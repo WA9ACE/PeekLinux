@@ -2,7 +2,7 @@
 #include "Font.h"
 #include "BitmapCache.h"
 #include "DataObject.h"
-
+#include "Debug.h"
 #include "p_malloc.h"
 
 static FT_Library ftlibrary;
@@ -28,7 +28,7 @@ Font *font_load(DataObject *dobj)
 	
 	output = (Font *)p_malloc(sizeof(Font));
 	if (output == NULL) {
-		bal_printf("Font alloc null\n");
+		emo_printf("Font alloc null\n");
 		return NULL;
 	}
 
@@ -38,7 +38,7 @@ Font *font_load(DataObject *dobj)
 	error = FT_New_Memory_Face(ftlibrary,
 			data, size, 0, &output->face);
 	if (error) {
-		bal_printf("Failed to load font face: %d\n", error); 
+		emo_printf("Failed to load font face: %d\n", error); 
 		return NULL;
 	}
 
@@ -54,7 +54,7 @@ void font_setHeight(Font *f, int height)
 	f->height = height;
 	error = FT_Set_Pixel_Sizes(f->face, 0, height);
 	if (error)
-		bal_printf("Failed to set font height\n");
+		emo_printf("Failed to set font height\n");
 }
 int font_getHeight(Font *f)
 {
@@ -79,19 +79,19 @@ void *font_getGlyph(Font *f, unsigned int utf32,
 
 	error = FT_Load_Char(f->face, utf32, FT_LOAD_RENDER );
 	if (error) {
-		bal_printf("Failed to FT load char\n");
+		emo_printf("Failed to FT load char\n");
 	}
 
 	if(f->face->glyph->bitmap.pixel_mode != FT_PIXEL_MODE_GRAY) {
-        bal_printf(" font didnt come back as greys\n");
+        emo_printf(" font didnt come back as greys\n");
         return NULL;
     }
 	
 #if 0
-	bal_printf("FontGlyph(");
+	emo_printf("FontGlyph(");
 	for (i = 0; i < f->face->glyph->bitmap.width*f->face->glyph->bitmap.rows; ++i)
-		bal_printf("0x%02X ", 	f->face->glyph->bitmap.buffer[i]);
-	bal_printf(")\n");
+		emo_printf("0x%02X ", 	f->face->glyph->bitmap.buffer[i]);
+	emo_printf(")\n");
 #endif
 
 #if 1

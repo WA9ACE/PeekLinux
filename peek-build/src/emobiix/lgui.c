@@ -1,5 +1,5 @@
 #include "lgui.h"
-
+#include "Debug.h"
 #include "Color.h"
 
 #include "p_malloc.h"
@@ -582,7 +582,7 @@ void lgui_draw_font(int x, int y, const char *utf8, Font *f, Color c)
 		data = (unsigned char *)font_getGlyph(f, val, A4, &width, &height,
 				&xadvance, &yadvance, &baselinedy);
 		if (data == NULL)
-			bal_printf(" Glyph missing");
+			emo_printf(" Glyph missing");
 		else
 			lgui_luminence_A4_blitC(x, y+fontHeight-baselinedy, 0, 0, width, height,
 					width, height, data, c);
@@ -612,7 +612,7 @@ void lgui_measure_font(const char *utf8, Font *f, IPoint *output)
 		data = (unsigned char *)font_getGlyph(f, val, A4, &width, &height,
 				&xadvance, &yadvance, &baselinedy);
 		if (data == NULL)
-			bal_printf(" Glyph missing");
+			emo_printf(" Glyph missing");
 		else {
 			output->x += xadvance;
 		}

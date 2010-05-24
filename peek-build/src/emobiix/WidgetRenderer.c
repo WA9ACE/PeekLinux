@@ -1,5 +1,5 @@
 #include "WidgetRenderer.h"
-
+#include "Debug.h"
 #include "lgui.h"
 #include "Point.h"
 
@@ -33,7 +33,7 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 					width, height, width, height, data, c);
 			break;
 		default:
-			bal_printf("Unsupported image format\n");
+			emo_printf("Unsupported image format\n");
 	}
 }
 

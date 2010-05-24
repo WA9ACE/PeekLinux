@@ -1,6 +1,7 @@
 #include "ata_api.h"
 #include "ata_aci_send.h"
 extern "C" {
+#include "Debug.h"
 #include "aci_cmd.h"
 #include "aci_lst.h"
 #include "aci_prs.h"
@@ -51,12 +52,12 @@ void ati_response_cb(UBYTE src_id, T_ATI_OUTPUT_TYPE output_type, UBYTE *output,
 		memset(msgList, 0, sizeof(*msgList));
 	}
 #ifdef EMO_DEBUG
-	bal_printf("ANDREY: ati_response_cb(%d, %d, %x, %d) = [%s]", src_id, output_type, output, output_len, output);
+	emo_printf("ANDREY: ati_response_cb(%d, %d, %x, %d) = [%s]", src_id, output_type, output, output_len, output);
 #endif
 	if(msg_cb) {
 	 	strcpy(msgList[s_awaitingSMS % 2].txtmsg, (char*)output);
 #ifdef EMO_DEBUG
-		bal_printf("CMW: Message - <%s> Number - <%s>", msgList[s_awaitingSMS % 2].txtmsg, msgList[s_awaitingSMS % 2].txtnumber);
+		emo_printf("CMW: Message - <%s> Number - <%s>", msgList[s_awaitingSMS % 2].txtmsg, msgList[s_awaitingSMS % 2].txtnumber);
 #endif
 		msg_cb=0;
 		s_awaitingSMS = (s_awaitingSMS + 1) % 2;
@@ -88,7 +89,7 @@ BOOL ATCMD(UBYTE *chars, USHORT len)
   static UBYTE     cnf_src_id = 0;
   T_LEDIT_ATCMD   *cmd = NULL;
 #ifdef EMO_DEBUG
-  bal_printf("ANDREY: ATCMD()");
+  emo_printf("ANDREY: ATCMD()");
 #endif
   if (!cnf_src_id)
   {
@@ -96,12 +97,12 @@ BOOL ATCMD(UBYTE *chars, USHORT len)
     if (!cnf_src_id)
     {
 #ifdef EMO_DEBUG
-      bal_printf("[ERR] ANDREY: ATCMD: cannot create source");
+      emo_printf("[ERR] ANDREY: ATCMD: cannot create source");
 #endif
       return (FALSE);
     }
 #ifdef EMO_DEBUG
-    bal_printf("ANDREY: ATCMD: srcId=%d", cnf_src_id);
+    emo_printf("ANDREY: ATCMD: srcId=%d", cnf_src_id);
 #endif
   }
   src_params = (T_ATI_SRC_PARAMS *)find_element (ati_src_list, cnf_src_id, search_ati_src_id);
@@ -109,7 +110,7 @@ BOOL ATCMD(UBYTE *chars, USHORT len)
   if (src_params EQ NULL)
   {
 #ifdef EMO_DEBUG
-    bal_printf("[ERR] ANDREY: ATCMD: source ID=%d not found",
+    emo_printf("[ERR] ANDREY: ATCMD: source ID=%d not found",
                     cnf_src_id);
 #endif
     return (FALSE);
@@ -119,13 +120,13 @@ BOOL ATCMD(UBYTE *chars, USHORT len)
     if ((ledit_get_current (src_params->src_id, &cmd) EQ LEDIT_CMPL) AND cmd)
     {
 #ifdef EMO_DEBUG
-      bal_printf("[WRN] ANDREY: ATCMD: command=%s is running", cmd->name);
+      emo_printf("[WRN] ANDREY: ATCMD: command=%s is running", cmd->name);
 #endif
 	}
     else
     {
 #ifdef EMO_DEBUG
-      bal_printf("[ERR] ANDREY: ATCMD: command not available !"); /* then we have a real problem */
+      emo_printf("[ERR] ANDREY: ATCMD: command not available !"); /* then we have a real problem */
 #endif
     }
     //return (FALSE);
@@ -164,7 +165,7 @@ BOOL ATCMD(UBYTE *chars, USHORT len)
 void recv_sms(void) {
 	char buf[256] = "AT+CMGL=\"ALL\"";
 #ifdef EMO_DEBUG
-	bal_printf("ANDREY: showing all %s", buf);
+	emo_printf("ANDREY: showing all %s", buf);
 #endif
 	ATCMD((UBYTE *)buf, strlen(buf));
 }
@@ -172,13 +173,13 @@ void recv_sms(void) {
 void ATI_RESPONSE(UBYTE src_id, T_ATI_OUTPUT_TYPE output_type, UBYTE *output, USHORT output_len)
 {
 #ifdef EMO_DEBUG
-	bal_printf("ANDREY: ATI_RESPONSE(%d, %d, %x, %d) = [%s]", src_id, output_type, output, output_len, output);
+	emo_printf("ANDREY: ATI_RESPONSE(%d, %d, %x, %d) = [%s]", src_id, output_type, output, output_len, output);
 #endif
 }
 
 static int last_line = 0;
 #define ANDREYTRACE do { \
-  bal_printf("ANDREY: Got to %d in %s", __LINE__, __FILE__); \
+  emo_printf("ANDREY: Got to %d in %s", __LINE__, __FILE__); \
   if (last_line < __LINE__) { \
     last_line = __LINE__; \
     return; \
@@ -199,7 +200,7 @@ void handleSmsSend(const char *pszNumber, const char *pszMsg)
 		BYTE ret = ccd_init();
 
 #ifdef EMO_DEBUG
-		bal_printf("ANDREY: ccd_init() = %d", ret);
+		emo_printf("ANDREY: ccd_init() = %d", ret);
 #endif
 	}
 
@@ -212,17 +213,17 @@ void handleSmsSend(const char *pszNumber, const char *pszMsg)
 
 	//char smsMsg[] = "\"5165473093\",129;How easy was that?\x1a";
 #ifdef EMO_DEBUG
-	bal_printf("ANDREY: sending sms: (%s, %s)", szNumber, szMsg);
+	emo_printf("ANDREY: sending sms: (%s, %s)", szNumber, szMsg);
 #endif
 
 	T_ATI_RSLT ret;
 	ret = atPlusCMGS(szNumber, aci_id);
 #ifdef EMO_DEBUG
-	bal_printf("ANDREY: sent sms: atPlusCMGS(%s, %d) = %d", szNumber, aci_id, ret);
+	emo_printf("ANDREY: sent sms: atPlusCMGS(%s, %d) = %d", szNumber, aci_id, ret);
 #endif
 
 	ret = atPlusCMGS(szMsg, aci_id);
 #ifdef EMO_DEBUG
-	bal_printf("ANDREY: sent sms: atPlusCMGS(%s, %d) = %d", szMsg, aci_id, ret);
+	emo_printf("ANDREY: sent sms: atPlusCMGS(%s, %d) = %d", szMsg, aci_id, ret);
 #endif
 }

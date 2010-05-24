@@ -1,4 +1,5 @@
 #include "Gradient.h"
+#include "Debug.h"
 
 #include "Array.h"
 
@@ -29,7 +30,7 @@ void gradient_addStop(Gradient *g, int position, Color color)
 
 	stop = (GradientStop *)p_malloc(sizeof(GradientStop));
 	if (stop == NULL)
-		bal_printf("Stop allocated was null\n\n");
+		emo_printf("Stop allocated was null\n\n");
 	stop->position = position;
 	stop->color = color;
 

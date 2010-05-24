@@ -1,5 +1,6 @@
 #include "emobiix_font.h"
 #ifndef SIMULATOR
+#include "Debug.h"
 #include "balapi.h"
 #include "bal_def.h"
 #endif
@@ -33,7 +34,7 @@ FT_Library* init_freetype()
 	static FT_Library ft;
 	int	error = FT_New_Library(&memory, &ft);
 	if (error != 0)
-		bal_printf("Font: New_Library() = %d", error);
+		emo_printf("Font: New_Library() = %d", error);
 
     FT_Add_Default_Modules(ft);
 	return &ft;

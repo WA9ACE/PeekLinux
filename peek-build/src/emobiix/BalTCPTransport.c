@@ -1,5 +1,4 @@
 #include "TCPTransport.h"
-
 #include "p_malloc.h"
 
 #include <ctype.h>
@@ -57,7 +56,7 @@ static int networkRequest_socket()
 	socketMsg->msgA = 1;
 	socketMsg->msgB = 2;
 
-	bal_printf("ANDREY::Requesting socket from the network task...");
+	emo_printf("ANDREY::Requesting socket from the network task...");
 	
 	// send a message to the network task
 	BOSMsgSend(BOS_EM_S_ID, BOS_MAILBOX_1_ID, EM_S_SOCKET, (void *)socketMsg, sizeof(emsMsg));
@@ -66,7 +65,7 @@ static int networkRequest_socket()
 		// blocking wait for a reply from the network task
 		EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOS_TIMEOUT_FALSE);
 
-		bal_printf("ANDREY::Received socket response!");
+		emo_printf("ANDREY::Received socket response!");
 		if (!(EvtStatus & BOS_MESSAGE_TYPE))
 			continue;
 
@@ -74,7 +73,7 @@ static int networkRequest_socket()
 			continue;
 
 		socketMsg = (emsMsg *)MsgBufferP;
-		bal_printf("ANDREY::Got a message id:%d, size:%d, socket: %d", MsgId, MsgSize, socketMsg->fd);
+		emo_printf("ANDREY::Got a message id:%d, size:%d, socket: %d", MsgId, MsgSize, socketMsg->fd);
 
 		return socketMsg->fd;
 	}
@@ -94,7 +93,7 @@ static int networkRequest_connect(int fd, const char *host, int port)
 	strcpy(socketMsg->host, host);
 	socketMsg->port = port;
 
-	bal_printf("ANDREY::Requesting connection from the network task...");
+	emo_printf("ANDREY::Requesting connection from the network task...");
 	
 	// send a message to the network task
 	BOSMsgSend(BOS_EM_S_ID, BOS_MAILBOX_1_ID, EM_S_CONNECT, (void *)socketMsg, sizeof(emsMsg));
@@ -103,7 +102,7 @@ static int networkRequest_connect(int fd, const char *host, int port)
 		// blocking wait for a reply from the network task
 		EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOS_TIMEOUT_FALSE);
 
-		bal_printf("ANDREY::Received connect response!");
+		emo_printf("ANDREY::Received connect response!");
 		if (!(EvtStatus & BOS_MESSAGE_TYPE))
 			continue;
 
@@ -111,7 +110,7 @@ static int networkRequest_connect(int fd, const char *host, int port)
 			continue;
 
 		socketMsg = (emsMsg *)MsgBufferP;
-		bal_printf("ANDREY::Got a message id:%d, size:%d, status: %d", MsgId, MsgSize, socketMsg->msgA);
+		emo_printf("ANDREY::Got a message id:%d, size:%d, status: %d", MsgId, MsgSize, socketMsg->msgA);
 
 		return socketMsg->msgA;
 	}
@@ -131,7 +130,7 @@ static int networkRequest_recv(int fd, char *buffer, int size)
 	socketMsg->readSize = size;
 	socketMsg->readBuffer = BOSMalloc(socketMsg->readSize);    
 
-	bal_printf("ANDREY::recv(%d, %x, %d)", fd, buffer, size);
+	emo_printf("ANDREY::recv(%d, %x, %d)", fd, buffer, size);
 	
 	// send a message to the network task
 	BOSMsgSend(BOS_EM_S_ID, BOS_MAILBOX_1_ID, EM_S_RECV, (void *)socketMsg, sizeof(emsMsg));
@@ -142,7 +141,7 @@ static int networkRequest_recv(int fd, char *buffer, int size)
 		// blocking wait for a reply from the network task
 		EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOS_TIMEOUT_FALSE);
 
-		bal_printf("ANDREY::Received recv response!");
+		emo_printf("ANDREY::Received recv response!");
 		if (!(EvtStatus & BOS_MESSAGE_TYPE))
 			continue;
 
@@ -150,7 +149,7 @@ static int networkRequest_recv(int fd, char *buffer, int size)
 			continue;
 
 		socketMsg = (emsMsg *)MsgBufferP;
-		bal_printf("ANDREY::recv(%d, %x, %d) = %d", fd, buffer, size, socketMsg->readSize);
+		emo_printf("ANDREY::recv(%d, %x, %d) = %d", fd, buffer, size, socketMsg->readSize);
 
 		if (socketMsg->readSize > 0)
 			memcpy(buffer, socketMsg->readBuffer, socketMsg->readSize);
@@ -175,7 +174,7 @@ static int networkRequest_peek(int fd, char *buffer, int size)
 	socketMsg->readSize = size;
 	socketMsg->readBuffer = BOSMalloc(socketMsg->readSize);    
 
-	bal_printf("ANDREY::Requesting a peek from the network task...");
+	emo_printf("ANDREY::Requesting a peek from the network task...");
 	
 	// send a message to the network task
 	BOSMsgSend(BOS_EM_S_ID, BOS_MAILBOX_1_ID, EM_S_PEEK, (void *)socketMsg, sizeof(emsMsg));
@@ -186,7 +185,7 @@ static int networkRequest_peek(int fd, char *buffer, int size)
 		// blocking wait for a reply from the network task
 		EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOS_TIMEOUT_FALSE);
 
-		bal_printf("ANDREY::Received peek response!");
+		emo_printf("ANDREY::Received peek response!");
 		if (!(EvtStatus & BOS_MESSAGE_TYPE))
 			continue;
 
@@ -194,7 +193,7 @@ static int networkRequest_peek(int fd, char *buffer, int size)
 			continue;
 
 		socketMsg = (emsMsg *)MsgBufferP;
-		bal_printf("ANDREY::Got a message id:%d, size:%d, bytes: %d", MsgId, MsgSize, socketMsg->readSize);
+		emo_printf("ANDREY::Got a message id:%d, size:%d, bytes: %d", MsgId, MsgSize, socketMsg->readSize);
 
 		if (socketMsg->readSize > 0)
 			memcpy(buffer, socketMsg->readBuffer, socketMsg->readSize);
@@ -220,7 +219,7 @@ static int networkRequest_send(int fd, const char *buffer, int size)
 	socketMsg->writeBuffer = BOSMalloc(size);
 	memcpy(socketMsg->writeBuffer, buffer, size);
 
-	bal_printf("ANDREY::Requesting a send from the network task...");
+	emo_printf("ANDREY::Requesting a send from the network task...");
 	
 	// send a message to the network task
 	BOSMsgSend(BOS_EM_S_ID, BOS_MAILBOX_1_ID, EM_S_SEND, (void *)socketMsg, sizeof(emsMsg));
@@ -231,7 +230,7 @@ static int networkRequest_send(int fd, const char *buffer, int size)
 		// blocking wait for a reply from the network task
 		EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOS_TIMEOUT_FALSE);
 
-		bal_printf("ANDREY::Received send response!");
+		emo_printf("ANDREY::Received send response!");
 		if (!(EvtStatus & BOS_MESSAGE_TYPE))
 			continue;
 
@@ -239,7 +238,7 @@ static int networkRequest_send(int fd, const char *buffer, int size)
 			continue;
 
 		socketMsg = (emsMsg *)MsgBufferP;
-		bal_printf("ANDREY::Got a send message id:%d, size:%d, status: %d", MsgId, MsgSize, socketMsg->writeSize);
+		emo_printf("ANDREY::Got a send message id:%d, size:%d, status: %d", MsgId, MsgSize, socketMsg->writeSize);
 
 		BOSFree(socketMsg->writeBuffer);
 		return socketMsg->writeSize;
@@ -258,7 +257,7 @@ static int networkRequest_close(int fd)
 
 	socketMsg->fd = fd;
 
-	bal_printf("ANDREY::Requesting close from the network task...");
+	emo_printf("ANDREY::Requesting close from the network task...");
 	
 	// send a message to the network task
 	BOSMsgSend(BOS_EM_S_ID, BOS_MAILBOX_1_ID, EM_S_CLOSE, (void *)socketMsg, sizeof(emsMsg));
@@ -267,7 +266,7 @@ static int networkRequest_close(int fd)
 		// blocking wait for a reply from the network task
 		EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOS_TIMEOUT_FALSE);
 
-		bal_printf("ANDREY::Received close response!");
+		emo_printf("ANDREY::Received close response!");
 		if (!(EvtStatus & BOS_MESSAGE_TYPE))
 			continue;
 
@@ -275,7 +274,7 @@ static int networkRequest_close(int fd)
 			continue;
 
 		socketMsg = (emsMsg *)MsgBufferP;
-		bal_printf("ANDREY::Got a message id:%d, size:%d, status: %d", MsgId, MsgSize, socketMsg->msgA);
+		emo_printf("ANDREY::Got a message id:%d, size:%d, status: %d", MsgId, MsgSize, socketMsg->msgA);
 
 		return socketMsg->msgA;
 	}

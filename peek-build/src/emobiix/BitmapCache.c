@@ -1,5 +1,6 @@
 #include "BitmapCache.h"
 #include "Map.h"
+#include "Debug.h"
 
 #include "p_malloc.h"
 #include <stdio.h>
@@ -62,7 +63,7 @@ void *bitmapcache_add(BitmapCache *c, unsigned long value,
 		c->data = (void *)p_realloc(c->data, c->dataSize + BITMAPCACHE_STEP);
 		c->dataSize += BITMAPCACHE_STEP;
 		if (c->data == NULL) {
-			bal_printf("realloc bitmapcache failed\n");
+			emo_printf("realloc bitmapcache failed\n");
 			return NULL;
 		}
 	}
@@ -70,7 +71,7 @@ void *bitmapcache_add(BitmapCache *c, unsigned long value,
 
 	b->data = c->dataPos;
 
-	//bal_printf("A4 image ");
+	//emo_printf("A4 image ");
 
 	src = data;
 	dest = c->data+b->data;
@@ -87,7 +88,7 @@ void *bitmapcache_add(BitmapCache *c, unsigned long value,
 				val |= ((*rsrc) >> 4) & 0x0F;
 				++rsrc;
 			}
-			//bal_printf("%02X ", val);
+			//emo_printf("%02X ", val);
 			*dest = val;
 			++dest;
 		}
@@ -97,7 +98,7 @@ void *bitmapcache_add(BitmapCache *c, unsigned long value,
 	c->dataPos += dataSize;
 #endif
 
-	//bal_printf("\n");
+	//emo_printf("\n");
 #if 1
 	map_append(c->cache, (void *)value, (void *)b);
 #endif

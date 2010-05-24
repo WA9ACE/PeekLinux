@@ -1,4 +1,5 @@
 #include "emobiix_font.h"
+#include "Debug.h"
 #ifdef SIMULATOR
 #define BalMalloc malloc
 #define BalFree free

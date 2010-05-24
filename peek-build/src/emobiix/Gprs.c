@@ -1,4 +1,5 @@
 #include "Gprs.h"
+#include "Debug.h"
 
 
 /**
@@ -21,11 +22,11 @@ static void rssiEventHandler(uint8 ucMessage)
   if(uSignalV>0 && uSignalV != mSignal){
         if(mSignal == SIGNAL_FLIGHT_M){
                 if(uSignalV != SIGNAL_FLIGHT_M){
-                        bal_printf("rssiEventHandler: Flight mode updated [%d]",uSignalV);
+                        emo_printf("rssiEventHandler: Flight mode updated [%d]",uSignalV);
                 }
         } else {
                if(uSignalV == SIGNAL_FLIGHT_M){
-			bal_printf("rssiEventHandler: Flight mode updated [%d]",uSignalV);
+			emo_printf("rssiEventHandler: Flight mode updated [%d]",uSignalV);
                }
         }
         /*Save signal value*/
@@ -49,7 +50,7 @@ static void rssiEventHandler(uint8 ucMessage)
           }
   }
 
-  bal_printf("rssiEventHandler[0x%x]",ucMessage);
+  emo_printf("rssiEventHandler[0x%x]",ucMessage);
 }
 
 void GprsRegisterRssi(void) {
