@@ -1,0 +1,97 @@
+<emobiix-gui>
+<!-- image, gradbox, gradboxr, selbox, label, solid, label, biglabel, labelw, biglabelw, entry -->
+<box alignment="center" packing="vertical" id="solid" script="
+function calculator(op) 
+  out = DataObject.find(&quot;output&quot;);
+  if op == '+' then
+    str = out:getValue();
+    str = a + b;
+    out:setValue(str);
+  end;
+end;
+function press(n)
+  out = DataObject.find(&quot;output&quot;);
+  str = out:getValue();
+  str = n;
+  out:setValue(str); 
+  if a == nil then a=n; end;
+  if b == nil then b=n; end;
+end;
+">
+	<box alignment="center" width="90%"  height="30" packing="vertical" id="gradboxr">
+		<label type="string" id="biglabel">  Calcumobiix</label>
+	</box>
+	<box alignment="center" width="300" height="30" packing="vertical" id="gradboxr">
+        	<label type="string" alignment="right" id="biglabel" name="output">55378008 </label>
+	</box>
+	<box alignment="center" width="300" height="170" packing="horizontal" id="gradbox" canfocus="0">
+	        <box width="140" height="50" packing="vertical" id="selbox" canfocus="0">
+       		 	<box width="280" height="50" packing="horizontal" id="selbox" canfocus="0">
+       		 		<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;1&quot;);">
+       		 			<label type="string" alignment="center" id="biglabel"> 1 </label>
+				</button>
+       		 		<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;2&quot;);">
+       		 			<label type="string" alignment="center" id="biglabel"> 2 </label>
+				</button>
+       		 		<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;3&quot;)">
+       		 			<label type="string" alignment="center" id="biglabel"> 3 </label>
+				</button>
+			</box>
+       		 	<box width="280" height="50" packing="horizontal" id="selbox" canfocus="0">
+       		 		<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;4&quot;)">
+       		 			<label type="string" alignment="center" id="biglabel"> 4 </label>
+				</button>
+       		 		<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;5&quot;)">
+       		 			<label type="string" alignment="center" id="biglabel"> 5 </label>
+				</button>
+       		 		<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;6&quot;)">
+       		 			<label type="string" alignment="center" id="biglabel"> 6 </label>
+				</button>
+			</box>
+       		 	<box width="280" height="50" packing="horizontal" id="selbox" canfocus="0">
+       		 		<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;7&quot;)">
+       		 			<label type="string" alignment="center" id="biglabel"> 7 </label>
+				</button>
+       		 		<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;8&quot;)">
+       		 			<label type="string" alignment="center" id="biglabel"> 8 </label>
+				</button>
+       		 		<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;9&quot;)">
+       		 			<label type="string" alignment="center" id="biglabel"> 9 </label>
+				</button>
+			</box>
+		</box>
+		<box width="120" height="50" packing="vertical" id="selbox" canfocus="0">
+			<box width="130" height="50" packing="horizontal" id="selbox" canfocus="0">
+	        		<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="calculator(&quot;+&quot;)">
+        				<label type="string" alignment="center" id="biglabel"> + </label>
+				</button>
+       		 		<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="">
+        				<label type="string" alignment="center" id="biglabel"> - </label>
+				</button>
+       		 		<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="">
+        				<label type="string" alignment="center" id="biglabel"> x^2 </label>
+				</button>
+			</box>
+       		 	<box width="130" height="50" packing="horizontal" id="selbox" canfocus="0">
+		        	<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="">
+       		 			<label type="string" alignment="center" id="biglabel"> X </label>
+				</button>
+       			 	<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="">
+       		 			<label type="string" alignment="center" id="biglabel"> / </label>
+				</button>
+       			 	<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="">
+       		 			<label type="string" alignment="center" id="biglabel"> 1/x </label>
+				</button>
+			</box>
+       		 	<box width="130" height="50" packing="horizontal" id="selbox" canfocus="0">
+		        	<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="">
+       		 			<label type="string" alignment="center" id="biglabel"> C </label>
+				</button>
+       			 	<button width="82" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="">
+       		 			<label type="string" alignment="center" id="biglabel"> = </label>
+				</button>
+			</box>
+		</box>
+	</box>
+</box>
+</emobiix-gui>

@@ -1,0 +1,58 @@
+BASEOUT_INC  = $(INCDIR)
+BASEOUT_INC += $(INCDIR)/cdginc
+BASEOUT_INC += $(INCDIR)/cdginc_tools
+BASEOUT_INC += $(INCDIR)/config
+
+CFLAGS_BASE = -me
+CFLAGS_BASE += -q 
+CFLAGS_BASE += $(CCALIGNSTRUCTS)
+CFLAGS_BASE += $(CCSUPPRESSWARN)
+CFLAGS_BASE += -DTOOL_CHOICE=3
+CFLAGS_BASE += -D_TMS470
+CFLAGS_BASE += $(CCTHUMB)
+CFLAGS_BASE += $(CCOPTIMIZE2)
+CFLAGS_BASE += $(CCDEBUGOPTIMIZE)
+
+CFLAGS := $(addprefix -D,$(VARIANT_DEFINE)) \
+					$(addprefix -U,$(VARIANT_UNDEFINE)) \
+					$(addprefix -D,$(DEFINE)) \
+					$(addprefix -U,$(UNDEFINE)) \
+					$(addprefix -I,$(COMPILER_INC) $(BASEOUT_INC) $(addprefix $(INCDIR)/,$(VARIANT_INCLUDE)) $(INCLUDE))
+
+THISDIR = $(subst $(BASEDIR)/,,$(CURDIR))
+OUTDIR  = $(BASEOUTDIR)/$(THISDIR)
+
+STR2IND_TAB = $(BUILDDIR)/trace/str2ind.tab
+STR2IND_LOG = $(BUILDDIR)/trace/str2ind.log
+STR2IND_C   = $(BUILDDIR)/trace/str2ind.c
+
+.SUFFIXES: .o .pp .c .cpp .pp_ .d
+
+## TODO Dependency checking!
+#ifneq ($(MAKECMDGOALS),clean)
+#-include $(DEPS)
+#endif
+
+## TODO Split into targets? note, -fp / -fc is required to differentiate c/c++
+
+%.o: %.cpp
+	@echo "  Compiling: $< => $@"
+	@$(subst /cygdrive/c,C:,$(CC) -ppl $(CFLAGS) $<)
+	@#$(subst /cygdrive/c,C:,$(STR2IND) -a -t$(STR2IND_TAB) -l$(STR2IND_LOG) -v$(STR2IND_C) -f$(patsubst %.o,%.pp,$@))
+	@$(subst /cygdrive/c,C:,$(CC) $(CFLAGS_BASE) -eoo -fr $(@D) -fp $(patsubst %.o,%.pp,$@))
+
+%.o: %.c
+	@echo "  Compiling: $< => $@"
+	@$(subst /cygdrive/c,C:,$(CC) -ppl $(CFLAGS) $<)
+	@#$(subst /cygdrive/c,C:,$(STR2IND) -a -t$(STR2IND_TAB) -l$(STR2IND_LOG) -v$(STR2IND_C) -f$(patsubst %.o,%.pp,$@))
+	@$(subst /cygdrive/c,C:,$(CC) $(CFLAGS_BASE) -eoo -fr $(@D) -fc $(patsubst %.o,%.pp,$@))
+
+%.d: %.cpp
+	@echo "  Dependencies for $<"
+	@$(subst /cygdrive/c,C:,$(CC) -ppi $(CFLAGS) $<)
+	@sed -e 's%\\%/%g' -e '1,1 s%^\s*%$(patsubst %.d,%.o,$@) $@ : $< %' -e 's%\s*$$% \\%g' -e '$$ s%\\%%' $(patsubst %.d,%.pp,$@) > $@
+
+%.d: %.c
+	@echo "  Dependencies for $<"
+	@$(subst /cygdrive/c,C:,$(CC) -ppi $(CFLAGS) $<)
+	@sed -e 's%\\%/%g' -e '1,1 s%^\s*%$(patsubst %.d,%.o,$@) $@ : $< %' -e 's%\s*$$% \\%g' -e '$$ s%\\%%' $(patsubst %.d,%.pp,$@) > $@

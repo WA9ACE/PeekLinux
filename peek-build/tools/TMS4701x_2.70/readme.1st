@@ -1,0 +1,100 @@
+TMS470 C/C++ CODE GENERATION TOOLS
+Release 2.70 February 2008
+
+
+Thank you for choosing Texas Instruments software development tools.
+It is our goal to provide you with the most useful and efficient
+development tools from which to develop your applications around
+Texas Instruments processors.  
+
+================================================================================
+Table of Contents
+================================================================================
+
+1. New Features
+2. Bug Fixes
+3. Known Issues
+
+
+================================================================================
+1. New Features
+================================================================================
+
+1. New Features  
+    a) Default DWARF2 Debug Support
+    b) Integer Division With Constant Divisor
+    c) The MUST_ITERATE Pragma
+    d) The UNROLL Pragma
+    e) New linker command file operator, palign
+    f) Static template instantiation
+    g) New --verbose switch to print banner 
+    h) New --default_order linker switch 
+    i) New --align_structs switch
+    j) New --v5e switch for ARM v5 DSP instructions
+2. Features added in release v2.30
+    a) 64-Bit Integer Support
+    b) Static Stack Depth Analysis
+    c) Improved -mn Switch
+    d) Branch Chaining 
+
+Details can be found in the document docs/CGTNew.txt
+
+Details on linker enhancements that have been added since release v2.20 that
+are not described in the current CGT User's Guide are provided in the
+docs/CGTLinker.txt document.
+
+
+================================================================================
+2. Bug Fixes
+================================================================================
+
+Details of bug fixes in this release, along with a complete defect history, can
+be found in the docs/CGTDefectHistory.txt document.
+
+
+================================================================================
+3. Known Issues
+================================================================================
+
+1. NOTE: Version 2.70 linker contains a new default allocation algorithm.  This
+new algorithm is a sized based algorithm, rather than following the order
+output sections are listed in the SECTIONS directive.  For example, if your
+linker command file contained:
+
+SECTIONS
+{
+   .cinit : {} > ROM
+   .const : {} > ROM
+   .text  : {} > ROM
+}
+
+prior to 2.51, the order of the sections in ROM would be: .cinit, .const, then
+.text.  Now, this order will be set by the size of the sections.  If a
+specific order is required, you must use a GROUP directive:
+
+SECTIONS
+{
+    GROUP
+    {
+       .cinit : {} > ROM
+       .const : {} > ROM
+       .text  : {} > ROM
+    }
+}
+
+This default size algorithm will also affect any output section not listed
+within the SECTIONS directive.
+
+A shell switch has been added to revert to the old allocation order.  See
+CGTNew.txt or CGTLinker.txt for details.
+
+2. NOTE: Version 2.70 will generate DWARF2 debug by default.  Some debug 
+directives are always generated, even if no -g switch is used.   The previous 
+STABS debug can be generated with the -gt switch.  If no debug information is
+desired, use the -gn switch.  This means there are DWARF2 debug directives in
+the default RTS libraries.  See docs/CGTNew.txt for details.  
+
+3. C++ Templates and Program Level Optimization
+
+Program Level Optimization, shell switch -pm, will not work with
+C++ code that contains templates.

@@ -1,0 +1,280 @@
+
+// for MCU attiny24 due to scroll wheel
+
+#ifndef __SPI_DRV_MCU_H__
+#define __SPI_DRV_MCU_H__
+
+#include "chipset.cfg"
+
+#include "memif/mem.h"
+#include "sys_types.h"
+
+
+/****************************************added for locosto SDCard *********************/
+#if(CHIPSET ==15)		//added for SPI in LOCOSTO
+#define SPI_REG_SCR     (MEM_SPI + 0x10)
+#define SPI_REG_TEST    (MEM_SPI + 0x3C)
+#define SPI_REG_SET1	(MEM_SPI + 0x24)
+#define SPI_REG_SET2	(MEM_SPI + 0x28)
+#define SPI_REG_CTRL	(MEM_SPI + 0x2C)
+#define SPI_REG_STATUS	(MEM_SPI + 0x30)
+#define SPI_REG_TX_LSB	(MEM_SPI + 0x34)
+#define SPI_REG_TX_MSB	(MEM_SPI + 0x36)
+#define SPI_REG_RX_LSB	(MEM_SPI + 0x38)
+#define SPI_REG_RX_MSB	(MEM_SPI + 0x40)
+#define SPI_REG_IER		(MEM_SPI + 0x1C) //added for enabling interrupt in Locosto
+#define SPI_REG_SSR     (MEM_SPI + 0x14) //added for  Locosto
+#define SPI_REG_ISR		(MEM_SPI + 0x18) //added for  Locosto  Interrupt Status register
+#define SPI_REG_RX		(MEM_SPI + 0x38)
+#define SPI_REG_TX		(MEM_SPI + 0x34)
+
+
+#endif
+/***************************************************************************************/
+
+// SPI module bits definition of register SPI_REG_SET1
+#define SPI_CLK_OFF          0x0000   // default value
+#define SPI_CLK_ON           0x0001
+#define SPI_CLOCK_DIV_1      0x0000   // default value
+#define SPI_CLOCK_DIV_2      0x0002
+#define SPI_CLOCK_DIV_4      0x0004
+#define SPI_CLOCK_DIV_8      0x0006
+#define SPI_CLOCK_DIV_16     0x0008
+/****************************************added for locosto SDCard *********************/
+#if(CHIPSET ==15)				//added for SPI interrupt in LOCOSTO
+#define SPI_IT_MASK_0        0x0001   // default value
+#define SPI_IT_DEMASK_0      0x0000
+#define SPI_IT_MASK_1        0x0020   // default value
+#define SPI_IT_DEMASK_1      0x0000
+#define SPI_SW_RESET         0x0002
+#define SPI_READ_TIMEOUT	0x0010 // Counter value for SPI Read timeout
+
+#endif
+/*************************************************************************************/
+
+// SPI module bits definition of register SPI_REG_SET2
+#define SPI_CLK_EDG_FALL     	  0x0000   // default value	for device 0
+#define SPI_CLK_EDG_RISE     	  0x0001
+#define SPI_CLK_EDG_FALL_1   	  0x0000   // default value	for device 1
+#define SPI_CLK_EDG_RISE_1   	  0x0002
+#define SPI_CLK_EDG_FALL_2   	  0x0000   // default value	for device 2
+#define SPI_CLK_EDG_RISE_2   	  0x0004
+#define SPI_CLK_EDG_FALL_3   	  0x0000   // default value	for device 3
+#define SPI_CLK_EDG_RISE_3   	  0x0008
+#define SPI_CLK_EDG_FALL_4   	  0x0000   // default value for device 4
+#define SPI_CLK_EDG_RISE_4   	  0x0010
+#define SPI_NTSPEN_NEG_LEV   	  0x0000   // default value	for device 0
+#define SPI_NTSPEN_POS_LEV   	  0x0020
+#define SPI_NTSPEN_NEG_LEV_1 	  0x0000   // default value	for device 1
+#define SPI_NTSPEN_POS_LEV_1 	  0x0040
+#define SPI_NTSPEN_NEG_LEV_2 	  0x0000   // default value	for device 2
+#define SPI_NTSPEN_POS_LEV_2 	  0x0080
+#define SPI_NTSPEN_NEG_LEV_3 	  0x0000   // default value	for device 3
+#define SPI_NTSPEN_POS_LEV_3 	  0x0100
+#define SPI_NTSPEN_NEG_LEV_4 	  0x0000   // default value for device 4
+#define SPI_NTSPEN_POS_LEV_4 	  0x0200
+#define SPI_NTSPEN_LEV_TRIG  	  0x0000   // default value	for device 0
+#define SPI_NTSPEN_EDG_TRIG  	  0x0400
+#define SPI_NTSPEN_LEV_TRIG_1	  0x0000   // default value	for device 1
+#define SPI_NTSPEN_EDG_TRIG_1	  0x0800
+#define SPI_NTSPEN_LEV_TRIG_2	  0x0000   // default value	for device 2
+#define SPI_NTSPEN_EDG_TRIG_2	  0x1000
+#define SPI_NTSPEN_LEV_TRIG_3	  0x0000   // default value	for device 3
+#define SPI_NTSPEN_EDG_TRIG_3	  0x2000
+#define SPI_NTSPEN_LEV_TRIG_4	  0x0000   // default value for device 4
+#define SPI_NTSPEN_EDG_TRIG_4	  0x4000
+
+#define SPI_NTSPEN_MODE			  0x8000   //DEFAULT MASTER MODE SELECTION FOR MC
+
+// SPI module bits definition of register SPI_REG_CTRL
+#define SPI_RDWR_DEACTIV   0x0000      // default value
+#define SPI_RDWR_ACTIV     0x0001
+#define SPI_WR_DEACTIV     0x0000      // default value
+#define SPI_WR_ACTIV       0x0002
+#define SPI_WNB_0          0x0000      // default value
+#define SPI_WNB_1          0x0004
+#define SPI_WNB_2          0x0008
+#define SPI_WNB_3          0x000c
+#define SPI_WNB_4          0x0010
+#define SPI_WNB_5          0x0014
+#define SPI_WNB_6          0x0018
+#define SPI_WNB_7          0x001c
+#define SPI_WNB_8          0x0020
+#define SPI_WNB_9          0x0024
+#define SPI_WNB_10         0x0028
+#define SPI_WNB_11         0x002c
+#define SPI_WNB_12         0x0030
+#define SPI_WNB_13         0x0034
+#define SPI_WNB_14         0x0038
+#define SPI_WNB_15         0x003c
+#define SPI_WNB_16         0x0040
+#define SPI_WNB_17         0x0044
+#define SPI_WNB_18         0x0048
+#define SPI_WNB_19         0x004c
+#define SPI_WNB_20         0x0050
+#define SPI_WNB_21         0x0054
+#define SPI_WNB_22         0x0058
+#define SPI_WNB_23         0x005c
+#define SPI_WNB_24         0x0060
+#define SPI_WNB_25         0x0064
+#define SPI_WNB_26         0x0068
+#define SPI_WNB_27         0x006c
+#define SPI_WNB_28         0x0070
+#define SPI_WNB_29         0x0074
+#define SPI_WNB_30         0x0078
+#define SPI_WNB_31         0x007c
+
+
+// SPI possible device IDs
+#define SPI_DEV0   0x0000
+#define SPI_DEV1   0x0080
+#define SPI_DEV2   0x0100
+#define SPI_DEV3   0x0180
+#define SPI_DEV4   0x0200
+
+// ABB should be mapped as device 0
+//#define ABB		SPI_DEV0
+
+
+// SPI module bits definition of register SPI_REG_STATUS
+#define RE_ST   0x0001   // bit 0
+#define WE_ST   0x0002   // bit 1
+
+
+/* The ARM emulator requires the spi clock always ON to be able to access */
+/* spi registers through a window.*/
+/* But it's better to stop the SPI clock in the GSM application to reduce the power consumption. */
+/* Validate the next line to reduce power consumption */
+//#define SPI_CLK_LOW_POWER
+
+
+
+// STRUCTURES
+typedef struct
+{
+    SYS_UWORD16 PrescVal;
+    SYS_UWORD16 DataTrLength;
+    SYS_UWORD16 DevAddLength;
+    SYS_UWORD16 DevId;
+    SYS_UWORD16 ClkEdge;
+    SYS_UWORD16 TspEnLevel;
+    SYS_UWORD16 TspEnForm;
+	SYS_UWORD16 Mode;
+}T_SPI_DEV;      // T_SPI_DEV is used to define an SPI device
+
+
+// MACROS
+#define SPI_WRITE_TX_LSB(TxLsb) { \
+* (volatile SYS_UWORD16 *) SPI_REG_TX_LSB = TxLsb;  }
+
+#define SPI_WRITE_TX_MSB(TxMsb) { \
+* (volatile SYS_UWORD16 *) SPI_REG_TX_MSB = TxMsb;  }
+
+#define SPI_WRITE_TX(Tx) { \
+* (volatile SYS_UWORD32 *) SPI_REG_TX = Tx;  }
+
+#define SPI_START_WRITE {* (volatile SYS_UWORD16 *) SPI_REG_CTRL |= SPI_WR_ACTIV; }
+
+//added for Locosto SD write stop
+#define SPI_STOP_WRITE  {* (volatile SYS_UWORD16 *) SPI_REG_CTRL &=~SPI_WR_ACTIV; }
+
+#define SPI_START_READ {* (volatile SYS_UWORD16 *) SPI_REG_CTRL |= SPI_RDWR_ACTIV; }
+
+#define SPI_CLK_DISABLE	{ \
+* (volatile SYS_UWORD16 *) SPI_REG_SET1 &= ~SPI_CLK_ON;  }
+
+#define SPI_CLK_ENABLE	{ \
+* (volatile SYS_UWORD16 *) SPI_REG_SET1 |= SPI_CLK_ON;  }
+
+#define SPI_MaskIT_WR { \
+* (volatile SYS_UWORD16 *) SPI_REG_SET1 |= SPI_IT_MASK_0;  }
+
+#define SPI_MaskIT_RD { \
+* (volatile SYS_UWORD16 *) SPI_REG_SET1 |= SPI_IT_MASK_1;  }
+
+#define SPI_Mask_All_IT { \
+* (volatile SYS_UWORD16 *) SPI_REG_SET1 |= (SPI_IT_MASK_0 | SPI_IT_MASK_1);  }
+
+#define SPI_UnmaskIT_WR { \
+* (volatile SYS_UWORD16 *) SPI_REG_SET1 &= ~SPI_IT_MASK_0;  }
+
+#define SPI_UnmaskIT_RD { \
+* (volatile SYS_UWORD16 *) SPI_REG_SET1 &= ~SPI_IT_MASK_1;  }
+
+#define SPI_Unmask_All_IT { \
+* (volatile SYS_UWORD16 *) SPI_REG_SET1 &= ~(SPI_IT_MASK_0 | SPI_IT_MASK_1);  }
+
+#define SPI_Ready_for_WR { \
+* (volatile SYS_UWORD16 *) SPI_REG_SET1 |= (SPI_CLK_ON | SPI_IT_MASK_0); }
+
+#define SPI_Ready_for_RD { \
+* (volatile SYS_UWORD16 *) SPI_REG_SET1 |= (SPI_CLK_ON | SPI_IT_MASK_1); }
+
+#define SPI_Ready_for_RDWR { \
+* (volatile SYS_UWORD16 *) SPI_REG_SET1 |= (SPI_CLK_ON | SPI_IT_MASK_0 | SPI_IT_MASK_1); }
+
+static  SYS_UWORD16 SPI_ReadRX_LSB(void);
+static  SYS_UWORD16 SPI_ReadRX_MSB(void);
+static  SYS_UWORD16 SPI_ReadStatus(void);
+
+/*ADDED FOR LOCOSTO*/
+
+// INLINE FUNCTIONS
+/*-----------------------------------------------------------------------*/
+/* SPI_ReadRX_LSB()                                                      */
+/*                                                                       */
+/* This function returns the value of SPI_REG_RX_LSB register            */
+/*                                                                       */
+/*-----------------------------------------------------------------------*/
+static  SYS_UWORD16 SPI_ReadRX_LSB(void)
+{
+  return * (volatile SYS_UWORD16 *) SPI_REG_RX_LSB;
+}
+
+
+/*-----------------------------------------------------------------------*/
+/* SPI_ReadRX_MSB()                                                      */
+/*                                                                       */
+/* This function returns the value of SPI_REG_RX_MSB register            */
+/*                                                                       */
+/*-----------------------------------------------------------------------*/
+static  SYS_UWORD16 SPI_ReadRX_MSB(void)
+{
+  return * (volatile SYS_UWORD16 *) SPI_REG_RX_MSB;
+}
+
+
+
+/*-----------------------------------------------------------------------*/
+/* SPI_ReadStatus()                                                      */
+/*                                                                       */
+/* This function returns the value of SPI_REG_STATUS register            */
+/*                                                                       */
+/*-----------------------------------------------------------------------*/
+static  SYS_UWORD16 SPI_ReadStatus(void)
+{
+  return * (volatile SYS_UWORD16 *) SPI_REG_STATUS;
+}
+
+
+// PROTOTYPES
+void SPI_InitDev(void);
+//void SPI_Write(UINT8);
+
+#if 0
+#define SPI_WRITE(data) { \
+  SPI_WRITE_TX_MSB(data) \
+  /*SPI_START_WRITE*/ }
+
+#define SPI_READ_BYTE(data) { \
+  SPI_WRITE_TX_MSB(data) \
+  SPI_START_READ }
+#endif
+
+#endif   //  __SPI_DRV_MCU_H__
+
+
+
+
+
+

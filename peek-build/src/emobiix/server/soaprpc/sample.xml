@@ -1,0 +1,50 @@
+<emobiix-gui>
+<box alignment="center" width="20" height="20" packing="vertical" id="solid">
+    <box alignment="center" width="20" height="20" packing="horizontal" id="gradbox" />
+    <box alignment="left" width="20" height="20" packing="vertical" id="gradboxr">
+        <label type="string" id="biglabel">bigtext</label>
+        <label type="string" id="label">sometext</label>
+		</box>
+    <box alignment="right" width="20" height="20" packing="vertical" id="gradboxr">
+        <image src="img1.png" />
+        <label type="string" id="biglabel">bigtext</label>
+        <label type="string" id="label">sometext</label>
+		</box>
+    <box alignment="center" width="20" height="20" packing="vertical" id="gradboxr" canfocus="1">
+        <box alignment="left" width="20" height="20" packing="horizontal" id="selbox" canfocus="1">
+            <image src="img2.png" />
+            <entry id="entry">INPUT</entry>
+				</box>
+        <box alignment="center" width="20" height="20" packing="horizontal" id="selbox" canfocus="1">
+            <image src="img2.png" />
+            <label type="string" id="label">sometext</label>
+            <label type="string" id="label">sometext</label>
+            <label type="string" id="label">sometext</label>
+				</box>
+        <box alignment="right" width="20" height="20" packing="horizontal" id="selbox" canfocus="1">
+            <image src="img2.png" />
+            <label type="string" id="label">sometext</label>
+            <label type="string" id="label">sometext</label>
+            <label type="string" id="label">sometext</label>
+				</box>
+        <box alignment="center" width="20" height="20" packing="horizontal" id="selbox" canfocus="1">
+            <image src="img2.png" />
+            <label type="string" id="label">sometext</label>
+            <label type="string" id="label">sometext</label>
+            <label type="string" id="label">sometext</label>
+				</box>
+		</box>
+    <box alignment="left" width="20" height="20" packing="vertical" id="gradboxr" canfocus="1">
+        <box alignment="center" width="20" height="20" packing="horizontal" id="selbox" canfocus="1">
+            <image src="img3.png" />
+            <label type="string" id="label">sometext</label>
+            <label type="string" id="label">sometext</label>
+				</box>
+        <box alignment="center" width="20" height="20" packing="horizontal" id="selbox" canfocus="1">
+            <image src="img3.png" />
+            <label type="string" id="label">sometext</label>
+            <label type="string" id="label">sometext</label>
+				</box>
+		</box>
+	</box>
+</emobiix-gui>

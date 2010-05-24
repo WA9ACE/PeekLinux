@@ -1,0 +1,140 @@
+FRI-Protocol-1-00 DEFINITIONS AUTOMATIC TAGS ::=
+
+BEGIN
+    FRIPacketP ::= SEQUENCE {
+        packetTypeP  CHOICE {
+            protocolHandshakeP        ProtocolHandshakeP ,
+            authRequestP              AuthRequestP ,
+            authUserPassP             AuthUserPassP ,
+            authResponseP             AuthResponseP ,
+            subscriptionRequestP      SubscriptionRequestP ,
+            subscriptionResponseP     SubscriptionResponseP ,
+            dataObjectSyncStartP      DataObjectSyncStartP ,
+            dataObjectSyncP           DataObjectSyncP ,
+            dataObjectSyncFinishP     DataObjectSyncFinishP 
+        }
+    }
+
+    maxIntP  INTEGER ::= 99999
+    ProtocolVersionP  ::= INTEGER (0 .. maxIntP )
+
+    AuthTypeP ::= ENUMERATED {
+        atImplicitP,
+        atUsernamePasswordP,
+        atPublickeyP
+    }
+
+    URLP ::= VisibleString
+
+    RequestResponseP ::= ENUMERATED {
+        responseErrorP,
+        responseOKP,
+        responseFailP,
+        responseExpiredP,
+        responseUnavailableP,
+        responseDisabledP,
+        responseMovedP
+    }
+
+    DataObjectTypeP ::= ENUMERATED {
+        blockDataObjectP,
+        recordDataObjectP,
+        treeDataObjectP
+    }
+
+    SyncOperationP ::= ENUMERATED {
+        syncAddP,
+        syncRemoveP,
+        syncModifyP
+    }
+
+    FieldNameP ::= VisibleString
+
+    DataObjectStampP ::= INTEGER
+    RecordIDP ::= INTEGER
+
+    AuthRequestP ::= SEQUENCE {
+        authSaltP    OCTET STRING,
+        authTypesP   SEQUENCE OF authTypeP AuthTypeP
+    }
+
+    AuthUserPassP ::= SEQUENCE {
+        authTypeP        AuthTypeP,
+        authUsernameP    OCTET STRING,
+        authPasswordP    OCTET STRING
+    }
+
+    AuthResponseP ::= RequestResponseP
+
+    SubscriptionRequestP ::= SEQUENCE {
+        urlP URLP
+    }
+
+    SubscriptionResponseP ::= SEQUENCE {
+        urlP                         URLP,
+        subscriptionResponseTypeP    RequestResponseP,
+        dataObjectTypeP              DataObjectTypeP OPTIONAL
+    }
+
+    DataObjectSyncStartP ::= SEQUENCE {
+        urlP                     URLP,
+        dataObjectStampMinorP    DataObjectStampP,
+        dataObjectStampMajorP    DataObjectStampP,
+        syncSequenceIDP          INTEGER (0 .. 255)
+    }
+
+    DataObjectSyncP ::= SEQUENCE {
+        syncSequenceIDP          INTEGER (0 .. 255),
+        syncListP                SyncListP
+    }
+
+    DataObjectSyncFinishP ::= SEQUENCE {
+        syncSequenceIDP          INTEGER (0 .. 255),
+        responseP                RequestResponseP
+    }
+
+    RecordSyncListP ::= SEQUENCE {
+        recordIdMinorP   RecordIDP,
+        recordIdMajorP   RecordIDP,
+        deleteRecordP    BOOLEAN,
+        recordFieldListP SEQUENCE OF recordSyncP SyncOperandP OPTIONAL
+    }
+
+    BlockSyncListP ::= SyncOperandP
+
+    SyncListP ::= CHOICE {
+        recordSyncListP  SEQUENCE OF recordSyncP RecordSyncListP,
+        blockSyncListP   SEQUENCE OF blockSyncP BlockSyncListP
+    }
+
+    SyncOperandP ::= SEQUENCE {
+        fieldNameP       FieldNameP,
+        syncP CHOICE {
+            nodeOperationP CHOICE {
+                nodeGotoTreeP    INTEGER,
+                nodeDeleteP      INTEGER,
+                nodeCloseTreeP   INTEGER (0 .. 64),
+                nodeAddP ENUMERATED {
+                    nodeSiblingP,
+                    nodeChildP
+                }
+            },
+            syncSetP         OCTET STRING,
+            syncRemoveP SEQUENCE {
+                removeSizeP  INTEGER,
+                removeOffsetP  INTEGER
+            },
+            syncModifyP SEQUENCE {
+                modifyDataP OCTET STRING,
+                modifySizeP INTEGER,
+                modifyOffsetP INTEGER
+            }
+        }
+    }
+
+    ProtocolHandshakeP ::= SEQUENCE {
+        protocolVersionP     ProtocolVersionP
+    }
+
+END
+

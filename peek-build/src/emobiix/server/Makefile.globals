@@ -1,0 +1,33 @@
+.PHONY: all clean
+
+# provide all defines to recursive make calls
+export
+
+MAKEFLAGS = -r
+
+BASEDIR=$(CURDIR)
+SRCDIR=$(BASEDIR)
+
+CXX     = g++
+CC      = gcc
+AR      = ar
+RANLIB  = ranlib
+
+CP = cp
+MV = mv
+
+LDFLAGS     = -shared
+ARFLAGS     = -rvu
+
+ASN1CDIR = /home/andrey/dev/asn1c/install
+ASN1C    = $(ASN1CDIR)/bin/asn1c
+ASN1CINC = $(ASN1CDIR)/share/asn1c
+
+BOOSTDIR = /home/andrey/dev/boost/install
+BOOSTINC = $(BOOSTDIR)/include
+BOOSTLIB = $(BOOSTDIR)/lib
+
+GSOAPDIR =  /home/andrey/dev/gsoap2/install
+GSOAPINC = $(GSOAPDIR)/include
+GSOAPLIB = $(GSOAPDIR)/lib
+GSOAPGEN = $(GSOAPDIR)/bin/soapcpp2
