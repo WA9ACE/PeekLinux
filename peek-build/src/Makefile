@@ -8,9 +8,11 @@ VIN_DEPEND = $(SRCDIR)/bal/bal.a \
              $(SRCDIR)/bal/bget.a
 
 SUBDIR_DEPEND = $(SRCDIR)/freetype2/freetype2.a \
+								$(SRCDIR)/libpng/libpng.a \
+								$(SRCDIR)/zlib/libz.a \
                 $(SRCDIR)/bam/bam.a \
                 $(SRCDIR)/baf/baf.a \
-		$(SRCDIR)/lua/lua.a \
+								$(SRCDIR)/lua/lua.a \
                 $(SRCDIR)/emobiix/emobiix.a \
                 $(SRCDIR)/emobiix/protocol/protocol.a \
                 $(SRCDIR)/bui/bui.a
@@ -25,24 +27,24 @@ ACI = $(SRCDIR)/aci/aci.a
 
 TARGET = $(SRCDIR)/vin.a
 
-SUBDIR = freetype2 lua bam baf emobiix bui
+SUBDIR = zlib libpng freetype2 lua bam baf emobiix bui
 
 .PHONY: $(VIN_DEPEND) $(SUBDIR)
 
 all: $(TARGET)
 
 $(TARGET): $(ACI) $(VIN_DEPEND) $(SUBDIR_DEPEND)
-	$(subst /cygdrive/c,C:,$(AR) $(ARFLAGS) $@ *.o)
+	$(AR) $(ARFLAGS) $@ *.o
 	$(RM) *.o
 
 $(VIN_DEPEND): 
-	$(subst /cygdrive/c,C:,$(AR) -xv $@)
+	$(AR) -xv $@
 
 $(ACI):
 	$(MAKE) -C aci 
 
 $(SUBDIR_DEPEND): $(SUBDIR)
-	$(subst /cygdrive/c,C:,$(AR) -xv $@)
+	$(AR) -xv $@
 
 $(SUBDIR):
 	$(MAKE) -C $@
@@ -53,6 +55,8 @@ clean:
 	$(MAKE) -C aci clean
 	$(MAKE) -C lua clean
 	$(MAKE) -C freetype2 clean
+	$(MAKE) -C libpng clean
+	$(MAKE) -C zlib clean
 	$(MAKE) -C bui clean
 	$(MAKE) -C emobiix clean
 	$(MAKE) -C baf clean
