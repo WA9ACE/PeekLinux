@@ -14,6 +14,7 @@
 #include "DataObject.h"
 #include "Platform.h"
 #include "Debug.h"
+#include "lgui.h"
 
 #include "p_malloc.h"
 
@@ -44,9 +45,26 @@ void updateScreen(void) {
         }
         emo_printf("\n RYAN Calling tweetDrawScreen() \n\n");
         tweetDrawScreen();
-        emo_printf("Flipping screen\n");
-        dc.BitBlt(0,0,BWIDTH,BHEIGHT,Bmp,0,0);
-        dc.UpdateDisplay();
+
+        if (!lgui_is_dirty())
+            return;
+
+        int index, upper;
+        upper = lgui_index_count();
+        if (upper == 0) {
+            emo_printf("Flipping entire screen\n");
+            dc.BitBlt(0,0,BWIDTH,BHEIGHT,Bmp,0,0);
+            dc.UpdateDisplay();
+        } else {
+            Rectangle *rect;
+            for (index = 0; index < upper; ++index) {
+                rect = lgui_get_region(index);
+
+                dc.BitBlt(rect->x, rect->y, rect->width, rect->height, Bmp,
+                        0, 0);
+            }
+            dc.UpdateDisplay();
+        }
 #endif
 }
 
@@ -57,13 +75,13 @@ ConnectionContext *connectionContext;
 
 void main_test(void)
 {
-	Endpoint *ep, *remote;
-	URL *url, *durl;
-	DataObject *dobj, *cdobj, *idobj;
+	Endpoint *ep;
+	URL *url;
+	DataObject *dobj;
 	Transport *transport;
 	ConnectionContext *ctx;
-  int hasPrinted;
-	char buf[256];
+	int hasPrinted;
+	//char buf[256];
 
 	dataobject_platformInit();
 	url = url_parse("tcp://69.114.111.9:12345/dataobject", URL_ALL);

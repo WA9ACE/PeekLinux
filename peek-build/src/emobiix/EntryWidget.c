@@ -2,6 +2,8 @@
 
 #include "DataObject.h"
 #include "Widget.h"
+#include "lgui.h"
+#include "Style.h"
 
 #include "p_malloc.h"
 
@@ -10,12 +12,13 @@
 
 /* TODO, handle UTF8 instead of just ascii */
 
-void entryWidget_handleKey(Widget *w, int key)
+void entryWidget_handleKey(Widget *w, int key, Style *s)
 {
 	DataObject *dobj;
 	DataObjectField *field;
 	int slen;
 	char *newstring;
+	Rectangle rect;
 
 	if (key == 10 || key == 13 || key == 86 || key == 87)
 		return;
@@ -41,4 +44,9 @@ void entryWidget_handleKey(Widget *w, int key)
 		p_free(field->field.string);
 		field->field.string = newstring;
 	}
+	lgui_clip_identity();
+	widget_getClipRectangle(w, &rect);
+	lgui_clip_set(&rect);
+	lgui_push_region();
+	style_renderWidgetTree(s, dataobject_superparent(w));
 }

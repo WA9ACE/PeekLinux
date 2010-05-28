@@ -5,13 +5,7 @@
 #include "Map.h"
 #include "DataObject.h"
 #include "List.h"
-#ifdef WIN32
-#define Rectangle Rectangle_emobiix
-#endif
 #include "Widget.h"
-#ifdef WIN32
-#undef Rectangle
-#endif
 #include "Debug.h"
 
 #include "Style.h"
@@ -155,13 +149,13 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 
 	transport = endpoint_getTransport(ctx->endpoint);
 
-	emo_printf("Loop iteration...");
+	/*emo_printf("Loop iteration...");*/
 
 	/* first check if there is any inbound data pending on our connection */
 	response = transport->peek(ctx->endpoint, ctx->buffer+ctx->bufferBytes,
 			1);
 	if (response < 0) {
-        emo_printf("transport->peek respose: %d\n", response);
+        /*emo_printf("transport->peek respose: %d\n", response);*/
 		/* error state, or no data */
 	} else if (response > 0) {
 #ifndef SIMULATOR
@@ -183,7 +177,7 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 		}
 	}
 
-	emo_printf("Outgoing sync");
+	/*emo_printf("Outgoing sync");*/
 
 	/* perform any outgoing sync requests */
 	iter = map_begin(ctx->syncRequests);
@@ -197,7 +191,7 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 			mapIterator_next(iter);
 	}
 
-	emo_printf("Outgoing sync complete");
+	/*emo_printf("Outgoing sync complete");*/
 
 	return 0;
 }
@@ -425,6 +419,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 				sreq->finalize = 1;
 				dataobject_setState(sreq->dobj, DOS_OK);
 				widget_resolveLayout(sreq->dobj, currentStyle);
+				widget_markDirty(sreq->dobj);
 			}
 			break;
 		case packetTypeP_PR_NOTHING:

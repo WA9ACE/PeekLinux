@@ -6,6 +6,7 @@
 
 #include <math.h>
 #include <stdio.h>
+#include <string.h>
 
 #ifndef M_PI
 #define M_PI 3.141592654f
@@ -15,18 +16,23 @@
 #define LGUI_HEIGHT 240
 static unsigned short *lgui_buffer = 0;
 
+#define CLIP_STACK_SIZE 5
+static Rectangle clip_stack[CLIP_STACK_SIZE];
+static short clip_index = 0;
+#define CLIP clip_stack[clip_index]
+
 #define RGB_TO_565(r,g,b) (((r << 8) & 0xF800) | ((g << 3) & 0x7E0) | ((b >> 3) & 0x1F))
-#define SCALE_PIXEL(scale, r, g, b) ((( (((int)(r))*scale/255) << 8) & 0xF800) | \
-	(((((int)(g))*scale/255) << 3) & 0x7E0) | \
-	(((((int)(b))*scale/255) >> 3) & 0x1F))
+#define SCALE_PIXEL(scale, r, g, b) ((( (((unsigned short)(r))*scale/255) << 8) & 0xF800) | \
+	(((((unsigned short)(g))*scale/255) << 3) & 0x7E0) | \
+	(((((unsigned short)(b))*scale/255) >> 3) & 0x1F))
 
 #define PIXEL_MODULATE_ALPHA(pixel, srcpixel, alpha) \
-	( (( (((unsigned int)(pixel & 0xF800)) * (unsigned int)(alpha))/255)&0xF800) + \
-    (( (((unsigned int)(srcpixel & 0xF800)) * (255-(unsigned int)(alpha)))/255)&0xF800) ) | \
-	( (( (((unsigned int)(pixel & 0x7E0)) * (unsigned int)(alpha))/255)&0x7E0) + \
-    (( (((unsigned int)(srcpixel & 0x7E0)) * (255-(unsigned int)(alpha)))/255)&0x7E0) ) | \
-	( (( (((unsigned int)(pixel & 0x1F)) * (unsigned int)(alpha))/255)&0x1F) + \
-    (( (((unsigned int)(srcpixel & 0x1F)) * (255-(unsigned int)(alpha)))/255)&0x1F))
+	( (( (((unsigned short)(pixel & 0xF800)) * (unsigned short)(alpha))/255)&0xF800) + \
+    (( (((unsigned short)(srcpixel & 0xF800)) * (255-(unsigned short)(alpha)))/255)&0xF800) ) | \
+	( (( (((unsigned short)(pixel & 0x7E0)) * (unsigned short)(alpha))/255)&0x7E0) + \
+    (( (((unsigned short)(srcpixel & 0x7E0)) * (255-(unsigned short)(alpha)))/255)&0x7E0) ) | \
+	( (( (((unsigned short)(pixel & 0x1F)) * (unsigned short)(alpha))/255)&0x1F) + \
+    (( (((unsigned short)(srcpixel & 0x1F)) * (255-(unsigned short)(alpha)))/255)&0x1F))
 
 #define FONT_HEADER_SIZE (6*4)
 
@@ -41,7 +47,13 @@ void lgui_attach(void *buf)
 	if (!aacircleInit) {
 		initD();
 		aacircleInit = 1;
+		lgui_clip_identity();
 	}
+}
+
+void lgui_clear(unsigned char pixel)
+{
+	memset(lgui_buffer, pixel, 320*240*2);
 }
 
 #define GRADIENT_STEP(res, sr, er, val, idx) res = sr*100 * (((val-1)-idx)*100)/((val-1)*100); \
@@ -51,14 +63,26 @@ void lgui_vertical_gradient(unsigned char start_red, unsigned char start_green, 
 	unsigned char end_red, unsigned char end_green, unsigned char end_blue,
 	int startx, int starty, int width, int height)
 {
-	unsigned int red;
-	unsigned int green;
-	unsigned int blue;
+	unsigned short red;
+	unsigned short green;
+	unsigned short blue;
 	int line, ypos, i;
 	unsigned short *buf, pixel;
+	Rectangle rect;
+	int cline, ccol, cwidth, cheight;
+
+	rect.x = startx;
+	rect.y = starty;
+	rect.width = width;
+	rect.height = height;
+	if (lgui_clip_rect(&rect, &ccol, &cline, &cwidth, &cheight) == 0)
+		return;
+
+	lgui_set_dirty();
 
 	ypos = starty;
-	for (line = 0; line < height; ++line) {
+	ypos += cline;
+	for (line = cline; line < cheight; ++line) {
 		if (ypos < 0 || ypos >= LGUI_HEIGHT) {
 			++ypos;
 			continue;
@@ -71,7 +95,8 @@ void lgui_vertical_gradient(unsigned char start_red, unsigned char start_green, 
 
 		buf = lgui_buffer + startx + ypos*LGUI_WIDTH;
 
-		for (i = 0; i < width; ++i) {
+		buf += ccol;
+		for (i = ccol; i < cwidth; ++i) {
 			*buf = pixel;
 			++buf;
 		}
@@ -94,9 +119,15 @@ void lgui_vertical_gradientG(Gradient *g,
 	maxStop = gradient_stops(g);
 	do {
 		if (hstart != hend)
+#if 1
 			lgui_vertical_gradient(cstart.rgba.red, cstart.rgba.green, cstart.rgba.blue,
 					cend.rgba.red, cend.rgba.green, cend.rgba.blue,
 					startx, starty+hstart, width, hend-hstart);
+#else
+			lgui_vertical_gradient(0xFF, 0xFF, 0xFF,
+					0xFF, 0xFF, 0xFF,
+					startx, starty+hstart, width, hend-hstart);
+#endif
 		++stop;
 		cstart = cend;
 		hstart = hend;
@@ -108,36 +139,29 @@ void lgui_vertical_gradientG(Gradient *g,
 
 void lgui_hline(int x, int y, int len, int width, unsigned char red, unsigned char green, unsigned char blue)
 {
-	int line, ypos, i;
-	unsigned short *buf, pixel;
-
-	ypos = y;
-	pixel = RGB_TO_565(red, green, blue);
-	for (line = 0; line < width; ++line) {
-		if (ypos < 0 || ypos >= LGUI_HEIGHT) {
-			++ypos;
-			continue;
-		}
-
-		buf = lgui_buffer + x + ypos*LGUI_WIDTH;
-
-		for (i = 0; i < len; ++i) {
-			*buf = pixel;
-			++buf;
-		}
-
-		++ypos;
-	}
+	lgui_vline(x, y, width, len, red, green, blue);
 }
 
 void lgui_vline(int x, int y, int len, int width, unsigned char red, unsigned char green, unsigned char blue)
 {
 	int line, ypos, i;
 	unsigned short *buf, pixel;
+	Rectangle rect;
+	int cline, ccol, cwidth, cheight;
+
+	rect.x = x;
+	rect.y = y;
+	rect.width = width;
+	rect.height = len;
+	if (lgui_clip_rect(&rect, &ccol, &cline, &cwidth, &cheight) == 0)
+		return;
+
+	lgui_set_dirty();
 
 	ypos = y;
 	pixel = RGB_TO_565(red, green, blue);
-	for (line = 0; line < len; ++line) {
+	ypos += cline;
+	for (line = cline; line < cheight; ++line) {
 		if (ypos < 0 || ypos >= LGUI_HEIGHT) {
 			++ypos;
 			continue;
@@ -145,7 +169,8 @@ void lgui_vline(int x, int y, int len, int width, unsigned char red, unsigned ch
 
 		buf = lgui_buffer + x + ypos*LGUI_WIDTH;
 
-		for (i = 0; i < width; ++i) {
+		buf += ccol;
+		for (i = ccol; i < cwidth; ++i) {
 			*buf = pixel;
 			++buf;
 		}
@@ -162,6 +187,7 @@ void lgui_box(int x, int y, int width, int height, int linewidth, unsigned char 
 	lgui_vline(x+width-linewidth, y, height, linewidth, red, green, blue);
 }
 
+// FIXME - needs clipping
 void lgui_luminence_alpha_blitC(int destx, int desty, int imgx, int imgy, int imgdx, int imgdy,
 							   int imgwidth, int imgheight, unsigned char *img,
 							   unsigned char red, unsigned char green, unsigned char blue)
@@ -207,10 +233,24 @@ void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 	unsigned short pixel, srcpixel;
 	unsigned char scale, scaleorig;
 	int line, col, ypos, imgypos;
+	int cline, cwidth, ccol, cheight;
+	Rectangle rect;
 	
 	ypos = desty;
 	imgypos = imgy;
-	for (line = 0; line < imgdy; ++line) {
+	
+	rect.x = destx;
+	rect.y = desty;
+	rect.width = imgdx;
+	rect.height = imgdy;
+	if (lgui_clip_rect(&rect, &ccol, &cline, &cwidth, &cheight) == 0)
+		return;
+
+	lgui_set_dirty();
+
+	ypos += cline;
+	imgypos += cline;
+	for (line = cline; line < cheight; ++line) {
 		if (ypos < 0 || ypos >= LGUI_HEIGHT) {
 			++ypos;
 			++imgypos;
@@ -219,7 +259,9 @@ void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 		buf = lgui_buffer + destx + ypos*LGUI_WIDTH;
 		imgbuf = img + imgx + imgypos*((imgwidth+1)>>1);
 
-		for (col = 0; col < (imgdx+1) >> 1; ++col) {
+		buf += ((ccol+1) >> 1) << 1;
+		imgbuf += (ccol+1) >> 1;
+		for (col = (ccol+1) >> 1; col < (cwidth+1) >> 1; ++col) {
 			scaleorig = (*imgbuf);
 			scale = scaleorig & 0xF0;
 			if (scale > 0) {
@@ -250,10 +292,24 @@ void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
     unsigned char *imgbuf;
     unsigned short pixel;
     int line, col, ypos, imgypos;
-   
-    ypos = desty;
-    imgypos = imgy;
-    for (line = 0; line < imgheight; ++line) {
+	int cline, cwidth, ccol, cheight;
+	Rectangle rect;
+	
+	ypos = desty;
+	imgypos = imgy;
+	
+	rect.x = destx;
+	rect.y = desty;
+	rect.width = imgwidth;
+	rect.height = imgheight;
+	if (lgui_clip_rect(&rect, &ccol, &cline, &cwidth, &cheight) == 0)
+		return;
+
+	lgui_set_dirty();
+
+	ypos += cline;
+	imgypos += cline;
+    for (line = cline; line < cheight; ++line) {
         if (ypos < 0 || ypos >= LGUI_HEIGHT) {
             ++ypos;
             ++imgypos;
@@ -262,7 +318,9 @@ void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
         buf = lgui_buffer + destx + ypos*LGUI_WIDTH;
         imgbuf = img + imgx + imgypos*imgwidth*2;
 
-        for (col = 0; col < imgwidth; ++col) {
+		buf += ccol;
+		imgbuf += ccol << 1;
+        for (col = ccol; col < cwidth; ++col) {
                 pixel = *((unsigned short *)(imgbuf));
                 /*if (pixel > 0)*/
                     *buf = pixel;
@@ -274,6 +332,7 @@ void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
     }
 }
 
+// FIXME - needs clipping
 void lgui_black_alpha_blitRGB(int destx, int desty, int imgx, int imgy,
 	 	int imgwidth, int imgheight, unsigned char *img)
 {
@@ -306,6 +365,7 @@ void lgui_black_alpha_blitRGB(int destx, int desty, int imgx, int imgy,
 
 }
 
+// FIXME - needs clipping
 void lgui_alpha_blitRGBA(int destx, int desty, int imgx, int imgy,
 	 	int imgwidth, int imgheight, unsigned char *img)
 {
@@ -379,8 +439,15 @@ static void putpixelAlpha(int x, int y, unsigned char red, unsigned char green, 
 	x+=putpixelX;
 	y+=putpixelY;
 
+	if (x < CLIP.x || x > CLIP.x + CLIP.width ||
+			y < CLIP.y || y > CLIP.y + CLIP.height) {
+		return;
+	}
+
     if (y < 0 || y > LGUI_HEIGHT)
         return;
+
+	lgui_set_dirty();
 
 	buf = lgui_buffer+x+y*LGUI_WIDTH;
 	pixel = RGB_TO_565(red, green, blue);
@@ -481,21 +548,33 @@ void lgui_rbox_gradient(Gradient *g, int x, int y, int width, int height, int ra
 	int stop, maxStop;
 	Color cstart, cend;
 	float cr;
-
+	Rectangle rect;
 	unsigned int red;
 	unsigned int green;
 	unsigned int blue;
 	int line, ypos, i;
 	unsigned short *buf, pixel;
 	int iheight, iwidth, imod;
-	int startx;
+	int cline, cheight;
+	int startx, cstartx, cendx;
+	int istart;
 
+	rect.x = x;
+	rect.y = y;
+	rect.width = width;
+	rect.height = height;
 	hstart = height;
 	cstart = gradient_getStop(g, 0, &hstart);
 	hend = height;
 	cend = gradient_getStop(g, 1, &hend);
 	stop = 1;
 	maxStop = gradient_stops(g);
+	
+	if (!lgui_clip_rect(&rect, &cstartx, &cline, &cendx, &cheight))
+		return;
+
+	lgui_set_dirty();
+
 	do {
 		if (hstart != hend) {
 			/*lgui_vertical_gradient(cstart.rgba.red, cstart.rgba.green, cstart.rgba.blue,
@@ -504,7 +583,14 @@ void lgui_rbox_gradient(Gradient *g, int x, int y, int width, int height, int ra
 			startx = x;
 			ypos = y+hstart;
 			iheight = hend-hstart;
-			for (line = 0; line < iheight; ++line) {
+			
+			rect.y = ypos;
+			rect.height = iheight;
+			if (lgui_clip_rect(&rect, &cstartx, &cline, &cendx, &cheight) == 0) {
+				goto skip_gradient_step;
+			}
+			ypos += cline;
+			for (line = cline; line < cheight; ++line) {
 				if (ypos < 0 || ypos >= LGUI_HEIGHT) {
 					++ypos;
 					continue;
@@ -527,17 +613,31 @@ void lgui_rbox_gradient(Gradient *g, int x, int y, int width, int height, int ra
 					imod = 0;
 				}
 
-				buf = lgui_buffer + startx +imod + ypos*LGUI_WIDTH;
-		
+				buf = lgui_buffer + startx + ypos*LGUI_WIDTH;
+				buf += imod;
+				istart = 0;
 
-				iwidth = width - (imod<<1);
-				for (i = 0; i < iwidth; ++i) {
+				if (cstartx > imod) {
+					buf += cstartx-imod;
+					istart = cstartx;
+				} else {
+					istart = imod;
+				}
+
+				if (width-imod+1 > cendx) {
+					iwidth = cendx;
+				} else {
+					iwidth = width - imod + 1;
+				}
+
+				for (i = istart; i < iwidth; ++i) {
 					*buf = pixel;
 					++buf;
 				}
 				++ypos;
 			}
 		}
+skip_gradient_step:
 		++stop;
 		cstart = cend;
 		hstart = hend;
@@ -581,11 +681,16 @@ void lgui_draw_font(int x, int y, const char *utf8, Font *f, Color c)
 		val = UTF8toUTF32(p, &adv);
 		data = (unsigned char *)font_getGlyph(f, val, A4, &width, &height,
 				&xadvance, &yadvance, &baselinedy);
-		if (data == NULL)
-			emo_printf(" Glyph missing");
-		else
-			lgui_luminence_A4_blitC(x, y+fontHeight-baselinedy, 0, 0, width, height,
-					width, height, data, c);
+		if (!(x + xadvance < CLIP.x ||
+				x > CLIP.x + CLIP.width ||
+				y + fontHeight < CLIP.y ||
+				y > CLIP.y + CLIP.height)) {
+			if (data == NULL)
+				emo_printf(" Glyph missing");
+			else
+				lgui_luminence_A4_blitC(x, y+fontHeight-baselinedy, 0, 0, width, height,
+						width, height, data, c);
+		}
 		x += xadvance;
 		y += yadvance;
 		p += adv;
@@ -618,4 +723,207 @@ void lgui_measure_font(const char *utf8, Font *f, IPoint *output)
 		}
 		p += adv;
 	}
+}
+
+void lgui_clip_set(Rectangle *rect)
+{
+	CLIP.x = rect->x;
+	CLIP.y = rect->y;
+	CLIP.width = rect->width;
+	CLIP.height = rect->height;
+}
+
+void lgui_clip_union(Rectangle *rect)
+{
+	int yh, xh, nyh, nxh;
+
+	yh = CLIP.y + CLIP.height;
+	xh = CLIP.x + CLIP.width;
+
+	nyh = rect->y + rect->height;
+	nxh = rect->x + rect->width;
+
+	if (rect->x < CLIP.x) CLIP.x = rect->x;
+	if (rect->y < CLIP.y) CLIP.y = rect->y;
+	if (nxh > xh)
+		CLIP.width = nxh - CLIP.x;
+	else
+		CLIP.width = xh - CLIP.x;
+	if (nyh > yh)
+		CLIP.height = nyh - CLIP.y;
+	else
+		CLIP.height = yh - CLIP.y;
+}
+
+void lgui_clip_and(Rectangle *rect)
+{
+	int yh, xh, nyh, nxh;
+
+	yh = CLIP.y + CLIP.height;
+	xh = CLIP.x + CLIP.width;
+
+	nyh = rect->y + rect->height;
+	nxh = rect->x + rect->width;
+
+	if (rect->x > CLIP.x) CLIP.x = rect->x;
+	if (rect->y > CLIP.y) CLIP.y = rect->y;
+	if (nxh < xh)
+		CLIP.width = nxh - CLIP.x;
+	else
+		CLIP.width = xh - CLIP.x;
+	if (nyh < yh)
+		CLIP.height = nyh - CLIP.y;
+	else
+		CLIP.height = yh - CLIP.y;
+}
+
+void lgui_clip_identity(void)
+{
+	clip_index = 0;
+	CLIP.x = 0;
+	CLIP.y = 0;
+	CLIP.width = LGUI_WIDTH;
+	CLIP.height = LGUI_HEIGHT;
+}
+
+void lgui_clip_push(void)
+{
+	if (clip_index == CLIP_STACK_SIZE-1) {
+		emo_printf("Attempted to push clip stack and overflow\n");
+		return;
+	}
+	++clip_index;
+	CLIP.x = clip_stack[clip_index-1].x;
+	CLIP.y = clip_stack[clip_index-1].y;
+	CLIP.width = clip_stack[clip_index-1].width;
+	CLIP.height = clip_stack[clip_index-1].height;
+}
+
+void lgui_clip_pop(void)
+{
+	--clip_index;
+	if (clip_index < 0) {
+		emo_printf("Attempted to pop lgui clip stack below 0\n");
+		clip_index = 0;
+	}
+}
+
+int lgui_clip_rect(Rectangle *rect, int *lowx, int *lowy,
+		int *highx, int *highy)
+{
+	int val;
+
+	/* Y */
+
+	/* assume y inside clip region, possible partial draw */
+	*lowy = 0;
+	
+	/* y beyond clip region, no-draw */
+	if (rect->y > CLIP.y + CLIP.height)
+		return 0;
+
+	/* y prior to clip region, possible partial draw */
+	if (rect->y < CLIP.y)
+		*lowy = CLIP.y - rect->y;
+
+	/* if our start is beyond our finish, return */
+	if (*lowy > rect->height)
+		return 0;
+
+	/* Y high */
+	val = rect->y + rect->height;
+
+	/* assume y+height inside clip, possible partial draw */
+	*highy = rect->height;
+
+	/* upper prior to start of clip region, no-draw */
+	if (val < CLIP.y)
+		return 0;
+
+	/* upper post clip region, possible partial draw */
+	if (val > CLIP.y + CLIP.height)
+		*highy = CLIP.y + CLIP.height - rect->y;
+
+	/* zero size or negative size region, no-draw */
+	if (*highy <= 0)
+		return 0;
+
+	/* X */
+
+	/* assume x inside clip region, possible partial draw */
+	*lowx = 0;
+	
+	/* x beyond clip region, no-draw */
+	if (rect->x > CLIP.x + CLIP.width)
+		return 0;
+
+	/* x prior to clip region, possible bartial draw */
+	if (rect->x < CLIP.x)
+		*lowx = CLIP.x - rect->x;
+
+	/* if our start is beyond our finish, return */
+	if (*lowx > rect->width)
+		return 0;
+
+	/* X high */
+	val = rect->x + rect->width;
+
+	/* assume x+width inside clip, possible partial draw */
+	*highx = rect->width;
+
+	/* upper prior to start of clip region, no-draw */
+	if (val < CLIP.x)
+		return 0;
+
+	/* upper post clip region, possible partial draw */
+	if (val > CLIP.x + CLIP.width)
+		*highx = CLIP.x + CLIP.width - rect->x;
+
+	/* zero size or negative size region, no-draw */
+	if (*highx <= 0)
+		return 0;
+
+	return 1;
+}
+
+#define REDRAW_REGION_COUNT 5
+static int region_index = 0;
+static Rectangle region_blit[REDRAW_REGION_COUNT];
+#define REGION (region_blit[region_index])
+
+void lgui_push_region(void)
+{
+	REGION.x = CLIP.x;
+	REGION.y = CLIP.y;
+	REGION.width = CLIP.width;
+	REGION.height = CLIP.height;
+	++region_index;
+}
+
+int lgui_index_count(void)
+{
+	return region_index;
+}
+
+Rectangle *lgui_get_region(int index)
+{
+	return &region_blit[index];
+}
+
+static int lguiDirty = 0;
+
+void lgui_blit_done(void)
+{
+	region_index = 0;
+	lguiDirty = 0;
+}
+
+void lgui_set_dirty(void)
+{
+	lguiDirty = 1;
+}
+
+int lgui_is_dirty(void)
+{
+	return lguiDirty;
 }

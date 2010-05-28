@@ -115,8 +115,8 @@ static void gradboxr_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		return;
 	radius = (int)style_getProperty(s, NULL, id, NULL, "radius");
 
-	lgui_rbox_gradient(g, box->x+margin->x, box->y+margin->y, box->width, box->height, radius);
-	lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width, box->height, radius,
+	lgui_rbox_gradient(g, box->x+margin->x, box->y+margin->y, box->width-1, box->height-1, radius);
+	lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width-1, box->height-1, radius,
 			outline.rgba.red, outline.rgba.green, outline.rgba.blue);
 }
 
@@ -201,7 +201,7 @@ static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		return;
 	str = (const char *)field->field.string;
 
-	lgui_draw_font(box->x/*+margin->x*/, box->y+margin->y, str, f, c);
+	lgui_draw_font(box->x+margin->x, box->y+margin->y, str, f, c);
 }
 
 static void string_measure(WidgetRenderer *wr, Style *s, Widget *w,
@@ -271,9 +271,10 @@ static void entry_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	} else {
 		str = "";
 	}
-	lgui_roundedbox_fill(box->x+margin->x, box->y+margin->y, box->width, box->height, 7,
+
+	lgui_roundedbox_fill(box->x+margin->x, box->y+margin->y, box->width-1, box->height-1, 7,
 			background.rgba.red, background.rgba.green, background.rgba.blue);
-	lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width, box->height, 7,
+	lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width-1, box->height-1, 7,
 			line.rgba.red, line.rgba.green, line.rgba.blue);
 
 	lgui_draw_font(box->x+4+margin->x, box->y+margin->y, str, f, c);

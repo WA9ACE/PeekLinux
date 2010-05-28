@@ -30,7 +30,10 @@ struct DataObject_t {
 
 	WidgetPacking packing;
 	DataObject *widgetData;
+	unsigned char flags1;
     void *scriptContext;
 };
+
+#define DO_FLAG_DIRTY 0x01
 
 #endif

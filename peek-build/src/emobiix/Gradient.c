@@ -48,7 +48,7 @@ Color gradient_getStop(Gradient *g, int id, int *height)
 	int outheight;
 
 	s = *((GradientStop **)array_item(g->stops, id));
-	outheight = ((*height)-1) * s->position / 100;
+	outheight = ((*height)) * s->position / 100;
 	*height = outheight;
 	return s->color;
 }

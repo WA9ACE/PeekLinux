@@ -3,6 +3,9 @@
 #include "ConnectionContext.h"
 #include "URL.h"
 #include "Debug.h"
+#include "Style.h"
+#include "Widget.h"
+#include "lgui.h"
 
 #include "lua.h"
 #include "lauxlib.h"
@@ -50,16 +53,39 @@ static int __dataobject_getValue(lua_State *L)
 	return 1;
 }
 
+extern Style *currentStyle;
+extern DataObject *currentScreen;
 
 static int __dataobject_setValue(lua_State *L)
 {
-	DataObject *dobj;
+	DataObject *dobj, *parent;
 	DataObjectField *dstr;
+	Rectangle rectb4, rectAfter, *rect;
 
 	dobj = checkDataObject(L, 1);
 	dstr = dataobjectfield_string(luaL_checkstring(L, 2));
 
     dataobject_setValue(dobj, "data", dstr);
+
+	parent = dataobject_superparent(dobj);
+	if (parent == currentScreen) {
+		widget_getClipRectangle(dobj, &rectb4);
+		widget_resolveLayout(currentScreen, currentStyle);
+		emo_printf("drawing from script setData\n");
+		widget_markDirty(dobj);
+		lgui_clip_identity();
+		widget_getClipRectangle(dobj, &rectAfter);
+		if (rectAfter.width > rectb4.width)
+			rect = &rectAfter;
+		else
+			rect = &rectb4;
+		lgui_clip_set(rect);
+		lgui_push_region();
+		style_renderWidgetTree(currentStyle, parent);
+#if 0
+		lgui_box(rect->x, rect->y, rect->width, rect->height, 1, 0xFF, 0, 0);
+#endif
+	}
 
     return 1;
 }

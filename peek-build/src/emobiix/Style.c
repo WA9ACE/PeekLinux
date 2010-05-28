@@ -42,15 +42,18 @@ void style_renderWidgetTree(Style *s, Widget *w)
 	DataObject *dobj;
 	WidgetRenderer *wr;
 
-	dobj = widget_getDataObject(w);
-	className = widget_getClass(w);
-	id = widget_getID(w);
-	if (dobj != NULL)
-		type = dataobject_getValue(dobj, "type");
-	wr = (WidgetRenderer *)style_getProperty(s, className,
-			id, type == NULL ? NULL : type->field.string, "renderer");
-	if (wr != NULL)
-		wr->render(wr, s, w, dobj);
+	if (dataobject_isDirty(w)) {
+		dobj = widget_getDataObject(w);
+		className = widget_getClass(w);
+		id = widget_getID(w);
+		if (dobj != NULL)
+			type = dataobject_getValue(dobj, "type");
+		wr = (WidgetRenderer *)style_getProperty(s, className,
+				id, type == NULL ? NULL : type->field.string, "renderer");
+		if (wr != NULL)
+			wr->render(wr, s, w, dobj);
+		dataobject_setClean(w);
+	}
 
 	iter = widget_getChildren(w);
 	while (!listIterator_finished(iter)) {

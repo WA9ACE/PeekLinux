@@ -3,6 +3,7 @@
 
 #include "Map.h"
 #include "List.h"
+#include "Debug.h"
 
 #include "p_malloc.h"
 
@@ -33,6 +34,7 @@ DataObject *dataobject_new(void)
 	output->margin.height = 3;
 	rectangle_zero(&output->box);
     output->scriptContext = NULL;
+	output->flags1 = 0;
 
 	return output;
 }
@@ -265,6 +267,21 @@ DataObject *dataobject_findByName(DataObject *dobj, const char *name)
 
 	listIterator_delete(iter);
 	return NULL;
+}
+
+int dataobject_isDirty(DataObject *dobj)
+{
+	return dobj->flags1 & DO_FLAG_DIRTY;
+}
+
+void dataobject_setDirty(DataObject *dobj)
+{
+	dobj->flags1 |= DO_FLAG_DIRTY;
+}
+
+void dataobject_setClean(DataObject *dobj)
+{
+	dobj->flags1 &= ~DO_FLAG_DIRTY;
 }
 
 static void dataobject_debugPrintR(DataObject *dobj, int level)

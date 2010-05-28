@@ -1,6 +1,6 @@
 #include "emobiix_font.h"
-#ifndef SIMULATOR
 #include "Debug.h"
+#ifndef SIMULATOR
 #include "balapi.h"
 #include "bal_def.h"
 #endif

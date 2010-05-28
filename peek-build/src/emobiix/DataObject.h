@@ -49,6 +49,10 @@ void *dataobject_findScriptContext(DataObject *dobj);
 
 DataObject *dataobject_findFieldParent(DataObject *dobj, const char *str);
 
+int dataobject_isDirty(DataObject *dobj);
+void dataobject_setDirty(DataObject *dobj);
+void dataobject_setClean(DataObject *dobj);
+
 void dataobject_debugPrint(DataObject *dobj);
 
 /* Global DataObject table functions */

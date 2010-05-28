@@ -31,11 +31,13 @@ void widget_setAlignment(Widget *w, WidgetAlignment a);
 int widget_isParent(Widget *wParent, Widget *w);
 Widget *widget_focusWhichOne(Widget *w);
 Widget *widget_focusWhichOneNF(Widget *w);
+void widget_markDirty(Widget *w);
 
 Rectangle *widget_getMargin(Widget *w);
 Rectangle *widget_getBorder(Widget *w);
 Rectangle *widget_getBox(Widget *w);
 void widget_resolveLayout(Widget *w, Style *s);
+void widget_getClipRectangle(Widget *w, Rectangle *rect);
 
 void widget_printTree(Widget *w, int level);
 

@@ -4,12 +4,14 @@
 #include "Gradient.h"
 #include "Font.h"
 #include "Point.h"
+#include "Rectangle.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 void lgui_attach(void *buf);
+void lgui_clear(unsigned char pixel);
 
 void lgui_vertical_gradient(unsigned char start_red, unsigned char start_green, unsigned char start_blue,
 	unsigned char end_red, unsigned char end_green, unsigned char end_blue,
@@ -53,6 +55,23 @@ void lgui_alpha_blitRGBA(int destx, int desty, int imgx, int imgy,
 
 void lgui_draw_font(int x, int y, const char *utf8, Font *f, Color c); 
 void lgui_measure_font(const char *utf8, Font *f, IPoint *output);
+
+void lgui_clip_set(Rectangle *rect);
+void lgui_clip_union(Rectangle *rect);
+void lgui_clip_and(Rectangle *rect);
+void lgui_clip_identity(void);
+void lgui_clip_push(void);
+void lgui_clip_pop(void);
+
+void lgui_push_region(void);
+int lgui_index_count(void);
+Rectangle *lgui_get_region(int index);
+void lgui_set_dirty(void);
+int lgui_is_dirty(void);
+void lgui_blit_done(void);
+
+int lgui_clip_rect(Rectangle *rect, int *lowx, int *lowy,
+		int *highx, int *highy);
 
 #ifdef __cplusplus
 }

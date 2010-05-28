@@ -6,6 +6,8 @@
 #include "List.h"
 #include "Style.h"
 #include "WidgetRenderer.h"
+#include "lgui.h"
+#include "Debug.h"
 
 #include "p_malloc.h"
 
@@ -15,28 +17,7 @@
 #include "DataObject_internal.h"
 #include "DataObject_private.h"
 
-#if 0
-struct Widget_t
-{
-	Rectangle margin, box;
-	Point position;
-	char *className;
-	char *idName;
-
-	int hasFocus;
-	int canFocus;
-
-	DataObject *data;
-	DataObjectMap *dataMap;
-	DataObject *self;
-
-	List *children;
-	Widget *parent;
-	WidgetPacking packing;
-
-	Widget *wtemplate;
-};
-#endif
+/*#define CLIP_DEBUG*/
 
 Widget *widget_new(void)
 {
@@ -233,7 +214,6 @@ void widget_printTree(Widget *w, int level)
 
 	for (i = 0; i < level; ++i)
 		printf("  ");
-	printf("Widget(%p)\n", (void *)w);
 
 	iter = widget_getChildren(w);
 	while (!listIterator_finished(iter)) {
@@ -251,6 +231,7 @@ int widget_focusFirst(Widget *w, List *l)
 	
 	if (widget_canFocus(w)) {
 		widget_setFocus(w, 1);
+		list_append(l, (void *)w);
 		return 1;
 	}
 
@@ -281,10 +262,14 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 	if (!*alreadyUnset && widget_hasFocus(w)) {
 		/*printf("UnFocus(%d)\n", w);*/
 		widget_setFocus(w, 0);
+#if 0
 		if (!parentRedraw) {
 			/*printf("Repaint unfocus\n");*/
+#endif
 			list_append(l, w);
+#if 0
 		}
+#endif
 		*alreadyUnset = 1;
 		thisUnset = 1;
 		parentRedraw = 1;
@@ -294,10 +279,14 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 		if (widget_canFocus(w)) {
 			/*printf("Focus(%d)\n", w);*/
 			widget_setFocus(w, 1);
+#if 0
 			if (!parentRedraw) {
 				/*printf("paint focus\n");*/
+#endif
 				list_append(l, w);
+#if 0
 			}
+#endif
 			*alreadySet = 1;
 			return 2;
 		}
@@ -322,8 +311,10 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 void widget_focusNext(Widget *tree, Style *s)
 {
 	List *redrawlist;
-	/*ListIterator *iter;*/
+	ListIterator *iter;
 	int unset, iset;
+	Widget *w1;
+	Rectangle rect;
 
 	unset = 0;
 	iset = 0;
@@ -331,33 +322,29 @@ void widget_focusNext(Widget *tree, Style *s)
 	if (widget_focusNextR(tree, redrawlist, 0, &unset, &iset) == 0) {
 		widget_focusFirst(tree, redrawlist);
 	}
-	list_delete(redrawlist);
 
-	style_renderWidgetTree(s, tree);
+	/*style_renderWidgetTree(s, tree);*/
 
-	/*iter = list_begin(redrawlist);
-	if (!listIterator_finished(iter)) {
+	/*emo_printf("Redraw list: %d\n", list_size(redrawlist));*/
+
+	iter = list_begin(redrawlist);
+	while (!listIterator_finished(iter)) {
 		w1 = (Widget *)listIterator_item(iter);
+		/*emo_printf("redrawlist: %p\n", w1);*/
+		widget_markDirty(w1);
+
+		lgui_clip_identity();
+		widget_getClipRectangle(w1, &rect);
+		lgui_clip_set(&rect);
+		lgui_push_region();
+		style_renderWidgetTree(s, tree);
+#ifdef CLIP_DEBUG
+		lgui_box(rect.x, rect.y, rect.width, rect.height, 1, 0, 0, 0);
+#endif
 		listIterator_next(iter);
-		if (!listIterator_finished(iter))
-			w2 = (Widget *)listIterator_item(iter);
-		list_delete(redrawlist);
-
-		if (w2 == NULL) {
-			if (w1 == NULL)
-				return;
-			style_renderWidgetTree(s, w1);
-			return;
-		}
-		
-		if (w1->parent == w2->parent) {
-			style_renderWidgetTree(s, w1->parent);
-			return;
-		}
-
-		style_renderWidgetTree(s, w1->parent);
-		style_renderWidgetTree(s, w2->parent);
-	}*/
+	}
+	listIterator_delete(iter);
+	list_delete(redrawlist);
 }
 
 Widget *widget_focusPrevD(Widget *w)
@@ -436,9 +423,33 @@ Widget *widget_focusPrevR(Widget *old)
 	return widget_focusPrevR(w);
 }
 
+static Widget *widget_focusLast(Widget *w)
+{
+	Widget *child;
+	ListIterator *iter;
+
+	iter = list_rbegin(w->children);
+	while (!listIterator_finished(iter)) {
+		child = (Widget *)listIterator_item(iter);
+		child = widget_focusLast(child);
+		if (child != NULL)
+			return child;
+		listIterator_next(iter);
+	}
+	listIterator_delete(iter);
+
+	if (widget_canFocus(w)) {
+		widget_setFocus(w, 1);
+		return w;
+	}
+
+	return NULL;
+}
+
 void widget_focusPrev(Widget *tree, Style *s)
 {
 	Widget *oldW, *newW;
+	Rectangle rect;
 
 	oldW = widget_focusWhichOne(tree);
 	if (oldW == NULL)
@@ -447,11 +458,25 @@ void widget_focusPrev(Widget *tree, Style *s)
 	widget_setFocus(oldW, 0);
 
 	newW = widget_focusPrevR(oldW);
-	/*if (newW == NULL || !widget_isParent(newW, oldW))
-		style_renderWidgetTree(s, oldW);
-	if (newW != NULL)
-		style_renderWidgetTree(s, newW);*/
-	/*style_renderWidgetTree(s, tree);*/
+	if (newW == NULL)
+		newW = widget_focusLast(tree);
+
+	widget_markDirty(oldW);
+	lgui_clip_identity();
+	widget_getClipRectangle(oldW, &rect);
+	lgui_clip_set(&rect);
+
+	lgui_push_region();
+	style_renderWidgetTree(s, tree);
+
+	widget_markDirty(newW);
+	lgui_clip_identity();
+	widget_getClipRectangle(newW, &rect);
+	lgui_clip_set(&rect);
+
+	lgui_push_region();
+	style_renderWidgetTree(s, tree);
+
 }
 
 Widget *widget_focusNoneR(Widget *w)
@@ -536,6 +561,32 @@ Widget *widget_focusWhichOne(Widget *w)
 	listIterator_delete(iter);
 
 	return NULL;
+}
+
+static void widget_markDirtyChild(Widget *w)
+{
+	ListIterator *iter;
+	dataobject_setDirty(w);
+
+	iter = list_begin(w->children);
+	while (!listIterator_finished(iter)) {
+		widget_markDirty((Widget *)listIterator_item(iter));
+		listIterator_next(iter);
+	}
+	listIterator_delete(iter);
+}
+
+void widget_markDirty(Widget *w)
+{
+	Widget *parent;
+
+	widget_markDirtyChild(w);
+
+	parent = w;
+	while (parent->parent != NULL) {
+		parent = parent->parent;
+		dataobject_setDirty(parent);
+	}
 }
 
 static void widget_layoutMeasure(Widget *w, Style *s)
@@ -654,10 +705,10 @@ static void widget_resolveLayoutR(Widget *w, Style *s)
 			default:
 				if (packing == WP_HORIZONTAL) {
 					cw->box.x = xpos;
-					cw->box.y = ypos;
+					cw->box.y = ypos+cw->margin.y;
 					xpos += cw->box.width;
 				} else {
-					cw->box.x = xpos;
+					cw->box.x = xpos+cw->margin.x;
 					cw->box.y = ypos;
 					ypos += cw->box.height;
 				}
@@ -665,10 +716,10 @@ static void widget_resolveLayoutR(Widget *w, Style *s)
 			case WA_RIGHT:
 				if (packing == WP_HORIZONTAL) {
 					cw->box.x = xpos;
-					cw->box.y = ypos + height-cw->box.height;
+					cw->box.y = ypos + height-cw->box.height-cw->margin.y;
 					xpos += cw->box.width;
 				} else {
-					cw->box.x = xpos + width-cw->box.width;
+					cw->box.x = xpos + width-cw->box.width-cw->margin.width;
 					cw->box.y = ypos;
 					ypos += cw->box.height;
 				}
@@ -676,10 +727,10 @@ static void widget_resolveLayoutR(Widget *w, Style *s)
 			case WA_CENTER:
 				if (packing == WP_HORIZONTAL) {
 					cw->box.x = xpos;
-					cw->box.y = ypos + (height-cw->box.height)/2;
+					cw->box.y = ypos + (height-cw->box.height-cw->margin.y-cw->margin.height)/2;
 					xpos += cw->box.width;
 				} else {
-					cw->box.x = xpos + (width-cw->box.width)/2;
+					cw->box.x = xpos + (width-cw->box.width-cw->margin.x-cw->margin.width)/2;
 					cw->box.y = ypos;
 					ypos += cw->box.height;
 				}
@@ -758,4 +809,12 @@ WidgetAlignment widget_getAlignment(Widget *w)
 		field = newField;
 	}
 	return (WidgetAlignment)field->field.integer;
+}
+
+void widget_getClipRectangle(Widget *w, Rectangle *rect)
+{
+	rect->x = w->box.x + w->margin.x;
+	rect->y = w->box.y + w->margin.y;
+	rect->width = w->box.width;
+	rect->height = w->box.height;
 }
