@@ -62,10 +62,20 @@ extern "C" uint32 SimReadReg(void);
 #endif
 extern "C" void bal_set_network_cb(BAL_NETWORK_CB);
 extern ExeSemaphoreT *bal_socket_recv_seamphore;
+extern "C" void flash_led();
 
 static void TCPSocketCallback(BAL_SOCKET_IND socketInd)
 {
 	bal_printf("ANDREY::Received socket notification: 0x%04x\n", socketInd);
+	switch (socketInd & 0xff)
+	{
+		case BAL_SOCKET_NETWORK_STATUS_IND:
+		case BAL_SOCK_RESUME_IND:
+			flash_led();
+			break;
+		default:
+			break;
+	}
 }
 
 void EMSInitFunc(void) 
