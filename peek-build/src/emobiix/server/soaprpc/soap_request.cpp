@@ -3,6 +3,8 @@
 #include "emobiix_rpc_H.h"
 #include "emobiix.nsmap"
 
+using namespace std;
+
 namespace emobiix
 {
 
@@ -22,8 +24,37 @@ bool get_authentication(const std::string& uri, const std::string& user, const s
 	return isAuth;
 }
 
-int get_blockDataObject(const std::string& uri, int id, char **blockData)
+int get_blockDataObject(const std::string& uri, int id, vector<pair<size_t, unsigned char *> >& blockData)
 {
+	struct soap *s = soap_new();
+
+	vector<char *> blocks;
+
+	ns__Timestamp ts(1, 5);
+
+	xsd__base64Binary raw; 
+	int ret = soap_call_ns__BlockDataObjectRequest(s, uri.c_str(), NULL, 1, ts, raw);
+
+	const int BLOCK = 2 * 1024;
+	size_t rawSize = raw.getSize();
+	unsigned char *rawPtr = raw.getPtr();
+
+	unsigned char *chunk = NULL;
+	while (rawSize > 0)
+	{
+		size_t chunkSize = BLOCK;
+		if (rawSize < BLOCK)
+			chunkSize = rawSize;
+
+		chunk = (unsigned char *)malloc(chunkSize);
+		memcpy(chunk, rawPtr, chunkSize);
+		blockData.push_back(make_pair(chunkSize, chunk));
+
+		rawSize -= chunkSize;
+		rawPtr += chunkSize;
+	}
+
+ 	soap_end(s);
 	return 1;
 }
 
