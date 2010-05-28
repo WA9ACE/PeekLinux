@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <string>
+#include <utility>
+
 #include <boost/noncopyable.hpp>
 
 #include <xercesc/dom/DOM.hpp>
@@ -42,6 +44,7 @@ private:
 	void start_serverSync(reply& rep);
 	bool parse(const char *doc, std::vector<FRIPacketP *>& packets);
 	bool parseTree(DOMNode *node, std::vector<FRIPacketP *>& packets, int& nodeCount);
+	bool retrieveLinks(std::vector<FRIPacketP *>& packets);
 
 	FRIPacketP* createDataObject(DOMNode *node);
 	FRIPacketP* createBox(DOMNode *node);
@@ -51,14 +54,13 @@ private:
 	FRIPacketP* createImage(DOMNode *node);
 	void setCommonAttributes(FRIPacketP *packet, DOMNode *node);
 	void addStringAttribute(FRIPacketP *packet, const char *attribute, const char *value);
-	void addDataAttribute(FRIPacketP *packet, const char *attribute, const char *value);
+	void addDataAttribute(FRIPacketP *packet, const char *attribute, std::vector<std::pair<size_t, unsigned char *> >& data);
 	void addChild(FRIPacketP* packet);
 	void goToTree(FRIPacketP* packet, int index);
 
 private:
   /// The directory containing the files to be served.
   std::string app_path_;
-
 	std::string url_request_;
 };
 

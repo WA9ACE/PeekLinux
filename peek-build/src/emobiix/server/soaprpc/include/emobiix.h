@@ -39,7 +39,7 @@ public:
 };
 
 int ns__AuthenticationRequest(xsd__string user, xsd__string pass, bool &isAuthenticated);
-int ns__BlockDataObjectRequest(int id, ns__Timestamp timestamp, xsd__base64Binary &blockData);
+int ns__BlockDataObjectRequest(xsd__string id, ns__Timestamp timestamp, xsd__base64Binary &blockData);
 int ns__TreeDataObjectRequest(xsd__string id, ns__Timestamp timestamp, XML& m__treeData);
 int ns__RecordDataObjectRequest(int id, ns__Timestamp timestamp, recordArray &recordData);
 int ns__TextDataObjectRequest(int id, ns__Timestamp timestamp, xsd__string& textData);

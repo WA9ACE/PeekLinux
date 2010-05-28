@@ -219,18 +219,28 @@ void request_handler::addStringAttribute(FRIPacketP *packet, const char *attribu
 	asn_sequence_add(&packet->packetTypeP.choice.dataObjectSyncP.syncListP.choice.blockSyncListP.list, syncOp);
 }
 
-void request_handler::addDataAttribute(FRIPacketP *packet, const char *attribute, const char *value)
+void request_handler::addDataAttribute(FRIPacketP *packet, const char *attribute, vector<pair<size_t, unsigned char *> >& data)
 {
-	SyncOperandP_t *syncOp = new SyncOperandP_t;
-	syncOp->fieldNameP.buf = NULL;
-	OCTET_STRING_fromString(&syncOp->fieldNameP, attribute);
+	TRACELOG("Adding " << attribute << " = " << data.size());
 
-	syncOp->syncP.present = syncP_PR_syncModifyP;
-	syncOp->syncP.choice.syncModifyP.modifyDataP.buf = NULL;
-	OCTET_STRING_fromBuf(&syncOp->syncP.choice.syncModifyP.modifyDataP, 0, 0); //field->field.data.bytes, field->field.data.size);
-	syncOp->syncP.choice.syncModifyP.modifySizeP = 0; //field->field.data.size;
-	syncOp->syncP.choice.syncModifyP.modifyOffsetP = 0;
-	asn_sequence_add(&packet->packetTypeP.choice.dataObjectSyncP.syncListP.choice.blockSyncListP.list, syncOp);
+	size_t offset = 0;
+	for (size_t i = 0; i < data.size(); ++i)
+	{
+		SyncOperandP_t *syncOp = new SyncOperandP_t;
+		syncOp->fieldNameP.buf = NULL;
+		OCTET_STRING_fromString(&syncOp->fieldNameP, attribute);
+
+		syncOp->syncP.present = syncP_PR_syncModifyP;
+		syncOp->syncP.choice.syncModifyP.modifyDataP.buf = NULL;
+		OCTET_STRING_fromBuf(&syncOp->syncP.choice.syncModifyP.modifyDataP, (char *)data[i].second, data[i].first);
+		syncOp->syncP.choice.syncModifyP.modifySizeP = data[i].first;
+		syncOp->syncP.choice.syncModifyP.modifyOffsetP = offset;
+		asn_sequence_add(&packet->packetTypeP.choice.dataObjectSyncP.syncListP.choice.blockSyncListP.list, syncOp);
+
+		TRACELOG("Adding data chunk " << i << " of size " << data[i].first << " at offset " << offset);
+
+		offset += data[i].first;
+	}
 }
 
 void request_handler::addChild(FRIPacketP* packet)
@@ -338,8 +348,13 @@ FRIPacketP* request_handler::createEntry(DOMNode *node)
 FRIPacketP* request_handler::createImage(DOMNode *node)
 {
 	FRIPacketP *image = createDataObject(node);
-	addStringAttribute(image, "src", GetAttribute(node, "src").c_str());
   addStringAttribute(image, "onreturn", GetAttribute(node, "onreturn").c_str());
+
+	std::string src = GetAttribute(node, "src").c_str();
+
+	vector<pair<size_t, unsigned char *> > blocks;
+	soap_request::get_blockDataObject("http://linux.emobiix.com:8082/cgi-bin/test.cgi", src, blocks);
+	addDataAttribute(image, "src", blocks);
 	return image;
 }
 

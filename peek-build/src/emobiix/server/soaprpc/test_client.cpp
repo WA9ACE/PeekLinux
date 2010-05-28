@@ -16,7 +16,7 @@ int main()
 		cerr << "Tree data request successful: " << endl << tree << endl;
 
 	vector<pair<size_t, unsigned char *> > blocks;
-	if (emobiix::soap_request::get_blockDataObject("http://linux.emobiix.com:8082/cgi-bin/test.cgi", 1, blocks))
+	if (emobiix::soap_request::get_blockDataObject("http://linux.emobiix.com:8082/cgi-bin/test.cgi", "image.jpg", blocks))
 		cerr << "Block data request successful, got " << blocks.size() << " blocks of data" << endl;
 
 	for (size_t i = 0; i < blocks.size(); ++i)

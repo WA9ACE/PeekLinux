@@ -34,6 +34,7 @@ std::vector<boost::asio::const_buffer> reply::to_buffers()
 
 	packets.clear();
 
+#if 0
 	std::vector<char> testcrap(encodedPackets);
 	TRACELOG("WILL DECODE " << testcrap.size() << " bytes");
 	for (size_t i = 0; i < testcrap.size(); ++i)
@@ -57,6 +58,7 @@ std::vector<boost::asio::const_buffer> reply::to_buffers()
 			break;
 		}
 	}
+#endif
 
 	TRACELOG("Will write: " << encodedPackets.size() << " bytes to client");
 

@@ -24,7 +24,7 @@ bool get_authentication(const std::string& uri, const std::string& user, const s
 	return isAuth;
 }
 
-int get_blockDataObject(const std::string& uri, int id, vector<pair<size_t, unsigned char *> >& blockData)
+int get_blockDataObject(const std::string& uri, const std::string& id, vector<pair<size_t, unsigned char *> >& blockData)
 {
 	struct soap *s = soap_new();
 
@@ -33,7 +33,7 @@ int get_blockDataObject(const std::string& uri, int id, vector<pair<size_t, unsi
 	ns__Timestamp ts(1, 5);
 
 	xsd__base64Binary raw; 
-	int ret = soap_call_ns__BlockDataObjectRequest(s, uri.c_str(), NULL, 1, ts, raw);
+	int ret = soap_call_ns__BlockDataObjectRequest(s, uri.c_str(), NULL, const_cast<char *>(id.c_str()), ts, raw);
 
 	const int BLOCK = 2 * 1024;
 	size_t rawSize = raw.getSize();

@@ -27,9 +27,9 @@ int ns__AuthenticationRequest(struct soap* soap, xsd__string user, xsd__string p
 	return SOAP_OK;
 }
 
-int ns__BlockDataObjectRequest(struct soap* soap, int id, ns__Timestamp timestamp, xsd__base64Binary &rawData)
+int ns__BlockDataObjectRequest(struct soap* soap, xsd__string id, ns__Timestamp timestamp, xsd__base64Binary &rawData)
 {
-	FILE *fd = fopen("image.jpg", "rb");
+	FILE *fd = fopen(id, "rb");
 
 	fseek(fd, 0L, SEEK_END);
 	int filesize = ftell(fd);
