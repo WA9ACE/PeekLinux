@@ -63,6 +63,7 @@ end;
 ">
 	<box alignment="center" width="90%"  height="30" packing="vertical" id="gradboxr">
 		<label type="string" id="biglabel">  Calcumobiix</label>
+		<image id="test" src="image.jpg" onreturn="" script="" name="" />
 	</box>
 	<box alignment="center" width="300" height="30" packing="vertical" id="gradboxr">
         	<label type="string" alignment="right" id="biglabel" name="output">0</label>
