@@ -127,7 +127,7 @@ static int UIWaitForActivity(void)
 
 		ctx = connectionContext_new(ep);
 		connectionContext = ctx;
-		connectionContext_syncRequest(ctx, url);
+		//connectionContext_syncRequest(ctx, url);
 
 		hasConnected = 1;
 	}

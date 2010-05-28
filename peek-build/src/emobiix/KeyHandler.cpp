@@ -59,12 +59,14 @@ void updateScreen(void) {
             Rectangle *rect;
             for (index = 0; index < upper; ++index) {
                 rect = lgui_get_region(index);
+		    emo_printf("Flipping partial screen: %d\n", index);
 
                 dc.BitBlt(rect->x, rect->y, rect->width, rect->height, Bmp,
-                        0, 0);
+                        rect->x, rect->y);
             }
             dc.UpdateDisplay();
         }
+	lgui_blit_done();
 #endif
 }
 
