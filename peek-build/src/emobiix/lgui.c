@@ -886,7 +886,7 @@ int lgui_clip_rect(Rectangle *rect, int *lowx, int *lowy,
 	return 1;
 }
 
-#define REDRAW_REGION_COUNT 5
+#define REDRAW_REGION_COUNT 30
 static int region_index = 0;
 static Rectangle region_blit[REDRAW_REGION_COUNT];
 #define REGION (region_blit[region_index])

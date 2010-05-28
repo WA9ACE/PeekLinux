@@ -148,7 +148,7 @@ static void UiHandleKeyEvents(RegIdT RegId, uint32 MsgId, void *MsgBufferP)
 #ifdef EMO_SIM
         emo_printf("UiHandleKeyEvents MsgId=%d,UiKeyId=%d\r\n", MsgId, UiKeyId);
 #endif
-        //if (MsgId == 1) {
+        if (MsgId == 1) {
      //           SetSettingValue(SET_UI_RINGTONE, 2);
    //             SetSettingValue(SET_UI_VOLUME, 5);
  //               Sounds_PlayMidi();
@@ -156,7 +156,7 @@ static void UiHandleKeyEvents(RegIdT RegId, uint32 MsgId, void *MsgBufferP)
                 //main_test();
 		tweetKey(UiKeyId);
 		updateScreen();
-        //}
+        }
 #ifndef EMO_SIM
         BalGetLightStatus(BAL_LIGHT_LCD,&lcdstatus,0);
         BalGetLightStatus(BAL_LIGHT_KEYPAD,&kpdstatus,0);
