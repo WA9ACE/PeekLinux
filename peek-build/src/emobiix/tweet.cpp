@@ -715,7 +715,7 @@ int tweetKey(int key)
 		field = dataobject_getValue(focus, "type");
 		if (field != NULL && field->type == DataObjectField::DOF_STRING &&
 				strcmp(field->field.string, "entry") == 0) {
-			entryWidget_handleKey(focus, key);
+			entryWidget_handleKey(focus, key, currentStyle);
 		}
 	}
 
