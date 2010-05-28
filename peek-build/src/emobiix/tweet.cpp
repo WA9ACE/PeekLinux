@@ -574,29 +574,17 @@ void tweetDrawScreen(void)
 		return;
 	}
 
-		style_renderWidgetTree(currentStyle, currentScreen);
+	//lgui_clear(0x7f);
+	lgui_clip_identity();
+	style_renderWidgetTree(currentStyle, currentScreen);
+	//emo_printf("style render done\n");
 }
 
-void handleComposeKey(int key)
+int tweetKey(int key)
 {
+	int isDirty = 0;
 	Widget *focus;
-
-	if (key == KP_BACKSPACE_KEY)
-		currentScreen = homeScreen;
-
-	focus = NULL;
-	if (currentScreen != NULL)
-		focus = widget_focusWhichOneNF(currentScreen);
-	if (focus == NULL)
-		return;
-	if (key == 46 && focus == composeSend) {
-#ifdef EMO_DEBUG
-		emo_printf("Send SMS\n");
-#endif
-		currentScreen = homeScreen;
-		style_renderWidgetTree(currentStyle, currentScreen);
-		handleSmsSend(toString, msgString);
-	}
+	static Rectangle clip = {0, 0, 320, 240};
 
 #ifndef SIMULATOR
 	switch (key) {
@@ -663,41 +651,10 @@ void handleComposeKey(int key)
 		case KP_Y_KEY: key = 'Y'; break;
 		case KP_Z_KEY: key = 'Z'; break;
 		case KP_SPACE_KEY: key = ' '; break;
+		case KP_BACKSPACE_KEY: key = '\b'; break;
 	}
 #endif
 
-	char *str;
-	Widget *w;
-	static char nstr[2];
-	int slen, blen;
-
-	nstr[0] = key;
-	nstr[1] = 0;
-
-	if (focus == composeTo) {
-		w = composeTo;
-		str = toString;
-		slen = strlen(toString);
-		blen = 10;
-	} else if (focus == composeMsg) {
-		w = composeMsg;
-		str = msgString;
-		slen = strlen(msgString);
-		blen = 512;
-	} else
-		return;
-
-	if (slen >= blen)
-		return;
-	strcat(str, nstr);
-
-	style_renderWidgetTree(currentStyle, w);
-}
-
-int tweetKey(int key)
-{
-	int isDirty = 0;
-	Widget *focus;
 
 	if (!tweetDidInit) {
 #ifdef EMO_DEBUG
@@ -709,7 +666,9 @@ int tweetKey(int key)
 	emo_printf("Key %d pressed\n", key);
 #endif
 
-	focus = widget_focusWhichOneNF(currentScreen);
+	focus = NULL;
+	if (currentScreen != NULL)
+		focus = widget_focusWhichOneNF(currentScreen);
 	if (focus != NULL) {
 		DataObjectField *field;
 		field = dataobject_getValue(focus, "type");
@@ -719,12 +678,14 @@ int tweetKey(int key)
 		}
 	}
 
+bal_printf("Key is %d\n", key);
+
 	switch (key) {
 		case KP_1_KEY:
 		case KP_2_KEY:
 		case 46: // Push down on wheel
+		case 13:
 			script_event(focus != NULL ? focus : currentScreen, "onreturn");
-			widget_resolveLayout(currentScreen, currentStyle);
 			break;
 		case 87: // up on scroll
 		/*case 103:*/ /* GLUT a */
@@ -812,20 +773,94 @@ void makeLockScreen(void)
 #else
 	widget_setID(lockScreen, "gradbox");
 #endif
+	dataobject_setDirty(lockScreen);
+
 
 	DataObject *dobj;
+#if 0
+	DataObject *pobj;
+	pobj = widget_new();
+	dataobject_setValue(pobj, "width", dataobjectfield_string("90%"));
+	widget_setPacking(pobj, WP_HORIZONTAL);
+	dataobject_setDirty(pobj);
+	widget_pack(pobj, lockScreen);
+
+	dobj = widget_new();
+	dataobject_setValue(dobj, "width", dataobjectfield_string("20"));
+	dataobject_setValue(dobj, "height", dataobjectfield_string("20"));
+	dataobject_setValue(dobj, "canfocus", dataobjectfield_string("1"));
+	widget_setID(dobj, "gradboxr");
+	dataobject_setDirty(dobj);
+	widget_pack(dobj, pobj);
+
+	dobj = widget_new();
+	dataobject_setValue(dobj, "width", dataobjectfield_string("20"));
+	dataobject_setValue(dobj, "height", dataobjectfield_string("20"));
+	dataobject_setValue(dobj, "canfocus", dataobjectfield_string("1"));
+	widget_setID(dobj, "gradboxr");
+	dataobject_setDirty(dobj);
+	widget_pack(dobj, pobj);
+
+	dobj = widget_new();
+	dataobject_setValue(dobj, "width", dataobjectfield_string("20"));
+	dataobject_setValue(dobj, "height", dataobjectfield_string("20"));
+	dataobject_setValue(dobj, "canfocus", dataobjectfield_string("1"));
+	widget_setID(dobj, "gradboxr");
+	dataobject_setDirty(dobj);
+	widget_pack(dobj, pobj);
+
+	pobj = widget_new();
+	dataobject_setValue(pobj, "width", dataobjectfield_string("90%"));
+	widget_setPacking(pobj, WP_HORIZONTAL);
+	dataobject_setDirty(pobj);
+	widget_pack(pobj, lockScreen);
+
+	dobj = widget_new();
+	dataobject_setValue(dobj, "width", dataobjectfield_string("20"));
+	dataobject_setValue(dobj, "height", dataobjectfield_string("20"));
+	dataobject_setValue(dobj, "canfocus", dataobjectfield_string("1"));
+	widget_setID(dobj, "gradboxr");
+	dataobject_setDirty(dobj);
+	widget_pack(dobj, pobj);
+
+	dobj = widget_new();
+	dataobject_setValue(dobj, "width", dataobjectfield_string("20"));
+	dataobject_setValue(dobj, "height", dataobjectfield_string("20"));
+	dataobject_setValue(dobj, "canfocus", dataobjectfield_string("1"));
+	widget_setID(dobj, "gradboxr");
+	dataobject_setDirty(dobj);
+	widget_pack(dobj, pobj);
+
+	dobj = widget_new();
+	dataobject_setValue(dobj, "width", dataobjectfield_string("20"));
+	dataobject_setValue(dobj, "height", dataobjectfield_string("20"));
+	dataobject_setValue(dobj, "canfocus", dataobjectfield_string("1"));
+	widget_setID(dobj, "gradboxr");
+	dataobject_setDirty(dobj);
+	widget_pack(dobj, pobj);
+#endif
+
+	dataobject_setValue(lockScreen, "script", dataobjectfield_string(
+			"customVar = \"hello\"\n function setIt (n)\n dobj = DataObject.find(\"output\")\n dobj:setValue(n)\nend\n"
+			"function getIt ()\n dobj = DataObject.find(\"output\")\n return dobj:getValue()\nend"));
+
 	dobj = widget_new();
 	dataobject_setValue(dobj, "data", dataobjectfield_string("emobiix"));
 	dataobject_setValue(dobj, "type", dataobjectfield_string("string"));
+	
 	widget_setAlignment(dobj, WA_CENTER);
+	//dataobject_setValue(dobj, "alignment", dataobjectfield_string("center"));
 	widget_setID(dobj, "biglabel");
+	dataobject_setDirty(dobj);
 	widget_pack(dobj, lockScreen);
 
 	dobj = widget_new();
 	dataobject_setValue(dobj, "data", dataobjectfield_string("Application Boot Environment"));
 	dataobject_setValue(dobj, "type", dataobjectfield_string("string"));
 	widget_setAlignment(dobj, WA_CENTER);
+	//dataobject_setValue(dobj, "alignment", dataobjectfield_string("center"));
 	widget_setID(dobj, "label");
+	dataobject_setDirty(dobj);
 	widget_pack(dobj, lockScreen);
 
 	DataObject *bobj;
@@ -834,16 +869,18 @@ void makeLockScreen(void)
 	widget_setID(bobj, "gradboxr");
 	widget_pack(bobj, lockScreen);
 	widget_setAlignment(bobj, WA_CENTER);
+	//dataobject_setValue(bobj, "alignment", dataobjectfield_string("center"));
 	dataobject_setValue(bobj, "onreturn", dataobjectfield_string(
 			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/dataobject\"); dobj:toScreen();"));
-
+	dataobject_setDirty(bobj);
 
 	dobj = widget_new();
 	dataobject_setValue(dobj, "data", dataobjectfield_string("Hello World"));
 	dataobject_setValue(dobj, "type", dataobjectfield_string("string"));
 	widget_setCanFocus(bobj, 1);
-	widget_setAlignment(dobj, WA_CENTER);
 	widget_setID(dobj, "label");
+	widget_setAlignment(dobj, WA_CENTER);
+	dataobject_setDirty(dobj);
 	widget_pack(dobj, bobj);
 
 	bobj = widget_new();
@@ -851,28 +888,42 @@ void makeLockScreen(void)
 	widget_setID(bobj, "gradboxr");
 	widget_pack(bobj, lockScreen);
 	widget_setAlignment(bobj, WA_CENTER);
+	//dataobject_setValue(bobj, "alignment", dataobjectfield_string("center"));
 	dataobject_setValue(bobj, "onreturn", dataobjectfield_string(
-		"dobj = DataObject.locate(\"tcp://69.114.111.9:2501/dataobject\"); dobj:toScreen();"));
-	
+		"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/calc\"); dobj:toScreen();"));
+	dataobject_setDirty(bobj);
+
 	dobj = widget_new();
 	dataobject_setValue(dobj, "data", dataobjectfield_string("Calculator"));
 	dataobject_setValue(dobj, "type", dataobjectfield_string("string"));
 	widget_setCanFocus(bobj, 1);
 	widget_setAlignment(dobj, WA_CENTER);
+	//dataobject_setValue(dobj, "alignment", dataobjectfield_string("center"));
 	widget_setID(dobj, "label");
+	dataobject_setDirty(dobj);
 	widget_pack(dobj, bobj);
 
 	dobj = widget_new();
 	dataobject_setValue(dobj, "data", dataobjectfield_string("tcp://69.114.111.9:12345/"));
 	dataobject_setValue(dobj, "type", dataobjectfield_string("entry"));
+	dataobject_setValue(dobj, "name", dataobjectfield_string("output"));
 	dataobject_setValue(dobj, "onreturn", dataobjectfield_string(
-			"str = getValue(); dobj = DataObject.locate(str); dobj:toScreen();"));
+#if 0
+			"str = DataObject.getValue(); dobj = DataObject.locate(str); dobj:toScreen();"
+#else
+		"str = getIt()\nstr = str .. \"hi\"\nsetIt(str)\n"
+#endif
+			));
 	widget_setCanFocus(bobj, 1);
 	widget_setAlignment(dobj, WA_CENTER);
+	//dataobject_setValue(dobj, "alignment", dataobjectfield_string("center"));
 	widget_setID(dobj, "entry");
 	widget_setCanFocus(dobj, 1);
 	dataobject_setValue(dobj, "width", dataobjectfield_string("90%"));
 	widget_pack(dobj, lockScreen);
+	dataobject_setDirty(dobj);
+
+	//script_event(dobj, "onreturn");
 
 	widget_resolveLayout(lockScreen, currentStyle);
 #if 0
