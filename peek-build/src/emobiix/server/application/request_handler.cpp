@@ -10,14 +10,12 @@
 #include "soap_request.h"
 
 #include <xercesc/util/PlatformUtils.hpp>
-#include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/dom/DOMDocumentTraversal.hpp>
 #include <xercesc/dom/DOMNodeFilter.hpp>
 #include <xercesc/dom/DOMNodeIterator.hpp>
 #include <xercesc/framework/MemBufInputSource.hpp>
 
-XERCES_CPP_NAMESPACE_USE
 using namespace std;
 
 namespace emobiix {
@@ -208,7 +206,7 @@ void request_handler::start_serverSync(reply& rep)
 	rep.packets.push_back(finish);
 }
 
-void addStringAttribute(FRIPacketP *packet, const char *attribute, const char *value)
+void request_handler::addStringAttribute(FRIPacketP *packet, const char *attribute, const char *value)
 {
 	TRACELOG("Adding " << attribute << " = " << value);
 
@@ -221,7 +219,7 @@ void addStringAttribute(FRIPacketP *packet, const char *attribute, const char *v
 	asn_sequence_add(&packet->packetTypeP.choice.dataObjectSyncP.syncListP.choice.blockSyncListP.list, syncOp);
 }
 
-void addDataAttribute(FRIPacketP *packet, const char *attribute, const char *value)
+void request_handler::addDataAttribute(FRIPacketP *packet, const char *attribute, const char *value)
 {
 	SyncOperandP_t *syncOp = new SyncOperandP_t;
 	syncOp->fieldNameP.buf = NULL;
@@ -235,7 +233,7 @@ void addDataAttribute(FRIPacketP *packet, const char *attribute, const char *val
 	asn_sequence_add(&packet->packetTypeP.choice.dataObjectSyncP.syncListP.choice.blockSyncListP.list, syncOp);
 }
 
-void addChild(FRIPacketP* packet)
+void request_handler::addChild(FRIPacketP* packet)
 {
 	TRACELOG("Moving to a child node");
 
@@ -248,7 +246,7 @@ void addChild(FRIPacketP* packet)
 	asn_sequence_add(&packet->packetTypeP.choice.dataObjectSyncP.syncListP.choice.blockSyncListP.list, syncOp);
 }
 
-void goToTree(FRIPacketP* packet, int index)
+void request_handler::goToTree(FRIPacketP* packet, int index)
 {
 	TRACELOG("Moving to parents node: " << index);
 
@@ -261,7 +259,7 @@ void goToTree(FRIPacketP* packet, int index)
 	asn_sequence_add(&packet->packetTypeP.choice.dataObjectSyncP.syncListP.choice.blockSyncListP.list, syncOp);
 }
 
-FRIPacketP* createDataObject()
+FRIPacketP* request_handler::createDataObject(DOMNode *node)
 {
 	FRIPacketP *object = new FRIPacketP;
 	object->packetTypeP.present = packetTypeP_PR_dataObjectSyncP;
@@ -273,125 +271,79 @@ FRIPacketP* createDataObject()
 	s.syncListP.choice.blockSyncListP.list.size = 0;
 	s.syncListP.choice.blockSyncListP.list.count = 0;
 
+	setCommonAttributes(object, node);
 	return object;
 }
 
-FRIPacketP* createBox(DOMNode *node, int index)
+void request_handler::setCommonAttributes(FRIPacketP *packet, DOMNode *node)
 {
-	FRIPacketP *box = createDataObject();
+	std::string prop;
+	if ((prop = GetAttribute(node, "id")) != "")
+		addStringAttribute(packet, "id", prop.c_str());
 
-	char buf[32] = ""; sprintf(buf, "%d", index);
-	addStringAttribute(box, "node", buf);
+	if ((prop = GetAttribute(node, "name")) != "")
+	  addStringAttribute(packet, "name", prop.c_str());
+
+	if ((prop = GetAttribute(node, "script")) != "")
+	  addStringAttribute(packet, "script", prop.c_str());
+
+	if ((prop = GetAttribute(node, "onreturn")) != "")
+	  addStringAttribute(packet, "onreturn", prop.c_str());
+}
+
+FRIPacketP* request_handler::createBox(DOMNode *node)
+{
+	FRIPacketP *box = createDataObject(node);
 	addStringAttribute(box, "alignment", GetAttribute(node, "alignment").c_str());
 	addStringAttribute(box, "packing", GetAttribute(node, "packing").c_str());
 	addStringAttribute(box, "width", GetAttribute(node, "width").c_str());
 	addStringAttribute(box, "height", GetAttribute(node, "height").c_str());
-	addStringAttribute(box, "id", GetAttribute(node, "id").c_str());
 	addStringAttribute(box, "canfocus", GetAttribute(node, "canfocus").c_str());
-  addStringAttribute(box, "onreturn", GetAttribute(node, "onreturn").c_str());
-
-	const std::string scriptProp = GetAttribute(node, "script").c_str();
-	if (scriptProp != "")
-	  addStringAttribute(box, "script", scriptProp.c_str());
-
-	const std::string nameProp = GetAttribute(node, "name").c_str();
-	if (nameProp != "")
-	  addStringAttribute(box, "name", nameProp.c_str());
-
 	return box;
 }
 
-FRIPacketP* createButton(DOMNode *node, int index)
+FRIPacketP* request_handler::createButton(DOMNode *node)
 {
-	FRIPacketP *button = createDataObject();
-
-	char buf[32] = ""; sprintf(buf, "%d", index);
-	addStringAttribute(button, "node", buf);
+	FRIPacketP *button = createDataObject(node);
 	addStringAttribute(button, "alignment", GetAttribute(node, "alignment").c_str());
 	addStringAttribute(button, "packing", GetAttribute(node, "packing").c_str());
 	addStringAttribute(button, "width", GetAttribute(node, "width").c_str());
 	addStringAttribute(button, "height", GetAttribute(node, "height").c_str());
-	addStringAttribute(button, "id", GetAttribute(node, "id").c_str());
 	addStringAttribute(button, "canfocus", GetAttribute(node, "canfocus").c_str());
-	addStringAttribute(button, "onreturn", GetAttribute(node, "onreturn").c_str());
 
-	const std::string scriptProp = GetAttribute(node, "script").c_str();
-	if (scriptProp != "")
-	  addStringAttribute(button, "script", scriptProp.c_str());
-
-	const std::string nameProp = GetAttribute(node, "name").c_str();
-	if (nameProp != "")
-	  addStringAttribute(button, "name", nameProp.c_str());
+	std::string prop;
+	prop = GetAttribute(node, "accesskey");
+	if (prop != "")
+		addStringAttribute(button, "accesskey", prop.c_str());
 
 	return button;
 }
 
-FRIPacketP* createLabel(DOMNode *node, int index)
+FRIPacketP* request_handler::createLabel(DOMNode *node)
 {
-	FRIPacketP *label = createDataObject();
-
-	char buf[32] = ""; sprintf(buf, "%d", index);
-	addStringAttribute(label, "node", buf);
-	addStringAttribute(label, "id", GetAttribute(node, "id").c_str());
+	FRIPacketP *label = createDataObject(node);
 	addStringAttribute(label, "type", GetAttribute(node, "type").c_str());
 	addStringAttribute(label, "alignment", GetAttribute(node, "alignment").c_str());
 	addStringAttribute(label, "data", XMLToString(node->getFirstChild()->getNodeValue()).c_str());
-  addStringAttribute(label, "onreturn", GetAttribute(node, "onreturn").c_str());
-
-	const std::string scriptProp = GetAttribute(node, "script").c_str();
-	if (scriptProp != "")
-	  addStringAttribute(label, "script", scriptProp.c_str());
-
-	const std::string nameProp = GetAttribute(node, "name").c_str();
-	if (nameProp != "")
-	  addStringAttribute(label, "name", nameProp.c_str());
-
 	return label;
 }
 
-FRIPacketP* createEntry(DOMNode *node, int index)
+FRIPacketP* request_handler::createEntry(DOMNode *node)
 {
-	FRIPacketP *entry = createDataObject();
-
-	char buf[32] = ""; sprintf(buf, "%d", index);
-	addStringAttribute(entry, "node", buf);
-	addStringAttribute(entry, "id", GetAttribute(node, "id").c_str());
+	FRIPacketP *entry = createDataObject(node);
 	addStringAttribute(entry, "data", XMLToString(node->getFirstChild()->getNodeValue()).c_str());
-  addStringAttribute(entry, "onreturn", GetAttribute(node, "onreturn").c_str());
-
-	const std::string scriptProp = GetAttribute(node, "script").c_str();
-	if (scriptProp != "")
-	  addStringAttribute(entry, "script", scriptProp.c_str());
-
-	const std::string nameProp = GetAttribute(node, "name").c_str();
-	if (nameProp != "")
-	  addStringAttribute(entry, "name", nameProp.c_str());
-
 	return entry;
 }
 
-FRIPacketP* createImage(DOMNode *node, int index)
+FRIPacketP* request_handler::createImage(DOMNode *node)
 {
-	FRIPacketP *image = createDataObject();
-
-	char buf[32] = ""; sprintf(buf, "%d", index);
-	addStringAttribute(image, "node", buf);
-	addStringAttribute(image, "id", GetAttribute(node, "id").c_str());
+	FRIPacketP *image = createDataObject(node);
 	addStringAttribute(image, "src", GetAttribute(node, "src").c_str());
   addStringAttribute(image, "onreturn", GetAttribute(node, "onreturn").c_str());
-
-	const std::string scriptProp = GetAttribute(node, "script").c_str();
-	if (scriptProp != "")
-	  addStringAttribute(image, "script", scriptProp.c_str());
-
-	const std::string nameProp = GetAttribute(node, "name").c_str();
-	if (nameProp != "")
-	  addStringAttribute(image, "name", nameProp.c_str());
-
 	return image;
 }
 
-static bool parseTree(DOMNode *node, vector<FRIPacketP *>& packets, int& nodeCount)
+bool request_handler::parseTree(DOMNode *node, vector<FRIPacketP *>& packets, int& nodeCount)
 {
 	if (!node)
 		return false;
@@ -399,27 +351,29 @@ static bool parseTree(DOMNode *node, vector<FRIPacketP *>& packets, int& nodeCou
 	int self = nodeCount;
 	string nodeName = XMLToString(node->getNodeName());
 
-	if (nodeName == "box") {
-		packets.push_back(createBox(node, nodeCount));
+	if (nodeName == "box") 
+	{
+		packets.push_back(createBox(node));
 		nodeCount++;
-	}
-	if (nodeName == "button") {
-		packets.push_back(createButton(node, nodeCount));
+	} 
+	else if (nodeName == "button") 
+	{
+		packets.push_back(createButton(node));
 		nodeCount++;
 	}
 	else if (nodeName == "label")
 	{
-		packets.push_back(createLabel(node, nodeCount));
+		packets.push_back(createLabel(node));
 		nodeCount++;
 	}
 	else if (nodeName == "entry")
 	{
-		packets.push_back(createEntry(node, nodeCount));
+		packets.push_back(createEntry(node));
 		nodeCount++;
 	}
 	else if (nodeName == "image")
 	{
-		packets.push_back(createImage(node, nodeCount));
+		packets.push_back(createImage(node));
 		nodeCount++;
 	}
 	else
@@ -427,20 +381,20 @@ static bool parseTree(DOMNode *node, vector<FRIPacketP *>& packets, int& nodeCou
 		// TODO
 	}
 
-
 	node = node->getFirstChild();
-	while (node) {
-		nodeName = XMLToString(node->getNodeName());
-		if (nodeName != "#text") {
+	while (node) 
+	{
+		if (node->getNodeType() == DOMNode::ELEMENT_NODE) 
+		{
 			if (self != nodeCount)
 				addChild(packets.back());
+
 			parseTree(node, packets, nodeCount);
 		}
 
 		node = node->getNextSibling();
-		if (node && nodeName != "#text") {
+		if (node && node->getNodeType() == DOMNode::ELEMENT_NODE) 
 			goToTree(packets.back(), self);
-		}
 	}
 }
 

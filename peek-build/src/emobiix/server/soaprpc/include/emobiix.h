@@ -1,5 +1,4 @@
 //gsoap ns service name: emobiix
-//gsoap ns service style: rpc
 //gsoap ns service encoding: encoded 
 
 #import "stl.h"

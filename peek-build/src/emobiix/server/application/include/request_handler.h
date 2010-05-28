@@ -5,6 +5,9 @@
 #include <string>
 #include <boost/noncopyable.hpp>
 
+#include <xercesc/dom/DOM.hpp>
+XERCES_CPP_NAMESPACE_USE
+
 struct FRIPacketP;
 
 namespace emobiix {
@@ -38,6 +41,19 @@ private:
 
 	void start_serverSync(reply& rep);
 	bool parse(const char *doc, std::vector<FRIPacketP *>& packets);
+	bool parseTree(DOMNode *node, std::vector<FRIPacketP *>& packets, int& nodeCount);
+
+	FRIPacketP* createDataObject(DOMNode *node);
+	FRIPacketP* createBox(DOMNode *node);
+	FRIPacketP* createButton(DOMNode *node);
+	FRIPacketP* createLabel(DOMNode *node);
+	FRIPacketP* createEntry(DOMNode *node);
+	FRIPacketP* createImage(DOMNode *node);
+	void setCommonAttributes(FRIPacketP *packet, DOMNode *node);
+	void addStringAttribute(FRIPacketP *packet, const char *attribute, const char *value);
+	void addDataAttribute(FRIPacketP *packet, const char *attribute, const char *value);
+	void addChild(FRIPacketP* packet);
+	void goToTree(FRIPacketP* packet, int index);
 
 private:
   /// The directory containing the files to be served.
