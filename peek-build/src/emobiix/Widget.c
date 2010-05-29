@@ -818,3 +818,4 @@ void widget_getClipRectangle(Widget *w, Rectangle *rect)
 	rect->width = w->box.width;
 	rect->height = w->box.height;
 }
+
