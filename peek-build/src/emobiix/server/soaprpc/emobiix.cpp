@@ -1,14 +1,15 @@
 #include "emobiix_rpc_H.h"
 
 xsd__base64Binary::xsd__base64Binary()
-: __ptr(NULL), __size(0)
+: __ptr(NULL), __size(0), mime("unknown")
 {
 }
 
-xsd__base64Binary::xsd__base64Binary(struct soap *soap, int n)
+xsd__base64Binary::xsd__base64Binary(struct soap *soap, int n, char *type)
 {
   __ptr = (unsigned char*)soap_malloc(soap, n);
   __size = n;
+	mime = type;
 }
 
 unsigned char *xsd__base64Binary::getPtr()
@@ -19,6 +20,11 @@ unsigned char *xsd__base64Binary::getPtr()
 int xsd__base64Binary::getSize() const
 {
   return __size;
+}
+
+char *xsd__base64Binary::getMime() 
+{
+	return mime;
 }
 
 recordArray::recordArray()

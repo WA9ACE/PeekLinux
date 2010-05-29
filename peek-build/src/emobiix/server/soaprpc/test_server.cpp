@@ -35,7 +35,11 @@ int ns__BlockDataObjectRequest(struct soap* soap, xsd__string id, ns__Timestamp 
 	int filesize = ftell(fd);
 	fseek(fd, 0L, SEEK_SET);
 
-	rawData = xsd__base64Binary(soap, filesize);
+	char *type = "unknown";
+	if (char *dot = strrchr(id, '.'))
+		type = dot + 1;
+
+	rawData = xsd__base64Binary(soap, filesize, type);
 
 	fread(rawData.getPtr(), rawData.getSize(), 1, fd);
 	fclose(fd);

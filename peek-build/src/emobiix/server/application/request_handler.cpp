@@ -352,8 +352,11 @@ FRIPacketP* request_handler::createImage(DOMNode *node)
 
 	std::string src = GetAttribute(node, "src").c_str();
 
+	std::string mime;
 	vector<pair<size_t, unsigned char *> > blocks;
-	soap_request::get_blockDataObject("http://linux.emobiix.com:8082/cgi-bin/test.cgi", src, blocks);
+	soap_request::get_blockDataObject("http://linux.emobiix.com:8082/cgi-bin/test.cgi", src, mime, blocks);
+
+	addStringAttribute(image, "mime-type", mime.c_str());
 	addDataAttribute(image, "src", blocks);
 	return image;
 }

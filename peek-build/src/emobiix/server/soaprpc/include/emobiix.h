@@ -3,20 +3,22 @@
 
 #import "stl.h"
 
+typedef char *XML;
+typedef char *xsd__string;
+
 class xsd__base64Binary
 {
 public:
 	unsigned char *__ptr;
 	int __size;
+	@xsd__string mime;
 
 	xsd__base64Binary();
-	xsd__base64Binary(struct soap* soap, int n);
+	xsd__base64Binary(struct soap* soap, int n, char *mime);
 	int getSize() const;
 	unsigned char *getPtr();
+	char *getMime();
 };
-
-typedef char *XML;
-typedef char *xsd__string;
 
 class recordArray
 {
