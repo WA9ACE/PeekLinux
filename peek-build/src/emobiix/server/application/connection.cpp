@@ -14,9 +14,6 @@ connection::connection(io_service& io_service, request_handler* handler)
     socket_(io_service),
     request_handler_(handler)
 {
-	// detect connection breaks without any data traffic
-	socket_base::keep_alive option(true);
-	socket_.set_option(option);
 }
 
 connection::~connection()
@@ -32,6 +29,10 @@ ip::tcp::socket& connection::socket()
 
 void connection::start()
 {
+	// detect connection breaks without any data traffic
+	socket_base::keep_alive option(true);
+	socket_.set_option(option);
+
   socket_.async_read_some(buffer(buffer_), 
 		strand_.wrap(
 			boost::bind(&connection::handle_read, shared_from_this(), 
