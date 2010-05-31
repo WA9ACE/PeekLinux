@@ -583,8 +583,9 @@ void tweetDrawScreen(void)
 int tweetKey(int key)
 {
 	int isDirty = 0;
-	Widget *focus;
+	Widget *focus, *accessKey;
 	static Rectangle clip = {0, 0, 320, 240};
+	char keyStr[2];
 
 #ifndef SIMULATOR
 	switch (key) {
@@ -675,7 +676,17 @@ int tweetKey(int key)
 		if (field != NULL && field->type == DataObjectField::DOF_STRING &&
 				strcmp(field->field.string, "entry") == 0) {
 			entryWidget_handleKey(focus, key, currentStyle);
+			return 1;
 		}
+	}
+
+	/* access key */
+	((unsigned char *)keyStr)[0] = (unsigned char)key;
+	keyStr[1] = 0;
+	accessKey = widget_findStringField(currentScreen, "accesskey", keyStr);
+	if (accessKey != NULL) {
+		script_event(accessKey, "onreturn");
+		return 1;
 	}
 
 bal_printf("Key is %d\n", key);

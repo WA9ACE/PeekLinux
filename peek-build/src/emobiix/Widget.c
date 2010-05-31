@@ -589,6 +589,32 @@ void widget_markDirty(Widget *w)
 	}
 }
 
+Widget *widget_findStringField(Widget *w, const char *key, const char *value)
+{
+	DataObjectField *field;
+	ListIterator *iter;
+	Widget *retval;
+
+	field = dataobject_getValue(w, key);
+	if (field != NULL) {
+		if (field->type == DOF_STRING && strcmp(field->field.string, value) == 0)
+			return w;
+	}
+
+	iter = widget_getChildren(w);
+	while (!listIterator_finished(iter)) {
+		retval = widget_findStringField((Widget *)listIterator_item(iter), key, value);
+		if (retval != NULL) {
+			listIterator_delete(iter);
+			return retval;
+		}
+		listIterator_next(iter);
+	}
+	listIterator_delete(iter);
+
+	return NULL;
+}
+
 static void widget_layoutMeasure(Widget *w, Style *s)
 {
 	ListIterator *iter;

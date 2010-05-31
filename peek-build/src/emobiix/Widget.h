@@ -32,6 +32,7 @@ int widget_isParent(Widget *wParent, Widget *w);
 Widget *widget_focusWhichOne(Widget *w);
 Widget *widget_focusWhichOneNF(Widget *w);
 void widget_markDirty(Widget *w);
+Widget *widget_findStringField(Widget *screen, const char *key, const char *value);
 
 Rectangle *widget_getMargin(Widget *w);
 Rectangle *widget_getBorder(Widget *w);
