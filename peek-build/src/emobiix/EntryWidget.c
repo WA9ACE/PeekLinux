@@ -20,7 +20,7 @@ int entryWidget_handleKey(Widget *w, int key, Style *s)
 	char *newstring;
 	Rectangle rect;
 
-	if (key == 10 || key == 13 || key == 86 || key == 87)
+	if (key == 10 || key == 13 || key == 86 || key == 87 || key == 46)
 		return 0;
 
 	dobj = widget_getDataObject(w);

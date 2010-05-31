@@ -917,8 +917,8 @@ void makeLockScreen(void)
 	dataobject_setValue(dobj, "type", dataobjectfield_string("entry"));
 	dataobject_setValue(dobj, "name", dataobjectfield_string("output"));
 	dataobject_setValue(dobj, "onreturn", dataobjectfield_string(
-#if 0
-			"str = DataObject.getValue(); dobj = DataObject.locate(str); dobj:toScreen();"
+#if 1
+		"ths = DataObject.find(\"output\"); str = ths:getValue(); dobj = DataObject.locate(str); dobj:toScreen();"
 #else
 		"str = getIt()\nstr = str .. \"hi\"\nsetIt(str)\n"
 #endif
