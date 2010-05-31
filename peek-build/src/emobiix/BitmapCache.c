@@ -63,7 +63,7 @@ void *bitmapcache_add(BitmapCache *c, unsigned long value,
 		c->data = (void *)p_realloc(c->data, c->dataSize + BITMAPCACHE_STEP);
 		c->dataSize += BITMAPCACHE_STEP;
 		if (c->data == NULL) {
-			emo_printf("realloc bitmapcache failed\n");
+			emo_printf("realloc bitmapcache failed" NL);
 			return NULL;
 		}
 	}
@@ -98,7 +98,7 @@ void *bitmapcache_add(BitmapCache *c, unsigned long value,
 	c->dataPos += dataSize;
 #endif
 
-	//emo_printf("\n");
+	//emo_printf("" NL);
 #if 1
 	map_append(c->cache, (void *)value, (void *)b);
 #endif

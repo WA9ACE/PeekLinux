@@ -12,6 +12,13 @@
 extern "C" {
 #endif
 
+#ifdef SIMULATOR
+#define NL "\n"
+#else
+#define NL
+#endif
+
+
 #ifndef SIMULATOR
 void emo_printf(const char *fmt, ...);
 #else

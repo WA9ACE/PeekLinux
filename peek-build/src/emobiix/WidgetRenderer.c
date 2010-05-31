@@ -33,7 +33,7 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 					width, height, width, height, data, c);
 			break;
 		default:
-			emo_printf("Unsupported image format\n");
+			emo_printf("Unsupported image format" NL);
 	}
 }
 

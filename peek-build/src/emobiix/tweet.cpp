@@ -84,7 +84,7 @@ int tweetInit(void)
 
 	if (tweetDidInit) {
 #ifdef EMO_DEBUG
-		emo_printf(" RYAN tweet init called when already initd\n");
+		emo_printf(" RYAN tweet init called when already initd" NL);
 #endif
 		return 1;
 	}
@@ -173,7 +173,7 @@ int tweetInit(void)
 
 	if (val == 1) {
 #ifdef EMO_DEBUG
-	emo_printf("\n -- sans \n");
+	emo_printf("\n -- sans" NL);
 #endif
 	fontObject1 = dataobject_new();
 #if 1
@@ -181,7 +181,7 @@ int tweetInit(void)
 	dataobject_setValue(fontObject1, "data", dataobjectfield_data((void *)DroidSans, DroidSansSize));
 #endif
 #ifdef EMO_DEBUG
-	emo_printf("\n -- sans done \n");
+	emo_printf("\n -- sans done" NL);
 #endif
 	}
 	PROGRESS
@@ -189,13 +189,13 @@ int tweetInit(void)
 #if 1
 	if (val == 1) {
 #ifdef EMO_DEBUG
-	emo_printf("\n -- font \n");
+	emo_printf(NL "-- font" NL);
 #endif
 	defaultFont = font_load(fontObject1);
 	if (defaultFont != NULL)
 		font_setHeight(defaultFont, 12);
 #ifdef EMO_DEBUG
-	emo_printf("\n -- font done \n");
+	emo_printf(NL "-- font done" NL);
 #endif
 	}
 	PROGRESS
@@ -219,12 +219,12 @@ int tweetInit(void)
 
 	if (val == 1) {
 #ifdef EMO_DEBUG
-	emo_printf("\n -- hugefont \n");
+	emo_printf(NL "-- hugefont" NL);
 #endif
 	hugeFont = font_load(fontObject1);
 	font_setHeight(hugeFont, 20);
 #ifdef EMO_DEBUG
-	emo_printf("\n -- font done \n");
+	emo_printf(NL "-- font done" NL);
 #endif
 	}
 	PROGRESS
@@ -250,12 +250,12 @@ int tweetInit(void)
 
 	if (val == 1) {
 #ifdef EMO_DEBUG
-	emo_printf("\n -- hugefont \n");
+	emo_printf(NL "-- hugefont" NL);
 #endif
 	consoleFont = font_load(fontObject1);
 	font_setHeight(consoleFont, 8);
 #ifdef EMO_DEBUG
-	emo_printf("\n -- font done \n");
+	emo_printf(NL "-- font done" NL);
 #endif
 	}
 	PROGRESS
@@ -264,7 +264,7 @@ int tweetInit(void)
 	static Gradient *grad1;
 	if (val == 1) {
 #ifdef EMO_DEBUG
-	emo_printf("\n -- g1 \n");
+	emo_printf(NL "-- g1" NL);
 #endif
 	grad1 = gradient_new();
 	color.value = 0xF9F9F9FF;
@@ -276,7 +276,7 @@ int tweetInit(void)
 	color.value = 0xDEDEDEFF;
 	gradient_addStop(grad1, 100, color);
 #ifdef EMO_DEBUG
-	emo_printf("\n -- g1 done \n");
+	emo_printf(NL "-- g1 done" NL);
 #endif
 	}
 	PROGRESS
@@ -284,13 +284,13 @@ int tweetInit(void)
 	static Gradient *greengrad1;
 	if (val == 1) {
 #ifdef EMO_DEBUG
-	emo_printf("\n -- gg1 \n");
+	emo_printf(NL "-- gg1" NL);
 #endif
 	greengrad1 = gradient_new();
 	if (greengrad1 == NULL)
 	{
 #ifdef EMO_DEBUG
-		emo_printf("gg1 is NULL\n\n");
+		emo_printf("gg1 is NULL" NL NL);
 #endif
 	}
 	color.value = 0x10CF0DFF;
@@ -302,7 +302,7 @@ int tweetInit(void)
 	color.value = 0x005823FF;
 	gradient_addStop(greengrad1, 100, color);
 #ifdef EMO_DEBUG
-	emo_printf("\n -- gg1 done \n");
+	emo_printf(NL "-- gg1 done" NL);
 #endif
 	}
 	PROGRESS
@@ -310,7 +310,7 @@ int tweetInit(void)
 	static Gradient *grad2;
 	if (val == 1) {
 #ifdef EMO_DEBUG
-	emo_printf("\n -- g2 \n");
+	emo_printf(NL "-- g2" NL);
 #endif
 	grad2 = gradient_new();
 	color.value = 0xF9F9F9FF;
@@ -322,7 +322,7 @@ int tweetInit(void)
 	color.value = 0xb7f1ffFF;
 	gradient_addStop(grad2, 100, color);
 #ifdef EMO_DEBUG
-	emo_printf("\n -- g2 done \n");
+	emo_printf(NL "-- g2 done" NL);
 #endif
 	}
 	PROGRESS
@@ -330,7 +330,7 @@ int tweetInit(void)
 	static Gradient *greengrad2;
 	if (val == 1) {
 #ifdef EMO_DEBUG
-	emo_printf("\n -- gg2 \n");
+	emo_printf(NL "-- gg2" NL);
 #endif
 	greengrad2 = gradient_new();
 	color.value = 0xE4FD13FF;
@@ -342,14 +342,14 @@ int tweetInit(void)
 	color.value = 0xbfe412FF;
 	gradient_addStop(greengrad2, 100, color);
 #ifdef EMO_DEBUG
-	emo_printf("\n -- gg2 done \n");
+	emo_printf(NL "-- gg2 done" NL);
 #endif
 	}
 	PROGRESS
 
 	if (val == 1) {
 #ifdef EMO_DEBUG
-	emo_printf("\n -- style \n");
+	emo_printf(NL "-- style" NL);
 #endif
 	defaultStyle = style_new();
 	greenStyle = style_new();
@@ -528,20 +528,20 @@ int tweetInit(void)
 	currentStyle = defaultStyle;
 	
 #ifdef EMO_DEBUG
-	emo_printf("\n -- style done \n");
+	emo_printf(NL "-- style done" NL);
 #endif
 	}
 
 		if (val == 1) {
 #ifdef EMO_DEBUG
-	emo_printf("\n -- screen \n");
+	emo_printf(NL "-- screen" NL);
 #endif
 	makeLockScreen();
 	makeHomeScreen();
 	makeComposeSMSScreen();
 	currentScreen = lockScreen;
 #ifdef EMO_DEBUG
-	emo_printf("\n -- screen done \n");
+	emo_printf(NL "-- screen done" NL);
 #endif
 	}
 	PROGRESS
@@ -562,14 +562,14 @@ void tweetDrawScreen(void)
 {
 	if (!tweetDidInit) {
 #ifdef EMO_DEBUG
-		emo_printf(" RYAN Draw screen called before init, returning\n");
+		emo_printf("RYAN Draw screen called before init, returning" NL);
 #endif
 		return;
 	}
 
 	if (currentStyle == NULL || currentScreen == NULL) {
 #ifdef EMO_DEBUG
-		emo_printf("\n RYAN - style or screen is NULL\n\n");
+		emo_printf(NL "RYAN - style or screen is NULL" NL);
 #endif
 		return;
 	}
@@ -659,12 +659,12 @@ int tweetKey(int key)
 
 	if (!tweetDidInit) {
 #ifdef EMO_DEBUG
-		emo_printf(" RYAN tweetKey called before Init, returning\n");
+		emo_printf("RYAN tweetKey called before Init, returning" NL);
 #endif
 		return 1;
 	}
 #ifdef EMO_DEBUG
-	emo_printf("Key %d pressed\n", key);
+	emo_printf("Key %d pressed" NL, key);
 #endif
 
 	focus = NULL;
@@ -688,8 +688,6 @@ int tweetKey(int key)
 		script_event(accessKey, "onreturn");
 		return 1;
 	}
-
-bal_printf("Key is %d\n", key);
 
 	switch (key) {
 		case KP_1_KEY:

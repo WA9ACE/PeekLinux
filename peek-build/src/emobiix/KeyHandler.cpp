@@ -40,10 +40,10 @@ void updateScreen(void) {
         Bmp.BitCount = BAL_DISP_BIT_COUNT_16;
         Bmp.DataBuf = (unsigned char *)screenBuf;
         if (screenBuf == NULL) {
-                emo_printf("\n RYAN screenbuf is NULL here\n\n");
+                emo_printf("RYAN screenbuf is NULL here" NL);
                 return;
         }
-        emo_printf("\n RYAN Calling tweetDrawScreen() \n\n");
+        emo_printf("RYAN Calling tweetDrawScreen()" NL);
         tweetDrawScreen();
 
         if (!lgui_is_dirty())
@@ -52,14 +52,14 @@ void updateScreen(void) {
         int index, upper;
         upper = lgui_index_count();
         if (upper == 0) {
-            emo_printf("Flipping entire screen\n");
+            emo_printf("Flipping entire screen" NL);
             dc.BitBlt(0,0,BWIDTH,BHEIGHT,Bmp,0,0);
             dc.UpdateDisplay();
         } else {
             Rectangle *rect;
             for (index = 0; index < upper; ++index) {
                 rect = lgui_get_region(index);
-		    emo_printf("Flipping partial screen: %d\n", index);
+		    emo_printf("Flipping partial screen: %d" NL, index);
 
                 dc.BitBlt(rect->x, rect->y, rect->width, rect->height, Bmp,
                         rect->x, rect->y);
@@ -90,15 +90,15 @@ void main_test(void)
 
 	transport = transport_get(url->scheme);
 	if (transport == NULL) {
-		emo_printf("No 'tcp' transport available");
+		emo_printf("No 'tcp' transport available" NL);
 		return;
 	}
 
-	emo_printf("ANDREY::Calling transport->socket())");
+	emo_printf("ANDREY::Calling transport->socket())" NL);
 
 	ep = transport->socket();
 	if (ep == NULL) {
-		emo_printf("Failed Transport::Socket(), error code: %d",
+		emo_printf("Failed Transport::Socket(), error code: %d" NL,
 #ifdef SIMULATOR
 			0
 #else
@@ -108,9 +108,9 @@ void main_test(void)
 		return;
 	}
 
-	emo_printf("ANDREY::Calling transport->connect())");
+	emo_printf("ANDREY::Calling transport->connect())" NL);
 	if (transport->connect(ep, url) < 0) {
-		emo_printf("Connect failed");
+		emo_printf("Connect failed" NL);
 		return;
 	}
 
@@ -146,7 +146,7 @@ static void UiHandleKeyEvents(RegIdT RegId, uint32 MsgId, void *MsgBufferP)
         BalLightLevelT kpdstatus;
         UiKeypadKeyIdT UiKeyId = (UiKeypadKeyIdT)*((SysKeyIdT*) MsgBufferP);
 #ifdef EMO_SIM
-        emo_printf("UiHandleKeyEvents MsgId=%d,UiKeyId=%d\r\n", MsgId, UiKeyId);
+        emo_printf("UiHandleKeyEvents MsgId=%d,UiKeyId=%d" NL, MsgId, UiKeyId);
 #endif
         if (MsgId == 1) {
      //           SetSettingValue(SET_UI_RINGTONE, 2);
@@ -166,10 +166,10 @@ extern "C" {
 void KeyPad_Init(void) {
 
      if(BalKeypadRegister(UiHandleKeyEvents) == -1) {
-	emo_printf("BalKeypadRegister() Failed to register handler\n");
+	emo_printf("BalKeypadRegister() Failed to register handler" NL);
 	return;
      }
-     emo_printf("BalKeypadRegister() registered\n");
+     emo_printf("BalKeypadRegister() registered" NL);
 }
 #endif
 }

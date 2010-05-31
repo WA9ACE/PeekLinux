@@ -30,7 +30,7 @@ void gradient_addStop(Gradient *g, int position, Color color)
 
 	stop = (GradientStop *)p_malloc(sizeof(GradientStop));
 	if (stop == NULL)
-		emo_printf("Stop allocated was null\n\n");
+		emo_printf("Stop allocated was null" NL);
 	stop->position = position;
 	stop->color = color;
 

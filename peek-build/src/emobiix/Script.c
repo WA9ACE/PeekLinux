@@ -71,7 +71,7 @@ static int __dataobject_setValue(lua_State *L)
 	if (parent == currentScreen) {
 		widget_getClipRectangle(dobj, &rectb4);
 		widget_resolveLayout(currentScreen, currentStyle);
-		emo_printf("drawing from script setData\n");
+		emo_printf("drawing from script setData" NL);
 		widget_markDirty(dobj);
 		lgui_clip_identity();
 		widget_getClipRectangle(dobj, &rectAfter);
@@ -226,7 +226,7 @@ lua_State *script_getContext(DataObject *dobj, int *isTemporary)
 			if (lua_isstring(output, lua_gettop(output))) {
 				errStr = lua_tostring(output, lua_gettop(output));
 				lua_pop(output, 1);
-				emo_printf("script error: %s\n", errStr);
+				emo_printf("script error: %s" NL, errStr);
 			}
 
             dataobject_setScriptContext(sobj, output);
@@ -256,7 +256,7 @@ int script_event(DataObject *context, const char *eventname)
 	if (lua_isstring(L, lua_gettop(L))) {
 	    errStr = lua_tostring(L, lua_gettop(L));
 		lua_pop(L, 1);
-		emo_printf("script error: %s\n", errStr);
+		emo_printf("script error: %s" NL, errStr);
 	}
 
 	luaL_dostring(L, field->field.string);
@@ -264,7 +264,7 @@ int script_event(DataObject *context, const char *eventname)
 	if (lua_isstring(L, lua_gettop(L))) {
 	    errStr = lua_tostring(L, lua_gettop(L));
 		lua_pop(L, 1);
-		emo_printf("script error: %s\n", errStr);
+		emo_printf("script error: %s" NL, errStr);
 	}
 
     if (isTemporary)

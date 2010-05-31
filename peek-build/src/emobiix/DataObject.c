@@ -19,7 +19,7 @@ DataObject *dataobject_new(void)
 	output = (DataObject *)p_malloc(sizeof(DataObject));
 	if (!output)
 	{
-		emo_printf("EMOBIIX: p_malloc(DataObject) returned NULL");
+		emo_printf("EMOBIIX: p_malloc(DataObject) returned NULL" NL);
 		return NULL;
 	}
 	output->data = map_string();
@@ -297,7 +297,7 @@ static void dataobject_debugPrintR(DataObject *dobj, int level)
 
 	emo_printf("DataObject<");
 	if (dobj == NULL) {
-		emo_printf("NULL>\n");
+		emo_printf("NULL>" NL);
 		return;
 	}
 
@@ -324,7 +324,7 @@ static void dataobject_debugPrintR(DataObject *dobj, int level)
 		mapIterator_next(iter);
 		++i;
 	}
-	emo_printf(">\n");
+	emo_printf(">" NL);
 
 	citer = list_begin(dobj->children);
 	while (!listIterator_finished(citer)) {

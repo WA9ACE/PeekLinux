@@ -11,7 +11,7 @@
 #define uthash_free(ptr, size) p_free(ptr)
 
 #undef uthash_fatal
-#define uthash_fatal(msg) emo_printf("HashTable: %s\n", msg)
+#define uthash_fatal(msg) emo_printf("HashTable: %s" NL, msg)
 
 struct HashTableNode_t {
     union {
