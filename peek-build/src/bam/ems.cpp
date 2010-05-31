@@ -26,10 +26,15 @@ This task receive signal and Msg and handle it.
 #include "sysdefs.h"
 #include "bal_os.h"
 #include "bal_def.h"
+#include "balfsiapi.h"
 #include "ems.h"
 #include "bal_socket_api_ti.h"
 #include "bal_def.h"
 #include "msg.h"
+
+#include "markup.h"
+#include "Debug.h"
+#include "p_malloc.h"
 
 /*====================================================================================
 	FUNCTION: EMSMailFunc
@@ -78,13 +83,113 @@ static void TCPSocketCallback(BAL_SOCKET_IND socketInd)
 	}
 }
 
+#define NETWORK_CONFIG "/Peek/peek.cfg"
+
+bool ReadNetworkConfig(char *&apn, char *&user, char *&pass)
+{
+	BalFsiHandleT handle = NULL;
+	BalFsiResultT ret = FSI_ERR_UNKNOWN;
+
+	ret = BalFsiFileOpen(&handle, NETWORK_CONFIG, FSI_FILE_OPEN_READ_EXIST);
+	if (ret != FSI_SUCCESS)
+	{
+		emo_printf("Failed to open file: %s", NETWORK_CONFIG);
+		return false;
+	}
+
+	BalFsiFileAttribT attr;
+	ret = BalFsiGetFileHandleAttrib(handle, &attr);
+	if (ret != FSI_SUCCESS)
+	{
+		emo_printf("Failed to get attributes for file: %s", NETWORK_CONFIG);
+		BalFsiFileClose(handle);
+		return false;
+	}
+
+	CMarkup markup;
+	uint32 nLen = attr.Size;
+	char *contents = (char *)p_malloc((nLen + 2) * sizeof(char));
+	memset(contents, 0, nLen + 2);
+
+	ret = BalFsiFileRead(contents, 1, &nLen, handle);
+	if (ret != FSI_SUCCESS)
+	{
+		emo_printf("Failed to read from file: %s", NETWORK_CONFIG);
+		BalFsiFileClose(handle);
+		p_free(contents);
+		return false;
+	}
+
+	if (!markup.LoadFromString(contents))
+	{
+		emo_printf("Failed to parse file: %s", NETWORK_CONFIG);
+		p_free(contents);
+		BalFsiFileClose(handle);
+		return false;
+	}
+
+	markup.ResetPos();
+	if (markup.FindElem("Peek"))
+	{
+		if (markup.FindChildElem("apn"))
+		{
+			const char *str = markup.GetChildData();
+			apn = (char *)p_malloc(strlen(str) + 1);
+			strcpy(apn, str);
+		}
+		else
+			emo_printf("Failed to find apn in %s", NETWORK_CONFIG);
+
+		if (markup.FindChildElem("username"))
+		{
+			const char *str = markup.GetChildData();
+			user = (char *)p_malloc(strlen(str) + 1);
+			strcpy(user, str);
+		}
+		else
+			emo_printf("Failed to find username in %s", NETWORK_CONFIG);
+
+		if (markup.FindChildElem("password"))
+		{
+			const char *str = markup.GetChildData();
+			pass = (char *)p_malloc(strlen(str) + 1);
+			strcpy(pass, str);
+		}
+		else
+			emo_printf("Failed to find password in %s", NETWORK_CONFIG);
+	}
+	else
+	{
+		emo_printf("Malformed config file: %s", NETWORK_CONFIG);
+	}
+
+	p_free(contents);
+	BalFsiFileClose(handle);
+	return true;
+}
+
 void EMSInitFunc(void) 
 {
 	bal_printf("ANDREY::EMSInitFun(): Initializing network...");
 
 	// initialize the network connection
-	bal_set_profile("wap.cingular", "WAP@CINGULARGPRS.COM", "CINGULAR1");
-	bal_set_network_cb((BAL_NETWORK_CB)TCPSocketCallback);
+	char *apn = NULL, *user = NULL, *pass = NULL;
+	if (!ReadNetworkConfig(apn, user, pass))
+		return;
+
+	if (apn && user && pass)
+	{
+		//bal_set_profile("wap.cingular", "WAP@CINGULARGPRS.COM", "CINGULAR1");
+		bal_set_profile(apn, user, pass);
+		bal_set_network_cb((BAL_NETWORK_CB)TCPSocketCallback);
+	}
+	else
+		emo_printf("Failed to get network info from config %s, apn: %s, user: %s, pass: %s", 
+			NETWORK_CONFIG, apn ? apn : "NULL", user ? user : "NULL", pass ? pass : "NULL");
+
+	if (apn) p_free(apn);
+	if (user) p_free(user);
+	if (pass) p_free(pass);
 }
 
 void EMSMailFunc(uint32 MsgId, void* MsgDataP, uint32 MsgSize)

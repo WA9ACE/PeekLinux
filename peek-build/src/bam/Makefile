@@ -14,15 +14,14 @@ INCLUDE += $(SRCDIR)/res
 INCLUDE += $(SRCDIR)/baf
 INCLUDE += $(SRCDIR)/bui
 INCLUDE += $(SRCDIR)/bui/uiex
-INCLUDE += $(SRCDIR)/freetype2
-INCLUDE += $(SRCDIR)/freetype2/include
 INCLUDE += $(SRCDIR)/bam
-INCLUDE += $(SRCDIR)/bam/txtblapp
+INCLUDE += $(SRCDIR)/emobiix
 
 SRC  = amdb.cpp
 SRC += amdb_task.cpp
 SRC += emailstask.cpp
 SRC += ems.cpp
+SRC += markup.cpp
 
 TARGET = $(CURDIR)/bam.a
 
