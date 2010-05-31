@@ -12,7 +12,7 @@
 
 /* TODO, handle UTF8 instead of just ascii */
 
-void entryWidget_handleKey(Widget *w, int key, Style *s)
+int entryWidget_handleKey(Widget *w, int key, Style *s)
 {
 	DataObject *dobj;
 	DataObjectField *field;
@@ -21,7 +21,7 @@ void entryWidget_handleKey(Widget *w, int key, Style *s)
 	Rectangle rect;
 
 	if (key == 10 || key == 13 || key == 86 || key == 87)
-		return;
+		return 0;
 
 	dobj = widget_getDataObject(w);
 	field = dataobject_getValue(dobj, "data");
@@ -49,4 +49,5 @@ void entryWidget_handleKey(Widget *w, int key, Style *s)
 	lgui_clip_set(&rect);
 	lgui_push_region();
 	style_renderWidgetTree(s, dataobject_superparent(w));
+	return 1;
 }
