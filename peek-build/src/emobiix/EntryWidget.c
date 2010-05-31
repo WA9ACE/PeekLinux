@@ -48,6 +48,7 @@ int entryWidget_handleKey(Widget *w, int key, Style *s)
 	widget_getClipRectangle(w, &rect);
 	lgui_clip_set(&rect);
 	lgui_push_region();
+	widget_markDirty(w);
 	style_renderWidgetTree(s, dataobject_superparent(w));
 	return 1;
 }
