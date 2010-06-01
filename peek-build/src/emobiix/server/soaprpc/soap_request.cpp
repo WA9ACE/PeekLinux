@@ -11,12 +11,12 @@ namespace emobiix
 namespace soap_request
 {
 
-bool get_authentication(const std::string& uri, const std::string& user, const std::string& pass) 
+bool GetAuthentication(const std::string& uri, const std::string& devId, const std::string& user, const std::string& pass) 
 { 
 	struct soap *s = soap_new();
 
 	bool isAuth = false;
-	int ret = soap_call_ns__AuthenticationRequest(s, uri.c_str(), NULL, const_cast<char *>(user.c_str()), const_cast<char *>(pass.c_str()), isAuth);
+	int ret = soap_call_ns__AuthenticationRequest(s, uri.c_str(), NULL, const_cast<char *>(devId.c_str()), const_cast<char *>(user.c_str()), const_cast<char *>(pass.c_str()), isAuth);
 
  	soap_end(s);
 	soap_free(s); 
@@ -24,7 +24,7 @@ bool get_authentication(const std::string& uri, const std::string& user, const s
 	return isAuth;
 }
 
-int get_blockDataObject(const std::string& uri, const std::string& id, std::string& mime, vector<pair<size_t, unsigned char *> >& blockData)
+int GetBlockDataObject(const std::string& uri, const std::string& id, std::string& mime, vector<pair<size_t, unsigned char *> >& blockData)
 {
 	struct soap *s = soap_new();
 
@@ -57,15 +57,17 @@ int get_blockDataObject(const std::string& uri, const std::string& id, std::stri
 	mime = raw.getMime();
 
  	soap_end(s);
+	soap_free(s); 
+
 	return 1;
 }
 
-int get_recordDataObject(const std::string& uri, int id, std::vector<char *>& recordData)
+int GetRecordDataObject(const std::string& uri, int id, std::vector<char *>& recordData)
 {
 	return 1;
 }
 
-int get_textDataObject(const std::string& uri, int id, char*& textData)
+int GetTextDataObject(const std::string& uri, int id, char*& textData)
 {
 	struct soap *s = soap_new();
 
@@ -78,7 +80,7 @@ int get_textDataObject(const std::string& uri, int id, char*& textData)
 	return ret;
 }
 
-int get_treeDataObject(const std::string& uri, const std::string& id, std::string& treeData)
+int GetTreeDataObject(const std::string& uri, const std::string& id, std::string& treeData)
 {
 	struct soap *s = soap_new();
 

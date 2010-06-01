@@ -13,7 +13,7 @@ int main()
    return c.serve(); // calls soap_serve to serve as CGI application (using stdin/out)
 }
 
-int ns__AuthenticationRequest(struct soap* soap, xsd__string user, xsd__string password, bool &isAuthenticated)
+int ns__AuthenticationRequest(struct soap* soap, xsd__string devId, xsd__string user, xsd__string password, bool &isAuthenticated)
 {
 	cerr << "Received authentication request for [" << user << "], [" << password << "]" << endl;
 

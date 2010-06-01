@@ -119,8 +119,12 @@ void request_handler::handle_protocolHandshake(FRIPacketP*, reply& rep)
 
 void request_handler::handle_authRequest(FRIPacketP*, reply& rep)
 {
+	DEBUGLOG("Received authentication request");
+
 	//	rep.packet->packetTypeP.present = packetTypeP_PR_authResponseP;
 	//	rep.packet.packetType.choice.authResponse = RequestResponse_responseOK;
+	if (soap_request::GetAuthentication("http://linux.emobiix.com:8082/cgi-bin/test.cgi", "deviceId", "username", "password"))
+		return;
 }
 
 void request_handler::handle_authUserPass(FRIPacketP*, reply& rep)
@@ -188,7 +192,7 @@ void request_handler::start_serverSync(reply& rep)
 	rep.packets.push_back(start);
 
 	string treeData;
-	if (!soap_request::get_treeDataObject("http://linux.emobiix.com:8082/cgi-bin/test.cgi", url_request_, treeData))
+	if (!soap_request::GetTreeDataObject("http://linux.emobiix.com:8082/cgi-bin/test.cgi", url_request_, treeData))
 	{
 		ERRORLOG("NO tree data...");
 		return;
@@ -354,7 +358,7 @@ FRIPacketP* request_handler::createImage(DOMNode *node)
 
 	std::string mime;
 	vector<pair<size_t, unsigned char *> > blocks;
-	soap_request::get_blockDataObject("http://linux.emobiix.com:8082/cgi-bin/test.cgi", src, mime, blocks);
+	soap_request::GetBlockDataObject("http://linux.emobiix.com:8082/cgi-bin/test.cgi", src, mime, blocks);
 
 	addStringAttribute(image, "mime-type", mime.c_str());
 	addDataAttribute(image, "src", blocks);
