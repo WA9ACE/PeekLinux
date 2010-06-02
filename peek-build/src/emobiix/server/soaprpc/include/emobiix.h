@@ -70,3 +70,9 @@ int ns__TextDataObjectRequest(
 	ns__Timestamp timestamp, 
 	xsd__string& textData
 );
+
+int ns__DataObjectPushRequest(
+	int id, 
+	xsd__string token,
+	struct ns__DataObjectPushRequestResponse {} *out
+);

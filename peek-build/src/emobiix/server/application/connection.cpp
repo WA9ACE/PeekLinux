@@ -33,6 +33,8 @@ void connection::start()
 	socket_base::keep_alive option(true);
 	socket_.set_option(option);
 
+	DEBUGLOG("Received connection from: " << socket_.remote_endpoint().address().to_string());
+
   socket_.async_read_some(buffer(buffer_), 
 		strand_.wrap(
 			boost::bind(&connection::handle_read, shared_from_this(), 

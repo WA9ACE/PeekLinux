@@ -59,7 +59,7 @@ int GetBlockDataObject(const std::string& uri, const std::string& id, std::strin
  	soap_end(s);
 	soap_free(s); 
 
-	return 1;
+	return ret == SOAP_OK;
 }
 
 int GetRecordDataObject(const std::string& uri, int id, std::vector<char *>& recordData)
@@ -77,7 +77,7 @@ int GetTextDataObject(const std::string& uri, int id, char*& textData)
  	soap_end(s);
 	soap_free(s); 
 
-	return ret;
+	return ret == SOAP_OK;
 }
 
 int GetTreeDataObject(const std::string& uri, const std::string& id, std::string& treeData)
@@ -87,13 +87,13 @@ int GetTreeDataObject(const std::string& uri, const std::string& id, std::string
 	ns__Timestamp ts(1, 5);
 	char *tree = NULL;
 	int ret = soap_call_ns__TreeDataObjectRequest(s, uri.c_str(), NULL, const_cast<char *>(id.c_str()), ts, tree);
-
-	treeData = tree;
+	if (ret == SOAP_OK)
+		treeData = tree;
 
  	soap_end(s);
 	soap_free(s); 
 
-	return 1;
+	return ret == SOAP_OK;
 }
 
 }

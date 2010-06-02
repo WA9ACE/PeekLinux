@@ -6,6 +6,7 @@ INCLUDE += $(GSOAPINC)
 INCLUDE += ./include
 INCLUDE += $(BASEDIR)/protocol
 INCLUDE += $(BASEDIR)/utils/include
+INCLUDE += $(BASEDIR)/soaprpc
 INCLUDE += $(BASEDIR)/soaprpc/include
 
 DEFINE = BOOST_ALL_NO_LIB=1

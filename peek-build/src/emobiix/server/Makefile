@@ -3,9 +3,12 @@ include Makefile.globals
 TARGET=server
 SUBDIR=protocol application utils soaprpc 
 
-INCLUDE  = protocol
-INCLUDE += application/include
+INCLUDE  = $(GSOAPINC)
 INCLUDE += $(BOOSTINC)
+INCLUDE += utils/include
+INCLUDE += protocol
+INCLUDE += application/include
+INCLUDE += soaprpc
 
 DEFINE  = WITH_OPENSSL
 DEFINE += WITH_GZIP
@@ -16,6 +19,7 @@ LIB  = application/application.a
 LIB += protocol/protocol.a
 LIB += utils/utils.a
 LIB += soaprpc/soaprpc.a
+LIB += soaprpc/soapserve.a
 LIB += $(GSOAPLIB)/libgsoapssl++.a -lssl -lcrypto -lz
 LIB += $(BOOSTLIB)/libboost_system.a
 LIB += $(BOOSTLIB)/libboost_thread.a -lpthread
@@ -28,11 +32,14 @@ all: server
 server: $(SUBDIR) $(OBJ)
 	$(CXX) -o $@ $(OBJ) $(LIB) 
 
+application: utils protocol soaprpc
+	$(MAKE) -C $@
+
 protocol soaprpc:
 	$(MAKE) -C $@ prepare
 	$(MAKE) -C $@
 
-application utils:
+utils: 
 	$(MAKE) -C $@
 
 clean: 

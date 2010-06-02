@@ -89,3 +89,9 @@ int ns__TreeDataObjectRequest(struct soap* soap, xsd__string id, ns__Timestamp t
 
 	return SOAP_OK;
 }
+
+int ns__DataObjectPushRequest(struct soap*, int id, char *token, struct ns__DataObjectPushRequestResponse *param)
+{
+	return SOAP_OK;
+}
+
