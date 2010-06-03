@@ -3,11 +3,14 @@
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/asio.hpp>
 
 #include "emobiix_rpc_H.h"
 #include "push_server.h"
 #include "logger.h"
 #include "shared_appdata.h"
+
+using boost::asio::ip::udp;
 
 namespace emobiix
 {
@@ -81,8 +84,14 @@ int ns__DataObjectPushRequest(struct soap*, int id, char *token, struct ns__Data
 	if (!emobiix::shared_appdata::instance().get(token, data))
 		return 404;
 
-	// TODO generate UDP packet to device
-  return SOAP_OK;
+	boost::asio::io_service io_service;
+	udp::socket device(io_service, udp::endpoint(udp::v4(), 0));
+
+	udp::resolver resolver(io_service);
+	udp::resolver::query query(udp::v4(), data.deviceIP, 7);
+
+	device.send_to(boost::asio::buffer("testing 1 2 3"), *resolver.resolve(query));
+	return SOAP_OK;
 }
 
 int ns__AuthenticationRequest(struct soap*, char *devId, char *user, char *pass, bool &isAuthenticated) { return 403; } 
