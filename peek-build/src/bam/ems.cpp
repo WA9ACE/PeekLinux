@@ -32,6 +32,12 @@ This task receive signal and Msg and handle it.
 #include "bal_def.h"
 #include "msg.h"
 
+#include "bal_gprs.h"
+#include "psa.h"
+#include "p_ppp.h"
+#include "cmh.h"
+#include "cmh_sm.h"
+
 #include "markup.h"
 #include "Debug.h"
 #include "p_malloc.h"
@@ -76,7 +82,11 @@ static void TCPSocketCallback(BAL_SOCKET_IND socketInd, void* data)
 	{
 		case BAL_SOCK_IP_ADDR_IND:
 		{
-			emo_printf("Received IP address");
+			T_NAS_ip ip;
+			cmhSM_get_pdp_addr_for_CGPADDR(1, &ip);
+
+			U8 *octets = ip.ip_address.ipv4_addr.a4;
+			emo_printf("Received IP address: %d.%d.%d.%d", octets[0], octets[1], octets[2], octets[3]);
 			flash_led();
 		}
 		break;

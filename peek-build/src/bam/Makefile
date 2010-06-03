@@ -8,6 +8,7 @@ INCLUDE += $(INCDIR)/csw-system/drv_core
 INCLUDE += $(INCDIR)/g23m/condat/com/include
 INCLUDE += $(SRCDIR)/include
 INCLUDE += $(SRCDIR)/bal/ata
+INCLUDE += $(SRCDIR)/bal/gprs
 INCLUDE += $(SRCDIR)/bal/socket
 INCLUDE += $(SRCDIR)/bal
 INCLUDE += $(SRCDIR)/res
