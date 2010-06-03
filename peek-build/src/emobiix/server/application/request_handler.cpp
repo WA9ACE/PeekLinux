@@ -1,13 +1,7 @@
-#include "request_handler.h"
-#include "logger.h"
 #include <fstream>
 #include <sstream>
 #include <string>
 #include <cstdlib>
-
-#include "reply.h"
-#include "request.h"
-#include "soap_request.h"
 
 #include <xercesc/util/PlatformUtils.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
@@ -15,6 +9,13 @@
 #include <xercesc/dom/DOMNodeFilter.hpp>
 #include <xercesc/dom/DOMNodeIterator.hpp>
 #include <xercesc/framework/MemBufInputSource.hpp>
+
+#include "request_handler.h"
+#include "logger.h"
+#include "reply.h"
+#include "request.h"
+#include "soap_request.h"
+#include "shared_appdata.h"
 
 using namespace std;
 
@@ -49,6 +50,11 @@ static std::string GetAttribute(DOMNode* pElem, const char* szAttr)
 request_handler::request_handler(const std::string& app_path)
 	: app_path_(app_path)
 {
+}
+
+request_handler::~request_handler()
+{
+	shared_appdata::instance().remove("IP ADDRESS");
 }
 
 void request_handler::handle_request(request& req, reply& rep)
@@ -123,8 +129,12 @@ void request_handler::handle_authRequest(FRIPacketP*, reply& rep)
 
 	//	rep.packet->packetTypeP.present = packetTypeP_PR_authResponseP;
 	//	rep.packet.packetType.choice.authResponse = RequestResponse_responseOK;
-	if (soap_request::GetAuthentication("http://linux.emobiix.com:8082/cgi-bin/test.cgi", "deviceId", "username", "password"))
+	if (soap_request::GetAuthentication("http://linux.emobiix.com:8082/cgi-bin/test.cgi", "123456", "bob", "torulethemall"))
+	{
+		appdata data = { "123456" };
+		shared_appdata::instance().put("IP ADDRESS", data);
 		return;
+	}
 }
 
 void request_handler::handle_authUserPass(FRIPacketP*, reply& rep)

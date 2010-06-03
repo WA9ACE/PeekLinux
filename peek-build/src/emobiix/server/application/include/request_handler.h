@@ -24,6 +24,8 @@ public:
   /// Construct with a directory containing files to be served.
   explicit request_handler(const std::string& app_path);
 
+	~request_handler();
+
   /// Handle a request and produce a reply.
   void handle_request(request& req, reply& rep);
 

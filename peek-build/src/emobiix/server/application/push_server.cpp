@@ -1,12 +1,13 @@
+#include <vector>
+
 #include <boost/thread.hpp>
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
-#include <vector>
 
 #include "emobiix_rpc_H.h"
-
 #include "push_server.h"
 #include "logger.h"
+#include "shared_appdata.h"
 
 namespace emobiix
 {
@@ -76,6 +77,11 @@ void push_server::stop()
 
 int ns__DataObjectPushRequest(struct soap*, int id, char *token, struct ns__DataObjectPushRequestResponse *param)
 {
+	emobiix::appdata data;
+	if (!emobiix::shared_appdata::instance().get(token, data))
+		return 404;
+
+	// TODO generate UDP packet to device
   return SOAP_OK;
 }
 

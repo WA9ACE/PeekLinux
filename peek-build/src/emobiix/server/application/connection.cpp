@@ -1,8 +1,10 @@
-#include "connection.h"
-#include "logger.h"
 #include <vector>
 #include <iostream>
+
 #include <boost/bind.hpp>
+
+#include "connection.h"
+#include "logger.h"
 #include "request_handler.h"
 
 namespace emobiix {

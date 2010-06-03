@@ -8,8 +8,7 @@
 #include "logger.h"
 #include "server.h"
 #include "push_server.h"
-
-#if !defined(_WIN32)
+#include "shared_appdata.h"
 
 #include <pthread.h>
 #include <signal.h>
@@ -23,6 +22,8 @@ int main(int argc, char* argv[])
       std::cerr << "Usage: " << argv[0] << " <host_name> <devport> <soapport> <threads> <app_path>\n";
       return 1;
     }
+
+		emobiix::shared_appdata::instance();
 
     // Block all signals for background thread.
     sigset_t new_mask;
@@ -68,5 +69,3 @@ int main(int argc, char* argv[])
 
   return 0;
 }
-
-#endif // !defined(_WIN32)
