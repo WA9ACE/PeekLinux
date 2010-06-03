@@ -69,15 +69,44 @@ extern "C" void bal_set_network_cb(BAL_NETWORK_CB);
 extern ExeSemaphoreT *bal_socket_recv_seamphore;
 extern "C" void flash_led();
 
-static void TCPSocketCallback(BAL_SOCKET_IND socketInd)
+static void TCPSocketCallback(BAL_SOCKET_IND socketInd, void* data)
 {
-	bal_printf("ANDREY::Received socket notification: 0x%04x\n", socketInd);
+	emo_printf("ANDREY::Received socket notification: 0x%04x\n", socketInd);
 	switch (socketInd & 0xff)
 	{
-		case BAL_SOCKET_NETWORK_STATUS_IND:
-		case BAL_SOCK_RESUME_IND:
+		case BAL_SOCK_IP_ADDR_IND:
+		{
+			emo_printf("Received IP address");
 			flash_led();
-			break;
+		}
+		break;
+
+		case BAL_SOCK_UDP_DATA_IND:
+		{
+			emo_printf("Received UDP notification, 0x%08x (%s)", data, (data ? (char *)data : ""));
+			flash_led();
+		}
+		break;
+
+		case BAL_SOCK_RESUME_IND:
+		case BAL_SOCKET_NETWORK_STATUS_IND:
+		{
+			emo_printf("Network status change to: %d", (socketInd >> 8) & 0xff);
+			flash_led();
+		}
+		break;
+
+		case BAL_SOCK_NEED_HARD_RESET_IND:
+		{
+			emo_printf("Bad stuff happened! Need reset");
+		}
+		break;
+
+		case BAL_SOCK_TIMEOUT_IND:
+		case BAl_SOCKET_NETWORK_LOST_IND:
+		case BAL_SOCK_CONN_CLOSED_IND:
+		case BAL_SOCK_ERROR_IND:
+		case BAL_SOCK_BAERER_CLOSED_IND:
 		default:
 			break;
 	}

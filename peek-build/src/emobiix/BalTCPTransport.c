@@ -30,9 +30,19 @@ int TCPClose(Endpoint *ep);
 void TCPFree(Endpoint *ep);
 unsigned int TCPSequenceID(Endpoint *ep);
 
-Transport TCPTransport = {TCPSocket, TCPConnect, TCPListen, TCPBind,
-		TCPAccept, TCPWrite, TCPRead, TCPPeek, TCPClose, TCPFree,
-		TCPSequenceID};
+Transport TCPTransport = {
+	TCPSocket, 
+	TCPConnect, 
+	TCPListen, // unused
+	TCPBind, // unused
+	TCPAccept, // unused
+	TCPWrite,
+	TCPRead,
+	TCPPeek,
+	TCPClose,
+	TCPFree,
+	TCPSequenceID
+};
 
 struct TCPEndpoint_t {
 	Transport *transport;
