@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\peek-build\simulator&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\src\emobiix&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\src\emobiix\thirdparty&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\src\bui&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\src\baf\uilifecycle&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\src\freetype2\include&quot;"
+				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\trunk\peek-build\simulator&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\emobiix&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\emobiix\thirdparty&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\bui&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\baf\uilifecycle&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\freetype2\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;SIMULATOR"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -63,9 +63,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="glut32.lib ws2_32.lib libemobiix.lib libprotocol.lib freetype2.lib win32platform.lib"
+				AdditionalDependencies="glut32.lib ws2_32.lib libemobiix.lib libprotocol.lib freetype2.lib win32platform.lib lua.lib libpng.lib libzlib.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;Z:\Documents\emobiix\repo\peek-build\simulator\peek-simulator\Debug&quot;;&quot;z:\Documents\emobiix\repo\peek-build\simulator\GL&quot;"
+				AdditionalLibraryDirectories="&quot;Z:\Documents\emobiix\repo\trunk\peek-build\simulator\peek-simulator\Debug&quot;;&quot;z:\Documents\emobiix\repo\trunk\peek-build\simulator\GL&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"
@@ -119,7 +119,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\peek-build\src\freetype2\include&quot;"
+				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\freetype2\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -140,7 +140,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="glut32.lib ws2_32.lib libemobiix.lib libprotocol.lib freetype2.lib w32platform.lib"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;Z:\Documents\emobiix\repo\peek-build\simulator\GL&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\simulator\peek-simulator\Debug&quot;"
+				AdditionalLibraryDirectories="&quot;Z:\Documents\emobiix\repo\trunk\peek-build\simulator\GL&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\simulator\peek-simulator\Debug&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"

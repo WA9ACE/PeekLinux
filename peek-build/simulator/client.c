@@ -37,8 +37,8 @@ int main(/*@unused@*/ int argc, /*@unused@*/ char **argv)
 
 	dataobject_platformInit();
 
-	url = url_parse("tcp://69.114.111.9:1234/dataobject", URL_ALL);
-	/*url = url_parse("tcp://localhost:2501/dataobject", URL_ALL);*/
+	url = url_parse("tcp://69.114.111.9:12345/dataobject", URL_ALL);
+	/*url = url_parse("tcp://localhost:1234/dataobject", URL_ALL);*/
 
     transport = transport_get(url->scheme);
     if (transport == NULL) {

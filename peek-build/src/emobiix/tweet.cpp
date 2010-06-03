@@ -353,9 +353,9 @@ int tweetInit(void)
 #endif
 	defaultStyle = style_new();
 	greenStyle = style_new();
-	style_setProperty(defaultStyle, NULL, NULL, "image",
+	style_setProperty(defaultStyle, NULL, "image", NULL,
 			"renderer", (void *)widgetrenderer_image());
-	style_setProperty(greenStyle, NULL, NULL, "image",
+	style_setProperty(greenStyle, NULL, "image", NULL,
 			"renderer", (void *)widgetrenderer_image());
 	color.value = 0x000000FF;
 	style_setProperty(defaultStyle, NULL, "image", NULL,

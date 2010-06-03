@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\peek-build\simulator\libprotocol\asn1c-files&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\src\emobiix\protocol&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\src\emobiix&quot;"
+				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\trunk\peek-build\simulator\libprotocol\asn1c-files&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\emobiix\protocol&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\emobiix&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;SIMULATOR;EMIT_ASN_DEBUG=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -61,9 +61,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ws2_32.lib libprotocol.lib libemobiix.lib"
+				AdditionalDependencies="ws2_32.lib libprotocol.lib libemobiix.lib freetype2.lib lua.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;Z:\Documents\emobiix\repo\peek-build\simulator\peek-simulator\Debug&quot;"
+				AdditionalLibraryDirectories="&quot;Z:\Documents\emobiix\repo\trunk\peek-build\simulator\peek-simulator\Debug&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="1"
 				TargetMachine="1"

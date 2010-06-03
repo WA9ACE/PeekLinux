@@ -21,7 +21,6 @@ static Rectangle clip_stack[CLIP_STACK_SIZE];
 static short clip_index = 0;
 #define CLIP clip_stack[clip_index]
 
-#define RGB_TO_565(r,g,b) (((r << 8) & 0xF800) | ((g << 3) & 0x7E0) | ((b >> 3) & 0x1F))
 #define SCALE_PIXEL(scale, r, g, b) ((( (((unsigned short)(r))*scale/255) << 8) & 0xF800) | \
 	(((((unsigned short)(g))*scale/255) << 3) & 0x7E0) | \
 	(((((unsigned short)(b))*scale/255) >> 3) & 0x1F))
@@ -326,6 +325,53 @@ void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
                     *buf = pixel;
             ++buf;
             imgbuf +=2;
+        }
+        ++ypos;
+        ++imgypos;
+    }
+}
+
+void lgui_blitRGB565A8(int destx, int desty, int imgx, int imgy,
+        int imgwidth, int imgheight, unsigned char *img)
+{
+    unsigned short *buf;
+    unsigned char *imgbuf;
+    unsigned short pixel;
+    int line, col, ypos, imgypos;
+	int cline, cwidth, ccol, cheight;
+	Rectangle rect;
+	
+	ypos = desty;
+	imgypos = imgy;
+	
+	rect.x = destx;
+	rect.y = desty;
+	rect.width = imgwidth;
+	rect.height = imgheight;
+	if (lgui_clip_rect(&rect, &ccol, &cline, &cwidth, &cheight) == 0)
+		return;
+
+	lgui_set_dirty();
+
+	ypos += cline;
+	imgypos += cline;
+    for (line = cline; line < cheight; ++line) {
+        if (ypos < 0 || ypos >= LGUI_HEIGHT) {
+            ++ypos;
+            ++imgypos;
+            continue;
+        }
+        buf = lgui_buffer + destx + ypos*LGUI_WIDTH;
+        imgbuf = img + imgx + imgypos*imgwidth*3;
+
+		buf += ccol;
+		imgbuf += ccol *3;
+        for (col = ccol; col < cwidth; ++col) {
+                pixel = *((unsigned short *)(imgbuf));
+                /*if (pixel > 0)*/
+                    *buf = pixel;
+            ++buf;
+            imgbuf +=3;
         }
         ++ypos;
         ++imgypos;

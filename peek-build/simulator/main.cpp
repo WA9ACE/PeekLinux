@@ -2,6 +2,8 @@
 #include "lgui.h"
 #include "tweet.h"
 #include "buikeymap.h"
+#include "Platform.h"
+#include "ConnectionContext.h"
 
 #include <GL/glut.h>
 #include <stdio.h>
@@ -9,7 +11,9 @@
 
 #define GL_UNSIGNED_SHORT_5_6_5           0x8363
 
+extern "C" {
 unsigned char screenBuf[320*240*2];
+}
 
 void recv_sms(void)
 {
@@ -17,7 +21,7 @@ void recv_sms(void)
 }
 
 void processKeys(unsigned char key, int x, int y) {
-
+#if 0
 	if (key == 'a') {
 		tweetKey(KP_WHEEL_UP);
 	} else
@@ -39,6 +43,7 @@ void processKeys(unsigned char key, int x, int y) {
 	if (key == '3') {
 		tweetKey(KP_3_KEY);
 	} else
+#endif
 	if (key == 27) 
 		exit(0);
 	else
@@ -55,9 +60,9 @@ void drawGUI(void)
 		lgui_attach(screenBuf);
 		tweetInit();
 		initd = 1;
+		tweetDrawScreen();
+		//glutPostRedisplay();
 	}
-	tweetDrawScreen();
-	glutPostRedisplay();
 }
 
 void processMouse(int button, int state, int x, int y) 
@@ -65,27 +70,64 @@ void processMouse(int button, int state, int x, int y)
     // Used for wheels, has to be up
 	if (state == GLUT_UP )
 	{
-		printf("Button is %d\n", button);
+		if (button == 0) {
+			tweetKey(87);
+		} else if (button == 2) {
+			tweetKey(86);
+		}
 	}
+	tweetDrawScreen();
+	glutPostRedisplay();
 }
 
+static unsigned char glBuffer[320*240*2];
 void
 display(void)
 {
-  int errcode;
-  glClear(GL_COLOR_BUFFER_BIT);
-  errcode = glGetError(); if (errcode != 0) fprintf(stderr, "Error Code %x at %d\n", errcode, __LINE__);
-  drawGUI();
-  errcode = glGetError(); if (errcode != 0) fprintf(stderr, "Error Code %x at %d\n", errcode, __LINE__);
-  glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-  errcode = glGetError(); if (errcode != 0) fprintf(stderr, "Error Code %x at %d\n", errcode, __LINE__);
-  glPixelZoom(1.0f, -1.0f);
-  errcode = glGetError(); if (errcode != 0) fprintf(stderr, "Error Code %x at %d\n", errcode, __LINE__);
-  glRasterPos2i(-1, 1);
-  errcode = glGetError(); if (errcode != 0) fprintf(stderr, "Error Code %x at %d\n", errcode, __LINE__);
-  glDrawPixels(320, 240, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, screenBuf);
-  errcode = glGetError(); if (errcode != 0) fprintf(stderr, "Error Code %x at %d\n", errcode, __LINE__);
-  glutSwapBuffers();
+	glClear(GL_COLOR_BUFFER_BIT);
+	drawGUI();
+	
+	//fprintf(stderr, "in display\n");
+
+	if (!lgui_is_dirty())
+		goto show_prev_screen;
+
+	//fprintf(stderr, "in blit\n");
+
+	// we really use glBuffer to make sure drawing works properly
+	int index, upper;
+	upper = lgui_index_count();
+	if (upper == 0) {
+		memcpy(glBuffer, screenBuf, 320*240*2);
+	} else {
+		Rectangle *rect;
+		for (index = 0; index < upper; ++index) {
+			rect = lgui_get_region(index);
+
+			for (int ypos = 0; ypos < rect->height; ++ypos) {
+				memcpy(glBuffer + rect->x*2 + (rect->y+ypos)*320*2,
+						screenBuf + rect->x*2 + (rect->y+ypos)*320*2,
+						rect->width*2);
+			}
+		}
+	}
+
+show_prev_screen:
+	glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+	glPixelZoom(1.0f, -1.0f);
+	glRasterPos2i(-1, 1);
+	glDrawPixels(320, 240, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glBuffer);
+	glutSwapBuffers();
+	lgui_blit_done();
+}
+
+extern "C" void main_test(void);
+
+extern "C" {
+void net_thread(void *d)
+{
+	main_test();
+}
 }
 
 int
@@ -98,6 +140,8 @@ main(int argc, char **argv)
   glutDisplayFunc(display);
   glutKeyboardFunc(processKeys);
   glutMouseFunc(processMouse);
+
+  thread_run(net_thread, NULL);
 
   glutMainLoop();
   return 0;            

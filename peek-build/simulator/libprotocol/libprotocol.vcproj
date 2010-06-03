@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\peek-build\src\emobiix\protocol&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\simulator\libprotocol\asn1c-files&quot;"
+				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\emobiix\protocol&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\simulator\libprotocol\asn1c-files&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;EMIT_ASN_DEBUG_not"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -105,7 +105,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\peek-build\src\emobiix\protocol&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\simulator\libprotocol\asn1c-files&quot;"
+				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\emobiix\protocol&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\simulator\libprotocol\asn1c-files&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -175,11 +175,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\emobiix\protocol\DataObjectSyncP.c"
+				RelativePath="..\..\src\emobiix\protocol\DataObjectSyncFinishP.c"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\emobiix\protocol\DataObjectSyncFinishP.c"
+				RelativePath="..\..\src\emobiix\protocol\DataObjectSyncP.c"
 				>
 			</File>
 			<File
@@ -204,10 +204,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\emobiix\protocol\ProtocolVersionP.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\emobiix\protocol\URLP.c"
 				>
 			</File>
 			<File
@@ -242,6 +238,10 @@
 				RelativePath="..\..\src\emobiix\protocol\SyncOperationP.c"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\emobiix\protocol\URLP.c"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -273,11 +273,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\emobiix\protocol\DataObjectSyncP.h"
+				RelativePath="..\..\src\emobiix\protocol\DataObjectSyncFinishP.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\emobiix\protocol\DataObjectSyncFinishP.h"
+				RelativePath="..\..\src\emobiix\protocol\DataObjectSyncP.h"
 				>
 			</File>
 			<File
@@ -302,10 +302,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\emobiix\protocol\ProtocolVersionP.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\emobiix\protocol\URLP.h"
 				>
 			</File>
 			<File
@@ -338,6 +334,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\emobiix\protocol\SyncOperationP.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\protocol\URLP.h"
 				>
 			</File>
 		</Filter>

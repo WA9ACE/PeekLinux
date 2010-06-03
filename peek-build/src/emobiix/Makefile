@@ -58,6 +58,7 @@ SRC += EntryWidget.c
 SRC += Script.c
 SRC += ProtocolUtils.c
 SRC += Debug.c
+SRC += Mime.c
 
 TARGET = $(CURDIR)/emobiix.a
 SOCKET_SIM = $(CURDIR)/socket_sim.a

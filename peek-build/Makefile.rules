@@ -29,9 +29,7 @@ STR2IND_C   = $(BUILDDIR)/trace/str2ind.c
 .SUFFIXES: .o .pp .c .cpp .pp_ .d
 
 ## TODO Dependency checking!
-#ifneq ($(MAKECMDGOALS),clean)
 #-include $(DEPS)
-#endif
 
 ## TODO Split into targets? note, -fp / -fc is required to differentiate c/c++
 

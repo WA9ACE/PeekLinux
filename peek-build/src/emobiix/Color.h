@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-typedef enum {RGB565, RGB, RGBA, A8, A4, A4RGB565} PixelFormat;
+typedef enum {RGB565, RGB, RGBA, A8, A4, RGB565A8} PixelFormat;
 
 union Color_t {
 	unsigned int value;

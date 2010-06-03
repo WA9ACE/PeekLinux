@@ -27,7 +27,7 @@ Semaphore *semaphore_create(int initialValue)
 
 	output->sem = CreateSemaphore(NULL, initialValue, 255, NULL);
 	if (output->sem == NULL) {
-		p_free(output, sizeof(Semaphore));
+		p_free(output);
 		return NULL;
 	}
 

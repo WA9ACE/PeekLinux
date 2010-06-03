@@ -1,12 +1,11 @@
 #include "ConnectionContext.h"
 
-
-
 #include "Map.h"
 #include "DataObject.h"
 #include "List.h"
 #include "Widget.h"
 #include "Debug.h"
+#include "Mime.h"
 
 #include "Style.h"
 extern Style *currentStyle;
@@ -424,6 +423,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 				dataobject_setState(sreq->dobj, DOS_OK);
 				widget_resolveLayout(sreq->dobj, currentStyle);
 				widget_markDirty(sreq->dobj);
+				mime_loadAll(sreq->dobj);
 			}
 			break;
 		case packetTypeP_PR_NOTHING:

@@ -41,8 +41,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\peek-build\simulator\libprotocol\asn1c-files&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\src\emobiix\protocol&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\src\freetype2\include&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\src\emobiix\thirdparty&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\src\emobiix&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\simulator&quot;"
-				PreprocessorDefinitions="SIMULATOR;WIN32;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\libpng&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\lua&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\simulator\libprotocol\asn1c-files&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\emobiix\protocol&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\freetype2\include&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\emobiix\thirdparty&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\emobiix&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\simulator&quot;"
+				PreprocessorDefinitions="SIMULATOR;WIN32;_CRT_SECURE_NO_WARNINGS;NOGDI"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -61,6 +61,8 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
+				AdditionalDependencies="libpng.lib libzlib.lib"
+				AdditionalLibraryDirectories="&quot;Z:\Documents\emobiix\repo\trunk\peek-build\simulator\peek-simulator\Debug&quot;"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -105,8 +107,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\peek-build\simulator\libprotocol\asn1c-files&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\src\emobiix\protocol&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\src\freetype2\include&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\src\emobiix\thirdparty&quot;;&quot;Z:\Documents\emobiix\repo\peek-build\src\emobiix&quot;"
-				PreprocessorDefinitions="SIMULATOR;WIN32;_CRT_SECURE_NO_WARNINGS"
+				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\trunk\peek-build\simulator\libprotocol\asn1c-files&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\emobiix\protocol&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\freetype2\include&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\emobiix\thirdparty&quot;;&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\emobiix&quot;"
+				PreprocessorDefinitions="SIMULATOR;WIN32;_CRT_SECURE_NO_WARNINGS;NOGDI"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
@@ -189,11 +191,23 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\DataObject_private.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\DataObjectMap.h"
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\Debug.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\emobiix_font.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\EntryWidget.h"
 				>
 			</File>
 			<File
@@ -245,6 +259,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\Mime.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\NetworkTask.h"
 				>
 			</File>
@@ -269,6 +287,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\ProtocolUtils.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\pstdint.h"
 				>
 			</File>
@@ -281,6 +303,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\Script.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\SortedList.h"
 				>
 			</File>
@@ -290,6 +316,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\emobiix\Style.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\Style_internal.h"
 				>
 			</File>
 			<File
@@ -322,6 +352,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\emobiix\Widget.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\Widget_internal.h"
 				>
 			</File>
 			<File
@@ -369,7 +403,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\Debug.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\emobiix_font.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\EntryWidget.c"
 				>
 			</File>
 			<File
@@ -385,6 +427,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\KeyHandler.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\lgui.c"
 				>
 			</File>
@@ -394,6 +440,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\emobiix\Map.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\Mime.c"
 				>
 			</File>
 			<File
@@ -409,7 +459,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\ProtocolUtils.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\Rectangle.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\Script.c"
 				>
 			</File>
 			<File

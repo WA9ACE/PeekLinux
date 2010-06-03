@@ -10,7 +10,7 @@
 			>
 			<DebugSettings
 				Command="$(TargetPath)"
-				WorkingDirectory="Z:\Documents\emobiix\repo\peek-build\simulator\peek-simulator\dist"
+				WorkingDirectory="Z:\Documents\emobiix\repo\trunk\peek-build\simulator\peek-simulator\dist"
 				CommandArguments=""
 				Attach="false"
 				DebuggerType="3"

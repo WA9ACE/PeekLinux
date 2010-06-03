@@ -1,8 +1,8 @@
 include Makefile.globals
 
-TARGET    = $(BUILDDIR)/peek.bin
+VIN=
 
-MOTOROLA  = $(BUILDDIR)/rel_n5_camera_micron_vin_merge.m0
+TARGET    = $(BUILDDIR)/rel_n5_camera_micron_vin_merge.m0
 TARGETOUT = $(BUILDDIR)/rel_n5_camera_micron_vin_merge.out
 
 LINKOUT  = $(BUILDDIR)/rel_n5_camera_micron_vin.out
@@ -12,7 +12,6 @@ LINKCMD  = $(BUILDDIR)/rel_n5_camera_micron_vin.cmd
 BASEBAND = $(BASEDIR)/cert/drp_fw.out 
 
 CMD_TOOL = $(BASEDIR)/tools/make_cmd.pl
-EXTRACT  = $(BASEDIR)/tools/extractBin.sh
 
 LCFSRC     = $(BASEDIR)/tools/lcfgen.c
 CMD_OPT_PP = $(BUILDDIR)/lcfgen.pp
@@ -143,34 +142,30 @@ SUBDIRS = src
 
 all: $(TARGET)
 
-$(TARGET): $(MOTOROLA)
-	$(EXTRACT) $(MOTOROLA) $@
-
-$(MOTOROLA): $(TARGETOUT)
-	$(HEX) $(HEXFLAGS) -o $@ $(TARGETOUT)
+$(TARGET): $(TARGETOUT)
+	$(subst /cygdrive/c,C:,$(HEX) $(HEXFLAGS) -o $@ $(TARGETOUT))
 
 $(TARGETOUT): $(LINKOUT)
-	$(MERGE) $(LINKOUT) $(BASEBAND) $@
+	$(subst /cygdrive/c,C:,$(MERGE) $(LINKOUT) $(BASEBAND) $@)
 
 $(LINKOUT) $(LINKMAP): $(SUBDIRS) $(LINKCMD)
-	$(LD) $(LDFLAGS) -o $@ -m $(LINKMAP) $(LINKCMD) $(LINK_OBJ)
+	$(subst /cygdrive/c,C:,$(LD) $(LDFLAGS) -o $@ -m $(LINKMAP) $(LINKCMD) $(LINK_OBJ))
 
 $(LINKCMD): $(CMD_MAP) $(CMD_OPT_PP)
-	$(PERL) $(CMD_TOOL) $(CMD_OPT_PP) $@ 3 $(CMD_MAP)
+	$(subst /cygdrive/c,C:,$(PERL) $(CMD_TOOL) $(CMD_OPT_PP) $@ 3 $(CMD_MAP))
 
 $(CMD_OPT_PP): $(LCFSRC)
-	$(CC) -ppl $(CFLAGS) $<
+	$(subst /cygdrive/c,C:,$(CC) -ppl $(CFLAGS) $<)
 	$(MV) $(patsubst %.c,%.pp,$(LCFSRC)) $(CMD_OPT_PP)
 
 $(SUBDIRS):
-	$(MAKE) -C $@ $(MAKECMDGOALS)
+	$(MAKE) -C $@
 
-clean: $(SUBDIRS)
+clean:
 	$(RM) $(TARGET)
-	$(RM) $(MOTOROLA)
 	$(RM) $(TARGETOUT)
 	$(RM) $(LINKOUT)
 	$(RM) $(LINKMAP)
 	$(RM) $(LINKCMD)
 	$(RM) $(CMD_OPT_PP)
-#	$(MAKE) -C src clean
+	$(MAKE) -C src clean

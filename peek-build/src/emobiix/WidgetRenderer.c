@@ -27,6 +27,10 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 			lgui_blitRGB565(box->x+margin->x, box->y+margin->y,
 					0, 0, width, height, data);
 			break;
+		case RGB565A8:
+			lgui_blitRGB565A8(box->x+margin->x, box->y+margin->y,
+					0, 0, width, height, data);
+			break;
 		case A4:
 			c.value = (unsigned int)style_getProperty(s, NULL, "image", NULL, "color");
 			lgui_luminence_A4_blitC(box->x+margin->x, box->y+margin->y, 0, 0,
@@ -40,8 +44,25 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 static void image_measure(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj, IPoint *output)
 {
-	output->x = (int)dataobject_getValue(dobj, "width")->field.integer;
-	output->y = (int)dataobject_getValue(dobj, "height")->field.integer;
+	DataObjectField *field;
+
+	field = dataobject_getValue(dobj, "width");
+	if (field == NULL || field->type != DOF_INT) {
+		emo_printf("width field not an int" NL);
+		output->x = 0;
+		output->y = 0;
+		return;
+	}
+	output->x = field->field.integer;
+
+	field = dataobject_getValue(dobj, "height");
+	if (field == NULL || field->type != DOF_INT) {
+		emo_printf("height field not an int" NL);
+		output->x = 0;
+		output->y = 0;
+		return;
+	}
+	output->y = field->field.integer;
 }
 
 WidgetRenderer *widgetrenderer_image(void)

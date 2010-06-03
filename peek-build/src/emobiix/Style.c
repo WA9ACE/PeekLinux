@@ -3,6 +3,7 @@
 #include "Map.h"
 #include "List.h"
 #include "WidgetRenderer.h"
+#include "Debug.h"
 
 #include "p_malloc.h"
 
@@ -18,7 +19,7 @@ static void makekey(char *key, const char *className, const char *id,
 		const char *type, const char *lvalue)
 {
 	snprintf(key, KEY_LEN, "%s-%s-%s-%s",
-		NULL, /*className == NULL ? "" : className,*/
+		"", /*className == NULL ? "" : className,*/
 		id == NULL ? "" : id,
 		type == NULL ? "" : type,
 		lvalue == NULL ? "" : lvalue);

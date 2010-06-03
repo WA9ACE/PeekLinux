@@ -10,6 +10,8 @@
 extern "C" {
 #endif
 
+#define RGB_TO_565(r,g,b) (((((unsigned short)r) << 8) & 0xF800) | ((((unsigned short)g) << 3) & 0x7E0) | ((((unsigned short)b) >> 3) & 0x1F))
+
 void lgui_attach(void *buf);
 void lgui_clear(unsigned char pixel);
 
@@ -47,6 +49,8 @@ void lgui_luminence_A4_blitC(int destx, int desy, int imgx, int imgy,
 		int imgdx, int imgdy, int imgwidth, int imgheight, unsigned char *img,
 		Color c);
 void lgui_blitRGB565(int destx, int desy, int imgx, int imgy,
+	 	int imgwidth, int imgheight, unsigned char *img);
+void lgui_blitRGB565A8(int destx, int desy, int imgx, int imgy,
 	 	int imgwidth, int imgheight, unsigned char *img);
 void lgui_black_alpha_blitRGB(int destx, int desy, int imgx, int imgy,
 	 	int imgwidth, int imgheight, unsigned char *img);
