@@ -98,7 +98,7 @@ bool CMarkup::SetDoc( const char* szDoc )
 
 	m_strError.empty();
 	return true;
-	return x_ParseDoc();
+	//return x_ParseDoc();
 }
 
 bool CMarkup::IsWellFormed()

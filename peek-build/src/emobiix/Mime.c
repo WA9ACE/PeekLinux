@@ -185,7 +185,6 @@ static int load_png(DataObject *dobj)
             png_destroy_read_struct(&pngPtr, &infoPtr, (png_infopp)NULL);
             emo_printf("Colour type not supported in PNG" NL);
             return 0;
-            break;
     }
 
 	/*
@@ -306,3 +305,4 @@ static unsigned char *imageConvert(void *input, int inputFormat, int outputForma
 	return output;
 
 }
+

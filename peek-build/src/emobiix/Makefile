@@ -13,6 +13,8 @@ INCLUDE += $(SRCDIR)/emobiix/thirdparty
 INCLUDE += $(SRCDIR)/lua
 INCLUDE += $(SRCDIR)/bui
 INCLUDE += $(SRCDIR)/freetype2/include
+INCLUDE += $(SRCDIR)/libpng
+INCLUDE += $(SRCDIR)/zlib
 INCLUDE += $(SRCDIR)/emobiix/protocol
 
 SRC  = Application.c
