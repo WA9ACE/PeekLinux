@@ -7,7 +7,7 @@
 
 static DataObject* SYSTEM_BATTERY;
 
-static void system_battery_set_battery_level(uint8 level)
+static void system_battery_set_battery_level(uint32 level)
 {
 	if (!SYSTEM_BATTERY)
 		return;
@@ -16,7 +16,7 @@ static void system_battery_set_battery_level(uint8 level)
 	dataobject_setValue(SYSTEM_BATTERY, "battery-level", dataobjectfield_uint(level));
 }
 
-static void system_battery_set_charge_state(uint8 state)
+static void system_battery_set_charge_state(uint32 state)
 {
 	if (!SYSTEM_BATTERY)
 		return;
@@ -31,13 +31,13 @@ static void system_battery_callback(RegIdT RegId, uint32 MsgId, void* MsgBufferP
 	{
 		case BAL_BATT_CHARGE_STATE:
 		{
-			system_battery_set_charge_state((uint8)MsgBufferP);
+			system_battery_set_charge_state((uint32)MsgBufferP);
 		}
 		break;
 
 		case BAL_BATT_CAPACITY:
 		{
-			system_battery_set_battery_level((uint8)MsgBufferP);
+			system_battery_set_battery_level((uint32)MsgBufferP);
 		}
 		break;
 		
