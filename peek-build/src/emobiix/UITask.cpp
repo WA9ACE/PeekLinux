@@ -16,6 +16,7 @@
 
 extern "C" {
 #include "bal_socket_api_ti.h"
+#include "system_battery.h"
 
 unsigned char *screenBuf; //[320*240*2];
 void updateScreen(void);
@@ -50,8 +51,9 @@ static int UIInit(void)
         LcdWakeUp();
 //#ifndef EMO_SIM
         BalLightInit();
+
         BalLcdScreenOn();
-//#else 
+
 // 	extern void main_test();
 //	main_test();
 
@@ -70,6 +72,8 @@ static int UIInit(void)
 	systemApplication = application_new(systemAppObject);
 	application_setActive(systemApplication);
 	*/
+	dataobject_platformInit();
+	system_battery_init();
 
 	return 1;
 }
@@ -94,7 +98,6 @@ static int UIWaitForActivity(void)
 
 	if (!hasConnected)
 	{
-		dataobject_platformInit();
 		url = url_parse("tcp://69.114.111.9:12345/dataobject", URL_ALL);
 
 		transport = transport_get(url->scheme);

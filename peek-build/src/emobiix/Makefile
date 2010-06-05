@@ -61,6 +61,7 @@ SRC += Script.c
 SRC += ProtocolUtils.c
 SRC += Debug.c
 SRC += Mime.c
+SRC += system_battery.c
 
 TARGET = $(CURDIR)/emobiix.a
 SOCKET_SIM = $(CURDIR)/socket_sim.a
