@@ -123,3 +123,4 @@ void protocol_authResponse(AuthResponseP_t *p, long response)
 {
 	*p = response;
 }
+

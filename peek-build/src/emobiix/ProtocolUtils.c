@@ -67,3 +67,4 @@ char *OCTET_STRING_to_string(OCTET_STRING_t *o)
 
 	return tmpstr;
 }
+

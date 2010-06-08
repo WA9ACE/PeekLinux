@@ -14,6 +14,8 @@ extern Style *currentStyle;
 
 #include "p_malloc.h"
 
+#include "balimeiapi.h"
+
 static const int CCTX_BUFLEN = 4096;
 
 struct SyncRequest_t {
@@ -721,8 +723,12 @@ static void connectionContext_processAuthRequest(ConnectionContext *ctx,
 
 static void connectionContext_authUserPass(ConnectionContext *ctx)
 {
+	static char deviceImei[IMEI_LEN + 1] = { 0 };
 	FRIPacketP_t packet;
 	AuthUserPassP_t *p;
+
+	if (!deviceImei[0])
+		BalGetImei(deviceImei);
 
 	packet.packetTypeP.present = packetTypeP_PR_authUserPassP;
 	p = &packet.packetTypeP.choice.authUserPassP;
@@ -730,7 +736,7 @@ static void connectionContext_authUserPass(ConnectionContext *ctx)
 	protocol_authUserPass(p, "peek", "peek123");
 
 	/* add our extras */
-	protocol_autUserPassExtra(p, "IMEI", "300000000000000");
+	protocol_autUserPassExtra(p, "IMEI", deviceImei);
 	protocol_autUserPassExtra(p, "IP", "192.168.1.1");
 
 	emo_printf("Sending auth user pass" NL);
@@ -764,3 +770,4 @@ static void connectionContext_processAuthResponse(ConnectionContext *ctx,
 		emo_printf("Auth not OK with: %d" NL, *p);
 	}
 }
+

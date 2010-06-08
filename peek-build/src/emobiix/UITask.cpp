@@ -98,7 +98,7 @@ static int UIWaitForActivity(void)
 
 	if (!hasConnected)
 	{
-		url = url_parse("tcp://69.114.111.9:12345/dataobject", URL_ALL);
+		url = url_parse("tcp://10.150.9.6:12345/dataobject", URL_ALL);
 
 		transport = transport_get(url->scheme);
 		if (transport == NULL) {
