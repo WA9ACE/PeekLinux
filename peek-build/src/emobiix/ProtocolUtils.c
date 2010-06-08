@@ -55,3 +55,15 @@ void protocolFreeDataObjectSyncP_children(DataObjectSyncP_t *p)
 	}
 }
 
+char *OCTET_STRING_to_string(OCTET_STRING_t *o)
+{
+	char *tmpstr;
+
+	tmpstr = p_malloc(o->size+1);
+	if (tmpstr == NULL)
+		return NULL;
+	tmpstr[o->size] = 0;
+	memcpy(tmpstr, o->buf, o->size);
+
+	return tmpstr;
+}

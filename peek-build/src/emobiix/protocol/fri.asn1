@@ -19,6 +19,7 @@ BEGIN
     ProtocolVersionP  ::= INTEGER (0 .. maxIntP )
 
     AuthTypeP ::= ENUMERATED {
+        atNoneP,
         atImplicitP,
         atUsernamePasswordP,
         atPublickeyP
@@ -58,10 +59,16 @@ BEGIN
         authTypesP   SEQUENCE OF authTypeP AuthTypeP
     }
 
+    AuthExtraP ::= SEQUENCE {
+        authExtraNameP OCTET STRING,
+        authExtraValueP OCTET STRING
+    }
+
     AuthUserPassP ::= SEQUENCE {
         authTypeP        AuthTypeP,
         authUsernameP    OCTET STRING,
-        authPasswordP    OCTET STRING
+        authPasswordP    OCTET STRING,
+        authExtrasP SEQUENCE OF authExtraP AuthExtraP
     }
 
     AuthResponseP ::= RequestResponseP

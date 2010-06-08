@@ -4,21 +4,29 @@
 #include "DataObject.h"
 #include "Application.h"
 
+#include "FRIPacketP.h"
+#include "SyncOperandP.h"
+#include "ProtocolUtils.h"
+
+#include <asn_application.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-struct ProtocolHandler_t {
-	int (*authHandler)(char **username, char **password);
-};
-typedef struct ProtocolHandler_t ProtocolHandler;
-
-struct Protocol_T;
-typedef struct Protocol_t Protocol;
-
-Protocol *protocol_new(ProtocolHandler *h);
-Application *protocol_loadApplication(Protocol *p, const char *URL);
-DataObject *protocol_loadDataObject(Protocol *p, const char *URL);
+void protocol_syncStart(DataObjectSyncStartP_t *p, const char *url,
+		DataObjectStampP_t minor, DataObjectStampP_t major, long sequenceID);
+void protocol_syncFinished(DataObjectSyncFinishP_t *p,
+		RequestResponseP_t response, long sequenceID);
+SyncOperandP_t *protocol_serializeField(DataObject *dobj, const char *fieldName);
+SyncOperandP_t *protocol_goToTree(int tree);
+SyncOperandP_t *protocol_addChild(void);
+void protocol_blockSyncList(DataObjectSyncP_t *p);
+void protocol_authUserPass(AuthUserPassP_t *p,
+		const char *username, const char *pass);
+void protocol_autUserPassExtra(AuthUserPassP_t *p,
+		const char *name, const char *value);
+void protocol_authResponse(AuthResponseP_t *p, long response);
 
 #ifdef __cplusplus
 }

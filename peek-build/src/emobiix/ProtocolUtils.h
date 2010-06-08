@@ -9,5 +9,7 @@ void protocolFreeFRIPacketP_children(FRIPacketP_t *p);
 void protocolFreeDataObjectSyncP(DataObjectSyncP_t *p);
 void protocolFreeDataObjectSyncP_children(DataObjectSyncP_t *p);
 
+char *OCTET_STRING_to_string(OCTET_STRING_t *o);
+
 #endif
 

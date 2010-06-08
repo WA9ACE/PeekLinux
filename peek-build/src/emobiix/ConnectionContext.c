@@ -6,18 +6,13 @@
 #include "Widget.h"
 #include "Debug.h"
 #include "Mime.h"
+#include "Protocol.h"
+#include "ProtocolUtils.h"
 
 #include "Style.h"
 extern Style *currentStyle;
 
-#include "FRIPacketP.h"
-#include "SyncOperandP.h"
-#include "ProtocolUtils.h"
-
 #include "p_malloc.h"
-
-
-#include <asn_application.h>
 
 static const int CCTX_BUFLEN = 4096;
 
@@ -52,6 +47,8 @@ struct ConnectionContext_t {
 	unsigned char *buffer;
 	int bufferBytes;
 	asn_codec_ctx_t decodeContext;
+	enum {NA_UNKNOWN, NA_NO, NA_YES} needAuth;
+	int hasAuth;
 };
 
 static void connectionContext_processPacket(ConnectionContext *ctx,
@@ -62,6 +59,28 @@ static void connectionContext_processSyncRequest(ConnectionContext *ctx,
 		SyncRequest *sreq);
 static void connectionContext_packetSend(ConnectionContext *ctx,
 		FRIPacketP_t *packet);
+static void connectionContext_processSyncStart(ConnectionContext *ctx,
+		DataObjectSyncStartP_t *p);
+static void connectionContext_outgoingSync(ConnectionContext *ctx,
+		SyncRequest *sreq, FRIPacketP_t *p);
+static void connectionContext_processSync(ConnectionContext *ctx,
+		DataObjectSyncP_t *p);
+static void connectionContext_processBlockSyncList(ConnectionContext *ctx,
+		SyncRequest *sreq, DataObject *sobj, struct blockSyncListP *p);
+static void connectionContext_processAuthRequest(ConnectionContext *ctx,
+		AuthRequestP_t *p);
+static void connectionContext_authUserPass(ConnectionContext *ctx);
+static void connectionContext_processAuthUserPass(ConnectionContext *ctx,
+		AuthUserPassP_t *p);
+static void connectionContext_processAuthResponse(ConnectionContext *ctx,
+		AuthResponseP_t *p);
+
+static const char *generate_mapKey(Endpoint *ep, long sid)
+{
+	static char mapKey[64];
+	snprintf(mapKey, 64, "%p,%d", ep, sid);
+	return mapKey;
+}
 
 /*static int encode_out(const void *buffer, size_t size, ConnectionContext *ctx)
 {
@@ -71,19 +90,6 @@ static void connectionContext_packetSend(ConnectionContext *ctx,
 	transport = endpoint_getTransport(ctx->endpoint);
 	return (transport->write(ctx->endpoint, buffer, size) == size) ? 0 : -1;
 }*/
-
-static char *OCTET_STRING_to_string(OCTET_STRING_t *o)
-{
-	char *tmpstr;
-
-	tmpstr = p_malloc(o->size+1);
-	if (tmpstr == NULL)
-		return NULL;
-	tmpstr[o->size] = 0;
-	memcpy(tmpstr, o->buf, o->size);
-
-	return tmpstr;
-}
 
 ConnectionContext *connectionContext_new(Endpoint *ep)
 {
@@ -122,6 +128,8 @@ ConnectionContext *connectionContext_new(Endpoint *ep)
 	output->bufferBytes = 0;
 	output->decodeContext.max_stack_size = 30000;
 	output->inprogressRequests = list;
+	output->needAuth = NA_UNKNOWN;
+	output->hasAuth = 0;
 
 	return output;
 }
@@ -182,17 +190,47 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 	iter = map_begin(ctx->syncRequests);
 	while (!mapIterator_finished(iter)) {
 		sreq = (SyncRequest *)mapIterator_item(iter, &key);
-        	emo_printf("Processing sync request %s" NL, sreq->url->all);
+#if 0
+		emo_printf("Processing sync request %s" NL, sreq->url->all);
+#endif
 		connectionContext_processSyncRequest(ctx, sreq);
 		if (sreq->finalize)
 			mapIterator_remove(iter);
 		else
 			mapIterator_next(iter);
+		return 1;
 	}
 
 	/*emo_printf("Outgoing sync complete");*/
 
 	return 0;
+}
+
+void connectionContext_requestAuth(ConnectionContext *ctx)
+{
+	FRIPacketP_t packet;
+	AuthRequestP_t *p;
+	AuthTypeP_t authType;
+
+	ctx->needAuth = NA_YES;
+	ctx->hasAuth = 0;
+	authType = AuthTypeP_atUsernamePasswordP;
+
+	packet.packetTypeP.present = packetTypeP_PR_authRequestP;
+	p = &packet.packetTypeP.choice.authRequestP;
+
+	p->authSaltP.buf = NULL;
+	OCTET_STRING_fromString(&p->authSaltP, "Hi!!");
+
+	p->authTypesP.list.array = NULL;
+	p->authTypesP.list.size = 0;
+	p->authTypesP.list.count = 0;
+	p->authTypesP.list.free = NULL;
+
+	asn_sequence_add(&p->authTypesP.list, &authType);
+
+	emo_printf("Sending request auth" NL);
+	connectionContext_packetSend(ctx, &packet);
 }
 
 int connectionContext_syncRequest(ConnectionContext *ctx, URL *url)
@@ -256,19 +294,70 @@ int connectionContext_consumePacket(ConnectionContext *ctx)
 	return 0;
 }
 
+static void connectionContext_processSyncStart(ConnectionContext *ctx,
+		DataObjectSyncStartP_t *p)
+{
+	char *tmpstr;
+	DataObject *dobj;
+	SyncRequest *sreq;
+	URL *url;
+	int isLocal;
+	const char *mapKey;
+
+	emo_printf("SyncStart packet" NL);
+	tmpstr = OCTET_STRING_to_string(&p->urlP);
+	if (tmpstr == NULL) {
+		emo_printf("Faild to get URL in sync start" NL);
+		return;
+	}
+	sreq = (SyncRequest *)list_find(ctx->inprogressRequests, tmpstr, (ListComparitor)strcmp);
+	emo_printf("SyncStart : %s" NL, tmpstr);
+	if (sreq != NULL) {
+		emo_printf("Received a Sync request for a already in progress object :%s" NL,
+				tmpstr);
+		return;
+	}
+	url = url_parse(tmpstr, URL_ALL);
+	if (url == NULL) {
+		emo_printf("Faild to parse URL in sync start :%s" NL,
+				tmpstr);
+		p_free(tmpstr);
+		return;
+	}
+	dobj = dataobject_locate(url);
+	if (dobj == NULL) {
+		emo_printf("Received a Sync request for non existing object :%s" NL,
+				tmpstr);
+		url_delete(url);
+		p_free(tmpstr);
+		return;
+	}
+	dataobject_setStamp(dobj, 0, 0);
+	isLocal = dataobject_isLocal(dobj);
+	sreq = syncRequest_new(url, !isLocal);
+	if (sreq != NULL) {
+		sreq->sequenceID = p->syncSequenceIDP;
+		sreq->dobj = dobj;
+		sreq->hasStarted = 1;
+		sreq->stampMinor = p->dataObjectStampMinorP;
+		sreq->stampMajor = p->dataObjectStampMinorP;
+		mapKey = generate_mapKey(ctx->endpoint, sreq->sequenceID);
+		map_append(ctx->syncRequests, mapKey, sreq);
+		list_append(ctx->inprogressRequests, tmpstr);
+	} else {
+		emo_printf("Failed to create sync request for :%s" NL,
+				tmpstr);
+		url_delete(url);
+		p_free(tmpstr);
+	}
+	p_free(tmpstr);
+}
+
 static void connectionContext_processPacket(ConnectionContext *ctx,
 		FRIPacketP_t *packet)
 {
 	SyncRequest *sreq;
-	URL *url;
-	int isLocal, i;
-	char *tmpstr, *fieldName;
-	DataObject *dobj, *sobj, *cobj;
-	DataObjectField *dof;
-	char mapKey[64];
-	void *data;
-	SyncOperandP_t *syncOp;
-	/*unsigned int stampMinor, stampMajor;*/
+	const char *mapKey;
 
 	emo_printf("Got packet : %d" NL, packet->packetTypeP.present);
 
@@ -276,140 +365,28 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 		case packetTypeP_PR_protocolHandshakeP:
 			break;
 		case packetTypeP_PR_authRequestP:
+			connectionContext_processAuthRequest(ctx, &packet->packetTypeP.choice.authRequestP);
 			break;
 		case packetTypeP_PR_authUserPassP:
+			connectionContext_processAuthUserPass(ctx, &packet->packetTypeP.choice.authUserPassP);
 			break;
 		case packetTypeP_PR_authResponseP:
+			connectionContext_processAuthResponse(ctx, &packet->packetTypeP.choice.authResponseP);
 			break;
 		case packetTypeP_PR_subscriptionRequestP:
 			break;
 		case packetTypeP_PR_subscriptionResponseP:
 			break;
 		case packetTypeP_PR_dataObjectSyncStartP:
-			emo_printf("SyncStart packet" NL);
-			tmpstr = OCTET_STRING_to_string(&packet->packetTypeP.choice.dataObjectSyncStartP.urlP);
-			if (tmpstr == NULL)
-				break;
-			sreq = (SyncRequest *)list_find(ctx->inprogressRequests, tmpstr, (ListComparitor)strcmp);
-			emo_printf("SyncStart : %s" NL, tmpstr);
-			if (sreq != NULL) {
-				emo_printf("Received a Sync request for a already in progress object :%s" NL,
-						tmpstr);
-				break;
-			}
-			url = url_parse(tmpstr, URL_ALL);
-			if (url == NULL) {
-				p_free(tmpstr);
-				break;
-			}
-			dobj = dataobject_locate(url);
-			if (dobj == NULL) {
-				emo_printf("Received a Sync request for non existing object :%s" NL,
-						tmpstr);
-				url_delete(url);
-				break;
-			}
-			dataobject_setStamp(dobj, 0, 0);
-			isLocal = dataobject_isLocal(dobj);
-			sreq = syncRequest_new(url, !isLocal);
-			if (sreq != NULL) {
-				sreq->sequenceID = packet->packetTypeP.choice.dataObjectSyncStartP.syncSequenceIDP;
-				sreq->dobj = dobj;
-				sreq->hasStarted = 1;
-				sreq->stampMinor = 
-						packet->packetTypeP.choice.dataObjectSyncStartP.dataObjectStampMinorP;
-				sreq->stampMajor = 
-						packet->packetTypeP.choice.dataObjectSyncStartP.dataObjectStampMinorP;
-				snprintf(mapKey, 64, "%p,%d", ctx->endpoint, sreq->sequenceID);
-				emo_printf("mapKey: %s" NL, mapKey);
-				map_append(ctx->syncRequests, mapKey, sreq);
-				list_append(ctx->inprogressRequests, tmpstr);
-			} else {
-				url_delete(url);
-				p_free(tmpstr);
-			}
+			connectionContext_processSyncStart(ctx,
+					&packet->packetTypeP.choice.dataObjectSyncStartP);
 			break;
 		case packetTypeP_PR_dataObjectSyncP:
-			emo_printf("DataObjectSync packet" NL);
-			snprintf(mapKey, 64, "%p,%d", ctx->endpoint, packet->packetTypeP.choice.dataObjectSyncFinishP.syncSequenceIDP);
-			emo_printf("mapKey: %s" NL, mapKey);
-			sreq = map_find(ctx->syncRequests, mapKey);
-			if (sreq == NULL) {
-				emo_printf("recvd sync for request not in progress: %d" NL, 
-						packet->packetTypeP.choice.dataObjectSyncFinishP.syncSequenceIDP);
-				break;
-			}
-			sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
-			if (sobj == NULL) {
-				emo_printf("Current Packet at NULL position, abort" NL);
-#ifdef SIMULATOR
-				abort();
-#endif
-				return;
-			}
-			if (packet->packetTypeP.choice.dataObjectSyncP.syncListP.present ==
-					SyncListP_PR_blockSyncListP) {
-				for (i = 0; i < packet->packetTypeP.choice.dataObjectSyncP.
-						syncListP.choice.blockSyncListP.list.count; ++i) {
-					syncOp = packet->packetTypeP.choice.dataObjectSyncP.
-						syncListP.choice.blockSyncListP.list.array[i];
-					fieldName = (char *)syncOp->fieldNameP.buf;
-					if (syncOp->syncP.present == syncP_PR_syncSetP) {
-						dof = dataobjectfield_string((const char *)syncOp->syncP.choice.syncSetP.buf);
-						dataobject_setValue(sobj, fieldName, dof);
-					} else if (syncOp->syncP.present == syncP_PR_syncModifyP) {
-						dof = dataobject_getValue(sobj, fieldName);
-						if (dof == NULL) {
-							data = p_malloc(syncOp->syncP.choice.syncSetP.size);
-							memcpy(data, syncOp->syncP.choice.syncSetP.buf,
-									syncOp->syncP.choice.syncSetP.size);
-							dof = dataobjectfield_data(data, syncOp->syncP.choice.syncSetP.size);
-							dataobject_setValue(sobj, fieldName, dof);
-						} else {
-							/* we assume they are always doing an append atm */
-							p_realloc(dof->field.data.bytes, dof->field.data.size+syncOp->syncP.choice.syncSetP.size);
-							memcpy(dof->field.data.bytes+dof->field.data.size, syncOp->syncP.choice.syncSetP.buf,
-									syncOp->syncP.choice.syncSetP.size);
-							dof->field.data.size += syncOp->syncP.choice.syncSetP.size;
-						}
-					} else if (syncOp->syncP.present == syncP_PR_nodeOperationP) {
-						if (syncOp->syncP.choice.nodeOperationP.present == nodeOperationP_PR_nodeAddP) {
-							if (syncOp->syncP.choice.nodeOperationP.choice.nodeAddP == nodeAddP_nodeChildP) {
-								cobj = dataobject_new();
-								dataobject_pack(sobj, cobj);
-								sobj = cobj;
-								sreq->objectIndex = dataobject_treeIndex(sobj);
-								emo_printf("#### Add child - new index: %d" NL, sreq->objectIndex);
-								//dataobject_debugPrint(sreq->dobj);
-							} else {
-								emo_printf("Unsuported node add type" NL);
-							}
-						} else if (syncOp->syncP.choice.nodeOperationP.present == nodeOperationP_PR_nodeGotoTreeP) {
-							sreq->objectIndex = syncOp->syncP.choice.nodeOperationP.choice.nodeGotoTreeP;
-							sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
-							emo_printf("#### GoTo index: %d" NL, sreq->objectIndex);
-							if (sobj == NULL) {
-								emo_printf("Going to invalid index" NL);
-#ifdef SIMULATOR
-								abort();
-#endif
-								return;
-							}
-						} else {
-							emo_printf("Unsupported type of node operation" NL);
-						}
-					} else {
-						emo_printf("Dont support that type of sync operation yet" NL);
-					}
-				}
-			} else {
-				emo_printf("Dont support that type of sync list yet" NL);
-			}
+			connectionContext_processSync(ctx, &packet->packetTypeP.choice.dataObjectSyncP);
 			break;
 		case packetTypeP_PR_dataObjectSyncFinishP:
 			emo_printf( "DataObjectSyncFinish packet" NL);
-			snprintf(mapKey, 64, "%p,%d", ctx->endpoint, packet->packetTypeP.choice.dataObjectSyncFinishP.syncSequenceIDP);
-			emo_printf("mapKey: %s" NL, mapKey);
+			mapKey = generate_mapKey(ctx->endpoint, packet->packetTypeP.choice.dataObjectSyncFinishP.syncSequenceIDP);
 			sreq = map_find(ctx->syncRequests, mapKey);
 			if (sreq == NULL) {
 				emo_printf("recvd sync finished for request not in progress: %d" NL, 
@@ -431,39 +408,22 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 			emo_printf("Unknown or NONE packet recieved" NL);
 	}
 }
-static void connectionContext_syncPacket(ConnectionContext *ctx,
-		DataObjectSyncP_t *packet)
-{
-
-}
 
 static void connectionContext_processSyncRequest(ConnectionContext *ctx,
 		SyncRequest *sreq)
 {
 	FRIPacketP_t packet;
-	/*unsigned int stampMinor, stampMajor;*/
-	MapIterator *iter;
-	ListIterator *citer;
-	DataObjectField *field;
-	char *fieldName;
 	Transport *transport;
-    SyncOperandP_t *syncOp;
-	char mapKey[64];
-	DataObject *sobj;
-	int childOp;
 
 	transport = endpoint_getTransport(ctx->endpoint);
 
 	if (sreq->isClient) {
 		if (!sreq->hasStarted) {
 			/* send start packet */
-			packet.packetTypeP.present = packetTypeP_PR_dataObjectSyncStartP;
-			packet.packetTypeP.choice.dataObjectSyncStartP.urlP.buf = (uint8_t *)sreq->url->all;
-			packet.packetTypeP.choice.dataObjectSyncStartP.urlP.size = strlen(sreq->url->all);
 			/* we dont have this object at all so use stamp 0 */
-			packet.packetTypeP.choice.dataObjectSyncStartP.dataObjectStampMinorP = 0;
-			packet.packetTypeP.choice.dataObjectSyncStartP.dataObjectStampMajorP = 0;
-			packet.packetTypeP.choice.dataObjectSyncStartP.syncSequenceIDP = sreq->sequenceID;
+			packet.packetTypeP.present = packetTypeP_PR_dataObjectSyncStartP;
+			protocol_syncStart(&packet.packetTypeP.choice.dataObjectSyncStartP,
+					sreq->url->all, 0, 0, sreq->sequenceID);
 			list_append(ctx->inprogressRequests, sreq->url->all);
 			emo_printf( "Sending SyncStart" NL);
 			connectionContext_packetSend(ctx, &packet);
@@ -474,129 +434,27 @@ static void connectionContext_processSyncRequest(ConnectionContext *ctx,
 		if (!sreq->hasFinished) {
 			/* for now, send a 'finished' packet since we dont send our changes */
 			packet.packetTypeP.present = packetTypeP_PR_dataObjectSyncFinishP;
-			packet.packetTypeP.choice.dataObjectSyncFinishP.responseP =
-					RequestResponseP_responseExpiredP;
-			packet.packetTypeP.choice.dataObjectSyncFinishP.syncSequenceIDP =
-					sreq->sequenceID;
+			protocol_syncFinished(&packet.packetTypeP.choice.dataObjectSyncFinishP,
+					RequestResponseP_responseExpiredP, sreq->sequenceID);
 			emo_printf( "Sending SyncFinish" NL);
 			connectionContext_packetSend(ctx, &packet);
 			sreq->hasFinished = 1;
 			return;
 		}
 	} else {
-		if (sreq->hasStarted && sreq->remoteFinished && !sreq->hasFinished) {
+		if (sreq->hasStarted && sreq->remoteFinished && !sreq->hasFinished
+				&& ((ctx->needAuth == NA_YES && ctx->hasAuth) || ctx->needAuth == NA_NO)){
 			/* client synched to us, sync back to them */
-			emo_printf( "Sending Sync Packet" NL);
-            packet.packetTypeP.present = packetTypeP_PR_dataObjectSyncP;
-			if (sreq->completeFields == NULL)
-				sreq->completeFields = list_new();
-			sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
-			/*if (sobj == NULL) {
-				sreq->hasFinished = 1;
-				goto skip_sync;
-				return;
-			}*/
-			iter = dataobject_fieldIterator(sobj);
-            packet.packetTypeP.choice.dataObjectSyncP.syncListP.present =
-                    SyncListP_PR_blockSyncListP;
-            packet.packetTypeP.choice.dataObjectSyncP.syncListP.
-                        choice.blockSyncListP.list.array = NULL;
-            packet.packetTypeP.choice.dataObjectSyncP.syncListP.
-                        choice.blockSyncListP.list.size = 0;
-            packet.packetTypeP.choice.dataObjectSyncP.syncListP.
-                        choice.blockSyncListP.list.count = 0;
-			packet.packetTypeP.choice.dataObjectSyncP.syncListP.
-                        choice.blockSyncListP.list.free = NULL;
-			packet.packetTypeP.choice.dataObjectSyncP.syncSequenceIDP = sreq->sequenceID;
-			if (sreq->childOp >= -1) {
-next_childop:
-				syncOp = (SyncOperandP_t *)p_malloc(sizeof(SyncOperandP_t));
-				syncOp->fieldNameP.buf = NULL;
-				OCTET_STRING_fromString(&syncOp->fieldNameP, "");
-				syncOp->syncP.present = syncP_PR_nodeOperationP;
-				if (sreq->childOp == -1) {
-					syncOp->syncP.choice.nodeOperationP.present = nodeOperationP_PR_nodeAddP;
-					syncOp->syncP.choice.nodeOperationP.choice.nodeAddP = nodeAddP_nodeChildP;
-					asn_sequence_add(&packet.packetTypeP.choice.dataObjectSyncP.syncListP.
-                            choice.blockSyncListP.list, syncOp);
-					sreq->childOp = -2;
-					citer = dataobject_childIterator(sobj);
-					while (!listIterator_finished(citer)) {
-						if (list_find(sreq->completeNodes, listIterator_item(citer), ListEqualComparitor) == NULL) {
-							sreq->objectIndex = dataobject_treeIndex((DataObject *)listIterator_item(citer));
-							break;
-						}
-						listIterator_next(citer);
-					}
-					listIterator_delete(citer);
-				} else {
-					syncOp->syncP.choice.nodeOperationP.present = nodeOperationP_PR_nodeGotoTreeP;
-					syncOp->syncP.choice.nodeOperationP.choice.nodeGotoTreeP = sreq->childOp;
-					asn_sequence_add(&packet.packetTypeP.choice.dataObjectSyncP.syncListP.
-                            choice.blockSyncListP.list, syncOp);
-					sreq->objectIndex = sreq->childOp;
-					sreq->childOp = -1;
-					sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
-					goto next_childop;
-				}
-				connectionContext_packetSend(ctx, &packet);
-				return;
-			}
-			while (!mapIterator_finished(iter)) {
-				field = (DataObjectField *)mapIterator_item(iter, (void **)&fieldName);
-				if (list_find(sreq->completeFields, fieldName, (ListComparitor)strcmp) == NULL) {
-					/* serialize field */
-                    syncOp = (SyncOperandP_t *)p_malloc(sizeof(SyncOperandP_t));
-					syncOp->fieldNameP.buf = NULL;
-					OCTET_STRING_fromString(&syncOp->fieldNameP, fieldName);
-                    field = dataobject_getValue(sobj, fieldName);
-					if (field->type == DOF_STRING) {
-						syncOp->syncP.present = syncP_PR_syncSetP;
-						syncOp->syncP.choice.syncSetP.buf = NULL;
-                        OCTET_STRING_fromBuf(&syncOp->syncP.choice.syncSetP,
-								field->field.string, strlen(field->field.string)+1);
-					} else if (field->type == DOF_DATA) {
-						syncOp->syncP.present = syncP_PR_syncModifyP;
-						syncOp->syncP.choice.syncModifyP.modifyDataP.buf = NULL;
-                        OCTET_STRING_fromBuf(&syncOp->syncP.choice.syncModifyP.modifyDataP, 
-                                (const char *)field->field.data.bytes,
-                                field->field.data.size);
-						syncOp->syncP.choice.syncModifyP.modifySizeP = field->field.data.size;
-						syncOp->syncP.choice.syncModifyP.modifyOffsetP = 0;
-					} else
-                        emo_printf("Unsupported field type in sync" NL);
-
-                    /* add to packet and mark field complete */
-                    asn_sequence_add(&packet.packetTypeP.choice.dataObjectSyncP.syncListP.
-                            choice.blockSyncListP.list, syncOp);
-					list_append(sreq->completeFields, fieldName);
-				}
-				mapIterator_next(iter);
-			}
-			list_append(sreq->completeNodes, sobj);
-			if (sreq->completeFields != NULL) {
-				list_delete(sreq->completeFields);
-				sreq->completeFields = NULL;
-			}
-			if  (dataobject_getTreeNextOp(sobj, &childOp))
-				sreq->childOp = childOp;
-			else
-				sreq->hasFinished = 1;
-			connectionContext_packetSend(ctx, &packet);
+			connectionContext_outgoingSync(ctx, sreq, &packet);
 			return;
 		}
-/*skip_sync:*/
 		if (sreq->hasStarted && sreq->remoteFinished && sreq->hasFinished) {
 			/* for now, send a 'finished' and remove request */
 			emo_printf( "Sending Finish Packet" NL);
 			packet.packetTypeP.present = packetTypeP_PR_dataObjectSyncFinishP;
-			packet.packetTypeP.choice.dataObjectSyncFinishP.responseP =
-					RequestResponseP_responseOKP;
-			packet.packetTypeP.choice.dataObjectSyncFinishP.syncSequenceIDP =
-					sreq->sequenceID;
+			protocol_syncFinished(&packet.packetTypeP.choice.dataObjectSyncFinishP,
+					RequestResponseP_responseOKP, sreq->sequenceID);
 			connectionContext_packetSend(ctx, &packet);
-			snprintf(mapKey, 64, "%p,%d", ctx->endpoint, sreq->sequenceID);
-			emo_printf("mapKey: %s" NL, mapKey);
 			sreq->finalize = 1;
 			return;
 		}
@@ -664,4 +522,245 @@ static SyncRequest *syncRequest_new(URL *url, int isClient)
 static void syncRqeuest_delete(SyncRequest *sreq)
 {
 	p_free(sreq);
+}
+
+static void connectionContext_outgoingSync(ConnectionContext *ctx,
+		SyncRequest *sreq, FRIPacketP_t *p)
+{
+	DataObject *sobj;
+	MapIterator *iter;
+	SyncOperandP_t *syncOp;
+	int childOp;
+	ListIterator *citer;
+	DataObjectField *field;
+	char *fieldName;
+
+	emo_printf( "Sending Sync Packet" NL);
+    p->packetTypeP.present = packetTypeP_PR_dataObjectSyncP;
+	if (sreq->completeFields == NULL)
+		sreq->completeFields = list_new();
+	sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
+
+	iter = dataobject_fieldIterator(sobj);
+	p->packetTypeP.choice.dataObjectSyncP.syncSequenceIDP = sreq->sequenceID;
+	protocol_blockSyncList(&p->packetTypeP.choice.dataObjectSyncP);
+	if (sreq->childOp >= -1) {
+		/* node operation */
+next_childop:
+		/* add child operation */
+		if (sreq->childOp == -1) {
+			syncOp = protocol_addChild();
+			asn_sequence_add(&p->packetTypeP.choice.dataObjectSyncP.syncListP.
+                    choice.blockSyncListP.list, syncOp);
+			sreq->childOp = -2;
+			citer = dataobject_childIterator(sobj);
+			while (!listIterator_finished(citer)) {
+				if (list_find(sreq->completeNodes, listIterator_item(citer), ListEqualComparitor) == NULL) {
+					sreq->objectIndex = dataobject_treeIndex((DataObject *)listIterator_item(citer));
+					break;
+				}
+				listIterator_next(citer);
+			}
+			listIterator_delete(citer);
+		} else {
+			/* go to tree operation */
+			syncOp = protocol_goToTree(sreq->childOp);
+			asn_sequence_add(&p->packetTypeP.choice.dataObjectSyncP.syncListP.
+                    choice.blockSyncListP.list, syncOp);
+			sreq->objectIndex = sreq->childOp;
+			sreq->childOp = -1;
+			sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
+			goto next_childop;
+		}
+		connectionContext_packetSend(ctx, p);
+		return;
+	}
+	while (!mapIterator_finished(iter)) {
+		field = (DataObjectField *)mapIterator_item(iter, (void **)&fieldName);
+		if (list_find(sreq->completeFields, fieldName, (ListComparitor)strcmp) == NULL) {
+			/* serialize field */
+			syncOp = protocol_serializeField(sobj, fieldName);
+			if (syncOp == NULL)
+				return;
+            /* add to packet and mark field complete */
+            asn_sequence_add(&p->packetTypeP.choice.dataObjectSyncP.syncListP.
+                    choice.blockSyncListP.list, syncOp);
+			list_append(sreq->completeFields, fieldName);
+		}
+		mapIterator_next(iter);
+	}
+	list_append(sreq->completeNodes, sobj);
+	if (sreq->completeFields != NULL) {
+		list_delete(sreq->completeFields);
+		sreq->completeFields = NULL;
+	}
+	if  (dataobject_getTreeNextOp(sobj, &childOp))
+		sreq->childOp = childOp;
+	else
+		sreq->hasFinished = 1;
+	connectionContext_packetSend(ctx, p);
+}
+
+static void connectionContext_processSync(ConnectionContext *ctx,
+		DataObjectSyncP_t *p)
+{
+	const char *mapKey;
+	SyncRequest *sreq;
+	DataObject *sobj;
+
+	emo_printf("DataObjectSync packet" NL);
+	mapKey = generate_mapKey(ctx->endpoint, p->syncSequenceIDP);
+	sreq = map_find(ctx->syncRequests, mapKey);
+	if (sreq == NULL) {
+		emo_printf("recvd sync for request not in progress: %d" NL, 
+				p->syncSequenceIDP);
+		return;
+	}
+
+	sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
+	if (sobj == NULL) {
+		emo_printf("Current Packet at NULL position, abort" NL);
+#ifdef SIMULATOR
+		abort();
+#endif
+		return;
+	}
+
+	if (p->syncListP.present == SyncListP_PR_blockSyncListP) {
+		connectionContext_processBlockSyncList(ctx, sreq, sobj,
+				&p->syncListP.choice.blockSyncListP);
+	} else {
+		emo_printf("Dont support that type of sync list yet" NL);
+	}
+
+}
+
+static void connectionContext_processBlockSyncList(ConnectionContext *ctx,
+		SyncRequest *sreq, DataObject *sobj, struct blockSyncListP *p)
+{
+	int i;
+	SyncOperandP_t *syncOp;
+	const char *fieldName;
+	DataObjectField *dof;
+	void *data;
+	DataObject *cobj;
+
+	for (i = 0; i < p->list.count; ++i) {
+		syncOp = p->list.array[i];
+		fieldName = (char *)syncOp->fieldNameP.buf;
+		if (syncOp->syncP.present == syncP_PR_syncSetP) {
+			dof = dataobjectfield_string((const char *)syncOp->syncP.choice.syncSetP.buf);
+			dataobject_setValue(sobj, fieldName, dof);
+		} else if (syncOp->syncP.present == syncP_PR_syncModifyP) {
+			dof = dataobject_getValue(sobj, fieldName);
+			if (dof == NULL) {
+				data = p_malloc(syncOp->syncP.choice.syncSetP.size);
+				memcpy(data, syncOp->syncP.choice.syncSetP.buf,
+						syncOp->syncP.choice.syncSetP.size);
+				dof = dataobjectfield_data(data, syncOp->syncP.choice.syncSetP.size);
+				dataobject_setValue(sobj, fieldName, dof);
+			} else {
+				/* we assume they are always doing an append atm */
+				p_realloc(dof->field.data.bytes, dof->field.data.size+syncOp->syncP.choice.syncSetP.size);
+				memcpy(dof->field.data.bytes+dof->field.data.size, syncOp->syncP.choice.syncSetP.buf,
+						syncOp->syncP.choice.syncSetP.size);
+				dof->field.data.size += syncOp->syncP.choice.syncSetP.size;
+			}
+		} else if (syncOp->syncP.present == syncP_PR_nodeOperationP) {
+			if (syncOp->syncP.choice.nodeOperationP.present == nodeOperationP_PR_nodeAddP) {
+				if (syncOp->syncP.choice.nodeOperationP.choice.nodeAddP == nodeAddP_nodeChildP) {
+					cobj = dataobject_new();
+					dataobject_pack(sobj, cobj);
+					sobj = cobj;
+					sreq->objectIndex = dataobject_treeIndex(sobj);
+					emo_printf("#### Add child - new index: %d" NL, sreq->objectIndex);
+					//dataobject_debugPrint(sreq->dobj);
+				} else {
+					emo_printf("Unsuported node add type" NL);
+				}
+			} else if (syncOp->syncP.choice.nodeOperationP.present == nodeOperationP_PR_nodeGotoTreeP) {
+				sreq->objectIndex = syncOp->syncP.choice.nodeOperationP.choice.nodeGotoTreeP;
+				sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
+				emo_printf("#### GoTo index: %d" NL, sreq->objectIndex);
+				if (sobj == NULL) {
+					emo_printf("Going to invalid index" NL);
+	#ifdef SIMULATOR
+					abort();
+	#endif
+					return;
+				}
+			} else {
+				emo_printf("Unsupported type of node operation" NL);
+			}
+		} else {
+			emo_printf("Dont support that type of sync operation yet" NL);
+		}
+	}
+}
+
+static void connectionContext_processAuthRequest(ConnectionContext *ctx,
+		AuthRequestP_t *p)
+{
+	AuthTypeP_t authType;
+	int i;
+
+	emo_printf("Processing request auth" NL);
+
+	for (i = 0; i < p->authTypesP.list.count; ++i) {
+		authType = *p->authTypesP.list.array[i];
+		emo_printf("Got authType request %d" NL, authType);
+		if (authType == AuthTypeP_atImplicitP) {
+			ctx->needAuth = NA_NO;
+		} else {
+			ctx->needAuth = NA_YES;
+		}
+	}
+	
+	connectionContext_authUserPass(ctx);
+}
+
+static void connectionContext_authUserPass(ConnectionContext *ctx)
+{
+	FRIPacketP_t packet;
+	AuthUserPassP_t *p;
+
+	packet.packetTypeP.present = packetTypeP_PR_authUserPassP;
+	p = &packet.packetTypeP.choice.authUserPassP;
+
+	protocol_authUserPass(p, "peek", "peek123");
+
+	/* add our extras */
+	protocol_autUserPassExtra(p, "IMEI", "300000000000000");
+	protocol_autUserPassExtra(p, "IP", "192.168.1.1");
+
+	emo_printf("Sending auth user pass" NL);
+	connectionContext_packetSend(ctx, &packet);
+}
+
+static void connectionContext_processAuthUserPass(ConnectionContext *ctx,
+		AuthUserPassP_t *p)
+{
+	FRIPacketP_t packet;
+
+	emo_printf("Got Auth User Pass" NL);
+
+	packet.packetTypeP.present = packetTypeP_PR_authResponseP;
+	protocol_authResponse(&packet.packetTypeP.choice.authResponseP,
+			RequestResponseP_responseOKP);
+
+	emo_printf("Sending Auth OK" NL);
+	ctx->hasAuth = 1;
+
+	connectionContext_packetSend(ctx, &packet);
+}
+
+static void connectionContext_processAuthResponse(ConnectionContext *ctx,
+		AuthResponseP_t *p)
+{
+	if (*p == RequestResponseP_responseOKP) {
+		emo_printf("Auth OK" NL);
+		ctx->hasAuth = 1;
+	} else {
+		emo_printf("Auth not OK with: %d" NL, *p);
+	}
 }
