@@ -95,9 +95,9 @@ void protocol_authUserPass(AuthUserPassP_t *p,
 		const char *username, const char *pass)
 {
 	p->authUsernameP.buf = NULL;
-	OCTET_STRING_fromString(&p->authUsernameP, "peek");
+	OCTET_STRING_fromString(&p->authUsernameP, username);
 	p->authPasswordP.buf = NULL;
-	OCTET_STRING_fromString(&p->authPasswordP, "peek123");
+	OCTET_STRING_fromString(&p->authPasswordP, pass);
 	p->authTypeP = AuthTypeP_atUsernamePasswordP;
 
 	p->authExtrasP.list.array = NULL;
