@@ -7,6 +7,7 @@
 #include "Sounds.h"
 #include "balapi.h"
 #include "tweet.h"
+#include "buidefs.h"
 #endif
 
 #include "Transport.h"
@@ -28,8 +29,7 @@
 
 extern "C" {
 extern unsigned char *screenBuf;
-
-
+extern unsigned char pwr_PowerOffMobile   (void);
 
 void updateScreen(void) {
 #ifndef SIMULATOR
@@ -148,6 +148,11 @@ static void UiHandleKeyEvents(RegIdT RegId, uint32 MsgId, void *MsgBufferP)
 #ifdef EMO_SIM
         emo_printf("UiHandleKeyEvents MsgId=%d,UiKeyId=%d" NL, MsgId, UiKeyId);
 #endif
+	if(UiKeyId == KP_PWR_KEY) {
+		emo_printf("Starting power off\n");
+		pwr_PowerOffMobile();
+
+	}
         if (MsgId == 1) {
      //           SetSettingValue(SET_UI_RINGTONE, 2);
    //             SetSettingValue(SET_UI_VOLUME, 5);
