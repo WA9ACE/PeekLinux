@@ -100,21 +100,48 @@ void request_handler::handle_protocolHandshake(FRIPacketP*, reply& rep)
 
 void request_handler::handle_authRequest(FRIPacketP*, reply& rep)
 {
-	DEBUGLOG("Received authentication request");
-
-	//	rep.packet->packetTypeP.present = packetTypeP_PR_authResponseP;
-	//	rep.packet.packetType.choice.authResponse = RequestResponse_responseOK;
-	if (soap_request::GetAuthentication("http://linux.emobiix.com:8082/cgi-bin/test.cgi", "123456", "bob", "torulethemall"))
-	{
-		appdata data = { "123456" };
-		shared_appdata::instance().put("IP ADDRESS", data);
-		return;
-	}
 }
 
-void request_handler::handle_authUserPass(FRIPacketP*, reply& rep)
+void request_handler::handle_authUserPass(FRIPacketP* packet, reply& rep)
 {
+	DEBUGLOG("Received authentication request");
 
+	AuthUserPassP_t &userPass = packet->packetTypeP.choice.authUserPassP;
+	string user((char *)userPass.authUsernameP.buf, userPass.authUsernameP.size);
+	string pass((char *)userPass.authPasswordP.buf, userPass.authPasswordP.size);
+
+	INFOLOG("User: " << user << ", pass: " << pass);
+
+	map<string, string> extraFields;
+	for (size_t i = 0; i < userPass.authExtrasP.list.size; ++i)
+	{
+		AuthExtraP_t &extra = *(userPass.authExtrasP.list.array[i]);
+		string field((char *)extra.authExtraNameP.buf, extra.authExtraNameP.size);
+		string value((char *)extra.authExtraValueP.buf, extra.authExtraValueP.size);
+	
+		extraFields[field] = value;
+		INFOLOG("Extra field " << field << " = " << value);
+	}
+
+	FRIPacketP *authResponse = new FRIPacketP;
+	authResponse->packetTypeP.present = packetTypeP_PR_authResponseP;
+
+	map<string, string>::const_iterator IMEI = extraFields.find("IMEI");
+	if (IMEI == extraFields.end())
+	{
+		ERRORLOG("Required field IMEI missing from authentication");
+		authResponse->packetTypeP.choice.authResponseP = RequestResponseP_responseErrorP;
+	}
+	else if (soap_request::GetAuthentication("http://linux.emobiix.com:8082/cgi-bin/test.cgi", IMEI->second.c_str(), user.c_str(), pass.c_str()))
+	{
+		authResponse->packetTypeP.choice.authResponseP = RequestResponseP_responseOKP;
+		appdata data = { IMEI->second };
+		shared_appdata::instance().put("IP ADDRESS", data);
+	}
+	else
+		authResponse->packetTypeP.choice.authResponseP = RequestResponseP_responseFailP;
+
+	rep.packets.push_back(authResponse);
 }
 
 void request_handler::handle_authResponse(FRIPacketP*, reply& rep)
