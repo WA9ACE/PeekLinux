@@ -17,7 +17,7 @@ int ns__AuthenticationRequest(struct soap* soap, xsd__string devId, xsd__string 
 {
 	cerr << "Received authentication request for [" << user << "], [" << password << "]" << endl;
 
-	if (!strcmp(user, "bob") && !strcmp(password, "torulethemall"))
+	if (!strcmp(user, "peek") && !strcmp(password, "peek123"))
 		isAuthenticated = true;
 	else
 		isAuthenticated = false;

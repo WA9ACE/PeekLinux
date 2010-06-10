@@ -2,7 +2,7 @@ ifneq ($(MAKECMDGOALS),clean)
 #	-include $(patsubst %.o,%.d,$(OBJ))
 endif
 
-DEBUG = -g #-DEMIT_ASN_DEBUG
+DEBUG = -g
 OPTIMIZE = -O3
 WARN = #-Wall
 

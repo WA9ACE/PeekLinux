@@ -41,11 +41,8 @@ void connection::start()
 	request_handler_->request_auth(reply_);
 	async_write(socket_, reply_.to_buffers(), strand_.wrap(boost::bind(&connection::handle_write, shared_from_this(), placeholders::error, placeholders::bytes_transferred)));
 
-  socket_.async_read_some(buffer(buffer_), 
-		strand_.wrap(
-			boost::bind(&connection::handle_read, shared_from_this(), 
-			placeholders::error, 
-			placeholders::bytes_transferred)));
+	INFOLOG("Waiting for authentication response from client");
+	socket_.async_read_some(buffer(buffer_), strand_.wrap(boost::bind(&connection::handle_read, shared_from_this(), placeholders::error, placeholders::bytes_transferred)));
 }
 
 void connection::handle_read(const boost::system::error_code& e, std::size_t bytes_transferred)

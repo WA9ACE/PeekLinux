@@ -15,8 +15,8 @@ int main(int argc, char **argv)
 	
 	cerr << "Will use URL: " << url << " for soap requests" << endl;
 
-	cerr << "Using \"bob\" pass \"torulethemall\" for authentication..." << endl;
-	if (emobiix::soap_request::GetAuthentication(url, "1234567", "bob", "torulethemall"))
+	cerr << "Using \"peek\" pass \"peek123\" for authentication..." << endl;
+	if (emobiix::soap_request::GetAuthentication(url, "1234567", "peek", "peek123"))
 		cerr << "Authentication successful!" << endl;
 
 	string tree;

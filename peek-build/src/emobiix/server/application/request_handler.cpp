@@ -134,7 +134,7 @@ void request_handler::handle_authUserPass(FRIPacketP* packet, reply& rep)
 	INFOLOG("User: " << user << ", pass: " << pass);
 
 	map<string, string> extraFields;
-	for (size_t i = 0; i < userPass.authExtrasP.list.size; ++i)
+	for (size_t i = 0; i < userPass.authExtrasP.list.count; ++i)
 	{
 		AuthExtraP_t &extra = *(userPass.authExtrasP.list.array[i]);
 		string field((char *)extra.authExtraNameP.buf, extra.authExtraNameP.size);
@@ -155,12 +155,17 @@ void request_handler::handle_authUserPass(FRIPacketP* packet, reply& rep)
 	}
 	else if (soap_request::GetAuthentication("http://linux.emobiix.com:8082/cgi-bin/test.cgi", IMEI->second.c_str(), user.c_str(), pass.c_str()))
 	{
+		INFOLOG("Aunethication successful");
+
 		authResponse->packetTypeP.choice.authResponseP = RequestResponseP_responseOKP;
 		appdata data = { IMEI->second };
 		shared_appdata::instance().put("IP ADDRESS", data);
 	}
 	else
+	{
+		ERRORLOG("Authentication failure");
 		authResponse->packetTypeP.choice.authResponseP = RequestResponseP_responseFailP;
+	}
 
 	rep.packets.push_back(authResponse);
 }
