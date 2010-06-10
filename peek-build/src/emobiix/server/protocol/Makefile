@@ -4,6 +4,7 @@ PROTOCOL = ../../protocol/fri.asn1
 OBJ = $(patsubst %.c,%.o,$(filter-out converter-sample.c,$(wildcard *.c)))
 
 INCLUDE  = .
+DEFINE   = EMIT_ASN_DEBUG
 
 .PHONY: prepare
 

@@ -46,8 +46,9 @@ void request_handler::request_auth(reply& rep)
 	authReq.authTypesP.list.count = 0;
 	authReq.authTypesP.list.free = NULL;
 
-	AuthTypeP_t authType = AuthTypeP_atUsernamePasswordP;
-	asn_sequence_add(&authReq.authTypesP.list, &authType);
+	AuthTypeP_t *authType = new AuthTypeP_t;
+	*authType = AuthTypeP_atUsernamePasswordP;
+	asn_sequence_add(&authReq.authTypesP.list, authType);
 
 	rep.packets.push_back(packet);
 }

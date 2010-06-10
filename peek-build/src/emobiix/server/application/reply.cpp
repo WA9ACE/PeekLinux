@@ -29,6 +29,8 @@ std::vector<boost::asio::const_buffer> reply::to_buffers()
 	for (size_t i = 0; i < packets.size(); ++i)
 	{
 		encode_packet(packets[i], encodedPackets);
+
+		// TODO free packet contents!
 		delete packets[i];
 	}
 
