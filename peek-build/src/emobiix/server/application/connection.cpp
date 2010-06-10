@@ -37,6 +37,10 @@ void connection::start()
 
 	DEBUGLOG("Received connection from: " << socket_.remote_endpoint().address().to_string());
 
+	INFOLOG("Requesting authentication from client");
+	request_handler_->request_auth(reply_);
+	async_write(socket_, reply_.to_buffers(), strand_.wrap(boost::bind(&connection::handle_write, shared_from_this(), placeholders::error, placeholders::bytes_transferred)));
+
   socket_.async_read_some(buffer(buffer_), 
 		strand_.wrap(
 			boost::bind(&connection::handle_read, shared_from_this(), 

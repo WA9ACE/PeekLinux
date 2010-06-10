@@ -29,6 +29,9 @@ public:
   /// Handle a request and produce a reply.
   void handle_request(request& req, reply& rep);
 
+  /// Generate the initial auth request
+  void request_auth(reply& rep);
+
 	/// Handle a single packet
 	void handle_packet(FRIPacketP *packet, reply& rep);
 

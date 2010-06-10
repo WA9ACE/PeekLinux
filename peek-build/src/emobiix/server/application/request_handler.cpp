@@ -32,6 +32,26 @@ request_handler::~request_handler()
 	shared_appdata::instance().remove("IP ADDRESS");
 }
 
+void request_handler::request_auth(reply& rep)
+{
+	FRIPacketP *packet = new FRIPacketP;
+	packet->packetTypeP.present = packetTypeP_PR_authRequestP;
+
+	AuthRequestP_t &authReq = packet->packetTypeP.choice.authRequestP;
+	authReq.authSaltP.buf = NULL;
+	OCTET_STRING_fromBuf(&authReq.authSaltP, "NaCl", -1);
+
+	authReq.authTypesP.list.array = NULL;
+	authReq.authTypesP.list.size = 0;
+	authReq.authTypesP.list.count = 0;
+	authReq.authTypesP.list.free = NULL;
+
+	AuthTypeP_t authType = AuthTypeP_atUsernamePasswordP;
+	asn_sequence_add(&authReq.authTypesP.list, &authType);
+
+	rep.packets.push_back(packet);
+}
+
 void request_handler::handle_request(request& req, reply& rep)
 {
 	if (!req.packets.size())
