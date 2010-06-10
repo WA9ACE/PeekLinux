@@ -14,7 +14,9 @@ extern Style *currentStyle;
 
 #include "p_malloc.h"
 
+#ifndef SIMULATOR
 #include "balimeiapi.h"
+#endif
 
 static const int CCTX_BUFLEN = 4096;
 
@@ -185,6 +187,12 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 			return 1;
 		}
 	}
+
+	if (!((ctx->needAuth == NA_YES && ctx->hasAuth) || ctx->needAuth == NA_NO)) {
+		emo_printf("Not doing outgoing sync because we are not authorized" NL);
+		return 0;
+	}
+
 
 	/*emo_printf("Outgoing sync");*/
 
@@ -723,12 +731,14 @@ static void connectionContext_processAuthRequest(ConnectionContext *ctx,
 
 static void connectionContext_authUserPass(ConnectionContext *ctx)
 {
-	static char deviceImei[IMEI_LEN + 1] = { 0 };
 	FRIPacketP_t packet;
 	AuthUserPassP_t *p;
+#ifndef SIMULATOR
+	static char deviceImei[IMEI_LEN + 1] = { 0 };
 
 	if (!deviceImei[0])
 		BalGetImei(deviceImei);
+#endif
 
 	packet.packetTypeP.present = packetTypeP_PR_authUserPassP;
 	p = &packet.packetTypeP.choice.authUserPassP;
@@ -736,7 +746,9 @@ static void connectionContext_authUserPass(ConnectionContext *ctx)
 	protocol_authUserPass(p, "peek", "peek123");
 
 	/* add our extras */
+#ifndef SIMULATOR
 	protocol_autUserPassExtra(p, "IMEI", deviceImei);
+#endif
 	protocol_autUserPassExtra(p, "IP", "192.168.1.1");
 
 	emo_printf("Sending auth user pass" NL);
