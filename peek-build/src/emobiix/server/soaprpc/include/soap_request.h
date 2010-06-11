@@ -16,6 +16,7 @@ int GetBlockDataObject(const std::string& uri, const std::string& id, std::strin
 int GetRecordDataObject(const std::string& uri, int id, std::vector<char *>& recordData);
 int GetTextDataObject(const std::string& uri, int id, char*& textData);
 int GetTreeDataObject(const std::string& uri, const std::string& id,std::string& treeData);
+int Test_Push(const std::string& data);
 
 };
 

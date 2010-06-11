@@ -96,6 +96,18 @@ int GetTreeDataObject(const std::string& uri, const std::string& id, std::string
 	return ret == SOAP_OK;
 }
 
+int Test_Push(const std::string& data)
+{
+	struct soap *s = soap_new();
+
+	int ret = soap_call_ns__DataObjectPushRequest(s, "http://0.0.0.0:23456", NULL, 1, const_cast<char *>(data.c_str()), NULL);
+
+	soap_end(s);
+	soap_free(s);
+
+  return ret == SOAP_OK;
+}
+
 }
 
 }

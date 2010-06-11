@@ -7,7 +7,6 @@
 #include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include "connection.h"
-#include "request_handler.h"
 
 namespace emobiix {
 

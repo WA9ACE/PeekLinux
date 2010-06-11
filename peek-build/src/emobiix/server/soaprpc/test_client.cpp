@@ -7,6 +7,9 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+	cerr << "got: " << emobiix::soap_request::Test_Push(argv[1]);
+	return 0;
+
 	const char *url = "http://linux.emobiix.com:8082/cgi-bin/test.cgi";
 	if (argc != 2)
 		cerr << "Usage: " << argv[0] << " <request_url>" << endl;

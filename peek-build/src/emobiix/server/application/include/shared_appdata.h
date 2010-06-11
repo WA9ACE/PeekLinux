@@ -8,9 +8,11 @@
 
 namespace emobiix {
 
+class connection;
+
 struct appdata
 {
-	std::string deviceIP;
+	connection *device;
 };
 
 class shared_appdata : private boost::noncopyable
