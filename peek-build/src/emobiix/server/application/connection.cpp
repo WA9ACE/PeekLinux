@@ -117,6 +117,8 @@ void connection::handle_write(const boost::system::error_code& e, std::size_t by
 	}
 
 	TRACELOG("Successfully wrote " << bytes_transferred);
+	reply_.encodedPackets.clear();
+
 	// No new asynchronous operations are started. This means that all shared_ptr
 	// references to the connection object will disappear and the object will be
 	// destroyed automatically after this handler returns. The connection class's
@@ -400,7 +402,7 @@ void connection::push(const std::string &data)
   boost::asio::io_service io_service;
 
   udp::resolver resolver(io_service);
-  udp::resolver::query query(udp::v4(), socket_.remote_endpoint().address().to_string(), DEVICE_UDP_LISTEN_PORT);
+  udp::resolver::query query(udp::v4(), socket_.remote_endpoint().address().to_string(), DEVICE_UDP_LISTEN_PORT, ip::udp::resolver_query::numeric_service);
   udp::endpoint receiver_endpoint = *resolver.resolve(query);
 
   udp::socket device(io_service);
