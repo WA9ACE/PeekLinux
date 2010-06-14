@@ -399,15 +399,22 @@ void connection::push(const std::string &data)
 
 	using namespace boost::asio::ip;
 
-  boost::asio::io_service io_service;
+	try
+	{
+		boost::asio::io_service io_service;
 
-  udp::resolver resolver(io_service);
-  udp::resolver::query query(udp::v4(), socket_.remote_endpoint().address().to_string(), DEVICE_UDP_LISTEN_PORT, ip::udp::resolver_query::numeric_service);
-  udp::endpoint receiver_endpoint = *resolver.resolve(query);
+		udp::resolver resolver(io_service);
+		udp::resolver::query query(udp::v4(), socket_.remote_endpoint().address().to_string(), DEVICE_UDP_LISTEN_PORT, ip::udp::resolver_query::numeric_service);
+		udp::endpoint receiver_endpoint = *resolver.resolve(query);
 
-  udp::socket device(io_service);
-  device.open(udp::v4());
-	device.send_to(boost::asio::buffer(data), receiver_endpoint);
+		udp::socket device(io_service);
+		device.open(udp::v4());
+		device.send_to(boost::asio::buffer(data), receiver_endpoint);
+	}
+	catch (std::exception &e)
+	{
+		ERRORLOG("Failed to send UDP notification to device: " << e.what());
+	}
 }
 
 }
