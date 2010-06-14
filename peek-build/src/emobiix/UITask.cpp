@@ -31,6 +31,17 @@ Task UITask = {UIInit, UIIteration, UIWaitForActivity, UICleanup};
 DataObject *systemAppObject;
 Application *systemApplication;
 
+void UITaskMsgCB(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
+{
+
+        switch (MsgId)
+        {
+	  default:
+		emo_printf("UITaskMsgCB(): Got message\n");
+		return;
+	}
+}
+
 static int UIInit(void)
 {	
         static int initd = 0;
@@ -95,6 +106,12 @@ static int UIWaitForActivity(void)
  	static int gprsAttached;
 	static ConnectionContext *ctx;
 	BOSEventWaitT EvtStatus;
+        bool          MsgStatus;
+        uint32        MsgId;
+        uint32        MsgSize;
+        void          *MsgBufferP;
+        uint8         MailBoxId;
+        BOSEventWaitT MailBoxIndex;
 
 	if (!hasConnected)
 	{
@@ -139,9 +156,32 @@ static int UIWaitForActivity(void)
 	connectionContext_loopIteration(ctx);
 #ifdef SIMULATOR
 	Sleep(100);
-#else
-	NU_Sleep(100);
 #endif
+        EvtStatus = BOSEventWait(BOS_EM_S_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOSCalMsec(100));
+        if(EvtStatus & BOS_MESSAGE_TYPE)
+	{
+		for(MailBoxIndex=BOS_MAILBOX_1,MailBoxId = BOS_MAILBOX_1_ID; MailBoxId<UI_MAX_MAILBOXES; MailBoxId++)
+		{
+			if(EvtStatus & MailBoxIndex)
+			{
+				//get the Msg value
+				MsgStatus = BOSMsgRead(BOS_EM_S_ID, (BOSMailboxIdT)MailBoxId, &MsgId, &MsgBufferP, &MsgSize);
+				if(MsgStatus)
+				{
+
+					//call Msg handler
+					UITaskMsgCB(MsgId,MsgBufferP,MsgSize);
+					if (MsgBufferP != NULL)
+					{
+						//free the Msg buffer.
+						BOSMsgBufferFree(MsgBufferP);
+						MsgBufferP = NULL;
+					}
+				}
+			}
+			MailBoxIndex = (BOSEventWaitT)(MailBoxIndex << 1);
+		}
+	}
 	updateScreen();
 
 	/*
