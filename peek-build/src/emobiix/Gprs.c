@@ -29,7 +29,7 @@ static void gprs_set_status(bool status)
 
         emo_printf("GPRS Status Update: %d", status);
         GPRS_STATUS->field.uinteger = status;
-        dataobject_setValue(GPRS_DO, "status", GPRS_SIGNAL_LEVEL);
+        dataobject_setValue(GPRS_DO, "status", GPRS_STATUS);
 }
 
 static void gprs_set_signal_level(uint32 level)
@@ -76,8 +76,8 @@ static void rssiEventHandler(RegIdT RegId, uint32 MsgId, void* MsgBufferP)
 	gprs_set_signal_level(mSignal);
   }
 
-	/*Check GPRS attached*/
-	bGprs = (uGprsFlg==GPRS_REGISTERED||uGprsFlg==GPRS_ROAMING)&&(uSignalV > 0);
+  /*Check GPRS attached*/
+  bGprs = (uGprsFlg==GPRS_REGISTERED||uGprsFlg==GPRS_ROAMING)&&(uSignalV > 0);
 
   /*Do GPRS changed process*/
   if(bGprs!= mGprs){
