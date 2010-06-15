@@ -43,7 +43,7 @@ void UITaskMsgCB(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 			UIMsg *rssiMsg = (UIMsg *)MsgDataP;
 			emo_printf("UITaskMsgCB() received RSSI Register\n");	
 			gprsAttached = 1;
-			BOSFree(rssiMsg);
+			BOSMsgBufferFree(rssiMsg);
                 	break;
 		}
 
@@ -52,7 +52,7 @@ void UITaskMsgCB(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 			UIMsg *rssiMsg = (UIMsg *)MsgDataP;
 			gprsAttached = 0;
 			emo_printf("UITaskMsgCB() received RSSI Detach\n");
-			BOSFree(rssiMsg);
+			BOSMsgBufferFree(rssiMsg);
 			break;
 		}
 
