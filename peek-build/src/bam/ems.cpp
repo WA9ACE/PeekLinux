@@ -100,7 +100,6 @@ static void TCPSocketCallback(BAL_SOCKET_IND socketInd, void* data)
 
 				int msgLen = strlen((char *)data) + 1;
 				udpMsg->payload = (char *)BOSMalloc(msgLen);
-				memset(udpMsg->payload, 0, msgLen);
 				memcpy(udpMsg->payload, data, msgLen);
 
 				BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_2_ID, UI_UDP_NOTIFY, (void *)udpMsg, sizeof(emsMsg));

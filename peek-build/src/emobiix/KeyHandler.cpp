@@ -43,7 +43,7 @@ void updateScreen(void) {
                 emo_printf("RYAN screenbuf is NULL here" NL);
                 return;
         }
-        emo_printf("RYAN Calling tweetDrawScreen()" NL);
+
         tweetDrawScreen();
 
         if (!lgui_is_dirty())
