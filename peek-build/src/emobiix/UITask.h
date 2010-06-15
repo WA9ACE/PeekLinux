@@ -12,7 +12,7 @@ extern "C" {
 #endif
 extern Task UITask;
 
-//extern void KeyPad_Init(void);
+#define UI_MAX_MAILBOXES      1
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,8 @@
 #include "Gprs.h"
 #include "Debug.h"
-
+#include "exeapi.h"
+#include "bal_os.h"
+#include "msg.h"
 
 /**
  *  GPRS call back function
@@ -12,6 +14,8 @@ static void rssiEventHandler(uint8 ucMessage)
 {
   static bool mGprs = 0;
   bool  bGprs;
+  UIMsg tmpMsg;
+
   static uint8 mSignal=0; //XXX: Fix we should or it against system wide value
 
 
@@ -44,8 +48,12 @@ static void rssiEventHandler(uint8 ucMessage)
           if(bGprs){
 		// GPRS Attached
 		// Signal UI to display attached view
+		tmpMsg.msgA = 1;
+		BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_1_ID, UI_RSSI_REG, (void *)&tmpMsg, sizeof(UIMsg));
           } else{
 		// GPRS detached
+		tmpMsg.msgA = 0;
+		BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_1_ID, UI_RSSI_REG, (void *)&tmpMsg, sizeof(UIMsg));
 		// Signal UI to display detached view
           }
   }

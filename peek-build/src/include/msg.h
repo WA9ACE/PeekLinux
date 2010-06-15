@@ -32,4 +32,17 @@ typedef enum
 
 } EMSMsgIdT;
 
+
+typedef enum
+{
+        UI_RSSI_REG
+
+} UIMsgIdT;
+
+typedef struct _UIMsg
+{
+  int msgA;
+} UIMsg;
+
+
 #endif // __MSG_H__

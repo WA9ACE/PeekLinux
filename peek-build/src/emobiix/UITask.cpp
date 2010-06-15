@@ -5,6 +5,7 @@
 #include "Gprs.h"
 #include "lgui.h"
 #include "tweet.h"
+#include "msg.h"
 
 
 #include "Transport.h"
@@ -36,10 +37,14 @@ void UITaskMsgCB(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 
         switch (MsgId)
         {
+		UI_RSSI_REG:
+			emo_printf("UITaskMsgCB() received RSSI Register\n");	
+			break;
 	  default:
 		emo_printf("UITaskMsgCB(): Got message\n");
-		return;
 	}
+
+	return;
 }
 
 static int UIInit(void)
@@ -157,7 +162,10 @@ static int UIWaitForActivity(void)
 #ifdef SIMULATOR
 	Sleep(100);
 #endif
-        EvtStatus = BOSEventWait(BOS_EM_S_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOSCalMsec(100));
+
+        updateScreen();
+
+        EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOSCalMsec(100));
         if(EvtStatus & BOS_MESSAGE_TYPE)
 	{
 		for(MailBoxIndex=BOS_MAILBOX_1,MailBoxId = BOS_MAILBOX_1_ID; MailBoxId<UI_MAX_MAILBOXES; MailBoxId++)
@@ -165,7 +173,7 @@ static int UIWaitForActivity(void)
 			if(EvtStatus & MailBoxIndex)
 			{
 				//get the Msg value
-				MsgStatus = BOSMsgRead(BOS_EM_S_ID, (BOSMailboxIdT)MailBoxId, &MsgId, &MsgBufferP, &MsgSize);
+				MsgStatus = BOSMsgRead(BOS_UI_ID, (BOSMailboxIdT)MailBoxId, &MsgId, &MsgBufferP, &MsgSize);
 				if(MsgStatus)
 				{
 
@@ -182,7 +190,6 @@ static int UIWaitForActivity(void)
 			MailBoxIndex = (BOSEventWaitT)(MailBoxIndex << 1);
 		}
 	}
-	updateScreen();
 
 	/*
   	EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_TRUE, BOS_MESSAGE_FALSE, BOSCalMsec(100));
