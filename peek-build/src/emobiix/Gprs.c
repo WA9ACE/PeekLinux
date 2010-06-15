@@ -64,7 +64,7 @@ static void rssiEventHandler(RegIdT RegId, uint32 MsgId, void* MsgBufferP)
 		// GPRS detached
 		tmpMsg.msgA = 0;
 		emo_printf("rssiEventHandler() GPRS_DETACHED\n");
-		BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_1_ID, UI_RSSI_REG, (void *)&tmpMsg, sizeof(UIMsg));
+		BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_1_ID, UI_RSSI_DEREG, (void *)&tmpMsg, sizeof(UIMsg));
 		// Signal UI to display detached view
           }
   }
