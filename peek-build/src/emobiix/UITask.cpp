@@ -40,6 +40,9 @@ void UITaskMsgCB(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 		UI_RSSI_REG:
 			emo_printf("UITaskMsgCB() received RSSI Register\n");	
 			break;
+		UI_RSSI_DEREG:
+			emo_printf("UITaskMsgCB() received RSSI Detach\n");
+			break;
 	  default:
 		emo_printf("UITaskMsgCB(): Got message\n");
 	}

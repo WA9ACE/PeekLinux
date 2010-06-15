@@ -35,7 +35,8 @@ typedef enum
 
 typedef enum
 {
-        UI_RSSI_REG
+        UI_RSSI_REG,
+	UI_RSSI_DEREG
 
 } UIMsgIdT;
 
