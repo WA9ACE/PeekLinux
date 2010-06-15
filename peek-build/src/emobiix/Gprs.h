@@ -4,6 +4,8 @@
 #include "sysdefs.h"
 #include "balapi.h"
 
+#define GPRS_URI "system://local/gprs"
+
 #define GPRS_NOT_PRESENT  (-1)  //not present, last state is not indicated
 #define GPRS_NOT_REGISTERED (0)//not registered, no searching
 #define GPRS_REGISTERED (1)//registered, home network
