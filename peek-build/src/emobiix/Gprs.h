@@ -20,6 +20,7 @@ extern "C" {
 #endif
 
 void GprsRegisterRssi(void);
+void gprs_dataobject_init(void);
 
 static void rssiEventHandler(RegIdT RegId, uint32 MsgId, void* MsgBufferP);
 

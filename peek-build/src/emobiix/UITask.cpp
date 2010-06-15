@@ -76,7 +76,6 @@ static int UIInit(void)
 {	
 	static int initd = 0;
 
-        dataobject_platformInit();
 	GprsRegisterRssi();
 
 	/* Wait for BAL Task to complete */
@@ -114,7 +113,9 @@ static int UIInit(void)
 		 systemApplication = application_new(systemAppObject);
 		 application_setActive(systemApplication);
 	 */
+        dataobject_platformInit();
 	system_battery_init();
+	gprs_dataobject_init();
 
 	return 1;
 }

@@ -94,21 +94,23 @@ static void rssiEventHandler(RegIdT RegId, uint32 MsgId, void* MsgBufferP)
 		emo_printf("rssiEventHandler() GPRS_DETACHED\n");
 		BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_2_ID, UI_RSSI_DEREG, (void *)tmpMsg, sizeof(UIMsg));
 		gprs_set_status(GPRS_NOT_REGISTERED);
-		// Signal UI to display detached view
           }
   }
 }
 
 void GprsRegisterRssi(void) {
 
-       URL *url = url_parse(GPRS_URI, URL_ALL);
        mSignal=0;
        mGprs = 0;
 
+       GPRS_DO = NULL;
+
+       BalRssiRegister(rssiEventHandler);
+}
+
+void gprs_dataobject_init(void) {
+       URL *url = url_parse(GPRS_URI, URL_ALL);
        GPRS_DO = dataobject_construct(url, 1);
        GPRS_SIGNAL_LEVEL = dataobjectfield_uint(GPRS_NOT_REGISTERED);
        GPRS_STATUS = dataobjectfield_uint(GPRS_NOT_REGISTERED);
-
-
-       BalRssiRegister(rssiEventHandler);
 }
