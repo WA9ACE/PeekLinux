@@ -2,6 +2,7 @@
 #define _GPRS_H_
 
 #include "sysdefs.h"
+#include "balapi.h"
 
 #define GPRS_NOT_PRESENT  (-1)  //not present, last state is not indicated
 #define GPRS_NOT_REGISTERED (0)//not registered, no searching
@@ -18,7 +19,7 @@ extern "C" {
 
 void GprsRegisterRssi(void);
 
-static void rssiEventHandler(uint8 ucMessage);
+static void rssiEventHandler(RegIdT RegId, uint32 MsgId, void* MsgBufferP);
 
 #ifdef __cplusplus
 }

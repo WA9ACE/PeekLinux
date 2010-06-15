@@ -51,7 +51,7 @@ static int UIInit(void)
 {	
         static int initd = 0;
 
-//	GprsRegisterRssi();
+	GprsRegisterRssi();
 
         /* Wait for BAL Task to complete */
         while(!BalStatusGet()) {
