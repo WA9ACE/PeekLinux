@@ -94,6 +94,17 @@ static void TCPSocketCallback(BAL_SOCKET_IND socketInd, void* data)
 		case BAL_SOCK_UDP_DATA_IND:
 		{
 			emo_printf("Received UDP notification, 0x%08x (%s)", data, (data ? (char *)data : ""));
+			if (data)
+			{
+				UIMsg *udpMsg = (UIMsg *)BOSMsgBufferGet(sizeof(UIMsg));
+
+				int msgLen = strlen((char *)data) + 1;
+				udpMsg->payload = (char *)BOSMalloc(msgLen);
+				memset(udpMsg->payload, 0, msgLen);
+				memcpy(udpMsg->payload, data, msgLen);
+
+				BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_2_ID, UI_UDP_NOTIFY, (void *)udpMsg, sizeof(emsMsg));
+			}
 			flash_led();
 		}
 		break;
@@ -305,13 +316,16 @@ void EMSMailFunc(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 #ifdef EMO_SIM
 			int hasData = SimReadReg();
 #else
-			int hasData = *(int *)(((char *)0x007a9820) + 0x28);
+			int hasData = *(int *)(((char *)0x007aa878) + 0x28);
+#define GET_LDR_OP *(unsigned int *)(((unsigned int)bal_bind)+4)
+#define DISASM_LDR_OFFSET(a) (unsigned int)((((a >> 24) & 0x7f) << 2)+4)
+			bal_printf("bal_bind+4 0x%08x proc_context addr 0x%08x actual address: 0x%08x", (unsigned int)bal_bind + 4, (unsigned int *)((unsigned int)bal_bind) + DISASM_LDR_OFFSET(GET_LDR_OP), 0x007aa878);
 #endif
 
 			if (hasData > 0)
-				peekReq->readSize = bal_recv(peekReq->fd, peekReq->readBuffer, peekReq->readSize, 0);
+				peekReq->msgA = hasData;
 			else
-				peekReq->readSize = -1;
+				peekReq->msgA = -1;
 
 			bal_printf("ANDREY::Dispatching recv reply...");
 			BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_1_ID, EM_S_PEEK, (void *)peekReq, sizeof(emsMsg));

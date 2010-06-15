@@ -163,17 +163,12 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 	/*emo_printf("Loop iteration...");*/
 
 	/* first check if there is any inbound data pending on our connection */
-	response = transport->peek(ctx->endpoint, ctx->buffer+ctx->bufferBytes,
-			1);
+	response = transport->peek(ctx->endpoint, ctx->buffer+ctx->bufferBytes, 1);
 	if (response < 0) {
         /*emo_printf("transport->peek respose: %d\n", response);*/
 		/* error state, or no data */
 	} else if (response > 0) {
-#ifndef SIMULATOR
-        ctx->bufferBytes += response;
-#endif
-		response = transport->read(ctx->endpoint, ctx->buffer+ctx->bufferBytes,
-				CCTX_BUFLEN-ctx->bufferBytes);
+		response = transport->read(ctx->endpoint, ctx->buffer+ctx->bufferBytes, CCTX_BUFLEN-ctx->bufferBytes);
 		emo_printf("ANDREY::Read %d bytes" NL, response);
 		if (response < 0) {
 			emo_printf("ANDREY::read got error state" NL);

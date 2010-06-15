@@ -35,14 +35,15 @@ typedef enum
 
 typedef enum
 {
-        UI_RSSI_REG,
-	UI_RSSI_DEREG
-
+	UI_RSSI_REG,
+	UI_RSSI_DEREG,
+	UI_UDP_NOTIFY
 } UIMsgIdT;
 
 typedef struct _UIMsg
 {
   int msgA;
+	char *payload;
 } UIMsg;
 
 

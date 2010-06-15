@@ -32,65 +32,82 @@ Task UITask = {UIInit, UIIteration, UIWaitForActivity, UICleanup};
 DataObject *systemAppObject;
 Application *systemApplication;
 
+static int gprsAttached;
+
 void UITaskMsgCB(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 {
-
-        switch (MsgId)
-        {
-		UI_RSSI_REG:
+	switch (MsgId)
+	{
+		case UI_RSSI_REG:
+		{
 			emo_printf("UITaskMsgCB() received RSSI Register\n");	
-			break;
-		UI_RSSI_DEREG:
-			emo_printf("UITaskMsgCB() received RSSI Detach\n");
-			break;
-	  default:
-		emo_printf("UITaskMsgCB(): Got message\n");
-	}
+			gprsAttached = 1;
+		}
+		break;
 
-	return;
+		case UI_RSSI_DEREG:
+		{
+			gprsAttached = 0;
+			emo_printf("UITaskMsgCB() received RSSI Detach\n");
+		}
+		break;
+
+		case UI_UDP_NOTIFY:
+		{
+			UIMsg *udpMsg = (UIMsg *)MsgDataP;
+			emo_printf("UITaskMsgCB(): Received UDP notification: %s\n", udpMsg->payload);
+
+			BOSFree(udpMsg->payload);
+		}
+		break;
+
+		default:
+			emo_printf("UITaskMsgCB(): Got message\n");
+			break;
+	}
 }
 
 static int UIInit(void)
 {	
-        static int initd = 0;
+	static int initd = 0;
 
 	GprsRegisterRssi();
 
-        /* Wait for BAL Task to complete */
-        while(!BalStatusGet()) {
-                ExeEventWait(EXE_UI_ID,EXE_SIGNAL_FALSE,EXE_MESSAGE_FALSE,0x16);
-        }
+	/* Wait for BAL Task to complete */
+	while(!BalStatusGet()) {
+		ExeEventWait(EXE_UI_ID,EXE_SIGNAL_FALSE,EXE_MESSAGE_FALSE,0x16);
+	}
 
-        /* Update Bui status so baseband initializes in mmi_main() */
-        BuiStatusSet();
+	/* Update Bui status so baseband initializes in mmi_main() */
+	BuiStatusSet();
 
 	extern void KeyPad_Init();
 	KeyPad_Init();
 
-        LcdWakeUp();
-//#ifndef EMO_SIM
-        BalLightInit();
+	LcdWakeUp();
+	//#ifndef EMO_SIM
+	BalLightInit();
 
-        BalLcdScreenOn();
+	BalLcdScreenOn();
 
-// 	extern void main_test();
-//	main_test();
+	// 	extern void main_test();
+	//	main_test();
 
-        if (!initd) {
+	if (!initd) {
 		screenBuf = (unsigned char *)BalMalloc(320*240*2);
-                lgui_attach(screenBuf);
-                tweetInit();
-                initd = 1;
-        }
-        tweetDrawScreen();
+		lgui_attach(screenBuf);
+		tweetInit();
+		initd = 1;
+	}
+	tweetDrawScreen();
 	updateScreen();
-//#endif
+	//#endif
 
 	/*
-	systemAppObject = dataobject_locateStr("system://local/bootapplication");
-	systemApplication = application_new(systemAppObject);
-	application_setActive(systemApplication);
-	*/
+		 systemAppObject = dataobject_locateStr("system://local/bootapplication");
+		 systemApplication = application_new(systemAppObject);
+		 application_setActive(systemApplication);
+	 */
 	dataobject_platformInit();
 	system_battery_init();
 
@@ -111,17 +128,19 @@ static int UIWaitForActivity(void)
 	int hasPrinted;
 	char buf[256];
 	static int hasConnected;
- 	static int gprsAttached;
 	static ConnectionContext *ctx;
 	BOSEventWaitT EvtStatus;
-        bool          MsgStatus;
-        uint32        MsgId;
-        uint32        MsgSize;
-        void          *MsgBufferP;
-        uint8         MailBoxId;
-        BOSEventWaitT MailBoxIndex;
+	bool          MsgStatus;
+	uint32        MsgId;
+	uint32        MsgSize;
+	void          *MsgBufferP;
+	uint8         MailBoxId;
+	BOSEventWaitT MailBoxIndex;
 
-	if (!hasConnected)
+	if (!gprsAttached)
+		hasConnected = 0;
+
+	if (!hasConnected && gprsAttached)
 	{
 		url = url_parse("tcp://10.150.9.6:12345/dataobject", URL_ALL);
 
@@ -159,19 +178,21 @@ static int UIWaitForActivity(void)
 
 		hasConnected = 1;
 	}
-	//       while (1)
-	//     {
-	connectionContext_loopIteration(ctx);
-#ifdef SIMULATOR
-	Sleep(100);
-#endif
 
-        updateScreen();
-
-        EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOSCalMsec(100));
-        if(EvtStatus & BOS_MESSAGE_TYPE)
+	if (hasConnected)
 	{
-		for(MailBoxIndex=BOS_MAILBOX_1,MailBoxId = BOS_MAILBOX_1_ID; MailBoxId<UI_MAX_MAILBOXES; MailBoxId++)
+		connectionContext_loopIteration(ctx);
+#ifdef SIMULATOR
+		Sleep(100);
+#endif
+	}
+
+	updateScreen();
+
+	EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOSCalMsec(100));
+	if(EvtStatus & BOS_MESSAGE_TYPE)
+	{
+		for(MailBoxIndex=BOS_MAILBOX_2,MailBoxId = BOS_MAILBOX_2_ID; MailBoxId<UI_MAX_MAILBOXES; MailBoxId++)
 		{
 			if(EvtStatus & MailBoxIndex)
 			{
@@ -193,15 +214,6 @@ static int UIWaitForActivity(void)
 			MailBoxIndex = (BOSEventWaitT)(MailBoxIndex << 1);
 		}
 	}
-
-	/*
-  	EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_TRUE, BOS_MESSAGE_FALSE, BOSCalMsec(100));
-  	if ((EvtStatus & BOS_SIGNAL_TYPE) && (EvtStatus & BOS_SIGNAL_1))
-  	{
-               // Gprs Attached
-               gprsAttached=1;
- 	}
-	*/
 
 	return 1;
 }

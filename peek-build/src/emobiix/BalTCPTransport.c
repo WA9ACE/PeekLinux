@@ -75,9 +75,10 @@ static int networkRequest_socket()
 		// blocking wait for a reply from the network task
 		EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOS_TIMEOUT_FALSE);
 
-		emo_printf("ANDREY::Received socket response!");
-		if (!(EvtStatus & BOS_MESSAGE_TYPE))
+		if (!(EvtStatus & BOS_MESSAGE_TYPE) || !(EvtStatus & BOS_MAILBOX_1))
 			continue;
+
+		emo_printf("ANDREY::Received socket response!");
 
 		if (!BOSMsgRead(BOS_UI_ID, BOS_MAILBOX_1_ID, &MsgId, &MsgBufferP, &MsgSize))
 			continue;
@@ -112,9 +113,10 @@ static int networkRequest_connect(int fd, const char *host, int port)
 		// blocking wait for a reply from the network task
 		EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOS_TIMEOUT_FALSE);
 
-		emo_printf("ANDREY::Received connect response!");
-		if (!(EvtStatus & BOS_MESSAGE_TYPE))
+		if (!(EvtStatus & BOS_MESSAGE_TYPE) || !(EvtStatus & BOS_MAILBOX_1))
 			continue;
+
+		emo_printf("ANDREY::Received connect response!");
 
 		if (!BOSMsgRead(BOS_UI_ID, BOS_MAILBOX_1_ID, &MsgId, &MsgBufferP, &MsgSize))
 			continue;
@@ -151,9 +153,10 @@ static int networkRequest_recv(int fd, char *buffer, int size)
 		// blocking wait for a reply from the network task
 		EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOS_TIMEOUT_FALSE);
 
-		emo_printf("ANDREY::Received recv response!");
-		if (!(EvtStatus & BOS_MESSAGE_TYPE))
+		if (!(EvtStatus & BOS_MESSAGE_TYPE) || !(EvtStatus & BOS_MAILBOX_1))
 			continue;
+
+		emo_printf("ANDREY::Received recv response!");
 
 		if (!BOSMsgRead(BOS_UI_ID, BOS_MAILBOX_1_ID, &MsgId, &MsgBufferP, &MsgSize))
 			continue;
@@ -170,7 +173,7 @@ static int networkRequest_recv(int fd, char *buffer, int size)
 	}
 }
 
-static int networkRequest_peek(int fd, char *buffer, int size)
+static int networkRequest_peek()
 {
 	BOSEventWaitT EvtStatus;
 	uint32        MsgId;
@@ -179,10 +182,6 @@ static int networkRequest_peek(int fd, char *buffer, int size)
 
 	emsMsg *socketMsg = (emsMsg *)BOSMsgBufferGet(sizeof(emsMsg));
 	memset(socketMsg, 0, sizeof(emsMsg));
-
-	socketMsg->fd = fd;
-	socketMsg->readSize = size;
-	socketMsg->readBuffer = BOSMalloc(socketMsg->readSize);    
 
 	emo_printf("ANDREY::Requesting a peek from the network task...");
 	
@@ -195,22 +194,18 @@ static int networkRequest_peek(int fd, char *buffer, int size)
 		// blocking wait for a reply from the network task
 		EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOS_TIMEOUT_FALSE);
 
-		emo_printf("ANDREY::Received peek response!");
-		if (!(EvtStatus & BOS_MESSAGE_TYPE))
+		if (!(EvtStatus & BOS_MESSAGE_TYPE) || !(EvtStatus & BOS_MAILBOX_1))
 			continue;
+
+		emo_printf("ANDREY::Received peek response!");
 
 		if (!BOSMsgRead(BOS_UI_ID, BOS_MAILBOX_1_ID, &MsgId, &MsgBufferP, &MsgSize))
 			continue;
 
 		socketMsg = (emsMsg *)MsgBufferP;
-		emo_printf("ANDREY::Got a message id:%d, size:%d, bytes: %d", MsgId, MsgSize, socketMsg->readSize);
+		emo_printf("ANDREY::Got a message id:%d, size:%d, hasData: %d", MsgId, MsgSize, socketMsg->msgA);
 
-		if (socketMsg->readSize > 0)
-			memcpy(buffer, socketMsg->readBuffer, socketMsg->readSize);
-
-		BOSFree(socketMsg->readBuffer);
-
-		return socketMsg->readSize;
+		return socketMsg->msgA;
 	}
 }
 
@@ -240,9 +235,10 @@ static int networkRequest_send(int fd, const char *buffer, int size)
 		// blocking wait for a reply from the network task
 		EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOS_TIMEOUT_FALSE);
 
-		emo_printf("ANDREY::Received send response!");
-		if (!(EvtStatus & BOS_MESSAGE_TYPE))
+		if (!(EvtStatus & BOS_MESSAGE_TYPE) || !(EvtStatus & BOS_MAILBOX_1))
 			continue;
+
+		emo_printf("ANDREY::Received send response!");
 
 		if (!BOSMsgRead(BOS_UI_ID, BOS_MAILBOX_1_ID, &MsgId, &MsgBufferP, &MsgSize))
 			continue;
@@ -276,9 +272,10 @@ static int networkRequest_close(int fd)
 		// blocking wait for a reply from the network task
 		EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOS_TIMEOUT_FALSE);
 
-		emo_printf("ANDREY::Received close response!");
-		if (!(EvtStatus & BOS_MESSAGE_TYPE))
+		if (!(EvtStatus & BOS_MESSAGE_TYPE) || !(EvtStatus & BOS_MAILBOX_1))
 			continue;
+
+		emo_printf("ANDREY::Received close response!");
 
 		if (!BOSMsgRead(BOS_UI_ID, BOS_MAILBOX_1_ID, &MsgId, &MsgBufferP, &MsgSize))
 			continue;
@@ -289,7 +286,6 @@ static int networkRequest_close(int fd)
 		return socketMsg->msgA;
 	}
 }
-
 
 Endpoint *TCPSocket(void)
 {
@@ -381,7 +377,7 @@ int TCPRead(Endpoint *ep, void *output, size_t len)
 
 int TCPPeek(Endpoint *ep, void *output, size_t len)
 {
-	return networkRequest_peek(((TCPEndpoint *)ep)->fd, output, len);
+	return networkRequest_peek();
 }
 
 int TCPClose(Endpoint *ep)
@@ -412,3 +408,4 @@ static int TCPInit(void)
 {
 	return 1;
 }
+

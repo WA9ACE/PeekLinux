@@ -12,7 +12,7 @@ extern "C" {
 #endif
 extern Task UITask;
 
-#define UI_MAX_MAILBOXES      1
+#define UI_MAX_MAILBOXES      2
 
 #ifdef __cplusplus
 }
