@@ -59,6 +59,7 @@ static int networkRequest_socket()
 	uint32        MsgId;
 	uint32        MsgSize;
 	void          *MsgBufferP;
+	int 					sockFd;
 
 	emsMsg *socketMsg = (emsMsg *)BOSMsgBufferGet(sizeof(emsMsg));
 	memset(socketMsg, 0, sizeof(emsMsg));
@@ -86,7 +87,10 @@ static int networkRequest_socket()
 		socketMsg = (emsMsg *)MsgBufferP;
 		emo_printf("ANDREY::Got a message id:%d, size:%d, socket: %d", MsgId, MsgSize, socketMsg->fd);
 
-		return socketMsg->fd;
+		sockFd = socketMsg->fd;
+		BOSMsgBufferFree(MsgBufferP);
+
+		return sockFd;
 	}
 }
 
@@ -96,6 +100,7 @@ static int networkRequest_connect(int fd, const char *host, int port)
 	uint32        MsgId;
 	uint32        MsgSize;
 	void          *MsgBufferP;
+	int 					connectRet;
 
 	emsMsg *socketMsg = (emsMsg *)BOSMsgBufferGet(sizeof(emsMsg));
 	memset(socketMsg, 0, sizeof(emsMsg));
@@ -124,7 +129,10 @@ static int networkRequest_connect(int fd, const char *host, int port)
 		socketMsg = (emsMsg *)MsgBufferP;
 		emo_printf("ANDREY::Got a message id:%d, size:%d, status: %d", MsgId, MsgSize, socketMsg->msgA);
 
-		return socketMsg->msgA;
+		connectRet = socketMsg->msgA;
+		BOSMsgBufferFree(MsgBufferP);
+
+		return connectRet;
 	}
 }
 
@@ -134,6 +142,7 @@ static int networkRequest_recv(int fd, char *buffer, int size)
 	uint32        MsgId;
 	uint32        MsgSize;
 	void          *MsgBufferP;
+	int						readRet;
 
 	emsMsg *socketMsg = (emsMsg *)BOSMsgBufferGet(sizeof(emsMsg));
 	memset(socketMsg, 0, sizeof(emsMsg));
@@ -167,9 +176,12 @@ static int networkRequest_recv(int fd, char *buffer, int size)
 		if (socketMsg->readSize > 0)
 			memcpy(buffer, socketMsg->readBuffer, socketMsg->readSize);
 
-		BOSFree(socketMsg->readBuffer);
+		readRet = socketMsg->readSize;
 
-		return socketMsg->readSize;
+		BOSFree(socketMsg->readBuffer);
+		BOSMsgBufferFree(MsgBufferP);
+
+		return readRet;
 	}
 }
 
@@ -179,6 +191,7 @@ static int networkRequest_peek()
 	uint32        MsgId;
 	uint32        MsgSize;
 	void          *MsgBufferP;
+	int						peekRet;
 
 	emsMsg *socketMsg = (emsMsg *)BOSMsgBufferGet(sizeof(emsMsg));
 	memset(socketMsg, 0, sizeof(emsMsg));
@@ -205,7 +218,10 @@ static int networkRequest_peek()
 		socketMsg = (emsMsg *)MsgBufferP;
 		emo_printf("ANDREY::Got a message id:%d, size:%d, hasData: %d", MsgId, MsgSize, socketMsg->msgA);
 
-		return socketMsg->msgA;
+		peekRet = socketMsg->msgA;
+		BOSMsgBufferFree(MsgBufferP);
+
+		return peekRet;
 	}
 }
 
@@ -215,6 +231,7 @@ static int networkRequest_send(int fd, const char *buffer, int size)
 	uint32        MsgId;
 	uint32        MsgSize;
 	void          *MsgBufferP;
+	int						writeRet;
 
 	emsMsg *socketMsg = (emsMsg *)BOSMsgBufferGet(sizeof(emsMsg));
 	memset(socketMsg, 0, sizeof(emsMsg));
@@ -246,8 +263,12 @@ static int networkRequest_send(int fd, const char *buffer, int size)
 		socketMsg = (emsMsg *)MsgBufferP;
 		emo_printf("ANDREY::Got a send message id:%d, size:%d, status: %d", MsgId, MsgSize, socketMsg->writeSize);
 
+		writeRet = socketMsg->writeSize;
+
 		BOSFree(socketMsg->writeBuffer);
-		return socketMsg->writeSize;
+		BOSMsgBufferFree(MsgBufferP);
+
+		return writeRet;
 	}
 }
 
@@ -257,6 +278,7 @@ static int networkRequest_close(int fd)
 	uint32        MsgId;
 	uint32        MsgSize;
 	void          *MsgBufferP;
+	int						closeRet;
 
 	emsMsg *socketMsg = (emsMsg *)BOSMsgBufferGet(sizeof(emsMsg));
 	memset(socketMsg, 0, sizeof(emsMsg));
@@ -283,7 +305,11 @@ static int networkRequest_close(int fd)
 		socketMsg = (emsMsg *)MsgBufferP;
 		emo_printf("ANDREY::Got a message id:%d, size:%d, status: %d", MsgId, MsgSize, socketMsg->msgA);
 
-		return socketMsg->msgA;
+		closeRet = socketMsg->msgA;
+
+		BOSMsgBufferFree(MsgBufferP);
+
+		return closeRet;
 	}
 }
 
