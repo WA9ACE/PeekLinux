@@ -40,17 +40,21 @@ void UITaskMsgCB(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 	{
 		case UI_RSSI_REG:
 		{
+			UIMsg *rssiMsg = (UIMsg *)MsgDataP;
 			emo_printf("UITaskMsgCB() received RSSI Register\n");	
 			gprsAttached = 1;
+			BOSFree(rssiMsg);
+                	break;
 		}
-		break;
 
 		case UI_RSSI_DEREG:
 		{
+			UIMsg *rssiMsg = (UIMsg *)MsgDataP;
 			gprsAttached = 0;
 			emo_printf("UITaskMsgCB() received RSSI Detach\n");
+			BOSFree(rssiMsg);
+			break;
 		}
-		break;
 
 		case UI_UDP_NOTIFY:
 		{
@@ -58,19 +62,21 @@ void UITaskMsgCB(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 			emo_printf("UITaskMsgCB(): Received UDP notification: %s\n", udpMsg->payload);
 
 			BOSFree(udpMsg->payload);
+			break;
 		}
-		break;
 
 		default:
 			emo_printf("UITaskMsgCB(): Got message\n");
 			break;
 	}
+
 }
 
 static int UIInit(void)
 {	
 	static int initd = 0;
 
+        dataobject_platformInit();
 	GprsRegisterRssi();
 
 	/* Wait for BAL Task to complete */
@@ -108,7 +114,6 @@ static int UIInit(void)
 		 systemApplication = application_new(systemAppObject);
 		 application_setActive(systemApplication);
 	 */
-	dataobject_platformInit();
 	system_battery_init();
 
 	return 1;

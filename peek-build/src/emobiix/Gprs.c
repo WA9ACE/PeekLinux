@@ -27,7 +27,6 @@ static void gprs_set_status(bool status)
         if (!GPRS_DO)
                 return;
 
-        emo_printf("GPRS Status Update: %d", status);
         GPRS_STATUS->field.uinteger = status;
         dataobject_setValue(GPRS_DO, "status", GPRS_STATUS);
 }
@@ -45,7 +44,7 @@ static void gprs_set_signal_level(uint32 level)
 static void rssiEventHandler(RegIdT RegId, uint32 MsgId, void* MsgBufferP)
 {
   bool  bGprs;
-  UIMsg tmpMsg;
+  UIMsg *tmpMsg = (UIMsg *)BOSMsgBufferGet(sizeof(UIMsg));
   uint8 ucMessage=0;
   uint8 uSignalV =0;
   uint8 uGprsFlg =0;
@@ -87,15 +86,13 @@ static void rssiEventHandler(RegIdT RegId, uint32 MsgId, void* MsgBufferP)
           if(bGprs){
 		// GPRS Attached
 		// Signal UI to display attached view
-		tmpMsg.msgA = GPRS_REGISTERED;
 		emo_printf("rssiEventHandler() GPRS_ATTACHED\n");
-		BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_2_ID, UI_RSSI_REG, (void *)&tmpMsg, sizeof(UIMsg));
+		BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_2_ID, UI_RSSI_REG, (void *)tmpMsg, sizeof(UIMsg));
 		gprs_set_status(GPRS_REGISTERED);
           } else{
 		// GPRS detached
-		tmpMsg.msgA = GPRS_NOT_REGISTERED;
 		emo_printf("rssiEventHandler() GPRS_DETACHED\n");
-		BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_2_ID, UI_RSSI_DEREG, (void *)&tmpMsg, sizeof(UIMsg));
+		BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_2_ID, UI_RSSI_DEREG, (void *)tmpMsg, sizeof(UIMsg));
 		gprs_set_status(GPRS_NOT_REGISTERED);
 		// Signal UI to display detached view
           }
