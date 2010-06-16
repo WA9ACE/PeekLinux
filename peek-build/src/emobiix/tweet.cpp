@@ -363,81 +363,81 @@ int tweetInit(void)
 	color.value = 0xFFFFFFFF;
 	style_setProperty(greenStyle, NULL, "image", NULL,
 			"color", (void *)color.value);
-	style_setProperty(defaultStyle, NULL, "gradbox", NULL,
+	style_setProperty(defaultStyle, NULL, "gradbox", "box",
 			"renderer", (void *)widgetrenderer_gradbox());
-	style_setProperty(greenStyle, NULL, "gradbox", NULL,
+	style_setProperty(greenStyle, NULL, "gradbox", "box",
 			"renderer", (void *)widgetrenderer_gradbox());
-	style_setProperty(defaultStyle, NULL, "gradbox", NULL,
+	style_setProperty(defaultStyle, NULL, "gradbox", "box",
 			"gradient", (void *)grad1);
-	style_setProperty(greenStyle, NULL, "gradbox", NULL,
+	style_setProperty(greenStyle, NULL, "gradbox", "box",
 			"gradient", (void *)greengrad1);
 
-	style_setProperty(defaultStyle, NULL, "gradboxr", NULL,
+	style_setProperty(defaultStyle, NULL, "gradboxr", "box",
 			"renderer", (void *)widgetrenderer_gradboxr());
-	style_setProperty(greenStyle, NULL, "gradboxr", NULL,
+	style_setProperty(greenStyle, NULL, "gradboxr", "box",
 			"renderer", (void *)widgetrenderer_gradboxr());
-	style_setProperty(defaultStyle, NULL, "gradboxr", NULL,
+	style_setProperty(defaultStyle, NULL, "gradboxr", "box",
 			"gradient", (void *)grad1);
-	style_setProperty(greenStyle, NULL, "gradboxr", NULL,
+	style_setProperty(greenStyle, NULL, "gradboxr", "box",
 			"gradient", (void *)greengrad1);
-	style_setProperty(defaultStyle, NULL, "gradboxr", NULL,
+	style_setProperty(defaultStyle, NULL, "gradboxr", "box",
 			"focusgradient", (void *)grad2);
-	style_setProperty(greenStyle, NULL, "gradboxr", NULL,
+	style_setProperty(greenStyle, NULL, "gradboxr", "box",
 			"focusgradient", (void *)greengrad2);
-	style_setProperty(defaultStyle, NULL, "gradboxr", NULL,
+	style_setProperty(defaultStyle, NULL, "gradboxr", "box",
 			"radius", (void *)7);
-	style_setProperty(greenStyle, NULL, "gradboxr", NULL,
+	style_setProperty(greenStyle, NULL, "gradboxr", "box",
 			"radius", (void *)7);
 	color.value = 0x696969FF;
-	style_setProperty(defaultStyle, NULL, "gradboxr", NULL,
+	style_setProperty(defaultStyle, NULL, "gradboxr", "box",
 			"outline", (void *)color.value);
 	color.value = 0x69F969FF;
-	style_setProperty(greenStyle, NULL, "gradboxr", NULL,
+	style_setProperty(greenStyle, NULL, "gradboxr", "box",
 			"outline", (void *)color.value);
 	color.value = 0x696989FF;
-	style_setProperty(defaultStyle, NULL, "gradboxr", NULL,
+	style_setProperty(defaultStyle, NULL, "gradboxr", "box",
 			"focusoutline", (void *)color.value);
-	style_setProperty(greenStyle, NULL, "gradboxr", NULL,
+	style_setProperty(greenStyle, NULL, "gradboxr", "box",
 			"focusoutline", (void *)color.value);
 
-	style_setProperty(defaultStyle, NULL, "selbox", NULL,
+	style_setProperty(defaultStyle, NULL, "selbox", "box",
 			"renderer", (void *)widgetrenderer_gradboxr());
-	style_setProperty(greenStyle, NULL, "selbox", NULL,
+	style_setProperty(greenStyle, NULL, "selbox", "box",
 			"renderer", (void *)widgetrenderer_gradboxr());
-	style_setProperty(defaultStyle, NULL, "selbox", NULL,
+	style_setProperty(defaultStyle, NULL, "selbox", "box",
 			"gradient", NULL);
-	style_setProperty(greenStyle, NULL, "selbox", NULL,
+	style_setProperty(greenStyle, NULL, "selbox", "box",
 			"gradient", NULL);
-	style_setProperty(defaultStyle, NULL, "selbox", NULL,
+	style_setProperty(defaultStyle, NULL, "selbox", "box",
 			"focusgradient", (void *)grad2);
-	style_setProperty(greenStyle, NULL, "selbox", NULL,
+	style_setProperty(greenStyle, NULL, "selbox", "box",
 			"focusgradient", (void *)greengrad2);
-	style_setProperty(defaultStyle, NULL, "selbox", NULL,
+	style_setProperty(defaultStyle, NULL, "selbox", "box",
 			"radius", (void *)7);
-	style_setProperty(greenStyle, NULL, "selbox", NULL,
+	style_setProperty(greenStyle, NULL, "selbox", "box",
 			"radius", (void *)7);
 	color.value = 0x696969FF;
-	style_setProperty(defaultStyle, NULL, "selbox", NULL,
+	style_setProperty(defaultStyle, NULL, "selbox", "box",
 			"outline", (void *)color.value);
 	color.value = 0x69F969FF;
-	style_setProperty(greenStyle, NULL, "selbox", NULL,
+	style_setProperty(greenStyle, NULL, "selbox", "box",
 			"outline", (void *)color.value);
 	color.value = 0x696989FF;
-	style_setProperty(defaultStyle, NULL, "selbox", NULL,
+	style_setProperty(defaultStyle, NULL, "selbox", "box",
 			"focusoutline", (void *)color.value);
 	color.value = 0x69F989FF;
-	style_setProperty(greenStyle, NULL, "selbox", NULL,
+	style_setProperty(greenStyle, NULL, "selbox", "box",
 			"focusoutline", (void *)color.value);
 
-	style_setProperty(defaultStyle, NULL, "solid", NULL,
+	style_setProperty(defaultStyle, NULL, "solid", "box",
 			"renderer", (void *)widgetrenderer_solid());
-	style_setProperty(greenStyle, NULL, "solid", NULL,
+	style_setProperty(greenStyle, NULL, "solid", "box",
 			"renderer", (void *)widgetrenderer_solid());
 	color.value = 0x878787FF;
-	style_setProperty(defaultStyle, NULL, "solid", NULL,
+	style_setProperty(defaultStyle, NULL, "solid", "box",
 			"color", (void *)color.value);
 	color.value = 0x263914FF;
-	style_setProperty(greenStyle, NULL, "solid", NULL,
+	style_setProperty(greenStyle, NULL, "solid", "box",
 			"color", (void *)color.value);
 	style_setProperty(defaultStyle, NULL, "label", "string",
 			"renderer", (void *)widgetrenderer_string());
@@ -781,6 +781,7 @@ void makeLockScreen(void)
 	dataobject_setValue(lockScreen, "color", dataobjectfield_uint(0x11883300));
 #else
 	widget_setID(lockScreen, "gradbox");
+	dataobject_setValue(lockScreen, "type", dataobjectfield_string("box"));
 #endif
 	dataobject_setDirty(lockScreen);
 
@@ -876,6 +877,7 @@ void makeLockScreen(void)
 	bobj = widget_new();
 	widget_setPacking(bobj, WP_VERTICAL);
 	widget_setID(bobj, "gradboxr");
+	dataobject_setValue(bobj, "type", dataobjectfield_string("box"));
 	widget_pack(bobj, lockScreen);
 	widget_setAlignment(bobj, WA_CENTER);
 	//dataobject_setValue(bobj, "alignment", dataobjectfield_string("center"));
@@ -896,6 +898,7 @@ void makeLockScreen(void)
 	widget_setPacking(bobj, WP_VERTICAL);
 	widget_setID(bobj, "gradboxr");
 	widget_pack(bobj, lockScreen);
+	dataobject_setValue(bobj, "type", dataobjectfield_string("box"));
 	widget_setAlignment(bobj, WA_CENTER);
 	//dataobject_setValue(bobj, "alignment", dataobjectfield_string("center"));
 	dataobject_setValue(bobj, "onreturn", dataobjectfield_string(
