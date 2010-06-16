@@ -8,6 +8,7 @@
 #include "p_malloc.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #define KEY_LEN 128
 
@@ -70,6 +71,12 @@ void style_setProperty(Style *s, const char *className, const char *id,
 	char key[KEY_LEN];
 	makekey(key, className, id, type, lvalue);
 	map_append(s->prop, key, value);
+
+	if (type != NULL && strcmp(type, "box") == 0) {
+		/* yeah its dirty but you like it */
+		makekey(key, className, id, "button", lvalue);
+		map_append(s->prop, key, value);
+	}
 }
 
 void *style_getProperty(Style *s, const char *className, const char *id,
