@@ -28,7 +28,7 @@ class connection : public boost::enable_shared_from_this<connection>, private bo
 {
 public:
   /// Construct a connection with the given io_service.
-  explicit connection(boost::asio::io_service& io_service);
+  explicit connection(boost::asio::io_service& io_service, const std::string app_path);
 
 	/// Destruct, clean up handler
 	~connection();
@@ -75,6 +75,8 @@ private:
 	std::string url_request_;
 
 private:
+	std::string app_path_;
+	
   /// Strand to ensure the connection's handlers are not called concurrently.
   boost::asio::io_service::strand strand_;
 

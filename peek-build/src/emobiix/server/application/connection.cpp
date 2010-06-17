@@ -28,9 +28,10 @@ namespace emobiix {
 
 using namespace boost::asio;
 
-connection::connection(io_service& io_service)
+connection::connection(io_service& io_service, const std::string app_path)
 	: strand_(io_service),
-	socket_(io_service)
+	socket_(io_service),
+	app_path_(app_path)
 {
 }
 
@@ -246,7 +247,7 @@ void connection::handle_authUserPass(FRIPacketP* packet, reply& rep)
 		ERRORLOG("Required field IMEI missing from authentication");
 		authResponse->packetTypeP.choice.authResponseP = RequestResponseP_responseErrorP;
 	}
-	else if (soap_request::GetAuthentication("http://linux.emobiix.com:8082/cgi-bin/test.cgi", IMEI->second.c_str(), user.c_str(), pass.c_str()))
+	else if (soap_request::GetAuthentication(app_path_, IMEI->second.c_str(), user.c_str(), pass.c_str()))
 	{
 		INFOLOG("Authentication successful");
 
@@ -323,7 +324,7 @@ void connection::start_serverSync(reply& rep)
 	rep.packets.push_back(start);
 
 	string treeData;
-	if (!soap_request::GetTreeDataObject("http://linux.emobiix.com:8082/cgi-bin/test.cgi", url_request_, treeData))
+	if (!soap_request::GetTreeDataObject(app_path_, url_request_, treeData))
 	{
 		ERRORLOG("NO tree data...");
 		return;
@@ -347,7 +348,7 @@ bool connection::parseTree(DOMNode *node, vector<FRIPacketP *>& packets, int& no
 		return false;
 
 	int self = nodeCount;
-	if (FRIPacketP *dataObject = dataobject_factory::create(node))
+	if (FRIPacketP *dataObject = dataobject_factory::create(app_path_, node))
 	{
 		packets.push_back(dataObject);
 		nodeCount++;

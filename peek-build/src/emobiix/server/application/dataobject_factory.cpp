@@ -12,7 +12,7 @@ using namespace std;
 namespace emobiix
 {
 
-FRIPacketP *dataobject_factory::create(DOMNode *node)
+FRIPacketP *dataobject_factory::create(const std::string& app_path, DOMNode *node)
 {
 	string nodeName = XML::XMLToString(node->getNodeName());
 	if (nodeName == "emobiix-application") 
@@ -28,7 +28,7 @@ FRIPacketP *dataobject_factory::create(DOMNode *node)
 	else if (nodeName == "entry")
 		return createEntry(node);
 	else if (nodeName == "image")
-		return createImage(node);
+		return createImage(node, app_path);
 
 	return NULL;
 }
@@ -167,7 +167,7 @@ FRIPacketP* dataobject_factory::createEntry(DOMNode *node)
 	return entry;
 }
 
-FRIPacketP* dataobject_factory::createImage(DOMNode *node)
+FRIPacketP* dataobject_factory::createImage(DOMNode *node, const std::string& app_path)
 {
 	FRIPacketP *image = createDataObject("image", node);
 	setCommonAttributes(image, node);
@@ -177,7 +177,7 @@ FRIPacketP* dataobject_factory::createImage(DOMNode *node)
 
 	std::string mime;
 	vector<pair<size_t, unsigned char *> > blocks;
-	soap_request::GetBlockDataObject("http://linux.emobiix.com:8082/cgi-bin/test.cgi", src, mime, blocks);
+	soap_request::GetBlockDataObject(app_path, src, mime, blocks);
 
 	addStringAttribute(image, "mime-type", mime.c_str());
 	addDataAttribute(image, "src", blocks);
