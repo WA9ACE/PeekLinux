@@ -5,6 +5,10 @@
 #include "emobiix_rpc_emobiixObject.h" // get server object
 #include "emobiix.nsmap" // get namespace bindings
 
+#include <string>  
+#include <iostream>  
+#include "curl/curl.h"  
+  
 using namespace std;
 
 int main()
@@ -27,8 +31,86 @@ int ns__AuthenticationRequest(struct soap* soap, xsd__string devId, xsd__string 
 	return SOAP_OK;
 }
 
+// Write any errors in here  
+static char errorBuffer[CURL_ERROR_SIZE];  
+ 
+#if 0 
+// Write all expected data in here  
+static string buffer;  
+  
+// This is the writer call back function used by curl  
+static int writer(char *data, size_t size, size_t nmemb,  
+                  std::string *buffer)  
+{  
+  // What we will return  
+  int result = 0;  
+  
+  // Is there anything in the buffer?  
+  if (buffer != NULL)  
+  {  
+    // Append the data to the buffer  
+    buffer->append(data, size * nmemb);  
+  
+    // How much did we write?  
+    result = size * nmemb;  
+  }  
+  
+  return result;  
+}  
+ 
+#endif
+ 
+bool curl_get_file(const char *szFileName, const char *szUrl)
+{
+	// Our curl objects  
+	CURL *curl;  
+	CURLcode result;  
+
+	// Create our curl handle  
+	curl = curl_easy_init();  
+	if (!curl) 
+		return false;
+
+	FILE *file = fopen(szFileName, "w");
+	if (!file)
+		return false;
+
+	// Now set up all of the curl options  
+	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);  
+	curl_easy_setopt(curl, CURLOPT_URL, szUrl);  
+	curl_easy_setopt(curl, CURLOPT_HEADER, 0);  
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);  
+//		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);  
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);  
+
+	// Attempt to retrieve the remote page  
+	result = curl_easy_perform(curl);  
+
+	// Always cleanup  
+	curl_easy_cleanup(curl);  
+
+	fclose(file);
+
+	// Did we succeed?  
+	if (result != CURLE_OK)  
+	{  
+		cout << "Error: [" << result << "] - " << errorBuffer;  
+		return false;
+	}
+
+	return true;
+}  
+
 int ns__BlockDataObjectRequest(struct soap* soap, xsd__string id, ns__Timestamp timestamp, xsd__base64Binary &rawData)
 {
+	if (!strcmp(id, "map.png"))
+	{
+		if (!curl_get_file(id, "http://maps.google.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=14&size=320x240&maptype=roadmap&markers=color:blue|label:S|40.702147,-74.015794&markers=color:green|label:G|40.711614,-74.012318&markers=color:red|color:red|label:C|40.718217,-73.998284&sensor=false"))
+		{
+			return 404;
+		}
+	}
+
 	FILE *fd = fopen(id, "rb");
 
 	fseek(fd, 0L, SEEK_END);

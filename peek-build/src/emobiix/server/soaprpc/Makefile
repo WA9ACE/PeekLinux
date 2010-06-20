@@ -18,7 +18,8 @@ SOBJ = emobiix_rpc_Server.o
 SERVER_OBJ = emobiix.o test_server.o emobiix_rpc_C.o
 CLIENT_OBJ = test_client.o
 
-LIB = $(GSOAPLIB)/libgsoapssl++.a -lssl -lcrypto -lz
+LIB  = $(GSOAPLIB)/libgsoapssl++.a -lssl -lcrypto -lz
+LIB += -lcurl
 
 all: $(TARGET) $(SERVERLIB) $(SERVER) $(CLIENT)
 
