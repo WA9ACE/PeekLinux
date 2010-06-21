@@ -12,7 +12,6 @@
 #include "ApplicationManager.h"
 
 #include "Style.h"
-extern Style *currentStyle;
 
 #include "p_malloc.h"
 
@@ -407,7 +406,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 			if (sreq->isClient) {
 				sreq->finalize = 1;
 				dataobject_setState(sreq->dobj, DOS_OK);
-				widget_resolveLayout(sreq->dobj, currentStyle);
+				/*widget_resolveLayout(sreq->dobj, currentStyle);*/
 				widget_markDirty(sreq->dobj);
 				mime_loadAll(sreq->dobj);
 				field = dataobject_getValue(sreq->dobj, "type");
@@ -417,7 +416,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 					manager_launchApplication(app);
 					manager_focusApplication(app);
 				}
-				dataobject_debugPrint(sreq->dobj);
+				/*dataobject_debugPrint(sreq->dobj);*/
 			}
 			break;
 		case packetTypeP_PR_NOTHING:

@@ -14,6 +14,7 @@
 
 #include "DataObject.h"
 #include "Application.h"
+#include "ApplicationManager.h"
 
 extern "C" {
 #include "bal_socket_api_ti.h"

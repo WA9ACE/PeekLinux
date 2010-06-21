@@ -6,6 +6,7 @@
 #include "Style.h"
 #include "Widget.h"
 #include "lgui.h"
+#include "ApplicationManager.h"
 
 #include "lua.h"
 #include "lauxlib.h"
@@ -53,9 +54,6 @@ static int __dataobject_getValue(lua_State *L)
 	return 1;
 }
 
-extern Style *currentStyle;
-extern DataObject *currentScreen;
-
 static int __dataobject_setValue(lua_State *L)
 {
 	DataObject *dobj, *parent;
@@ -68,6 +66,8 @@ static int __dataobject_setValue(lua_State *L)
     dataobject_setValue(dobj, "data", dstr);
 
 	parent = dataobject_superparent(dobj);
+#if 0
+	/* this needs to be fixed */
 	if (parent == currentScreen) {
 		widget_getClipRectangle(dobj, &rectb4);
 		widget_resolveLayout(currentScreen, currentStyle);
@@ -82,10 +82,8 @@ static int __dataobject_setValue(lua_State *L)
 		lgui_clip_set(rect);
 		lgui_push_region();
 		style_renderWidgetTree(currentStyle, parent);
-#if 0
-		lgui_box(rect->x, rect->y, rect->width, rect->height, 1, 0xFF, 0, 0);
-#endif
 	}
+#endif
 
     return 1;
 }
@@ -127,13 +125,13 @@ static int __dataobject_find(lua_State *L)
 
 
 
-extern DataObject *currentScreen;
-
 static int __toScreen(lua_State *L)
 {
+#if 0
 	DataObject *dobj = checkDataObject(L, 1);
 	currentScreen = dobj;
 	//lua_pushnumber(L, gdImageColorAllocate(im, r, g, b));
+#endif
 	
 	return 0;
 }

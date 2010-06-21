@@ -7,9 +7,10 @@ extern "C" {
 
 struct DataObject_t;
 typedef struct DataObject_t DataObject;
+typedef enum {DOF_STRING, DOF_DATA, DOF_INT, DOF_UINT} DOFType;
 
 struct DataObjectField_t {
-	enum {DOF_STRING, DOF_DATA, DOF_INT, DOF_UINT} type;
+	DOFType type;
 	union field_t {
 		char *string;
 		struct data_t {

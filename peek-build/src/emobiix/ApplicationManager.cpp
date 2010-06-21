@@ -1,3 +1,14 @@
+
+#ifndef SIMULATOR
+#include "bal_def.h"
+#endif
+
+#include "buikeymap.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "ApplicationManager.h"
 
 #include "Application.h"
@@ -14,12 +25,6 @@
 #include "Script.h"
 
 #include "p_malloc.h"
-
-#ifndef SIMULATOR
-#include "bal_def.h"
-#endif
-
-#include "buikeymap.h"
 
 #include <string.h>
 
@@ -238,3 +243,7 @@ void manager_focusApplication(Application *app)
 
 	dataobject_debugPrint(appManager->rootApplicationWindow);
 }
+
+#ifdef __cplusplus
+}
+#endif
