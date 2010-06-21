@@ -79,6 +79,8 @@ static void connectionContext_processAuthUserPass(ConnectionContext *ctx,
 		AuthUserPassP_t *p);
 static void connectionContext_processAuthResponse(ConnectionContext *ctx,
 		AuthResponseP_t *p);
+static void connectionContext_recordSyncList(ConnectionContext *ctx,
+		SyncRequest *sreq, SyncListP_t *p);
 
 static const char *generate_mapKey(Endpoint *ep, long sid)
 {
@@ -559,7 +561,16 @@ static void connectionContext_outgoingSync(ConnectionContext *ctx,
 
 	iter = dataobject_fieldIterator(sobj);
 	p->packetTypeP.choice.dataObjectSyncP.syncSequenceIDP = sreq->sequenceID;
+
+	if (dataobject_getRecordType(sreq->dobj)) {
+		protocol_recordSyncList(&p->packetTypeP.choice.dataObjectSyncP);
+		connectionContext_recordSyncList(ctx, sreq,
+				&p->packetTypeP.choice.dataObjectSyncP.syncListP);
+		return;
+	}
+
 	protocol_blockSyncList(&p->packetTypeP.choice.dataObjectSyncP);
+	
 	if (sreq->childOp >= -1) {
 		/* node operation */
 next_childop:
@@ -791,3 +802,20 @@ static void connectionContext_processAuthResponse(ConnectionContext *ctx,
 	}
 }
 
+static void connectionContext_recordSyncList(ConnectionContext *ctx,
+		SyncRequest *sreq, SyncListP_t *p)
+{
+	ListIterator *iter;
+
+	for (iter = widget_getChildren(sreq->dobj); !listIterator_finished(iter);
+			listIterator_next(iter)) {
+
+	}
+	listIterator_delete(iter);
+#if 0
+	p->deleteRecordP = 0;
+	p->recordIdMinorP = sreq->dobj->stampMinor;
+	p->recordIdMajorP = sreq->dobj->stampMajor;
+	p->recordFieldListP
+#endif
+}

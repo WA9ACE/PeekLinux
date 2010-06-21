@@ -8,7 +8,7 @@
 DataObject *BootApplication(void)
 {
     static DataObject *output = NULL;
-    DataObject *view, *root, *dobj1, *dobj2, *script;
+    DataObject *view, *root, *dobj1, *dobj2;
 
     if (output != NULL)
         return output;
@@ -29,13 +29,7 @@ DataObject *BootApplication(void)
     dataobject_setValue(output, "onUnFocus",
             dataobjectfield_string("print(\"BootApp: UnFocused\")"));
 
-#if 0
-    script = dataobject_new();
-    dataobject_setValue(script, "type", dataobjectfield_string("script"));
-    dataobject_setValue(script, "data", dataobjectfield_string(
-#else
 	dataobject_setValue(output, "script", dataobjectfield_string(
-#endif
 "customVar = \"hello\"\n"
 "function setIt (n)\n"
 "    dobj = DataObject.find(\"output\")\n"

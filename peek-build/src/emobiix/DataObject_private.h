@@ -37,5 +37,6 @@ struct DataObject_t {
 #define DO_FLAG_DIRTY 0x01
 #define DO_FLAG_LAYOUT_DIRTY_WIDTH 0x02
 #define DO_FLAG_LAYOUT_DIRTY_HEIGHT 0x04
+#define DO_FLAG_RECORD_TYPE 0x08
 
 #endif

@@ -86,6 +86,19 @@ DataObjectField *dataobject_getValueAsInt(DataObject *dobj, const char *key)
 	return NULL;
 }
 
+void dataobject_setRecordType(DataObject *dobj, int isRecord)
+{
+	if (isRecord)
+		dobj->flags1 |= DO_FLAG_RECORD_TYPE;
+	else
+		dobj->flags1 &= ~DO_FLAG_RECORD_TYPE;
+}
+
+int dataobject_getRecordType(DataObject *dobj)
+{
+	return dobj->flags1 & DO_FLAG_RECORD_TYPE;
+}
+
 int dataobject_isLocal(DataObject *dobj)
 {
 	return dobj->isLocal;

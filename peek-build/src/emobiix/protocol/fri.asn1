@@ -39,8 +39,7 @@ BEGIN
 
     DataObjectTypeP ::= ENUMERATED {
         blockDataObjectP,
-        recordDataObjectP,
-        treeDataObjectP
+        recordDataObjectP
     }
 
     SyncOperationP ::= ENUMERATED {

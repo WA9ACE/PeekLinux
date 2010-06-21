@@ -91,6 +91,15 @@ void protocol_blockSyncList(DataObjectSyncP_t *p)
 	p->syncListP.choice.blockSyncListP.list.free = NULL;
 }
 
+void protocol_recordSyncList(DataObjectSyncP_t *p)
+{
+	p->syncListP.present = SyncListP_PR_recordSyncListP;
+	p->syncListP.choice.recordSyncListP.list.array = NULL;
+	p->syncListP.choice.recordSyncListP.list.size = 0;
+	p->syncListP.choice.recordSyncListP.list.count = 0;
+	p->syncListP.choice.recordSyncListP.list.free = NULL;
+}
+
 void protocol_authUserPass(AuthUserPassP_t *p,
 		const char *username, const char *pass)
 {
