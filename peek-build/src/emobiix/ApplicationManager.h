@@ -10,6 +10,8 @@ extern "C" {
 
 void manager_init(void);
 void manager_drawScreen(void);
+void manager_drawScreenPartial(void);
+void manager_resolveLayout(void);
 void manager_handleKey(int key);
 void manager_launchApplication(Application *app);
 ListIterator *manager_applications(void);

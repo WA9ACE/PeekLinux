@@ -762,9 +762,10 @@ void lgui_measure_font(const char *utf8, Font *f, IPoint *output)
 		val = UTF8toUTF32(p, &adv);
 		data = (unsigned char *)font_getGlyph(f, val, A4, &width, &height,
 				&xadvance, &yadvance, &baselinedy);
-		if (data == NULL)
+		if (data == NULL) {
 			emo_printf(" Glyph missing");
-		else {
+			return;
+		} else {
 			output->x += xadvance;
 		}
 		p += adv;

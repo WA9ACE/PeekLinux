@@ -56,7 +56,7 @@ static int __dataobject_getValue(lua_State *L)
 
 static int __dataobject_setValue(lua_State *L)
 {
-	DataObject *dobj, *parent;
+	DataObject *dobj;/*, *parent;*/
 	DataObjectField *dstr;
 	Rectangle rectb4, rectAfter, *rect;
 
@@ -64,8 +64,21 @@ static int __dataobject_setValue(lua_State *L)
 	dstr = dataobjectfield_string(luaL_checkstring(L, 2));
 
     dataobject_setValue(dobj, "data", dstr);
+	emo_printf("Set value to %s" NL, dstr->field.string);
 
-	parent = dataobject_superparent(dobj);
+	/*parent = dataobject_superparent(dobj);*/
+	widget_getClipRectangle(dobj, &rectb4);
+	manager_resolveLayout();
+	widget_markDirty(dobj);
+	lgui_clip_identity();
+	widget_getClipRectangle(dobj, &rectAfter);
+	if (rectAfter.width > rectb4.width)
+		rect = &rectAfter;
+	else
+		rect = &rectb4;
+	lgui_clip_set(rect);
+	lgui_push_region();
+	manager_drawScreenPartial();
 #if 0
 	/* this needs to be fixed */
 	if (parent == currentScreen) {

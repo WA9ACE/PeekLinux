@@ -71,16 +71,27 @@ void manager_init(void)
 
 void manager_drawScreen(void)
 {
+	lgui_clip_identity();
+	manager_drawScreenPartial();
+}
+
+void manager_drawScreenPartial(void)
+{
 	DataObject *view;
 
 	view = application_getCurrentScreen(appManager->rootApplication);
 	
 	if (view != NULL) {
-		lgui_clip_identity();
 		style_renderWidgetTree(appManager->style, view);
 	} else {
 		emo_printf("no view to draw" NL);
 	}
+}
+
+void manager_resolveLayout(void)
+{
+	widget_resolveLayout(appManager->rootApplicationWindow,
+			appManager->style);
 }
 
 void manager_handleKey(int key)
