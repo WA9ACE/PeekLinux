@@ -71,12 +71,13 @@ void style_setProperty(Style *s, const char *className, const char *id,
 	char key[KEY_LEN];
 	makekey(key, className, id, type, lvalue);
 	map_append(s->prop, key, value);
-
+#if 0
 	if (type != NULL && strcmp(type, "box") == 0) {
 		/* yeah its dirty but you like it */
 		makekey(key, className, id, "button", lvalue);
 		map_append(s->prop, key, value);
 	}
+#endif
 }
 
 void *style_getProperty(Style *s, const char *className, const char *id,

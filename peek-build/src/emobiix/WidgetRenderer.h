@@ -16,6 +16,8 @@ struct WidgetRenderer_t {
 			DataObject *dobj);
 	void (*measure)(WidgetRenderer *wr, Style *s, Widget *w,
 			DataObject *dobj, IPoint *output);
+	void (*margin)(WidgetRenderer *wr, Style *s, Widget *w,
+			DataObject *dobj, Rectangle *output);
 };
 
 WidgetRenderer *widgetrenderer_image(void);
@@ -24,6 +26,9 @@ WidgetRenderer *widgetrenderer_gradboxr(void);
 WidgetRenderer *widgetrenderer_solid(void);
 WidgetRenderer *widgetrenderer_string(void);
 WidgetRenderer *widgetrenderer_entry(void);
+WidgetRenderer *widgetrenderer_button(void);
+WidgetRenderer *widgetrenderer_zero(void);
+WidgetRenderer *widgetrenderer_full(void);
 
 #ifdef __cplusplus
 }

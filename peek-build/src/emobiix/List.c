@@ -49,6 +49,22 @@ void list_append(List *l, void *item)
     ++l->length;
 }
 
+void list_prepend(List *l, void *item)
+{
+    ListNode *node;
+
+    node = (ListNode *)p_malloc(sizeof(ListNode));
+    if (l->head != NULL)
+        l->head->prev = node;
+    node->next = l->head;
+    node->prev = NULL;
+    l->head = node;
+	if (l->tail == NULL)
+		l->tail = node;
+    node->data = item;
+    ++l->length;
+}
+
 void list_delete(List *l)
 {
     ListNode *node, *next;;
@@ -144,6 +160,8 @@ void listIterator_remove(ListIterator *iter)
         iter->list->tail = node->prev;
 
 	iter->node = node->prev;
+
+	--iter->list->length;
     p_free(node);
 }
 

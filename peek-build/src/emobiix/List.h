@@ -15,6 +15,7 @@ typedef int (*ListComparitor)(void *arg1, void *arg2);
 
 List *list_new(void);
 void list_append(List *l, void *item);
+void list_prepend(List *l, void *item);
 void list_delete(List *l);
 void *list_find(List *l, void *obj, ListComparitor lc);
 int list_size(List *l);

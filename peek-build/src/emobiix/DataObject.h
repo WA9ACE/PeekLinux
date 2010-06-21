@@ -26,6 +26,7 @@ DataObject *dataobject_new(void);
 DataObject *dataobject_newMap(DataObject *src, DataObjectMap *dmap);
 void dataobject_setValue(DataObject *dobj, const char *key, DataObjectField *v);
 DataObjectField *dataobject_getValue(DataObject *obj, const char *key);
+DataObjectField *dataobject_getValueAsInt(DataObject *dobj, const char *key);
 int dataobject_isLocal(DataObject *dobj);
 DataObjectState dataobject_getState(DataObject *dobj);
 void dataobject_setState(DataObject *dobj, DataObjectState state);
@@ -39,7 +40,9 @@ DataObject *dataobject_getTree(DataObject *dobj, int index);
 int dataobject_getTreeNextOp(DataObject *dobj, int *ischild);
 int dataobject_treeIndex(DataObject *dobj);
 void dataobject_pack(DataObject *parent, DataObject *child);
+void dataobject_packStart(DataObject *parent, DataObject *child);
 
+DataObject *dataobject_parent(DataObject *dobj);
 DataObject *dataobject_superparent(DataObject *dobj);
 DataObject *dataobject_findByName(DataObject *root, const char *name);
 
@@ -52,6 +55,13 @@ DataObject *dataobject_findFieldParent(DataObject *dobj, const char *str);
 int dataobject_isDirty(DataObject *dobj);
 void dataobject_setDirty(DataObject *dobj);
 void dataobject_setClean(DataObject *dobj);
+
+#define LAYOUT_DIRTY_WIDTH		0x02
+#define LAYOUT_DIRTY_HEIGHT		0x04
+int dataobject_isLayoutDirty(DataObject *dobj, unsigned int wh);
+void dataobject_setLayoutDirty(DataObject *dobj, unsigned int wh);
+void dataobject_setLayoutClean(DataObject *dobj, unsigned int wh);
+void dataobject_setLayoutDirtyAll(DataObject *dobj);
 
 void dataobject_debugPrint(DataObject *dobj);
 

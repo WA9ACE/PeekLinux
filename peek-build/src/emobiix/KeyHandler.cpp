@@ -15,6 +15,7 @@
 #include "DataObject.h"
 #include "Platform.h"
 #include "Debug.h"
+#include "ApplicationManager.h"
 #include "lgui.h"
 
 #include "p_malloc.h"
@@ -44,7 +45,8 @@ void updateScreen(void) {
                 return;
         }
 
-        tweetDrawScreen();
+        /*tweetDrawScreen();*/
+        manager_drawScreen();
 
         if (!lgui_is_dirty())
             return;
@@ -159,7 +161,8 @@ static void UiHandleKeyEvents(RegIdT RegId, uint32 MsgId, void *MsgBufferP)
  //               Sounds_PlayMidi();
        //         flash_led();
                 //main_test();
-		tweetKey(UiKeyId);
+		/*tweetKey(UiKeyId);*/
+        manager_handleKey(UiKeyId);
 		updateScreen();
         }
 #ifndef EMO_SIM

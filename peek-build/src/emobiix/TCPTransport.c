@@ -1,5 +1,7 @@
 #include "TCPTransport.h"
 
+#include "Debug.h"
+
 #include "p_malloc.h"
 
 #include <ctype.h>
@@ -84,6 +86,8 @@ int TCPConnect(Endpoint *iep, URL *destination)
 
 	if (destination == NULL || destination->port == NULL || destination->hostname == NULL)
 		return -1;
+
+	emo_printf("Connecting to %s : %s" NL, destination->hostname, destination->port);
 
 	ep = (TCPEndpoint *)iep;
 

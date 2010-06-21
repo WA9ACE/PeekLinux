@@ -30,10 +30,12 @@ struct DataObject_t {
 
 	WidgetPacking packing;
 	DataObject *widgetData;
-	unsigned char flags1;
+	unsigned int flags1;
     void *scriptContext;
 };
 
 #define DO_FLAG_DIRTY 0x01
+#define DO_FLAG_LAYOUT_DIRTY_WIDTH 0x02
+#define DO_FLAG_LAYOUT_DIRTY_HEIGHT 0x04
 
 #endif

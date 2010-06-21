@@ -101,10 +101,12 @@ static int UIInit(void)
 	if (!initd) {
 		screenBuf = (unsigned char *)BalMalloc(320*240*2);
 		lgui_attach(screenBuf);
-		tweetInit();
+		/*tweetInit();*/
+        manager_init();
 		initd = 1;
 	}
-	tweetDrawScreen();
+	/*tweetDrawScreen();*/
+    manager_drawScreen();
 	updateScreen();
 	//#endif
 

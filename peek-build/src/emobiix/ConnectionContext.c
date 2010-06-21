@@ -8,6 +8,8 @@
 #include "Mime.h"
 #include "Protocol.h"
 #include "ProtocolUtils.h"
+#include "Application.h"
+#include "ApplicationManager.h"
 
 #include "Style.h"
 extern Style *currentStyle;
@@ -363,6 +365,8 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 {
 	SyncRequest *sreq;
 	const char *mapKey;
+	DataObjectField *field;
+	Application *app;
 
 	emo_printf("Got packet : %d" NL, packet->packetTypeP.present);
 
@@ -406,6 +410,14 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 				widget_resolveLayout(sreq->dobj, currentStyle);
 				widget_markDirty(sreq->dobj);
 				mime_loadAll(sreq->dobj);
+				field = dataobject_getValue(sreq->dobj, "type");
+				if (field != NULL && field->type == DOF_STRING &&
+						strcmp(field->field.string, "application") == 0) {
+					app = application_load(sreq->dobj);
+					manager_launchApplication(app);
+					manager_focusApplication(app);
+				}
+				dataobject_debugPrint(sreq->dobj);
 			}
 			break;
 		case packetTypeP_PR_NOTHING:
@@ -743,6 +755,8 @@ static void connectionContext_authUserPass(ConnectionContext *ctx)
 	/* add our extras */
 #ifndef SIMULATOR
 	protocol_autUserPassExtra(p, "IMEI", deviceImei);
+#else
+	protocol_autUserPassExtra(p, "IMEI", "312000012345678");
 #endif
 	protocol_autUserPassExtra(p, "IP", "192.168.1.1");
 

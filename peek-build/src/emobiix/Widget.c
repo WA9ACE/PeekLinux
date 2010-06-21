@@ -29,6 +29,24 @@ Widget *widget_new(void)
 	return output;
 }
 
+Widget *widget_newTypeIdName(const char *type, const char *id,
+        const char *name, Widget *parent)
+{
+    Widget *output;
+
+    output = widget_new();
+    if (type != NULL)
+        dataobject_setValue(output, "type", dataobjectfield_string(type));
+    if (id != NULL)
+        dataobject_setValue(output, "id", dataobjectfield_string(id));
+    if (name != NULL)
+        dataobject_setValue(output, "name", dataobjectfield_string(name));
+    if (parent != NULL)
+        widget_pack(output, parent);
+
+    return output;
+}
+
 void widget_setDataObject(Widget *w, DataObject *dobj)
 {
 	w->widgetData = dobj;
@@ -427,6 +445,7 @@ static Widget *widget_focusLast(Widget *w)
 {
 	Widget *child;
 	ListIterator *iter;
+	DataObjectField *field;
 
 	iter = list_rbegin(w->children);
 	while (!listIterator_finished(iter)) {
@@ -437,10 +456,16 @@ static Widget *widget_focusLast(Widget *w)
 		listIterator_next(iter);
 	}
 	listIterator_delete(iter);
+	emo_printf("Done %d children" NL, list_size(w->children));
 
 	if (widget_canFocus(w)) {
+		field = dataobject_getValue(w, "type");
+		emo_printf("LastFocusing : %s" NL, field->field.string);
 		widget_setFocus(w, 1);
 		return w;
+	} else {
+		field = dataobject_getValue(w, "type");
+		emo_printf("NotLastFocusing : %s\n", field->field.string);
 	}
 
 	return NULL;
@@ -460,6 +485,8 @@ void widget_focusPrev(Widget *tree, Style *s)
 	newW = widget_focusPrevR(oldW);
 	if (newW == NULL)
 		newW = widget_focusLast(tree);
+	/*if (newW == NULL)
+		return;*/
 
 	widget_markDirty(oldW);
 	lgui_clip_identity();
@@ -615,6 +642,76 @@ Widget *widget_findStringField(Widget *w, const char *key, const char *value)
 	return NULL;
 }
 
+static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
+{
+	DataObjectField *sField, *type;
+	WidgetRenderer *wr;
+	DataObject *dobj;
+	const char *className, *id;
+	ListIterator *iter;
+	IPoint p;
+	int slen, tmpint;
+
+	/* get style default */
+	dobj = widget_getDataObject(w);
+	className = widget_getClass(w);
+	id = widget_getID(w);
+	type = dataobject_getValue(w, "type");
+	wr = (WidgetRenderer *)style_getProperty(s, className,
+			id, type == NULL ? NULL : type->field.string, "renderer");
+	if (wr != NULL && wr->measure != NULL) {
+		wr->measure(wr, s, w, dobj, &p);
+		w->box.width = p.x;
+		w->box.height = p.y;
+		dataobject_setLayoutClean(w, LAYOUT_DIRTY_WIDTH);
+		dataobject_setLayoutClean(w, LAYOUT_DIRTY_HEIGHT);
+	}
+
+	/* get specified absolute values */
+#define ABSOLUTE_FIELD(_x, _y) \
+	sField = dataobject_getValue(w, #_x); \
+	if (sField != NULL) { \
+		if (sField->type == DOF_INT) { \
+			w->box._x = sField->field.integer; \
+			dataobject_setLayoutClean(w, _y); \
+		} else { \
+			slen = strlen(sField->field.string); \
+			sscanf(sField->field.string, "%d", &tmpint); \
+			if (sField->field.string[slen-1] == '%') { \
+				/* do nothing - this is a relative measure */ \
+			} else { \
+				w->box._x = tmpint; \
+				dataobject_setLayoutClean(w, _y); \
+			} \
+		} \
+	}
+
+	ABSOLUTE_FIELD(width, LAYOUT_DIRTY_WIDTH);
+	ABSOLUTE_FIELD(height, LAYOUT_DIRTY_HEIGHT);
+
+#undef ABSOLUTE_FIELD
+
+#if 0
+	if (!dataobject_isLayoutDirty(w, LAYOUT_DIRTY_WIDTH)) {
+		w->box.width -= w->margin.x + w->margin.width;
+		if (w->box.width < 0)
+			w->box.width = 0;
+	}
+	if (!dataobject_isLayoutDirty(w, LAYOUT_DIRTY_HEIGHT)) {
+		w->box.height -= w->margin.y + w->margin.height;
+		if (w->box.height < 0)
+			w->box.width = 0;
+	}
+#endif
+
+	iter = list_begin(w->children);
+	while (!listIterator_finished(iter)) {
+		widget_layoutMeasureAbsolute(listIterator_item(iter), s);
+		listIterator_next(iter);
+	}
+	listIterator_delete(iter);
+}
+
 static void widget_layoutMeasure(Widget *w, Style *s)
 {
 	ListIterator *iter;
@@ -630,12 +727,37 @@ static void widget_layoutMeasure(Widget *w, Style *s)
 	if (s == NULL)
 		return;
 
-	iter = list_begin(w->children);
-
 	cwidth = 0;
 	cheight = 0;
 	packing = widget_getPacking(w);
 
+	sField = dataobject_getValue(w, "width");
+	if (sField != NULL) {
+		if (sField->type == DOF_INT)
+			w->box.width = sField->field.integer;
+		else {
+			slen = strlen(sField->field.string);
+			sscanf(sField->field.string, "%d", &tmpint);
+			if (sField->field.string[slen-1] == '%') {
+				w->box.width = (int)(w->parent->box.width * ((float)tmpint)/100.0);
+			}
+		}
+	}
+
+	sField = dataobject_getValue(w, "height");
+	if (sField != NULL) {
+		if (sField->type == DOF_INT)
+			w->box.height = sField->field.integer;
+		else {
+			slen = strlen(sField->field.string);
+			sscanf(sField->field.string, "%d", &tmpint);
+			if (sField->field.string[slen-1] == '%') {
+				w->box.height = (int)(w->parent->box.height * ((float)tmpint)/100.0);
+			}
+		}
+	}
+
+	iter = list_begin(w->children);
 	while (!listIterator_finished(iter)) {
 		cw = (Widget *)listIterator_item(iter);
 		widget_layoutMeasure(cw, s);
@@ -663,62 +785,199 @@ static void widget_layoutMeasure(Widget *w, Style *s)
 			type = dataobject_getValue(dobj, "type");
 		wr = (WidgetRenderer *)style_getProperty(s, className,
 				id, type == NULL ? NULL : type->field.string, "renderer");
-		if (wr != NULL) {
-			wr->measure(wr, s, w, dobj, &p);
-			w->box.width = p.x;
-			w->box.height = p.y;
-		}
+		if (wr == NULL)
+			wr = widgetrenderer_zero();
+		wr->measure(wr, s, w, dobj, &p);
+		w->box.width = p.x;
+		w->box.height = p.y;
 	} else {
 		w->box.width = cwidth;
 		w->box.height = cheight;
 	}
 
-	sField = dataobject_getValue(w, "width");
-	if (sField != NULL) {
-		if (sField->type == DOF_INT)
-			w->box.width = sField->field.integer;
-		else {
-			slen = strlen(sField->field.string);
-			sscanf(sField->field.string, "%d", &tmpint);
-			if (sField->field.string[slen-1] == '%') {
-				w->box.width = (int)(w->parent->box.width * ((float)tmpint)/100.0);
-			} else {
-				w->box.width = tmpint;
+#if 0
+	sField = dataobject_getValue(w, "type");
+	if (sField == NULL ||
+			(sField != NULL && sField->type == DOF_STRING &&
+			(strcmp(sField->field.string, "view") == 0) ||
+			(strcmp(sField->field.string, "stack") == 0))) {
+		w->box.width = w->parent->box.width;
+		w->box.height = w->parent->box.height;
+	} else {
+#endif
+		sField = dataobject_getValue(w, "width");
+		if (sField != NULL) {
+			if (sField->type == DOF_INT)
+				w->box.width = sField->field.integer;
+			else {
+				slen = strlen(sField->field.string);
+				sscanf(sField->field.string, "%d", &tmpint);
+				if (sField->field.string[slen-1] == '%') {
+					w->box.width = (int)(w->parent->box.width * ((float)tmpint)/100.0);
+				} else {
+					w->box.width = tmpint;
+				}
 			}
 		}
+
+		sField = dataobject_getValue(w, "height");
+		if (sField != NULL) {
+			if (sField->type == DOF_INT)
+				w->box.height = sField->field.integer;
+			else {
+				slen = strlen(sField->field.string);
+				sscanf(sField->field.string, "%d", &tmpint);
+				if (sField->field.string[slen-1] == '%') {
+					w->box.height = (int)(w->parent->box.height * ((float)tmpint)/100.0);
+				} else {
+					w->box.height = tmpint;
+				}
+			}
+		}
+#if 0
+	}
+#endif
+
+	listIterator_delete(iter);
+}
+
+void widget_layoutForceResolveParent(Widget *w, unsigned int flag)
+{
+	if (dataobject_isLayoutDirty(w->parent, flag))
+		widget_layoutForceResolveParent(w->parent, flag);
+
+	if (flag == LAYOUT_DIRTY_WIDTH) {
+		w->box.width = w->parent->box.width -
+				(w->margin.x + w->margin.width);
+	} else {
+		w->box.height = w->parent->box.height -
+			(w->margin.y + w->margin.height);
+	}
+	dataobject_setLayoutClean(w, flag);
+}
+
+void widget_resolveMeasureRelative(Widget *w)
+{
+	int sumWidth, sumHeight;
+	DataObject *child;
+	DataObjectField *sField;
+	ListIterator *iter;
+	int tmpint, slen;
+
+	/* get specified absolute values */
+#define RELATIVE_FIELD(_x, _y, _z) \
+	sField = dataobject_getValue(w, #_x); \
+	if (sField != NULL) { \
+		if (sField->type == DOF_STRING) { \
+			slen = strlen(sField->field.string); \
+			sscanf(sField->field.string, "%d", &tmpint); \
+			if (sField->field.string[slen-1] == '%') { \
+				if (dataobject_isLayoutDirty(w->parent, _y)) \
+					widget_layoutForceResolveParent(w->parent, _y); \
+				w->box._x = (int)(w->parent->box._x * ((float)tmpint)/100.0); \
+				w->box._x -= w->margin._z + w->margin._x; \
+				dataobject_setLayoutClean(w, _y); \
+			} \
+		} \
 	}
 
-	sField = dataobject_getValue(w, "height");
-	if (sField != NULL) {
-		if (sField->type == DOF_INT)
-			w->box.height = sField->field.integer;
-		else {
-			slen = strlen(sField->field.string);
-			sscanf(sField->field.string, "%d", &tmpint);
-			if (sField->field.string[slen-1] == '%') {
-				w->box.height = (int)(w->parent->box.height * ((float)tmpint)/100.0);
-			} else {
-				w->box.height = tmpint;
-			}
-		}
+	RELATIVE_FIELD(width, LAYOUT_DIRTY_WIDTH, x)
+	RELATIVE_FIELD(height, LAYOUT_DIRTY_HEIGHT, y)
+
+#undef RELATIVE_FIELD
+
+	sumWidth = 0;
+	sumHeight = 0;
+	iter = list_begin(w->children);
+	while (!listIterator_finished(iter)) {
+		child = (DataObject *)listIterator_item(iter);
+		widget_resolveMeasureRelative(child);
+		sumWidth += child->box.width + child->margin.x + child->margin.width;
+		sumHeight += child->box.height + child->margin.y + child->margin.height;
+		listIterator_next(iter);
+	}
+
+	listIterator_delete(iter);
+
+	if (dataobject_isLayoutDirty(w, LAYOUT_DIRTY_WIDTH)) {
+		w->box.width = sumWidth;
+		dataobject_setLayoutClean(w, LAYOUT_DIRTY_WIDTH);
+	}
+	if (dataobject_isLayoutDirty(w, LAYOUT_DIRTY_HEIGHT)) {
+		w->box.height = sumHeight;
+		dataobject_setLayoutClean(w, LAYOUT_DIRTY_HEIGHT);
+	}
+}
+
+void widget_resolveMargin(Widget *w, Style *s)
+{
+	DataObjectField *field, *type;
+	WidgetRenderer *wr;
+	ListIterator *iter;
+	const char *className, *id;
+	DataObject *dobj;
+
+	/* Apply margin from style */
+	dobj = widget_getDataObject(w);
+	className = widget_getClass(w);
+	id = widget_getID(w);
+	type = dataobject_getValue(w, "type");
+	wr = (WidgetRenderer *)style_getProperty(s, className,
+			id, type == NULL ? NULL : type->field.string, "renderer");
+	if (wr != NULL && wr->margin != NULL)
+		wr->margin(wr, s, w, dobj, &w->margin);
+
+	/* Apply specified margin */
+	field = dataobject_getValueAsInt(w, "margin");
+	if (field != NULL) {
+		w->margin.x = field->field.integer;
+		w->margin.y = field->field.integer;
+		w->margin.width = field->field.integer;
+		w->margin.height = field->field.integer;
+	} else {
+		field = dataobject_getValueAsInt(w, "marginleft");
+		if (field != NULL)
+			w->margin.x = field->field.integer;
+		field = dataobject_getValueAsInt(w, "marginright");
+		if (field != NULL)
+			w->margin.width = field->field.integer;
+		field = dataobject_getValueAsInt(w, "margintop");
+		if (field != NULL)
+			w->margin.y = field->field.integer;
+		field = dataobject_getValueAsInt(w, "marginbottom");
+		if (field != NULL)
+			w->margin.height = field->field.integer;
+	}
+
+	iter = list_begin(w->children);
+	while (!listIterator_finished(iter)) {
+		widget_resolveMargin(listIterator_item(iter), s);
+		listIterator_next(iter);
 	}
 
 	listIterator_delete(iter);
 }
 
-static void widget_resolveLayoutR(Widget *w, Style *s)
+void widget_resolvePosition(Widget *w)
 {
 	int xpos, ypos, width, height;
 	ListIterator *iter;
 	WidgetAlignment alignment;
 	WidgetPacking packing;
 	Widget *cw;
+	int positionStatic = 0;
+	DataObjectField *field;
 
 	xpos = w->box.x+w->margin.x;
 	ypos = w->box.y+w->margin.y;
 	width = w->box.width;
 	height = w->box.height;
 	packing = widget_getPacking(w);
+
+	field = dataobject_getValue(w, "type");
+	if (field != NULL && field->type == DOF_STRING &&
+			strcmp(field->field.string, "stack") == 0)
+		positionStatic = 1;
 
 	iter = list_begin(w->children);
 
@@ -732,41 +991,51 @@ static void widget_resolveLayoutR(Widget *w, Style *s)
 				if (packing == WP_HORIZONTAL) {
 					cw->box.x = xpos;
 					cw->box.y = ypos+cw->margin.y;
-					xpos += cw->box.width;
+					if (!positionStatic)
+						xpos += cw->box.width+cw->margin.x+cw->margin.width;
 				} else {
 					cw->box.x = xpos+cw->margin.x;
 					cw->box.y = ypos;
-					ypos += cw->box.height;
+					if (!positionStatic)
+						ypos += cw->box.height+cw->margin.y+cw->margin.height;
 				}
 				break;
 			case WA_RIGHT:
 				if (packing == WP_HORIZONTAL) {
 					cw->box.x = xpos;
 					cw->box.y = ypos + height-cw->box.height-cw->margin.y;
-					xpos += cw->box.width;
+					if (!positionStatic)
+						xpos += cw->box.width+cw->margin.x+cw->margin.width;
 				} else {
 					cw->box.x = xpos + width-cw->box.width-cw->margin.width;
 					cw->box.y = ypos;
-					ypos += cw->box.height;
+					if (!positionStatic)
+						ypos += cw->box.height+cw->margin.y+cw->margin.height;
 				}
 				break;
 			case WA_CENTER:
 				if (packing == WP_HORIZONTAL) {
 					cw->box.x = xpos;
 					cw->box.y = ypos + (height-cw->box.height-cw->margin.y-cw->margin.height)/2;
-					xpos += cw->box.width;
+					if (!positionStatic)	
+						xpos += cw->box.width+cw->margin.x+cw->margin.width;
 				} else {
 					cw->box.x = xpos + (width-cw->box.width-cw->margin.x-cw->margin.width)/2;
 					cw->box.y = ypos;
-					ypos += cw->box.height;
+					if (!positionStatic)	
+						ypos += cw->box.height+cw->margin.y+cw->margin.height;
 				}
 				break;
 		}
-		widget_resolveLayoutR(cw, s);
-		if (packing == WP_HORIZONTAL)
-			xpos += 2;
-		else
-			ypos += 2;
+		widget_resolvePosition(cw);
+#if 0
+		if (!positionStatic) {
+			if (packing == WP_HORIZONTAL)
+				xpos += 2;
+			else
+				ypos += 2;
+		}
+#endif
 		listIterator_next(iter);
 	}
 
@@ -777,26 +1046,47 @@ void widget_resolveLayout(Widget *w, Style *s)
 {
 	ListIterator *iter;
 
+	dataobject_setLayoutDirtyAll(w);
+
+	widget_resolveMargin(w, s);
+
+	/* force to screen size */
 	w->box.x = 0;
 	w->box.y = 0;
 	w->box.width = 320;
 	w->box.height = 240;
 
+	/* force to no margin */
 	w->margin.x = 0;
 	w->margin.y = 0;
 	w->margin.width = 0;
 	w->margin.height = 0;
 
+	/* measure those with explicit sizes or measurable content */
 	iter = list_begin(w->children);
-
 	while (!listIterator_finished(iter)) {
-		widget_layoutMeasure(listIterator_item(iter), s);
+		widget_layoutMeasureAbsolute(listIterator_item(iter), s);
 		listIterator_next(iter);
 	}
-
 	listIterator_delete(iter);
 
-	widget_resolveLayoutR(w, s);	
+	/* measure those whos size is based on their children or parent */
+	iter = list_begin(w->children);
+	while (!listIterator_finished(iter)) {
+		widget_resolveMeasureRelative((DataObject *)listIterator_item(iter));
+		listIterator_next(iter);
+	}
+	listIterator_delete(iter);
+
+	/* position widgets based on packing and alignment */
+#if 0
+	iter = list_begin(w->children);
+	while (!listIterator_finished(iter)) {
+		listIterator_next(iter);
+	}
+	listIterator_delete(iter);
+#endif
+	widget_resolvePosition(w);
 }
 
 void widget_setAlignment(Widget *w, WidgetAlignment a)

@@ -28,10 +28,10 @@ DataObject *dataobject_new(void)
 	output->widgetData = NULL;
 	output->state = DOS_INIT;
 	rectangle_zero(&output->margin);
-	output->margin.x = 3;
-	output->margin.y = 3;
-	output->margin.width = 3;
-	output->margin.height = 3;
+	output->margin.x = 0;
+	output->margin.y = 0;
+	output->margin.width = 0;
+	output->margin.height = 0;
 	rectangle_zero(&output->box);
     output->scriptContext = NULL;
 	output->flags1 = 0;
@@ -61,6 +61,29 @@ DataObjectField *dataobject_getValue(DataObject *dobj, const char *key)
 	output = map_find(dobj->data, key);
 
 	return (DataObjectField *)output;
+}
+
+DataObjectField *dataobject_getValueAsInt(DataObject *dobj, const char *key)
+{
+	DataObjectField *output;
+	char *str;
+
+	output = dataobject_getValue(dobj, key);
+	if (output == NULL)
+		return output;
+
+	if (output->type == DOF_INT)
+		return output;
+
+	if (output->type == DOF_STRING) {
+		str = output->field.string;
+		output->field.integer = atoi(str);
+		output->type = DOF_INT;
+		p_free(str);
+		return output;
+	}
+
+	return NULL;
 }
 
 int dataobject_isLocal(DataObject *dobj)
@@ -229,6 +252,17 @@ void dataobject_pack(DataObject *parent, DataObject *child)
 	list_append(parent->children, child);
 }
 
+void dataobject_packStart(DataObject *parent, DataObject *child)
+{
+	child->parent = parent;
+	list_prepend(parent->children, child);
+}
+
+DataObject *dataobject_parent(DataObject *dobj)
+{
+	return dobj->parent;
+}
+
 DataObject *dataobject_superparent(DataObject *dobj)
 {
 	if (dobj == NULL)
@@ -284,6 +318,38 @@ void dataobject_setClean(DataObject *dobj)
 	dobj->flags1 &= ~DO_FLAG_DIRTY;
 }
 
+int dataobject_isLayoutDirty(DataObject *dobj, unsigned int wh)
+{
+	return dobj->flags1 & wh;
+}
+
+void dataobject_setLayoutDirty(DataObject *dobj, unsigned int wh)
+{
+	dobj->flags1 |= wh;
+}
+
+void dataobject_setLayoutDirtyAll(DataObject *dobj)
+{
+	ListIterator *iter;
+
+	dobj->flags1 |= DO_FLAG_LAYOUT_DIRTY_WIDTH;
+	dobj->flags1 |= DO_FLAG_LAYOUT_DIRTY_HEIGHT;
+
+	iter = list_begin(dobj->children);
+	while (!listIterator_finished(iter)) {
+		dataobject_setLayoutDirtyAll(
+				(DataObject *)listIterator_item(iter));
+		listIterator_next(iter);
+	}
+	listIterator_delete(iter);
+}
+
+void dataobject_setLayoutClean(DataObject *dobj, unsigned int wh)
+{
+	dobj->flags1 &= ~wh;
+}
+
+
 static void dataobject_debugPrintR(DataObject *dobj, int level)
 {
 	MapIterator *iter;
@@ -295,7 +361,10 @@ static void dataobject_debugPrintR(DataObject *dobj, int level)
 	for (i = 0; i < level; ++i)
 		emo_printf("    ");
 
-	emo_printf("DataObject<");
+	emo_printf("DataObject<wh(%d, %d, %d, %d), margin(%d, %d)",
+			dobj->box.width, dobj->box.height,
+			dobj->box.x, dobj->box.y,
+			dobj->margin.x, dobj->margin.y);
 	if (dobj == NULL) {
 		emo_printf("NULL>" NL);
 		return;

@@ -6,6 +6,32 @@
 #include "p_malloc.h"
 #include <stdio.h>
 
+/* zeros */
+static void zero_renderer(WidgetRenderer *wr, Style *s, Widget *w,
+		DataObject *dobj) {
+}
+
+static void full_measure(WidgetRenderer *wr, Style *s, Widget *w,
+		DataObject *dobj, IPoint *output)
+{
+	Rectangle *box;
+	DataObject *parent;
+
+	parent = dataobject_parent(w);
+	box = widget_getBox(parent);
+	output->x = box->width;
+	output->y = box->height;
+}
+
+static void zero_margin(WidgetRenderer *wr, Style *s, Widget *w,
+		DataObject *dobj, Rectangle *output)
+{
+	output->x = 0;
+	output->y = 0;
+	output->width = 0;
+	output->height = 0;
+}
+
 /* image renderer */
 static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj) {
@@ -75,6 +101,7 @@ WidgetRenderer *widgetrenderer_image(void)
 	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
 	output->render = image_renderer;
 	output->measure = image_measure;
+	output->margin = zero_margin;
 
 	return output;
 }
@@ -87,17 +114,10 @@ static void gradbox_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
-	g = (Gradient *)style_getProperty(s, NULL, "gradbox", NULL, "gradient");
+	g = (Gradient *)style_getProperty(s, NULL, "gradbox", "box", "gradient");
 
 	lgui_vertical_gradientG(g,
 			box->x+margin->x, box->y+margin->y, box->width, box->height);
-}
-
-static void zero_measure(WidgetRenderer *wr, Style *s, Widget *w,
-		DataObject *dobj, IPoint *output)
-{
-	output->x = 0;
-	output->y = 0;
 }
 
 WidgetRenderer *widgetrenderer_gradbox(void)
@@ -109,7 +129,8 @@ WidgetRenderer *widgetrenderer_gradbox(void)
 
 	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
 	output->render = gradbox_renderer;
-	output->measure = zero_measure;
+	output->measure = NULL;
+	output->margin = zero_margin;
 
 	return output;
 }
@@ -126,18 +147,18 @@ static void gradboxr_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	margin = widget_getMargin(w);
 	id = widget_getID(w);
 	if (widget_hasFocus(w)) {
-		g = (Gradient *)style_getProperty(s, NULL, id, NULL, "focusgradient");
+		g = (Gradient *)style_getProperty(s, NULL, id, "box", "focusgradient");
 		outline.value = (unsigned int)style_getProperty(s, NULL, id, NULL, "focusoutline");
 	} else {
-		g = (Gradient *)style_getProperty(s, NULL, id, NULL, "gradient");
+		g = (Gradient *)style_getProperty(s, NULL, id, "box", "gradient");
 		outline.value = (unsigned int)style_getProperty(s, NULL, id, NULL, "outline");
 	}
 	if (g == NULL)
 		return;
-	radius = (int)style_getProperty(s, NULL, id, NULL, "radius");
+	radius = (int)style_getProperty(s, NULL, id, "box", "radius");
 
-	lgui_rbox_gradient(g, box->x+margin->x, box->y+margin->y, box->width-1, box->height-1, radius);
-	lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width-1, box->height-1, radius,
+	lgui_rbox_gradient(g, box->x+margin->x, box->y+margin->y, box->width, box->height, radius);
+	lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width, box->height, radius,
 			outline.rgba.red, outline.rgba.green, outline.rgba.blue);
 }
 
@@ -150,11 +171,11 @@ WidgetRenderer *widgetrenderer_gradboxr(void)
 
 	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
 	output->render = gradboxr_renderer;
-	output->measure = zero_measure;
+	output->measure = NULL;
+	output->margin = zero_margin;
 
 	return output;
 }
-
 
 /* solid renderer */
 static void solid_renderer(WidgetRenderer *wr, Style *s, Widget *w,
@@ -165,7 +186,7 @@ static void solid_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
-	c.value = (unsigned int)style_getProperty(s, NULL, "solid", NULL, "color");
+	c.value = (unsigned int)style_getProperty(s, NULL, "solid", "box", "color");
 	field = dataobject_getValue(w, "color");
 	if (field != NULL) {
 		if (field->type == DOF_UINT) {
@@ -187,7 +208,8 @@ WidgetRenderer *widgetrenderer_solid(void)
 
 	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
 	output->render = solid_renderer;
-	output->measure = zero_measure;
+	output->measure = NULL;
+	output->margin = zero_margin;
 
 	return output;
 }
@@ -248,6 +270,15 @@ static void string_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	lgui_measure_font(str, f, p);
 }
 
+static void string_margin(WidgetRenderer *wr, Style *s, Widget *w,
+		DataObject *dobj, Rectangle *output)
+{
+	output->x = 3;
+	output->y = 2;
+	output->width = 3;
+	output->height = 2;
+}
+
 WidgetRenderer *widgetrenderer_string(void)
 {
 	static WidgetRenderer *output = NULL;
@@ -258,6 +289,7 @@ WidgetRenderer *widgetrenderer_string(void)
 	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
 	output->render = string_renderer;
 	output->measure = string_measure;
+	output->margin = string_margin;
 
 	return output;
 }
@@ -328,6 +360,63 @@ WidgetRenderer *widgetrenderer_entry(void)
 	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
 	output->render = entry_renderer;
 	output->measure = entry_measure;
+	output->margin = zero_margin;
+
+	return output;
+}
+
+/* zero renderer */
+WidgetRenderer *widgetrenderer_zero(void)
+{
+	static WidgetRenderer *output = NULL;
+
+	if (output != NULL)
+		return output;
+
+	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
+	output->render = zero_renderer;
+	output->measure = NULL;
+	output->margin = zero_margin;
+
+	return output;
+}
+
+/* view renderer */
+WidgetRenderer *widgetrenderer_full(void)
+{
+	static WidgetRenderer *output = NULL;
+
+	if (output != NULL)
+		return output;
+
+	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
+	output->render = zero_renderer;
+	output->measure = full_measure;
+	output->margin = zero_margin;
+
+	return output;
+}
+
+static void button_margin(WidgetRenderer *wr, Style *s, Widget *w,
+		DataObject *dobj, Rectangle *output)
+{
+	output->x = 2;
+	output->y = 2;
+	output->width = 2;
+	output->height = 2;
+}
+
+WidgetRenderer *widgetrenderer_button(void)
+{
+	static WidgetRenderer *output = NULL;
+
+	if (output != NULL)
+		return output;
+
+	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
+	output->render = gradboxr_renderer;
+	output->measure = NULL;
+	output->margin = button_margin;
 
 	return output;
 }
