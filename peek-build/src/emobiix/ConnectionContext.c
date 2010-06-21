@@ -81,6 +81,8 @@ static void connectionContext_processAuthResponse(ConnectionContext *ctx,
 		AuthResponseP_t *p);
 static void connectionContext_recordSyncList(ConnectionContext *ctx,
 		SyncRequest *sreq, SyncListP_t *p);
+static RecordSyncListP_t *connectionContext_recordSync(ConnectionContext *ctx,
+		SyncRequest *sreq, DataObject *dobj);
 
 static const char *generate_mapKey(Endpoint *ep, long sid)
 {
@@ -806,16 +808,23 @@ static void connectionContext_recordSyncList(ConnectionContext *ctx,
 		SyncRequest *sreq, SyncListP_t *p)
 {
 	ListIterator *iter;
+	RecordSyncListP_t *rsync;
 
 	for (iter = widget_getChildren(sreq->dobj); !listIterator_finished(iter);
 			listIterator_next(iter)) {
-
+		rsync = connectionContext_recordSync(ctx, sreq,
+				(DataObject *)listIterator_item(iter));
 	}
 	listIterator_delete(iter);
-#if 0
-	p->deleteRecordP = 0;
-	p->recordIdMinorP = sreq->dobj->stampMinor;
-	p->recordIdMajorP = sreq->dobj->stampMajor;
-	p->recordFieldListP
-#endif
+}
+
+static RecordSyncListP_t *connectionContext_recordSync(ConnectionContext *ctx,
+		SyncRequest *sreq, DataObject *dobj)
+{
+	RecordSyncListP_t *p;
+	/*SyncOperandP_t *syncOp;*/
+	unsigned int stampMinor, stampMajor;
+
+	dataobject_getStamp(dobj, &stampMinor, &stampMajor);
+	p = protocol_recordSync(0, stampMinor, stampMajor);
 }

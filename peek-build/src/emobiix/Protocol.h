@@ -23,6 +23,8 @@ SyncOperandP_t *protocol_goToTree(int tree);
 SyncOperandP_t *protocol_addChild(void);
 void protocol_blockSyncList(DataObjectSyncP_t *p);
 void protocol_recordSyncList(DataObjectSyncP_t *p);
+RecordSyncListP_t *protocol_recordSync(int isDelete, unsigned int stampMinor,
+		unsigned int stampMajor);
 void protocol_authUserPass(AuthUserPassP_t *p,
 		const char *username, const char *pass);
 void protocol_autUserPassExtra(AuthUserPassP_t *p,

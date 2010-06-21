@@ -100,6 +100,24 @@ void protocol_recordSyncList(DataObjectSyncP_t *p)
 	p->syncListP.choice.recordSyncListP.list.free = NULL;
 }
 
+RecordSyncListP_t *protocol_recordSync(int isDelete, unsigned int stampMinor,
+		unsigned int stampMajor)
+{
+	RecordSyncListP_t *p;
+
+	p = p_malloc(sizeof(RecordSyncListP_t));
+	p->deleteRecordP = isDelete;
+	p->recordIdMinorP = stampMinor;
+	p->recordIdMajorP = stampMajor;
+
+	p->recordFieldListP->list.array = NULL;
+	p->recordFieldListP->list.size = 0;
+	p->recordFieldListP->list.count = 0;
+	p->recordFieldListP->list.free = NULL;
+	
+	return p;
+}
+
 void protocol_authUserPass(AuthUserPassP_t *p,
 		const char *username, const char *pass)
 {
