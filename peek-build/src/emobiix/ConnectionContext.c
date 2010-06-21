@@ -409,6 +409,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 				/*widget_resolveLayout(sreq->dobj, currentStyle);*/
 				widget_markDirty(sreq->dobj);
 				mime_loadAll(sreq->dobj);
+				/*dataobject_debugPrint(sreq->dobj);*/
 				field = dataobject_getValue(sreq->dobj, "type");
 				if (field != NULL && field->type == DOF_STRING &&
 						strcmp(field->field.string, "application") == 0) {
@@ -416,7 +417,6 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 					manager_launchApplication(app);
 					manager_focusApplication(app);
 				}
-				/*dataobject_debugPrint(sreq->dobj);*/
 			}
 			break;
 		case packetTypeP_PR_NOTHING:

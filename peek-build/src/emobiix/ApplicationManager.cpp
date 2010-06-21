@@ -241,7 +241,9 @@ void manager_focusApplication(Application *app)
 	widget_focusNone(appManager->rootApplicationWindow,
 			appManager->style);
 
-	dataobject_debugPrint(appManager->rootApplicationWindow);
+	widget_markDirty(appManager->rootApplicationWindow);
+
+	/*dataobject_debugPrint(appManager->rootApplicationWindow);*/
 }
 
 #ifdef __cplusplus

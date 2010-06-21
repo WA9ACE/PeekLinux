@@ -456,16 +456,13 @@ static Widget *widget_focusLast(Widget *w)
 		listIterator_next(iter);
 	}
 	listIterator_delete(iter);
-	emo_printf("Done %d children" NL, list_size(w->children));
-
+	
 	if (widget_canFocus(w)) {
 		field = dataobject_getValue(w, "type");
-		emo_printf("LastFocusing : %s" NL, field->field.string);
 		widget_setFocus(w, 1);
 		return w;
 	} else {
 		field = dataobject_getValue(w, "type");
-		emo_printf("NotLastFocusing : %s\n", field->field.string);
 	}
 
 	return NULL;
@@ -679,7 +676,7 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 			sscanf(sField->field.string, "%d", &tmpint); \
 			if (sField->field.string[slen-1] == '%') { \
 				/* do nothing - this is a relative measure */ \
-			} else { \
+			} else if (slen > 0) { \
 				w->box._x = tmpint; \
 				dataobject_setLayoutClean(w, _y); \
 			} \
