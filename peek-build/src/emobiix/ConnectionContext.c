@@ -83,6 +83,9 @@ static void connectionContext_recordSyncList(ConnectionContext *ctx,
 		SyncRequest *sreq, SyncListP_t *p);
 static RecordSyncListP_t *connectionContext_recordSync(ConnectionContext *ctx,
 		SyncRequest *sreq, DataObject *dobj);
+static void connectionContext_syncOperand(ConnectionContext *ctx,
+		SyncRequest *sreq, SyncListP_t *list, RecordSyncListP_t *listr,
+		DataObject *sobj);
 
 static const char *generate_mapKey(Endpoint *ep, long sid)
 {
@@ -548,31 +551,31 @@ static void connectionContext_outgoingSync(ConnectionContext *ctx,
 		SyncRequest *sreq, FRIPacketP_t *p)
 {
 	DataObject *sobj;
-	MapIterator *iter;
-	SyncOperandP_t *syncOp;
-	int childOp;
-	ListIterator *citer;
-	DataObjectField *field;
-	char *fieldName;
-
+	
 	emo_printf( "Sending Sync Packet" NL);
     p->packetTypeP.present = packetTypeP_PR_dataObjectSyncP;
 	if (sreq->completeFields == NULL)
 		sreq->completeFields = list_new();
 	sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
 
-	iter = dataobject_fieldIterator(sobj);
 	p->packetTypeP.choice.dataObjectSyncP.syncSequenceIDP = sreq->sequenceID;
 
 	if (dataobject_getRecordType(sreq->dobj)) {
 		protocol_recordSyncList(&p->packetTypeP.choice.dataObjectSyncP);
 		connectionContext_recordSyncList(ctx, sreq,
 				&p->packetTypeP.choice.dataObjectSyncP.syncListP);
+		connectionContext_packetSend(ctx, p);
 		return;
 	}
 
 	protocol_blockSyncList(&p->packetTypeP.choice.dataObjectSyncP);
 	
+	connectionContext_syncOperand(ctx, sreq,
+			&p->packetTypeP.choice.dataObjectSyncP.syncListP, NULL, sobj);
+
+	connectionContext_packetSend(ctx, p);
+
+#if 0
 	if (sreq->childOp >= -1) {
 		/* node operation */
 next_childop:
@@ -627,7 +630,7 @@ next_childop:
 		sreq->childOp = childOp;
 	else
 		sreq->hasFinished = 1;
-	connectionContext_packetSend(ctx, p);
+#endif
 }
 
 static void connectionContext_processSync(ConnectionContext *ctx,
@@ -827,4 +830,84 @@ static RecordSyncListP_t *connectionContext_recordSync(ConnectionContext *ctx,
 
 	dataobject_getStamp(dobj, &stampMinor, &stampMajor);
 	p = protocol_recordSync(0, stampMinor, stampMajor);
+
+	/*syncOp = connectionContext_syncOperand(ctx, sreq, p->recordFieldListP);
+	asn_sequence_add(&p->recordFieldListP->list, syncOp);*/
+
+	return p;
+}
+
+static void connectionContext_syncOperand(ConnectionContext *ctx,
+		SyncRequest *sreq, SyncListP_t *list, RecordSyncListP_t *listr,
+		DataObject *sobj)
+{
+	SyncOperandP_t *syncOp;
+	int childOp;
+	char *fieldName;
+	ListIterator *citer;
+	DataObjectField *field;
+	MapIterator *iter;
+
+	iter = dataobject_fieldIterator(sobj);
+
+	if (sreq->childOp >= -1) {
+		/* node operation */
+next_childop:
+		/* add child operation */
+		if (sreq->childOp == -1) {
+			syncOp = protocol_addChild();
+			if (list->present == SyncListP_PR_blockSyncListP)
+				asn_sequence_add(&list->choice.blockSyncListP.list, syncOp);
+			else
+				asn_sequence_add(&listr->recordFieldListP->list, syncOp);
+
+			sreq->childOp = -2;
+			citer = dataobject_childIterator(sobj);
+			while (!listIterator_finished(citer)) {
+				if (list_find(sreq->completeNodes, listIterator_item(citer), ListEqualComparitor) == NULL) {
+					sreq->objectIndex = dataobject_treeIndex((DataObject *)listIterator_item(citer));
+					break;
+				}
+				listIterator_next(citer);
+			}
+			listIterator_delete(citer);
+		} else {
+			/* go to tree operation */
+			syncOp = protocol_goToTree(sreq->childOp);
+			if (list->present == SyncListP_PR_blockSyncListP)
+				asn_sequence_add(&list->choice.blockSyncListP.list, syncOp);
+			else
+				asn_sequence_add(&listr->recordFieldListP->list, syncOp);
+			sreq->objectIndex = sreq->childOp;
+			sreq->childOp = -1;
+			sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
+			goto next_childop;
+		}
+		return;
+	}
+	while (!mapIterator_finished(iter)) {
+		field = (DataObjectField *)mapIterator_item(iter, (void **)&fieldName);
+		if (list_find(sreq->completeFields, fieldName, (ListComparitor)strcmp) == NULL) {
+			/* serialize field */
+			syncOp = protocol_serializeField(sobj, fieldName);
+			if (syncOp == NULL)
+				return ;
+            /* add to packet and mark field complete */
+			if (list->present == SyncListP_PR_blockSyncListP)
+				asn_sequence_add(&list->choice.blockSyncListP.list, syncOp);
+			else
+				asn_sequence_add(&listr->recordFieldListP->list, syncOp);
+			list_append(sreq->completeFields, fieldName);
+		}
+		mapIterator_next(iter);
+	}
+	list_append(sreq->completeNodes, sobj);
+	if (sreq->completeFields != NULL) {
+		list_delete(sreq->completeFields);
+		sreq->completeFields = NULL;
+	}
+	if  (dataobject_getTreeNextOp(sobj, &childOp))
+		sreq->childOp = childOp;
+	else
+		sreq->hasFinished = 1;
 }

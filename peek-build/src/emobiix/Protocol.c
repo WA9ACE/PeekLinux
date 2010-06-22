@@ -110,11 +110,16 @@ RecordSyncListP_t *protocol_recordSync(int isDelete, unsigned int stampMinor,
 	p->recordIdMinorP = stampMinor;
 	p->recordIdMajorP = stampMajor;
 
-	p->recordFieldListP->list.array = NULL;
-	p->recordFieldListP->list.size = 0;
-	p->recordFieldListP->list.count = 0;
-	p->recordFieldListP->list.free = NULL;
-	
+	if (isDelete) {
+		p->recordFieldListP = NULL;
+	} else {
+		p->recordFieldListP = (struct recordFieldListP *)p_malloc(sizeof(struct recordFieldListP));
+		p->recordFieldListP->list.array = NULL;
+		p->recordFieldListP->list.size = 0;
+		p->recordFieldListP->list.count = 0;
+		p->recordFieldListP->list.free = NULL;
+	}
+
 	return p;
 }
 
