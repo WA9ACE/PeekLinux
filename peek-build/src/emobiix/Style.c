@@ -44,20 +44,25 @@ void style_renderWidgetTree(Style *s, Widget *w)
 	DataObject *dobj = NULL;
 	WidgetRenderer *wr;
 
+	type = dataobject_getValue(w, "type");
+
 	if (dataobject_isDirty(w)) {
 		/* ryan disabled this, dont know what it was here for anyway */
 		/*dobj = widget_getDataObject(w);*/
 		dobj = w;
 		className = widget_getClass(w);
 		id = widget_getID(w);
-		if (dobj != NULL)
-			type = dataobject_getValue(dobj, "type");
+		/*if (dobj != NULL)*/
 		wr = (WidgetRenderer *)style_getProperty(s, className,
 				id, type == NULL ? NULL : type->field.string, "renderer");
 		if (wr != NULL)
 			wr->render(wr, s, w, dobj);
 		dataobject_setClean(w);
 	}
+
+	/* we dont render array children - they render themselves */
+	if (strcmp(type->field.string, "array") == 0)
+		return;
 
 	iter = widget_getChildren(w);
 	while (!listIterator_finished(iter)) {

@@ -35,6 +35,7 @@ Widget *widget_focusWhichOne(Widget *w);
 Widget *widget_focusWhichOneNF(Widget *w);
 void widget_markDirty(Widget *w);
 Widget *widget_findStringField(Widget *screen, const char *key, const char *value);
+int widget_typeNoChildRender(DataObjectField *field);
 
 Rectangle *widget_getMargin(Widget *w);
 Rectangle *widget_getBorder(Widget *w);

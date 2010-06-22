@@ -3,6 +3,8 @@
 #include "Gradient.h"
 #include "Widget.h"
 #include "WidgetRenderer.h"
+#include "ArrayWidget.h"
+
 #include "Font.h"
 
 #include "assets/DroidSans.c"

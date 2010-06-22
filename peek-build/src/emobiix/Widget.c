@@ -709,135 +709,6 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 	listIterator_delete(iter);
 }
 
-static void widget_layoutMeasure(Widget *w, Style *s)
-{
-	ListIterator *iter;
-	const char *id, *className;
-	DataObjectField *type = NULL, *sField;
-	WidgetRenderer *wr;
-	DataObject *dobj;
-	IPoint p;
-	Widget *cw;
-	int cwidth, cheight, tmpint, slen;
-	WidgetPacking packing;
-
-	if (s == NULL)
-		return;
-
-	cwidth = 0;
-	cheight = 0;
-	packing = widget_getPacking(w);
-
-	sField = dataobject_getValue(w, "width");
-	if (sField != NULL) {
-		if (sField->type == DOF_INT)
-			w->box.width = sField->field.integer;
-		else {
-			slen = strlen(sField->field.string);
-			sscanf(sField->field.string, "%d", &tmpint);
-			if (sField->field.string[slen-1] == '%') {
-				w->box.width = (int)(w->parent->box.width * ((float)tmpint)/100.0);
-			}
-		}
-	}
-
-	sField = dataobject_getValue(w, "height");
-	if (sField != NULL) {
-		if (sField->type == DOF_INT)
-			w->box.height = sField->field.integer;
-		else {
-			slen = strlen(sField->field.string);
-			sscanf(sField->field.string, "%d", &tmpint);
-			if (sField->field.string[slen-1] == '%') {
-				w->box.height = (int)(w->parent->box.height * ((float)tmpint)/100.0);
-			}
-		}
-	}
-
-	iter = list_begin(w->children);
-	while (!listIterator_finished(iter)) {
-		cw = (Widget *)listIterator_item(iter);
-		widget_layoutMeasure(cw, s);
-		switch (packing) {
-			case WP_VERTICAL:
-			default:
-				tmpint = cw->box.width + cw->margin.x + cw->margin.width;
-				cwidth = cwidth > tmpint ? cwidth : tmpint;
-				cheight += cw->box.height + cw->margin.y + cw->margin.height;
-				break;
-			case WP_HORIZONTAL:
-				tmpint = cw->box.height + cw->margin.y + cw->margin.height;
-				cwidth += cw->box.width + cw->margin.width + cw->margin.x;
-				cheight = cheight > tmpint ? cheight : tmpint;
-				break;
-		}
-		listIterator_next(iter);
-	}
-
-	if (list_size(w->children) == 0) {
-		dobj = widget_getDataObject(w);
-		className = widget_getClass(w);
-		id = widget_getID(w);
-		if (dobj != NULL)
-			type = dataobject_getValue(dobj, "type");
-		wr = (WidgetRenderer *)style_getProperty(s, className,
-				id, type == NULL ? NULL : type->field.string, "renderer");
-		if (wr == NULL)
-			wr = widgetrenderer_zero();
-		wr->measure(wr, s, w, dobj, &p);
-		w->box.width = p.x;
-		w->box.height = p.y;
-	} else {
-		w->box.width = cwidth;
-		w->box.height = cheight;
-	}
-
-#if 0
-	sField = dataobject_getValue(w, "type");
-	if (sField == NULL ||
-			(sField != NULL && sField->type == DOF_STRING &&
-			(strcmp(sField->field.string, "view") == 0) ||
-			(strcmp(sField->field.string, "stack") == 0))) {
-		w->box.width = w->parent->box.width;
-		w->box.height = w->parent->box.height;
-	} else {
-#endif
-		sField = dataobject_getValue(w, "width");
-		if (sField != NULL) {
-			if (sField->type == DOF_INT)
-				w->box.width = sField->field.integer;
-			else {
-				slen = strlen(sField->field.string);
-				sscanf(sField->field.string, "%d", &tmpint);
-				if (sField->field.string[slen-1] == '%') {
-					w->box.width = (int)(w->parent->box.width * ((float)tmpint)/100.0);
-				} else {
-					w->box.width = tmpint;
-				}
-			}
-		}
-
-		sField = dataobject_getValue(w, "height");
-		if (sField != NULL) {
-			if (sField->type == DOF_INT)
-				w->box.height = sField->field.integer;
-			else {
-				slen = strlen(sField->field.string);
-				sscanf(sField->field.string, "%d", &tmpint);
-				if (sField->field.string[slen-1] == '%') {
-					w->box.height = (int)(w->parent->box.height * ((float)tmpint)/100.0);
-				} else {
-					w->box.height = tmpint;
-				}
-			}
-		}
-#if 0
-	}
-#endif
-
-	listIterator_delete(iter);
-}
-
 void widget_layoutForceResolveParent(Widget *w, unsigned int flag)
 {
 	if (dataobject_isLayoutDirty(w->parent, flag))
@@ -885,24 +756,26 @@ void widget_resolveMeasureRelative(Widget *w)
 
 	sumWidth = 0;
 	sumHeight = 0;
-	iter = list_begin(w->children);
-	while (!listIterator_finished(iter)) {
-		child = (DataObject *)listIterator_item(iter);
-		widget_resolveMeasureRelative(child);
-		if (widget_getPacking(w) == WP_HORIZONTAL) {
-			sumWidth += child->box.width + child->margin.x + child->margin.width;
-			sumNew = child->box.height + child->margin.y + child->margin.height;
-			sumHeight = sumNew > sumHeight ? sumNew : sumHeight;
-			emo_printf("HORIZONTAL height now: %d" NL, sumHeight);
-		} else {
-			sumNew = child->box.width + child->margin.x + child->margin.width;
-			sumWidth = sumNew > sumWidth ? sumNew : sumWidth;
-			sumHeight += child->box.height + child->margin.y + child->margin.height;
-		}
-		listIterator_next(iter);
-	}
 
-	listIterator_delete(iter);
+	sField = dataobject_getValue(w, "type");
+	if (!widget_typeNoChildRender(sField)) {
+		iter = list_begin(w->children);
+		while (!listIterator_finished(iter)) {
+			child = (DataObject *)listIterator_item(iter);
+			widget_resolveMeasureRelative(child);
+			if (widget_getPacking(w) == WP_HORIZONTAL) {
+				sumWidth += child->box.width + child->margin.x + child->margin.width;
+				sumNew = child->box.height + child->margin.y + child->margin.height;
+				sumHeight = sumNew > sumHeight ? sumNew : sumHeight;
+			} else {
+				sumNew = child->box.width + child->margin.x + child->margin.width;
+				sumWidth = sumNew > sumWidth ? sumNew : sumWidth;
+				sumHeight += child->box.height + child->margin.y + child->margin.height;
+			}
+			listIterator_next(iter);
+		}
+		listIterator_delete(iter);
+	}
 
 	if (dataobject_isLayoutDirty(w, LAYOUT_DIRTY_WIDTH)) {
 		w->box.width = sumWidth;
@@ -910,7 +783,6 @@ void widget_resolveMeasureRelative(Widget *w)
 	}
 	if (dataobject_isLayoutDirty(w, LAYOUT_DIRTY_HEIGHT)) {
 		w->box.height = sumHeight;
-		emo_printf("Child sumHeight : %d" NL, sumHeight);
 		dataobject_setLayoutClean(w, LAYOUT_DIRTY_HEIGHT);
 	}
 }
@@ -955,6 +827,10 @@ void widget_resolveMargin(Widget *w, Style *s)
 			w->margin.height = field->field.integer;
 	}
 
+	/* dont do no-child-renderable decend */
+	if (widget_typeNoChildRender(type))
+		return;
+
 	iter = list_begin(w->children);
 	while (!listIterator_finished(iter)) {
 		widget_resolveMargin(listIterator_item(iter), s);
@@ -981,6 +857,10 @@ void widget_resolvePosition(Widget *w)
 	packing = widget_getPacking(w);
 
 	field = dataobject_getValue(w, "type");
+
+	if (widget_typeNoChildRender(field))
+		return;
+
 	if (field != NULL && field->type == DOF_STRING &&
 			strcmp(field->field.string, "stack") == 0)
 		positionStatic = 1;
@@ -1141,3 +1021,10 @@ void widget_getClipRectangle(Widget *w, Rectangle *rect)
 	rect->height = w->box.height;
 }
 
+int widget_typeNoChildRender(DataObjectField *field)
+{
+	if (field != NULL && field->type == DOF_STRING &&
+			strcmp(field->field.string, "array") == 0)
+		return 1;
+	return 0;
+}

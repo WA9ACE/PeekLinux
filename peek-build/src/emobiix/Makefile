@@ -66,6 +66,7 @@ SRC += ApplicationManager.cpp
 SRC += BootApplication.c
 SRC += RootApplication.c
 SRC += RootStyle.c
+SRC += ArrayWidget.c
 
 TARGET = $(CURDIR)/emobiix.a
 SOCKET_SIM = $(CURDIR)/socket_sim.a
