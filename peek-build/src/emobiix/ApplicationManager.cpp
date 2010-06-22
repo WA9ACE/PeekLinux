@@ -90,8 +90,8 @@ void manager_drawScreenPartial(void)
 
 void manager_resolveLayout(void)
 {
-	widget_resolveLayout(appManager->rootApplicationWindow,
-			appManager->style);
+	widget_resolveLayoutRoot(appManager->rootApplicationWindow,
+			appManager->style, 0);
 }
 
 void manager_handleKey(int key)

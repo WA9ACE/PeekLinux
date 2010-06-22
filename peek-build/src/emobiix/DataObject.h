@@ -23,6 +23,7 @@ typedef void (*DataObjectSubscriptionCallback)(DataObject *dobj,
 		DataObjectOperation doop, void *pararm);
 
 DataObject *dataobject_new(void);
+void dataobject_delete(DataObject *dobj);
 DataObject *dataobject_newMap(DataObject *src, DataObjectMap *dmap);
 void dataobject_setValue(DataObject *dobj, const char *key, DataObjectField *v);
 DataObjectField *dataobject_getValue(DataObject *obj, const char *key);
@@ -47,6 +48,7 @@ void dataobject_pack(DataObject *parent, DataObject *child);
 void dataobject_packStart(DataObject *parent, DataObject *child);
 
 DataObject *dataobject_parent(DataObject *dobj);
+void dataobject_setParent(DataObject *dobj, DataObject *parent);
 DataObject *dataobject_superparent(DataObject *dobj);
 DataObject *dataobject_findByName(DataObject *root, const char *name);
 

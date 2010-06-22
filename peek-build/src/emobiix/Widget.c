@@ -711,6 +711,9 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 
 void widget_layoutForceResolveParent(Widget *w, unsigned int flag)
 {
+	if (w->parent == NULL)
+		return;
+
 	if (dataobject_isLayoutDirty(w->parent, flag))
 		widget_layoutForceResolveParent(w->parent, flag);
 
@@ -928,7 +931,7 @@ void widget_resolvePosition(Widget *w)
 	listIterator_delete(iter);
 }
 
-void widget_resolveLayout(Widget *w, Style *s)
+void widget_resolveLayoutRoot(Widget *w, Style *s, int resizeRoot)
 {
 	ListIterator *iter;
 
@@ -936,17 +939,19 @@ void widget_resolveLayout(Widget *w, Style *s)
 
 	widget_resolveMargin(w, s);
 
-	/* force to screen size */
-	w->box.x = 0;
-	w->box.y = 0;
-	w->box.width = 320;
-	w->box.height = 240;
+	if (resizeRoot) {
+		/* force to screen size */
+		w->box.x = 0;
+		w->box.y = 0;
+		w->box.width = 320;
+		w->box.height = 240;
 
-	/* force to no margin */
-	w->margin.x = 0;
-	w->margin.y = 0;
-	w->margin.width = 0;
-	w->margin.height = 0;
+		/* force to no margin */
+		w->margin.x = 0;
+		w->margin.y = 0;
+		w->margin.width = 0;
+		w->margin.height = 0;
+	}
 
 	/* measure those with explicit sizes or measurable content */
 	iter = list_begin(w->children);

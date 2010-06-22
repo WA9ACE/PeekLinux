@@ -40,7 +40,8 @@ int widget_typeNoChildRender(DataObjectField *field);
 Rectangle *widget_getMargin(Widget *w);
 Rectangle *widget_getBorder(Widget *w);
 Rectangle *widget_getBox(Widget *w);
-void widget_resolveLayout(Widget *w, Style *s);
+#define widget_resolveLayout(_w, _s) widget_resolveLayoutRoot(_w, _s, 1)
+void widget_resolveLayoutRoot(Widget *w, Style *s, int resizeRoot);
 void widget_getClipRectangle(Widget *w, Rectangle *rect);
 
 void widget_printTree(Widget *w, int level);

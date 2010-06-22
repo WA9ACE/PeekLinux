@@ -159,7 +159,10 @@ void *mapIterator_item(MapIterator *iter, void **key)
 
 void mapIterator_remove(MapIterator *iter)
 {
+	MapNode *item;
+	item = (MapNode *)listIterator_item((ListIterator *)iter);
 	listIterator_remove((ListIterator *)iter);
+	p_free(item);
 }
 
 void mapIterator_next(MapIterator *iter)

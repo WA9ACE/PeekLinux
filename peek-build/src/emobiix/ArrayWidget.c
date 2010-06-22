@@ -1,6 +1,8 @@
 #include "ArrayWidget.h"
 
 #include "lgui.h"
+#include "Debug.h"
+
 #include "p_malloc.h"
 
 #include <stdio.h>
@@ -9,16 +11,109 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj)
 {
 	Rectangle *box, *margin;
+	Rectangle *shimBox, *shimMargin;
+	Rectangle *childBox, *childMargin;
 	WidgetRenderer *boxwr;
+	DataObjectField *startindex, *focusindex;
+	DataObject /**rec,*/ *shim, *wchild;
+	WidgetPacking packing;
+	ListIterator *iter;
+	int sfHeight, sfStartY, recordCount;
+	int startidx, focusidx, idx, canFocus;
 
 	boxwr = widgetrenderer_gradboxr();
 	boxwr->render(boxwr, s, w, dobj);
 
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
+	packing = widget_getPacking(w);
+
+	/* start index */
+	startindex = dataobject_getValue(w, "startindex");
+	if (startindex == NULL) {
+		startindex = dataobjectfield_int(0);
+		dataobject_setValue(w, "startindex", startindex);
+	}
+	startidx = startindex->field.integer;
+
+	/* focus index */
+	focusindex = dataobject_getValue(w, "focusindex");
+	if (focusindex == NULL) {
+		focusindex = dataobjectfield_int(0);
+		dataobject_setValue(w, "focusindex", startindex);
+	}
+	focusidx = focusindex->field.integer;
+
+	iter = dataobject_childIterator(w);
+	wchild = listIterator_item(iter);
+	listIterator_delete(iter);
+	if (wchild == NULL)
+		return;
+	
+	canFocus = widget_canFocus(wchild);
+
+	shim = dataobject_new();
+	dataobject_setValue(shim, "type", dataobjectfield_string("box"));
+
+	shimMargin = widget_getMargin(shim);
+	shimMargin->x = 0;
+	shimMargin->y = 0;
+	shimMargin->width = 0;
+	shimMargin->height = 0;
+
+	shimBox = widget_getBox(shim);
+	shimBox->x = box->x+margin->x;
+	shimBox->y = box->y+margin->y;
+	shimBox->width = box->width-10;
+	shimBox->height = box->height;
+
+	recordCount = dataobject_getChildCount(dobj);
+	idx = 0;
+	dataobject_pack(shim, wchild);
+	lgui_clip_push();
+	lgui_clip_and(box);
+	for (iter = dataobject_childIterator(dobj);
+			!listIterator_finished(iter); listIterator_next(iter)) {
+		/*emo_printf("Drawing Array index %d" NL, idx);*/
+		
+		if (idx == focusidx && canFocus)
+			widget_setFocus(wchild, 1);
+		else
+			widget_setFocus(wchild, 0);
+		widget_resolveLayoutRoot(shim, s, 0);
+		widget_markDirty(shim);
+		style_renderWidgetTree(s, shim);
+
+		childBox = widget_getBox(wchild);
+		childMargin = widget_getMargin(wchild);
+		if (packing == WP_HORIZONTAL) {
+			shimBox->x += childBox->width;
+			if (shimBox->x > box->x+box->width)
+				break;
+		} else {
+			shimBox->y += childBox->height;
+			if (shimBox->y > box->y+box->height)
+				break;
+		}
+
+		++idx;
+	}
+	listIterator_delete(iter);
+	dataobject_setParent(wchild, w);
+	lgui_clip_pop();
+
+	dataobject_delete(shim);
 
 	/* render scroll bar */
-	lgui_vline(box->x+margin->x+box->width-8, box->y+margin->y+1, box->height-1, 4, 0x88, 0x88, 0xFF);
+	lgui_vline(box->x+margin->x+box->width-8, box->y+margin->y+1, box->height-1, 4, 0x44, 0x44, 0xFF);
+	sfHeight = (box->height-1) / recordCount;
+	if (sfHeight < 5)
+		sfHeight = 5;
+	sfStartY = ((box->height-1) - sfHeight) / recordCount;
+	if (sfStartY == 0)
+		sfStartY = 0;
+	sfStartY *= startidx;
+	lgui_vline(box->x+margin->x+box->width-8, box->y+margin->y+1+sfStartY, sfHeight, 4, 0xCC, 0xCC, 0xFF);
 
 #if 0
 	Rectangle *box, *margin;

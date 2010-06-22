@@ -48,8 +48,8 @@ void style_renderWidgetTree(Style *s, Widget *w)
 
 	if (dataobject_isDirty(w)) {
 		/* ryan disabled this, dont know what it was here for anyway */
-		/*dobj = widget_getDataObject(w);*/
-		dobj = w;
+		dobj = widget_getDataObject(w);
+		/*dobj = w;*/
 		className = widget_getClass(w);
 		id = widget_getID(w);
 		/*if (dobj != NULL)*/

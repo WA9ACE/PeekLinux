@@ -40,6 +40,29 @@ DataObject *dataobject_new(void)
 	return output;
 }
 
+void dataobject_delete(DataObject *dobj)
+{
+	MapIterator *iter;
+	void *item;
+	char *key;
+	
+	do {
+		iter = map_begin(dobj->data);
+		if (mapIterator_finished(iter)) {
+			mapIterator_delete(iter);
+			break;
+		}
+		item = mapIterator_item(iter, &key);
+		p_free(item);
+		mapIterator_remove(iter);
+		mapIterator_delete(iter);
+	} while (1);
+
+	list_delete(dobj->children);
+	map_delete(dobj->data);
+	p_free(dobj);
+}
+
 DataObject *dataobject_newMap(DataObject *src, DataObjectMap *dmap)
 {
 	DataObject *output;
@@ -287,6 +310,11 @@ void dataobject_packStart(DataObject *parent, DataObject *child)
 DataObject *dataobject_parent(DataObject *dobj)
 {
 	return dobj->parent;
+}
+
+void dataobject_setParent(DataObject *dobj, DataObject *parent)
+{
+	dobj->parent = dobj;
 }
 
 DataObject *dataobject_superparent(DataObject *dobj)

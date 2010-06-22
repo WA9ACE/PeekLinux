@@ -121,10 +121,11 @@ DataObject *BootApplication(void)
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("90%"));
 	dataobject_setValue(dobj1, "height", dataobjectfield_string("100"));
 	dataobject_setValue(dobj1, "margin", dataobjectfield_int(3));
+	widget_setPacking(dobj1, WP_VERTICAL);
 	widget_setAlignment(dobj1, WA_CENTER);
 
 	sbox = widget_newTypeIdName("box", "selbox", NULL, dobj1);
-	dataobject_setValue(sbox, "width", dataobjectfield_string("97%"));
+	dataobject_setValue(sbox, "width", dataobjectfield_string("100%"));
 	dataobject_setValue(sbox, "margin", dataobjectfield_int(2));
 	widget_setCanFocus(sbox, 1);
 	widget_setPacking(sbox, WP_HORIZONTAL);
