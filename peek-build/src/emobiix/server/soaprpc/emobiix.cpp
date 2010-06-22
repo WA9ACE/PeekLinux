@@ -5,11 +5,11 @@ xsd__base64Binary::xsd__base64Binary()
 {
 }
 
-xsd__base64Binary::xsd__base64Binary(struct soap *soap, int n, char *type)
+xsd__base64Binary::xsd__base64Binary(struct soap *soap, int n, const xsd__string& mimeType)
 {
   __ptr = (unsigned char*)soap_malloc(soap, n);
   __size = n;
-	mime = type;
+	mime = mimeType;
 }
 
 unsigned char *xsd__base64Binary::getPtr()
@@ -22,7 +22,7 @@ int xsd__base64Binary::getSize() const
   return __size;
 }
 
-char *xsd__base64Binary::getMime() 
+const xsd__string& xsd__base64Binary::getMime() 
 {
 	return mime;
 }
@@ -34,7 +34,7 @@ recordArray::recordArray()
 
 recordArray::recordArray(struct soap* soap, int n)
 {
-	__ptr = (char **)soap_malloc(soap, n * sizeof(char *));
+	__ptr = (xsd__string *)soap_malloc(soap, n * sizeof(xsd__string));
 	__size = n;
 }
 

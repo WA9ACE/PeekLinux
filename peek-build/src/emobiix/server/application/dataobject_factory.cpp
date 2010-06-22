@@ -12,7 +12,7 @@ using namespace std;
 namespace emobiix
 {
 
-FRIPacketP *dataobject_factory::create(const std::string& app_path, DOMNode *node)
+FRIPacketP *dataobject_factory::create(const std::string& app_path, const std::string& deviceId, DOMNode *node)
 {
 	string nodeName = XML::XMLToString(node->getNodeName());
 	if (nodeName == "emobiix-application") 
@@ -28,7 +28,7 @@ FRIPacketP *dataobject_factory::create(const std::string& app_path, DOMNode *nod
 	else if (nodeName == "entry")
 		return createEntry(node);
 	else if (nodeName == "image")
-		return createImage(node, app_path);
+		return createImage(node, app_path, deviceId);
 
 	return NULL;
 }
@@ -167,7 +167,7 @@ FRIPacketP* dataobject_factory::createEntry(DOMNode *node)
 	return entry;
 }
 
-FRIPacketP* dataobject_factory::createImage(DOMNode *node, const std::string& app_path)
+FRIPacketP* dataobject_factory::createImage(DOMNode *node, const std::string& app_path, const std::string& deviceId)
 {
 	FRIPacketP *image = createDataObject("image", node);
 	setCommonAttributes(image, node);
@@ -177,7 +177,7 @@ FRIPacketP* dataobject_factory::createImage(DOMNode *node, const std::string& ap
 
 	std::string mime;
 	vector<pair<size_t, unsigned char *> > blocks;
-	soap_request::GetBlockDataObject(app_path, src, mime, blocks);
+	soap_request::GetBlockDataObject(app_path, deviceId, src, mime, blocks);
 
 	addStringAttribute(image, "mime-type", mime.c_str());
 	addDataAttribute(image, "src", blocks);

@@ -1,12 +1,14 @@
-#include <cstdio>
-
 #include "stdsoap2.h"
 #include "emobiix_rpc_Stub.h"
 #include "emobiix_rpc_emobiixObject.h" // get server object
 #include "emobiix.nsmap" // get namespace bindings
 
+#include <cstdio>
 #include <string>  
-#include <iostream>  
+#include <iostream>
+#include <fstream>
+#include <sys/stat.h>
+
 #include "curl/curl.h"  
   
 using namespace std;
@@ -17,11 +19,11 @@ int main()
    return c.serve(); // calls soap_serve to serve as CGI application (using stdin/out)
 }
 
-int ns__AuthenticationRequest(struct soap* soap, xsd__string devId, xsd__string user, xsd__string password, bool &isAuthenticated)
+int ns__AuthenticationRequest(struct soap* soap, std::string deviceId, std::string userName, std::string password, bool &isAuthenticated)
 {
-	cerr << "Received authentication request for [" << user << "], [" << password << "]" << endl;
+	cerr << "Authentication request for [" << deviceId << "], [" << userName << "], [" << password << "]" << endl;
 
-	if (!strcmp(user, "peek") && !strcmp(password, "peek123"))
+	if (userName == "peek" && password == "peek123")
 		isAuthenticated = true;
 	else
 		isAuthenticated = false;
@@ -60,7 +62,7 @@ static int writer(char *data, size_t size, size_t nmemb,
  
 #endif
  
-bool curl_get_file(const char *szFileName, const char *szUrl)
+bool curl_get_file(const std::string& filename, const char *szUrl)
 {
 	// Our curl objects  
 	CURL *curl;  
@@ -71,7 +73,7 @@ bool curl_get_file(const char *szFileName, const char *szUrl)
 	if (!curl) 
 		return false;
 
-	FILE *file = fopen(szFileName, "w");
+	FILE *file = fopen(filename.c_str(), "w");
 	if (!file)
 		return false;
 
@@ -101,35 +103,36 @@ bool curl_get_file(const char *szFileName, const char *szUrl)
 	return true;
 }  
 
-int ns__BlockDataObjectRequest(struct soap* soap, xsd__string id, ns__Timestamp timestamp, xsd__base64Binary &rawData)
+int ns__BlockDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, xsd__base64Binary &binaryData)
 {
-	if (!strcmp(id, "map.png"))
+	if (dataObjectURI == "map.png")
 	{
-		if (!curl_get_file(id, "http://maps.google.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=14&size=320x240&maptype=roadmap&markers=color:blue|label:S|40.702147,-74.015794&markers=color:green|label:G|40.711614,-74.012318&markers=color:red|color:red|label:C|40.718217,-73.998284&sensor=false"))
+		if (!curl_get_file(dataObjectURI, "http://maps.google.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=14&size=320x240&maptype=roadmap&markers=color:blue|label:S|40.702147,-74.015794&markers=color:green|label:G|40.711614,-74.012318&markers=color:red|color:red|label:C|40.718217,-73.998284&sensor=false"))
 		{
 			return 404;
 		}
 	}
 
-	FILE *fd = fopen(id, "rb");
+	struct stat st;
+	if (stat(dataObjectURI.c_str(), &st) != 0)
+		return 404;
 
-	fseek(fd, 0L, SEEK_END);
-	int filesize = ftell(fd);
-	fseek(fd, 0L, SEEK_SET);
+	ifstream file(dataObjectURI.c_str(), ios::in | ios::binary);
+	if (!file)
+		return 404;
 
 	char *type = "unknown";
-	if (char *dot = strrchr(id, '.'))
+	if (char *dot = strrchr(dataObjectURI.c_str(), '.'))
 		type = dot + 1;
 
-	rawData = xsd__base64Binary(soap, filesize, type);
+	binaryData = xsd__base64Binary(soap, st.st_size, type);
 
-	fread(rawData.getPtr(), rawData.getSize(), 1, fd);
-	fclose(fd);
+	file.read((char *)binaryData.getPtr(), binaryData.getSize());
 
 	return SOAP_OK;
 }
 
-int ns__RecordDataObjectRequest(struct soap* soap, int id, ns__Timestamp timestamp, recordArray &recordData)
+int ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, recordArray &recordData)
 {
 	recordData = recordArray(soap, 3);
 
@@ -140,39 +143,38 @@ int ns__RecordDataObjectRequest(struct soap* soap, int id, ns__Timestamp timesta
 	return SOAP_OK;
 }
 
-int ns__TextDataObjectRequest(struct soap* soap, int id, ns__Timestamp timestamp, char*& textData)
+int ns__TextDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::string &textData)
 {
 	textData = "some textual data";
 	return SOAP_OK;
 }
 
-int ns__TreeDataObjectRequest(struct soap* soap, xsd__string id, ns__Timestamp timestamp, XML& m__treeData)
+int ns__TreeDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, std::string &m__treeData)
 {
 	char path[2048] = "";
-	sprintf(path, "%s.xml", id);
+	sprintf(path, "%s.xml", dataObjectURI.c_str());
 
-	FILE *fd = fopen(path, "rb");
-	if (!fd)
+	struct stat st;
+	if (stat(path, &st) != 0)
 	{
 		m__treeData = "<emobiix-gui></emobiix-gui>";
 		return SOAP_OK;
 	}
 
-	fseek(fd, 0L, SEEK_END);
-	int filesize = ftell(fd);
-	fseek(fd, 0L, SEEK_SET);
+	ifstream file(path, ios::in);
+	if (!file)
+	{
+		m__treeData = "<emobiix-gui></emobiix-gui>";
+		return SOAP_OK;
+	}
 
-	m__treeData = (XML)soap_malloc(soap, filesize * sizeof(char));
-
-	fread(m__treeData, filesize, 1, fd);
-	m__treeData[filesize] = 0;
-
-	fclose(fd);
+	std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+	m__treeData = str;
 
 	return SOAP_OK;
 }
 
-int ns__DataObjectPushRequest(struct soap*, int id, char *token, struct ns__DataObjectPushRequestResponse *param)
+int ns__DataObjectPushRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, bool &isDelivered)
 {
 	return SOAP_OK;
 }

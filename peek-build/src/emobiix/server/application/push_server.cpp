@@ -78,18 +78,18 @@ void push_server::stop()
 
 }
 
-int ns__DataObjectPushRequest(struct soap*, int id, char *token, struct ns__DataObjectPushRequestResponse *param)
+int ns__DataObjectPushRequest(struct soap*, std::string deviceId, std::string dataObjectURI, bool &isDelivered)
 {
 	emobiix::appdata data;
-	if (!emobiix::shared_appdata::instance().get(token, data))
+	if (!emobiix::shared_appdata::instance().get(deviceId, data))
 		return 404;
 
-	data.device->push("testing 1 2 3");
+	data.device->push(dataObjectURI);
 	return SOAP_OK;
 }
 
-int ns__AuthenticationRequest(struct soap*, char *devId, char *user, char *pass, bool &isAuthenticated) { return 403; } 
-int ns__BlockDataObjectRequest(struct soap*, char *id, ns__Timestamp timestamp, xsd__base64Binary &blockData) { return 403; } 
-int ns__TreeDataObjectRequest(struct soap*, char *id, ns__Timestamp timestamp, char *&m__treeData) { return 403; } 
-int ns__RecordDataObjectRequest(struct soap*, int id, ns__Timestamp timestamp, recordArray &recordData) { return 403; } 
-int ns__TextDataObjectRequest(struct soap*, int id, ns__Timestamp timestamp, char *&textData) { return 403; } 
+int ns__AuthenticationRequest(struct soap*, std::string deviceId, std::string userName, std::string password, bool &isAuthenticated) { return 403; }
+int ns__BlockDataObjectRequest(struct soap*, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, xsd__base64Binary &binaryData) { return 403; }
+int ns__TreeDataObjectRequest(struct soap*, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, std::string &m__treeData) { return 403; }
+int ns__RecordDataObjectRequest(struct soap*, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, recordArray &recordData) { return 403; }
+int ns__TextDataObjectRequest(struct soap*, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::string &textData) { return 403; }

@@ -37,8 +37,10 @@ connection::connection(io_service& io_service, const std::string app_path)
 
 connection::~connection()
 {
-	shared_appdata::instance().remove("IP ADDRESS");
-	TRACELOG("Terminating connection");
+	if (connection_token_.length())
+		shared_appdata::instance().remove(connection_token_);
+
+	TRACELOG("Terminating connection: " << connection_token_);
 }
 
 ip::tcp::socket& connection::socket()
@@ -251,9 +253,11 @@ void connection::handle_authUserPass(FRIPacketP* packet, reply& rep)
 	{
 		INFOLOG("Authentication successful");
 
+		connection_token_ = IMEI->second;
+
 		authResponse->packetTypeP.choice.authResponseP = RequestResponseP_responseOKP;
 		appdata data = { this };
-		shared_appdata::instance().put(IMEI->second, data);
+		shared_appdata::instance().put(connection_token_, data);
 	}
 	else
 	{
@@ -324,7 +328,7 @@ void connection::start_serverSync(reply& rep)
 	rep.packets.push_back(start);
 
 	string treeData;
-	if (!soap_request::GetTreeDataObject(app_path_, url_request_, treeData))
+	if (!soap_request::GetTreeDataObject(app_path_, connection_token_, url_request_, treeData))
 	{
 		ERRORLOG("NO tree data...");
 		return;
@@ -348,7 +352,7 @@ bool connection::parseTree(DOMNode *node, vector<FRIPacketP *>& packets, int& no
 		return false;
 
 	int self = nodeCount;
-	if (FRIPacketP *dataObject = dataobject_factory::create(app_path_, node))
+	if (FRIPacketP *dataObject = dataobject_factory::create(app_path_, connection_token_, node))
 	{
 		packets.push_back(dataObject);
 		nodeCount++;

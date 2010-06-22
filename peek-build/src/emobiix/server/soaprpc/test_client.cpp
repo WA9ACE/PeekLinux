@@ -23,12 +23,12 @@ int main(int argc, char **argv)
 		cerr << "Authentication successful!" << endl;
 
 	string tree;
-	if (emobiix::soap_request::GetTreeDataObject(url, "sample", tree))
+	if (emobiix::soap_request::GetTreeDataObject(url, "1234567", "dataobject", tree))
 		cerr << "Tree data request successful: " << endl << tree << endl;
 
 	string mime;
 	vector<pair<size_t, unsigned char *> > blocks;
-	if (emobiix::soap_request::GetBlockDataObject(url, "image.jpg", mime, blocks))
+	if (emobiix::soap_request::GetBlockDataObject(url, "1234567", "image.jpg", mime, blocks))
 		cerr << "Block data request successful, got data of type " << mime << " of size " << blocks.size() << " blocks of data" << endl;
 
 	for (size_t i = 0; i < blocks.size(); ++i)

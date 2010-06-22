@@ -3,8 +3,8 @@
 
 #import "stl.h"
 
-typedef char *XML;
-typedef char *xsd__string;
+typedef std::string XML;
+typedef std::string xsd__string; 
 
 class xsd__base64Binary
 {
@@ -14,10 +14,10 @@ public:
 	@xsd__string mime;
 
 	xsd__base64Binary();
-	xsd__base64Binary(struct soap* soap, int n, char *mime);
+	xsd__base64Binary(struct soap* soap, int n, const xsd__string& mime);
 	int getSize() const;
 	unsigned char *getPtr();
-	char *getMime();
+	const xsd__string& getMime();
 };
 
 class recordArray
@@ -41,38 +41,42 @@ public:
 };
 
 int ns__AuthenticationRequest(
-	xsd__string devId,
-	xsd__string user, 
-	xsd__string pass, 
+	xsd__string deviceId,
+	xsd__string userName, 
+	xsd__string password, 
 	bool &isAuthenticated
 );
 
 int ns__BlockDataObjectRequest(
-	xsd__string id, 
-	ns__Timestamp timestamp, 
-	xsd__base64Binary &blockData
+	xsd__string deviceId,
+	xsd__string dataObjectURI, 
+	ns__Timestamp timeStamp, 
+	xsd__base64Binary &binaryData
 );
 
 int ns__TreeDataObjectRequest(
-	xsd__string id, 
-	ns__Timestamp timestamp, 
+	xsd__string deviceId, 
+	xsd__string dataObjectURI, 
+	ns__Timestamp timeStamp, 
 	XML& m__treeData
 );
 
 int ns__RecordDataObjectRequest(
-	int id, 
+	xsd__string deviceId, 
+	xsd__string dataObjectURI, 
 	ns__Timestamp timestamp, 
 	recordArray &recordData
 );
 
 int ns__TextDataObjectRequest(
-	int id, 
+	xsd__string deviceId, 
+	xsd__string dataObjectURI, 
 	ns__Timestamp timestamp, 
 	xsd__string& textData
 );
 
 int ns__DataObjectPushRequest(
-	int id, 
-	xsd__string token,
-	struct ns__DataObjectPushRequestResponse {} *out
+	xsd__string deviceId, 
+	xsd__string dataObjectURI, 
+	bool &isDelivered
 );

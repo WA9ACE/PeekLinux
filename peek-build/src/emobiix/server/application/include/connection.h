@@ -75,6 +75,8 @@ private:
 	std::string url_request_;
 
 private:
+	std::string connection_token_;
+	
 	std::string app_path_;
 	
   /// Strand to ensure the connection's handlers are not called concurrently.

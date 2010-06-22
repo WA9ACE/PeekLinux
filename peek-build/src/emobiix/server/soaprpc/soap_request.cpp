@@ -11,20 +11,20 @@ namespace emobiix
 namespace soap_request
 {
 
-bool GetAuthentication(const std::string& uri, const std::string& devId, const std::string& user, const std::string& pass) 
+bool GetAuthentication(const std::string& URL, const std::string& deviceId, const std::string& userName, const std::string& password) 
 { 
 	struct soap *s = soap_new();
 
-	bool isAuth = false;
-	int ret = soap_call_ns__AuthenticationRequest(s, uri.c_str(), NULL, const_cast<char *>(devId.c_str()), const_cast<char *>(user.c_str()), const_cast<char *>(pass.c_str()), isAuth);
+	bool isAuthenticated = false;
+	int ret = soap_call_ns__AuthenticationRequest(s, URL.c_str(), NULL, deviceId, userName, password, isAuthenticated);
 
  	soap_end(s);
 	soap_free(s); 
 
-	return isAuth;
+	return isAuthenticated;
 }
 
-int GetBlockDataObject(const std::string& uri, const std::string& id, std::string& mime, vector<pair<size_t, unsigned char *> >& blockData)
+int GetBlockDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, std::string& mime, vector<pair<size_t, unsigned char *> >& blockData)
 {
 	struct soap *s = soap_new();
 
@@ -33,7 +33,7 @@ int GetBlockDataObject(const std::string& uri, const std::string& id, std::strin
 	ns__Timestamp ts(1, 5);
 
 	xsd__base64Binary raw;
-	int ret = soap_call_ns__BlockDataObjectRequest(s, uri.c_str(), NULL, const_cast<char *>(id.c_str()), ts, raw);
+	int ret = soap_call_ns__BlockDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, raw);
 
 	const int BLOCK = 2 * 1024;
 	size_t rawSize = raw.getSize();
@@ -67,12 +67,12 @@ int GetRecordDataObject(const std::string& uri, int id, std::vector<char *>& rec
 	return 1;
 }
 
-int GetTextDataObject(const std::string& uri, int id, char*& textData)
+int GetTextDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, std::string& textData)
 {
 	struct soap *s = soap_new();
 
 	ns__Timestamp ts(1, 5);
-	int ret = soap_call_ns__TextDataObjectRequest(s, uri.c_str(), NULL, id, ts, textData);
+	int ret = soap_call_ns__TextDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, textData);
 
  	soap_end(s);
 	soap_free(s); 
@@ -80,15 +80,12 @@ int GetTextDataObject(const std::string& uri, int id, char*& textData)
 	return ret == SOAP_OK;
 }
 
-int GetTreeDataObject(const std::string& uri, const std::string& id, std::string& treeData)
+int GetTreeDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, std::string& treeData)
 {
 	struct soap *s = soap_new();
 
 	ns__Timestamp ts(1, 5);
-	char *tree = NULL;
-	int ret = soap_call_ns__TreeDataObjectRequest(s, uri.c_str(), NULL, const_cast<char *>(id.c_str()), ts, tree);
-	if (ret == SOAP_OK)
-		treeData = tree;
+	int ret = soap_call_ns__TreeDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, treeData);
 
  	soap_end(s);
 	soap_free(s); 
@@ -100,7 +97,8 @@ int Test_Push(const std::string& data)
 {
 	struct soap *s = soap_new();
 
-	int ret = soap_call_ns__DataObjectPushRequest(s, "http://0.0.0.0:23456", NULL, 1, const_cast<char *>(data.c_str()), NULL);
+	bool isDelivered = false;
+	int ret = soap_call_ns__DataObjectPushRequest(s, "http://0.0.0.0:23456", NULL, "1", data, isDelivered);
 
 	soap_end(s);
 	soap_free(s);

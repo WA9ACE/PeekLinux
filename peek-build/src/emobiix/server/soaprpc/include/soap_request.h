@@ -11,11 +11,11 @@ namespace emobiix
 namespace soap_request
 {
 
-bool GetAuthentication(const std::string& uri, const std::string& devId, const std::string& user, const std::string& pass);
-int GetBlockDataObject(const std::string& uri, const std::string& id, std::string& mime, std::vector<std::pair<size_t, unsigned char *> >& blockData);
+bool GetAuthentication(const std::string& URL, const std::string& deviceId, const std::string& userName, const std::string& password);
+int GetBlockDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, std::string& mime, std::vector<std::pair<size_t, unsigned char *> >& blockData);
+int GetTextDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, std::string& textData);
+int GetTreeDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, std::string& treeData);
 int GetRecordDataObject(const std::string& uri, int id, std::vector<char *>& recordData);
-int GetTextDataObject(const std::string& uri, int id, char*& textData);
-int GetTreeDataObject(const std::string& uri, const std::string& id,std::string& treeData);
 int Test_Push(const std::string& data);
 
 };

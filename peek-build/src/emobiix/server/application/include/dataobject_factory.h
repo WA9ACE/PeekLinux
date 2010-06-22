@@ -15,7 +15,7 @@ namespace emobiix
 class dataobject_factory
 {
 public:
-	static FRIPacketP *create(const std::string& app_path, DOMNode *node);
+	static FRIPacketP *create(const std::string& app_path, const std::string& deviceId, DOMNode *node);
 	static void addChild(FRIPacketP* packet);
 	static void goToTree(FRIPacketP* packet, int index);
 
@@ -27,7 +27,7 @@ private:
 	static FRIPacketP* createButton(DOMNode *node);
 	static FRIPacketP* createLabel(DOMNode *node);
 	static FRIPacketP* createEntry(DOMNode *node);
-	static FRIPacketP* createImage(DOMNode *node, const std::string& app_path);
+	static FRIPacketP* createImage(DOMNode *node, const std::string& app_path, const std::string& deviceId);
 	static void setCommonAttributes(FRIPacketP *packet, DOMNode *node);
 	static void addStringAttribute(FRIPacketP *packet, const char *attribute, const char *value);
 	static void addDataAttribute(FRIPacketP *packet, const char *attribute, std::vector<std::pair<size_t, unsigned char *> >& data);
