@@ -1,9 +1,10 @@
 
 #include "lgui.h"
-#include "tweet.h"
+//#include "tweet.h"
 #include "buikeymap.h"
 #include "Platform.h"
 #include "ConnectionContext.h"
+#include "ApplicationManager.h"
 
 #include <GL/glut.h>
 #include <stdio.h>
@@ -47,23 +48,34 @@ void processKeys(unsigned char key, int x, int y) {
 	if (key == 27) 
 		exit(0);
 	else
+#ifdef USE_TWEET
 		tweetKey(key);
+#else
+		manager_handleKey(key);
+#endif
 
 	glutPostRedisplay();
 }
 
+#if 0
 void drawGUI(void)
 {
 	static int initd = 0;
 
 	if (!initd) {
 		lgui_attach(screenBuf);
+#ifdef USE_TWEET
 		tweetInit();
 		initd = 1;
 		tweetDrawScreen();
+#else
+		manager_init();
+		manager_drawScreen();
+#endif
 		//glutPostRedisplay();
 	}
 }
+#endif
 
 void processMouse(int button, int state, int x, int y) 
 {
@@ -71,12 +83,24 @@ void processMouse(int button, int state, int x, int y)
 	if (state == GLUT_UP )
 	{
 		if (button == 0) {
+#ifdef USE_TWEET
 			tweetKey(87);
+#else
+			manager_handleKey(87);
+#endif
 		} else if (button == 2) {
+#ifdef USE_TWEET
 			tweetKey(86);
+#else
+			manager_handleKey(86);
+#endif
 		}
 	}
+#ifdef USE_TWEET
 	tweetDrawScreen();
+#else
+	manager_drawScreen();
+#endif
 	glutPostRedisplay();
 }
 
@@ -85,7 +109,7 @@ void
 display(void)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	drawGUI();
+	//drawGUI();
 	
 	//fprintf(stderr, "in display\n");
 
@@ -103,6 +127,8 @@ display(void)
 		Rectangle *rect;
 		for (index = 0; index < upper; ++index) {
 			rect = lgui_get_region(index);
+			fprintf(stderr, "DRegion(%d, %d, %d, %d)\n", rect->x, rect->y,
+					rect->width, rect->height);
 
 			for (int ypos = 0; ypos < rect->height; ++ypos) {
 				memcpy(glBuffer + rect->x*2 + (rect->y+ypos)*320*2,
@@ -130,6 +156,18 @@ void net_thread(void *d)
 }
 }
 
+static void timerCallback (int value)
+{
+#ifdef USE_TWEET
+	tweetDrawScreen();
+#else
+	manager_drawScreen();
+#endif
+	glutPostRedisplay();
+
+	glutTimerFunc(100, timerCallback, 0);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -142,6 +180,11 @@ main(int argc, char **argv)
   glutMouseFunc(processMouse);
 
   thread_run(net_thread, NULL);
+
+  manager_init();
+  lgui_attach(screenBuf);
+
+  glutTimerFunc(100, timerCallback, 0);
 
   glutMainLoop();
   return 0;            

@@ -155,11 +155,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\ApplicationManager.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\Array.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\src\emobiix\BitmapCache.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\BootApplication.h"
 				>
 			</File>
 			<File
@@ -303,6 +311,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\RootApplication.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\RootStyle.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\Script.h"
 				>
 			</File>
@@ -339,10 +355,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\emobiix\tweet.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\emobiix\UITask.h"
 				>
 			</File>
@@ -371,6 +383,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\ApplicationManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\Array.c"
 				>
 			</File>
@@ -380,6 +396,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\emobiix\Boot.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\BootApplication.c"
 				>
 			</File>
 			<File
@@ -467,6 +487,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\RootApplication.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\RootStyle.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\Script.c"
 				>
 			</File>
@@ -492,10 +520,6 @@
 			</File>
 			<File
 				RelativePath="..\..\src\emobiix\Transport.c"
-				>
-			</File>
-			<File
-				RelativePath="..\..\src\emobiix\tweet.cpp"
 				>
 			</File>
 			<File

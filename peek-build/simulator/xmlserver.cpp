@@ -36,6 +36,7 @@ int main(/*@unused@*/ int argc, /*@unused@*/ char **argv)
 
 	durl = url_parse("system://localhost/dataobject", URL_ALL);
 	dobj = dataobject_construct(durl, 1);
+#if 0
 	dataobject_setValue(dobj, "test1", dataobjectfield_string("Hi, Test"));
 	dataobject_setValue(dobj, "test2", dataobjectfield_data((void *)"12345", 5));
 
@@ -58,6 +59,31 @@ int main(/*@unused@*/ int argc, /*@unused@*/ char **argv)
 	dataobject_setValue(cdobj, "location", dataobjectfield_string("home"));
 	dataobject_setValue(cdobj, "reason", dataobjectfield_string("sleep"));
 	dataobject_pack(dobj, cdobj);
+#else
+	dataobject_setRecordType(dobj, 1);
+
+	cdobj = dataobject_new();
+	dataobject_setStamp(cdobj, 1, 0);
+	dataobject_setValue(cdobj, "childval1", dataobjectfield_string("Childrens"));
+	dataobject_setValue(cdobj, "childval2", dataobjectfield_string("Damage"));
+	dataobject_appendRecord(dobj, cdobj);
+
+/*	idobj = dataobject_new();
+	dataobject_setValue(idobj, "product", dataobjectfield_string("handset"));
+	dataobject_setValue(idobj, "value", dataobjectfield_string("$20"));
+	dataobject_pack(cdobj, idobj);
+
+	idobj = dataobject_new();
+	dataobject_setValue(idobj, "product2", dataobjectfield_string("charger"));
+	dataobject_setValue(idobj, "value2", dataobjectfield_string("$10"));
+	dataobject_pack(cdobj, idobj);*/
+
+	cdobj = dataobject_new();
+	dataobject_setStamp(cdobj, 2, 0);
+	dataobject_setValue(cdobj, "location", dataobjectfield_string("home"));
+	dataobject_setValue(cdobj, "reason", dataobjectfield_string("sleep"));
+	dataobject_appendRecord(dobj, cdobj);
+#endif
 
 	dataobject_debugPrint(dobj);
 
@@ -108,6 +134,7 @@ static void handle_client(void *endpoint)
 
 	ep = (Endpoint *)endpoint;
 	ctx = connectionContext_new(ep);
+	connectionContext_requestAuth(ctx);
 
 	while (1) {
 		connectionContext_loopIteration(ctx);
