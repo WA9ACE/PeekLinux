@@ -41,11 +41,13 @@ void style_renderWidgetTree(Style *s, Widget *w)
 	ListIterator *iter;
 	const char *id, *className;
 	DataObjectField *type = NULL;
-	DataObject *dobj;
+	DataObject *dobj = NULL;
 	WidgetRenderer *wr;
 
 	if (dataobject_isDirty(w)) {
-		dobj = widget_getDataObject(w);
+		/* ryan disabled this, dont know what it was here for anyway */
+		/*dobj = widget_getDataObject(w);*/
+		dobj = w;
 		className = widget_getClass(w);
 		id = widget_getID(w);
 		if (dobj != NULL)

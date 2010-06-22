@@ -855,7 +855,7 @@ void widget_layoutForceResolveParent(Widget *w, unsigned int flag)
 
 void widget_resolveMeasureRelative(Widget *w)
 {
-	int sumWidth, sumHeight;
+	int sumWidth, sumHeight, sumNew;
 	DataObject *child;
 	DataObjectField *sField;
 	ListIterator *iter;
@@ -889,8 +889,16 @@ void widget_resolveMeasureRelative(Widget *w)
 	while (!listIterator_finished(iter)) {
 		child = (DataObject *)listIterator_item(iter);
 		widget_resolveMeasureRelative(child);
-		sumWidth += child->box.width + child->margin.x + child->margin.width;
-		sumHeight += child->box.height + child->margin.y + child->margin.height;
+		if (widget_getPacking(w) == WP_HORIZONTAL) {
+			sumWidth += child->box.width + child->margin.x + child->margin.width;
+			sumNew = child->box.height + child->margin.y + child->margin.height;
+			sumHeight = sumNew > sumHeight ? sumNew : sumHeight;
+			emo_printf("HORIZONTAL height now: %d" NL, sumHeight);
+		} else {
+			sumNew = child->box.width + child->margin.x + child->margin.width;
+			sumWidth = sumNew > sumWidth ? sumNew : sumWidth;
+			sumHeight += child->box.height + child->margin.y + child->margin.height;
+		}
 		listIterator_next(iter);
 	}
 
@@ -902,6 +910,7 @@ void widget_resolveMeasureRelative(Widget *w)
 	}
 	if (dataobject_isLayoutDirty(w, LAYOUT_DIRTY_HEIGHT)) {
 		w->box.height = sumHeight;
+		emo_printf("Child sumHeight : %d" NL, sumHeight);
 		dataobject_setLayoutClean(w, LAYOUT_DIRTY_HEIGHT);
 	}
 }
@@ -1103,7 +1112,7 @@ WidgetAlignment widget_getAlignment(Widget *w)
 	
 	field = dataobject_getValue(w, "alignment");
 	if (!field)
-		return (WidgetAlignment)0;
+		return (WidgetAlignment)WA_LEFT;
 	if (field->type == DOF_STRING) {
 		if (strcmp(field->field.string, "left") == 0 ||
 				strcmp(field->field.string, "top") == 0)

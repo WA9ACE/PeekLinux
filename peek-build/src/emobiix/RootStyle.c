@@ -194,6 +194,21 @@ Style *RootStyle(void)
 			"focusline", (void *)color.value);
 	color.value = 0xFFFF00FF;
 	
+	style_setProperty(defaultStyle, NULL, "gradboxr", "array",
+			"renderer", (void *)widgetrenderer_array());
+	style_setProperty(defaultStyle, NULL, "gradboxr", "array",
+			"gradient", (void *)grad1);
+	style_setProperty(defaultStyle, NULL, "gradboxr", "array",
+			"focusgradient", (void *)grad2);
+	style_setProperty(defaultStyle, NULL, "gradboxr", "array",
+			"radius", (void *)7);
+	color.value = 0x696969FF;
+	style_setProperty(defaultStyle, NULL, "gradboxr", "array",
+			"outline", (void *)color.value);
+	color.value = 0x69F969FF;
+	color.value = 0x696989FF;
+	style_setProperty(defaultStyle, NULL, "gradboxr", "array",
+			"focusoutline", (void *)color.value);
 #if 0
 	style_setProperty(defaultStyle, NULL, NULL, "view",
 			"renderer", (void *)widgetrenderer_full());

@@ -9,7 +9,9 @@ DataObject *BootApplication(void)
 {
     static DataObject *output = NULL;
     DataObject *view, *root, *dobj1, *dobj2;
+
 	DataObject *recordobj, *rec;
+	DataObject *sbox, *label;
 
     if (output != NULL)
         return output;
@@ -84,7 +86,7 @@ DataObject *BootApplication(void)
 
 	dobj1 = widget_newTypeIdName("entry", NULL, "output", root);
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("80%"));
-	dataobject_setValue(dobj1, "data", dataobjectfield_string("tcp://69.114.111.9:12345/"));
+	dataobject_setValue(dobj1, "data", dataobjectfield_string("tcp://69.114.111.9:12345/idontcare"));
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
 			"ths = DataObject.find(\"output\"); str = ths:getValue(); dobj = DataObject.locate(str); dobj:toScreen();"));
     widget_setAlignment(dobj1, WA_CENTER);
@@ -114,8 +116,26 @@ DataObject *BootApplication(void)
 	REC(11, "Krac", "Eleven");
 	REC(12, "Jest", "Twelve");
 
-	dobj1 = widget_newTypeIdName("array", NULL, NULL, root);
+	dobj1 = widget_newTypeIdName("array", "gradboxr", NULL, root);
 	widget_setDataObject(dobj1, recordobj);
+	dataobject_setValue(dobj1, "width", dataobjectfield_string("90%"));
+	dataobject_setValue(dobj1, "height", dataobjectfield_string("100"));
+	dataobject_setValue(dobj1, "margin", dataobjectfield_int(3));
+	widget_setAlignment(dobj1, WA_CENTER);
+
+	sbox = widget_newTypeIdName("box", "selbox", NULL, dobj1);
+	dataobject_setValue(sbox, "width", dataobjectfield_string("97%"));
+	dataobject_setValue(sbox, "margin", dataobjectfield_int(2));
+	widget_setCanFocus(sbox, 1);
+	widget_setPacking(sbox, WP_HORIZONTAL);
+
+	label = widget_newTypeIdName("string", "label", NULL, sbox);
+	dataobject_setValue(label, "width", dataobjectfield_string("45%"));
+	dataobject_setValue(label, "data", dataobjectfield_string("TestLabel"));
+
+	label = widget_newTypeIdName("string", "label", NULL, sbox);
+	dataobject_setValue(label, "width", dataobjectfield_string("45%"));
+	dataobject_setValue(label, "data", dataobjectfield_string("RyanK"));
 
     return output;
 }

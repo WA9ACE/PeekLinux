@@ -35,6 +35,7 @@ DataObject *dataobject_new(void)
 	rectangle_zero(&output->box);
     output->scriptContext = NULL;
 	output->flags1 = 0;
+	output->packing = WP_VERTICAL;
 
 	return output;
 }
