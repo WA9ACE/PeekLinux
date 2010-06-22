@@ -1,5 +1,6 @@
 //gsoap ns service name: emobiix
 //gsoap ns service encoding: literal 
+//gsoap ns service documentation: emobiix mobile communication layer
 
 #import "stl.h"
 
