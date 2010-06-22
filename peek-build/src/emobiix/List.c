@@ -1,5 +1,7 @@
 #include "List.h"
 
+#include "Debug.h"
+
 #include "p_malloc.h"
 
 #include <stddef.h>
@@ -99,6 +101,17 @@ void *list_find(List *l, void *obj, ListComparitor lc)
 int list_size(List *l)
 {
 	return l->length;
+}
+void list_debug(List *l)
+{
+	ListIterator *iter;
+
+	emo_printf("List<");
+	for (iter = list_begin(l); !listIterator_finished(iter); listIterator_next(iter)) {
+		emo_printf("%p, ", listIterator_item(iter));
+	}
+	listIterator_delete(iter);
+	emo_printf(">" NL);
 }
 
 ListIterator *list_begin(List *l)

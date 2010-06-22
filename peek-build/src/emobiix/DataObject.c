@@ -99,6 +99,16 @@ int dataobject_getRecordType(DataObject *dobj)
 	return dobj->flags1 & DO_FLAG_RECORD_TYPE;
 }
 
+void dataobject_appendRecord(DataObject *dobj, DataObject *robj)
+{
+	list_append(dobj->children, robj);
+}
+
+int dataobject_getChildCount(DataObject *dobj)
+{
+	return list_size(dobj->children);
+}
+
 int dataobject_isLocal(DataObject *dobj)
 {
 	return dobj->isLocal;
@@ -248,6 +258,8 @@ int dataobject_treeIndex(DataObject *dobj)
 	DataObject *superparent;
 	int index;
 
+	dataobject_debugPrint(dobj);
+
 	superparent = dobj;
 	while (superparent->parent != NULL) {
 		superparent = superparent->parent;
@@ -374,10 +386,14 @@ static void dataobject_debugPrintR(DataObject *dobj, int level)
 	for (i = 0; i < level; ++i)
 		emo_printf("    ");
 
-	emo_printf("DataObject<wh(%d, %d, %d, %d), margin(%d, %d)",
-			dobj->box.width, dobj->box.height,
-			dobj->box.x, dobj->box.y,
-			dobj->margin.x, dobj->margin.y);
+	if (dataobject_getRecordType(dobj)) {
+		emo_printf("RecordObject<%p, ", dobj);
+	} else {
+		emo_printf("DataObject<%p, wh(%d, %d, %d, %d), margin(%d, %d)",
+				dobj, dobj->box.width, dobj->box.height,
+				dobj->box.x, dobj->box.y,
+				dobj->margin.x, dobj->margin.y);
+	}
 	if (dobj == NULL) {
 		emo_printf("NULL>" NL);
 		return;

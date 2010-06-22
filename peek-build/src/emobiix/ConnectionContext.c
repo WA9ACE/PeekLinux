@@ -38,6 +38,7 @@ struct SyncRequest_t {
 	unsigned int sequenceID;
 
 	int objectIndex;
+	int recordIndex;
 	int childOp;
 };
 typedef struct SyncRequest_t SyncRequest;
@@ -70,8 +71,12 @@ static void connectionContext_outgoingSync(ConnectionContext *ctx,
 		SyncRequest *sreq, FRIPacketP_t *p);
 static void connectionContext_processSync(ConnectionContext *ctx,
 		DataObjectSyncP_t *p);
+static void connectionContext_processSyncOperand(ConnectionContext *ctx,
+		SyncRequest *sreq, DataObject *sobj, SyncOperandP_t *syncOp);
 static void connectionContext_processBlockSyncList(ConnectionContext *ctx,
 		SyncRequest *sreq, DataObject *sobj, struct blockSyncListP *p);
+static void connectionContext_processRecordSyncList(ConnectionContext *ctx,
+		SyncRequest *sreq, struct recordSyncListP *p);
 static void connectionContext_processAuthRequest(ConnectionContext *ctx,
 		AuthRequestP_t *p);
 static void connectionContext_authUserPass(ConnectionContext *ctx);
@@ -260,7 +265,7 @@ int connectionContext_syncRequest(ConnectionContext *ctx, URL *url)
 	sreq->hasStarted = 0;
 	sreq->sequenceID = endpoint_getTransport(ctx->endpoint)->sequenceID(ctx->endpoint);
 	snprintf(mapKey, 64, "%p,%d", ctx->endpoint, sreq->sequenceID);
-	emo_printf("mapKey: %s" NL, mapKey);
+	/*emo_printf("mapKey: %s" NL, mapKey);*/
 	map_append(ctx->syncRequests, mapKey, sreq);
 
 	return 1;
@@ -532,6 +537,7 @@ static SyncRequest *syncRequest_new(URL *url, int isClient)
 	output->remoteFinished = 0;
 	output->finalize = 0;
 	output->objectIndex = 0;
+	output->recordIndex = 0;
 	output->completeFields = NULL;
 	output->completeNodes = list_new();
 	output->dobj = dataobject_locate(url);
@@ -556,7 +562,6 @@ static void connectionContext_outgoingSync(ConnectionContext *ctx,
     p->packetTypeP.present = packetTypeP_PR_dataObjectSyncP;
 	if (sreq->completeFields == NULL)
 		sreq->completeFields = list_new();
-	sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
 
 	p->packetTypeP.choice.dataObjectSyncP.syncSequenceIDP = sreq->sequenceID;
 
@@ -568,6 +573,7 @@ static void connectionContext_outgoingSync(ConnectionContext *ctx,
 		return;
 	}
 
+	sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
 	protocol_blockSyncList(&p->packetTypeP.choice.dataObjectSyncP);
 	
 	connectionContext_syncOperand(ctx, sreq,
@@ -647,22 +653,81 @@ static void connectionContext_processSync(ConnectionContext *ctx,
 		emo_printf("recvd sync for request not in progress: %d" NL, 
 				p->syncSequenceIDP);
 		return;
-	}
-
-	sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
-	if (sobj == NULL) {
-		emo_printf("Current Packet at NULL position, abort" NL);
-#ifdef SIMULATOR
-		abort();
-#endif
-		return;
-	}
+	}	
 
 	if (p->syncListP.present == SyncListP_PR_blockSyncListP) {
+		sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
+		if (sobj == NULL) {
+			emo_printf("Current Packet at NULL position, abort" NL);
+#ifdef SIMULATOR
+			abort();
+#endif
+			return;
+		}
 		connectionContext_processBlockSyncList(ctx, sreq, sobj,
 				&p->syncListP.choice.blockSyncListP);
 	} else {
-		emo_printf("Dont support that type of sync list yet" NL);
+		connectionContext_processRecordSyncList(ctx, sreq,
+				&p->syncListP.choice.recordSyncListP);
+	}
+
+}
+
+static void connectionContext_processSyncOperand(ConnectionContext *ctx,
+		SyncRequest *sreq, DataObject *sobj, SyncOperandP_t *syncOp)
+{
+	const char *fieldName;
+	DataObjectField *dof;
+	void *data;
+	DataObject *cobj;
+
+	fieldName = (char *)syncOp->fieldNameP.buf;
+	if (syncOp->syncP.present == syncP_PR_syncSetP) {
+		dof = dataobjectfield_string((const char *)syncOp->syncP.choice.syncSetP.buf);
+		dataobject_setValue(sobj, fieldName, dof);
+	} else if (syncOp->syncP.present == syncP_PR_syncModifyP) {
+		dof = dataobject_getValue(sobj, fieldName);
+		if (dof == NULL) {
+			data = p_malloc(syncOp->syncP.choice.syncSetP.size);
+			memcpy(data, syncOp->syncP.choice.syncSetP.buf,
+					syncOp->syncP.choice.syncSetP.size);
+			dof = dataobjectfield_data(data, syncOp->syncP.choice.syncSetP.size);
+			dataobject_setValue(sobj, fieldName, dof);
+		} else {
+			/* we assume they are always doing an append atm */
+			p_realloc(dof->field.data.bytes, dof->field.data.size+syncOp->syncP.choice.syncSetP.size);
+			memcpy(dof->field.data.bytes+dof->field.data.size, syncOp->syncP.choice.syncSetP.buf,
+					syncOp->syncP.choice.syncSetP.size);
+			dof->field.data.size += syncOp->syncP.choice.syncSetP.size;
+		}
+	} else if (syncOp->syncP.present == syncP_PR_nodeOperationP) {
+		if (syncOp->syncP.choice.nodeOperationP.present == nodeOperationP_PR_nodeAddP) {
+			if (syncOp->syncP.choice.nodeOperationP.choice.nodeAddP == nodeAddP_nodeChildP) {
+				cobj = dataobject_new();
+				dataobject_pack(sobj, cobj);
+				sobj = cobj;
+				sreq->objectIndex = dataobject_treeIndex(sobj);
+				emo_printf("#### Add child - new index: %d" NL, sreq->objectIndex);
+				//dataobject_debugPrint(sreq->dobj);
+			} else {
+				emo_printf("Unsuported node add type" NL);
+			}
+		} else if (syncOp->syncP.choice.nodeOperationP.present == nodeOperationP_PR_nodeGotoTreeP) {
+			sreq->objectIndex = syncOp->syncP.choice.nodeOperationP.choice.nodeGotoTreeP;
+			sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
+			emo_printf("#### GoTo index: %d" NL, sreq->objectIndex);
+			if (sobj == NULL) {
+				emo_printf("Going to invalid index" NL);
+#ifdef SIMULATOR
+				abort();
+#endif
+				return;
+			}
+		} else {
+			emo_printf("Unsupported type of node operation" NL);
+		}
+	} else {
+		emo_printf("Dont support that type of sync operation yet" NL);
 	}
 
 }
@@ -672,60 +737,50 @@ static void connectionContext_processBlockSyncList(ConnectionContext *ctx,
 {
 	int i;
 	SyncOperandP_t *syncOp;
-	const char *fieldName;
-	DataObjectField *dof;
-	void *data;
-	DataObject *cobj;
 
 	for (i = 0; i < p->list.count; ++i) {
 		syncOp = p->list.array[i];
-		fieldName = (char *)syncOp->fieldNameP.buf;
-		if (syncOp->syncP.present == syncP_PR_syncSetP) {
-			dof = dataobjectfield_string((const char *)syncOp->syncP.choice.syncSetP.buf);
-			dataobject_setValue(sobj, fieldName, dof);
-		} else if (syncOp->syncP.present == syncP_PR_syncModifyP) {
-			dof = dataobject_getValue(sobj, fieldName);
-			if (dof == NULL) {
-				data = p_malloc(syncOp->syncP.choice.syncSetP.size);
-				memcpy(data, syncOp->syncP.choice.syncSetP.buf,
-						syncOp->syncP.choice.syncSetP.size);
-				dof = dataobjectfield_data(data, syncOp->syncP.choice.syncSetP.size);
-				dataobject_setValue(sobj, fieldName, dof);
-			} else {
-				/* we assume they are always doing an append atm */
-				p_realloc(dof->field.data.bytes, dof->field.data.size+syncOp->syncP.choice.syncSetP.size);
-				memcpy(dof->field.data.bytes+dof->field.data.size, syncOp->syncP.choice.syncSetP.buf,
-						syncOp->syncP.choice.syncSetP.size);
-				dof->field.data.size += syncOp->syncP.choice.syncSetP.size;
+		connectionContext_processSyncOperand(ctx, sreq, sobj, syncOp);
+	}
+}
+
+static void connectionContext_processRecordSyncList(ConnectionContext *ctx,
+		SyncRequest *sreq, struct recordSyncListP *p)
+{
+	RecordSyncListP_t *rsl;
+	ListIterator *iter;
+	unsigned int minor, major;
+	DataObject *robj;
+	SyncOperandP_t *syncOp;
+	int i, j;
+
+	dataobject_setRecordType(sreq->dobj, 1);
+
+	for (i = 0; i < p->list.count; ++i) {
+		rsl = p->list.array[i];
+		if (rsl->deleteRecordP) {
+			emo_printf("Delete record not supported yet" NL);
+			continue;
+		}
+		robj = NULL;
+		for (iter = dataobject_childIterator(sreq->dobj);
+				!listIterator_finished(iter); listIterator_next(iter)) {
+			robj = listIterator_item(iter);
+			dataobject_getStamp(robj, &minor, &major);
+			if (minor == rsl->recordIdMinorP && major == rsl->recordIdMajorP) {
+				robj = dataobject_getTree(robj, sreq->objectIndex);			
+				break;
 			}
-		} else if (syncOp->syncP.present == syncP_PR_nodeOperationP) {
-			if (syncOp->syncP.choice.nodeOperationP.present == nodeOperationP_PR_nodeAddP) {
-				if (syncOp->syncP.choice.nodeOperationP.choice.nodeAddP == nodeAddP_nodeChildP) {
-					cobj = dataobject_new();
-					dataobject_pack(sobj, cobj);
-					sobj = cobj;
-					sreq->objectIndex = dataobject_treeIndex(sobj);
-					emo_printf("#### Add child - new index: %d" NL, sreq->objectIndex);
-					//dataobject_debugPrint(sreq->dobj);
-				} else {
-					emo_printf("Unsuported node add type" NL);
-				}
-			} else if (syncOp->syncP.choice.nodeOperationP.present == nodeOperationP_PR_nodeGotoTreeP) {
-				sreq->objectIndex = syncOp->syncP.choice.nodeOperationP.choice.nodeGotoTreeP;
-				sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
-				emo_printf("#### GoTo index: %d" NL, sreq->objectIndex);
-				if (sobj == NULL) {
-					emo_printf("Going to invalid index" NL);
-	#ifdef SIMULATOR
-					abort();
-	#endif
-					return;
-				}
-			} else {
-				emo_printf("Unsupported type of node operation" NL);
-			}
-		} else {
-			emo_printf("Dont support that type of sync operation yet" NL);
+			robj = NULL;
+		}
+		if (robj == NULL) {
+			robj = dataobject_new();
+			dataobject_setStamp(robj, rsl->recordIdMinorP, rsl->recordIdMajorP);
+			dataobject_appendRecord(sreq->dobj, robj);
+		}
+		for (j = 0; j < rsl->recordFieldListP->list.count; ++j) {
+			syncOp = rsl->recordFieldListP->list.array[j];
+			connectionContext_processSyncOperand(ctx, sreq, robj, syncOp);
 		}
 	}
 }
@@ -812,27 +867,47 @@ static void connectionContext_recordSyncList(ConnectionContext *ctx,
 {
 	ListIterator *iter;
 	RecordSyncListP_t *rsync;
+	int idx = 0;
+	DataObject *sobj;
 
 	for (iter = widget_getChildren(sreq->dobj); !listIterator_finished(iter);
 			listIterator_next(iter)) {
-		rsync = connectionContext_recordSync(ctx, sreq,
-				(DataObject *)listIterator_item(iter));
+		if (idx != sreq->recordIndex) {
+			++idx;
+			continue;
+		}
+		fprintf(stderr, "RecordSync for index %d - object index %d\n",
+				idx, sreq->objectIndex);
+		sobj = dataobject_getTree((DataObject *)listIterator_item(iter),
+				sreq->objectIndex);
+		rsync = connectionContext_recordSync(ctx, sreq, sobj);
+		if (rsync != NULL)
+			asn_sequence_add(&p->choice.recordSyncListP.list, rsync);
+		if (sreq->hasFinished) {
+			sreq->hasFinished = 0;
+			sreq->objectIndex = 0;
+			++sreq->recordIndex;
+			list_delete(sreq->completeNodes);
+			sreq->completeNodes = list_new();
+		}
+		break;
 	}
 	listIterator_delete(iter);
+
+	if (sreq->recordIndex == dataobject_getChildCount(sreq->dobj))
+		sreq->hasFinished = 1;
 }
 
 static RecordSyncListP_t *connectionContext_recordSync(ConnectionContext *ctx,
 		SyncRequest *sreq, DataObject *dobj)
 {
 	RecordSyncListP_t *p;
-	/*SyncOperandP_t *syncOp;*/
 	unsigned int stampMinor, stampMajor;
 
 	dataobject_getStamp(dobj, &stampMinor, &stampMajor);
 	p = protocol_recordSync(0, stampMinor, stampMajor);
 
-	/*syncOp = connectionContext_syncOperand(ctx, sreq, p->recordFieldListP);
-	asn_sequence_add(&p->recordFieldListP->list, syncOp);*/
+	connectionContext_syncOperand(ctx, sreq, NULL, p, dobj);
 
 	return p;
 }
@@ -855,8 +930,9 @@ static void connectionContext_syncOperand(ConnectionContext *ctx,
 next_childop:
 		/* add child operation */
 		if (sreq->childOp == -1) {
+			/*emo_printf("Add Child" NL);*/
 			syncOp = protocol_addChild();
-			if (list->present == SyncListP_PR_blockSyncListP)
+			if (list != NULL)
 				asn_sequence_add(&list->choice.blockSyncListP.list, syncOp);
 			else
 				asn_sequence_add(&listr->recordFieldListP->list, syncOp);
@@ -866,6 +942,9 @@ next_childop:
 			while (!listIterator_finished(citer)) {
 				if (list_find(sreq->completeNodes, listIterator_item(citer), ListEqualComparitor) == NULL) {
 					sreq->objectIndex = dataobject_treeIndex((DataObject *)listIterator_item(citer));
+					/*emo_printf("Node to go to %p with index %d" NL, listIterator_item(citer),
+							sreq->objectIndex);
+					list_debug(sreq->completeNodes);*/
 					break;
 				}
 				listIterator_next(citer);
@@ -873,8 +952,9 @@ next_childop:
 			listIterator_delete(citer);
 		} else {
 			/* go to tree operation */
+			/*emo_printf("GoTo Child %d" NL, sreq->childOp);*/
 			syncOp = protocol_goToTree(sreq->childOp);
-			if (list->present == SyncListP_PR_blockSyncListP)
+			if (list != NULL)
 				asn_sequence_add(&list->choice.blockSyncListP.list, syncOp);
 			else
 				asn_sequence_add(&listr->recordFieldListP->list, syncOp);
@@ -893,7 +973,7 @@ next_childop:
 			if (syncOp == NULL)
 				return ;
             /* add to packet and mark field complete */
-			if (list->present == SyncListP_PR_blockSyncListP)
+			if (list != NULL)
 				asn_sequence_add(&list->choice.blockSyncListP.list, syncOp);
 			else
 				asn_sequence_add(&listr->recordFieldListP->list, syncOp);
@@ -902,11 +982,13 @@ next_childop:
 		mapIterator_next(iter);
 	}
 	list_append(sreq->completeNodes, sobj);
+	/*emo_printf("Node Complete %p" NL, sobj);
+	list_debug(sreq->completeNodes);*/
 	if (sreq->completeFields != NULL) {
 		list_delete(sreq->completeFields);
 		sreq->completeFields = NULL;
 	}
-	if  (dataobject_getTreeNextOp(sobj, &childOp))
+	if (dataobject_getTreeNextOp(sobj, &childOp))
 		sreq->childOp = childOp;
 	else
 		sreq->hasFinished = 1;

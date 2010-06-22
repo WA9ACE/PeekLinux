@@ -26,6 +26,8 @@ SyncOperandP_t *protocol_serializeField(DataObject *sobj, const char *fieldName)
 	SyncOperandP_t *syncOp;
 	DataObjectField *field;
 
+	emo_printf("Serializing field: %s\n", fieldName);
+
 	syncOp = (SyncOperandP_t *)p_malloc(sizeof(SyncOperandP_t));
 	syncOp->fieldNameP.buf = NULL;
 	OCTET_STRING_fromString(&syncOp->fieldNameP, fieldName);

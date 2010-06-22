@@ -9,6 +9,7 @@ DataObject *BootApplication(void)
 {
     static DataObject *output = NULL;
     DataObject *view, *root, *dobj1, *dobj2;
+	DataObject *recordobj, *rec;
 
     if (output != NULL)
         return output;
@@ -89,6 +90,32 @@ DataObject *BootApplication(void)
     widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 	/*widget_setPacking(dobj1, WP_VERTICAL);*/
+
+	recordobj = dataobject_new();
+	dataobject_setRecordType(recordobj, 1);
+	
+#define REC(_minor, _str1, _str2) \
+	rec = dataobject_new(); \
+	dataobject_setStamp(rec, _minor, 0); \
+	dataobject_setValue(rec, "str1", dataobjectfield_string(_str1)); \
+	dataobject_setValue(rec, "str2", dataobjectfield_string(_str2)); \
+	dataobject_appendRecord(recordobj, rec);
+
+	REC(1, "Ryan", "One");
+	REC(2, "Dr K", "Two");
+	REC(3, "33", "Three");
+	REC(4, "skinny", "Four");
+	REC(5, "ding", "Five");
+	REC(6, "dava", "Six");
+	REC(7, "OG", "Seven");
+	REC(8, "lefbac", "Eight");
+	REC(9, "rhls", "Nine");
+	REC(10, "Cru", "Ten");
+	REC(11, "Krac", "Eleven");
+	REC(12, "Jest", "Twelve");
+
+	dobj1 = widget_newTypeIdName("array", NULL, NULL, root);
+	widget_setDataObject(dobj1, recordobj);
 
     return output;
 }

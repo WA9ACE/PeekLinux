@@ -19,6 +19,7 @@ void list_prepend(List *l, void *item);
 void list_delete(List *l);
 void *list_find(List *l, void *obj, ListComparitor lc);
 int list_size(List *l);
+void list_debug(List *l);
 ListIterator *list_begin(List *l);
 ListIterator *list_rbegin(List *l);
 int listIterator_finished(ListIterator *iter);

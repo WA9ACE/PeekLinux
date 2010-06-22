@@ -29,6 +29,8 @@ DataObjectField *dataobject_getValue(DataObject *obj, const char *key);
 DataObjectField *dataobject_getValueAsInt(DataObject *dobj, const char *key);
 void dataobject_setRecordType(DataObject *dobj, int isRecord);
 int dataobject_getRecordType(DataObject *dobj);
+void dataobject_appendRecord(DataObject *dobj, DataObject *robj);
+int dataobject_getChildCount(DataObject *dobj);
 int dataobject_isLocal(DataObject *dobj);
 DataObjectState dataobject_getState(DataObject *dobj);
 void dataobject_setState(DataObject *dobj, DataObjectState state);
