@@ -267,7 +267,7 @@ static unsigned char *imageConvert(void *input, int inputFormat, int outputForma
 		}
 		upper = width*height;
 		for (pos = 0; pos < upper; pos += 2) {
-			output[pos>>1] = *src;
+			output[pos>>1] = *src & 0xF0;
 			++src;
 			output[pos>>1] |= (*src >> 4);
 			++src;
