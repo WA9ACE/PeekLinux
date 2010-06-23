@@ -53,6 +53,35 @@ void widget_setDataObject(Widget *w, DataObject *dobj)
 	/*w->self = dobj;*/
 }
 
+int widget_isArraySource(Widget *w)
+{
+	DataObjectField *field;
+
+	field = dataobject_getValue(w, "arraysource");
+	if (field == NULL)
+		return 0;
+	if (field->type == DOF_STRING && strcmp(field->field.string, "true") == 0)
+		return 1;
+	if (field->type == DOF_INT && field->field.integer)
+		return 1;
+	return 0;
+}
+
+void widget_setDataObjectArray(Widget *w, DataObject *dobj)
+{
+	ListIterator *iter;
+
+	if (widget_isArraySource(w))
+		widget_setDataObject(w, dobj);
+	
+	for (iter = list_begin(w->children);
+			!listIterator_finished(iter);
+			listIterator_next(iter)) {
+		widget_setDataObjectArray((Widget *)listIterator_item(iter),
+				dobj);
+	}
+}
+
 DataObject *widget_getDataObject(Widget *w)
 {
 	if (w->widgetData == NULL)

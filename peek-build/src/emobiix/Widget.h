@@ -16,6 +16,8 @@ Widget *widget_newTypeIdName(const char *type, const char *id, const char *name,
         Widget *parent);
 void widget_setDataObject(Widget *w, DataObject *dobj);
 DataObject *widget_getDataObject(Widget *w);
+int widget_isArraySource(Widget *w);
+void widget_setDataObjectArray(Widget *w, DataObject *dobj);
 void widget_setPacking(Widget *w, WidgetPacking p);
 WidgetPacking widget_getPacking(Widget *w);
 void widget_pack(Widget *w, Widget *parent);

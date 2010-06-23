@@ -223,11 +223,11 @@ static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	const char *dtype;
 	const char *ltype;
 	const char *str;
-	DataObjectField *field;
+	DataObjectField *field, *sourceField;
 
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
-	dtype = (const char *)dataobject_getValue(dobj, "type")->field.string;
+	dtype = (const char *)dataobject_getValue(w, "type")->field.string;
 	ltype = widget_getID(w);
 	f = (Font *)style_getProperty(s, NULL, ltype, dtype, "font");
 	c.value = (unsigned int)style_getProperty(s, NULL, ltype, dtype, "color");
@@ -239,7 +239,11 @@ static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 			sscanf(field->field.string, "%x", &c.value);
 		}
 	}
-	field = dataobject_getValue(dobj, "data");
+	sourceField = dataobject_getValue(w, "datafield");
+	if (sourceField != NULL && sourceField->type == DOF_STRING)
+		field = dataobject_getValue(dobj, sourceField->field.string);
+	else
+		field = dataobject_getValue(dobj, "data");
 	if (field == NULL)
 		return;
 	str = (const char *)field->field.string;
@@ -254,12 +258,18 @@ static void string_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	const char *dtype;
 	const char *ltype;
 	const char *str;
-	DataObjectField *field;
+	DataObjectField *field, *sourceField;
 
-	dtype = (const char *)dataobject_getValue(dobj, "type")->field.string;
+	dtype = (const char *)dataobject_getValue(w, "type")->field.string;
 	ltype = widget_getID(w);
 	f = (Font *)style_getProperty(s, NULL, ltype, dtype, "font");
-	field = dataobject_getValue(dobj, "data");
+	
+	sourceField = dataobject_getValue(w, "datafield");
+	if (sourceField != NULL && sourceField->type == DOF_STRING)
+		field = dataobject_getValue(dobj, sourceField->field.string);
+	else
+		field = dataobject_getValue(dobj, "data");
+	
 	if (field == NULL) {
 		p->x = 0;
 		p->y = 0;

@@ -15,7 +15,7 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	Rectangle *childBox, *childMargin;
 	WidgetRenderer *boxwr;
 	DataObjectField *startindex, *focusindex;
-	DataObject /**rec,*/ *shim, *wchild;
+	DataObject *rec, *shim, *wchild;
 	WidgetPacking packing;
 	ListIterator *iter;
 	int sfHeight, sfStartY, recordCount;
@@ -75,11 +75,12 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	for (iter = dataobject_childIterator(dobj);
 			!listIterator_finished(iter); listIterator_next(iter)) {
 		/*emo_printf("Drawing Array index %d" NL, idx);*/
-		
+		rec = (DataObject *)listIterator_item(iter);
 		if (idx == focusidx && canFocus)
 			widget_setFocus(wchild, 1);
 		else
 			widget_setFocus(wchild, 0);
+		widget_setDataObjectArray(shim, rec);
 		widget_resolveLayoutRoot(shim, s, 0);
 		widget_markDirty(shim);
 		style_renderWidgetTree(s, shim);
