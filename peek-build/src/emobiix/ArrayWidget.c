@@ -86,9 +86,9 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	lgui_clip_and(box);
 	for (iter = dataobject_childIterator(dobj);
 			!listIterator_finished(iter); listIterator_next(iter)) {
-		emo_printf("Drawing Array index %d" NL, idx);
+		/*emo_printf("Drawing Array index %d" NL, idx);*/
 		if (idx < startidx) {
-			emo_printf("Skipping %d - %d" NL, idx, startidx);
+			/*emo_printf("Skipping %d - %d" NL, idx, startidx);*/
 			++idx;
 			continue;
 		}
