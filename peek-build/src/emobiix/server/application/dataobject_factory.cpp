@@ -20,25 +20,17 @@ void dataobject_factory::addStringAttribute(FRIPacketP *packet, const char *attr
 	asn_sequence_add(&packet->packetTypeP.choice.dataObjectSyncP.syncListP.choice.blockSyncListP.list, syncOp);
 }
 
-void dataobject_factory::addDataAttribute(FRIPacketP *packet, const char *attribute, vector<pair<size_t, unsigned char *> >& data)
+void dataobject_factory::addDataAttribute(FRIPacketP *packet, const char *attribute, unsigned char *data, size_t length, size_t offset)
 {
-	TRACELOG("Adding " << attribute << " = " << data.size());
+	TRACELOG("Adding " << attribute << " size: " << length << " offset: " << offset);
 
-	size_t offset = 0;
-	for (size_t i = 0; i < data.size(); ++i)
-	{
-		SyncOperandP_t *syncOp = syncOperandP(attribute);
-		syncOp->syncP.present = syncP_PR_syncModifyP;
-		syncOp->syncP.choice.syncModifyP.modifyDataP.buf = NULL;
-		OCTET_STRING_fromBuf(&syncOp->syncP.choice.syncModifyP.modifyDataP, (char *)data[i].second, data[i].first);
-		syncOp->syncP.choice.syncModifyP.modifySizeP = data[i].first;
-		syncOp->syncP.choice.syncModifyP.modifyOffsetP = offset;
-		asn_sequence_add(&packet->packetTypeP.choice.dataObjectSyncP.syncListP.choice.blockSyncListP.list, syncOp);
-
-		TRACELOG("Adding data chunk " << i << " of size " << data[i].first << " at offset " << offset);
-
-		offset += data[i].first;
-	}
+	SyncOperandP_t *syncOp = syncOperandP(attribute);
+	syncOp->syncP.present = syncP_PR_syncModifyP;
+	syncOp->syncP.choice.syncModifyP.modifyDataP.buf = NULL;
+	OCTET_STRING_fromBuf(&syncOp->syncP.choice.syncModifyP.modifyDataP, (char *)data, length);
+	syncOp->syncP.choice.syncModifyP.modifySizeP = length;
+	syncOp->syncP.choice.syncModifyP.modifyOffsetP = offset;
+	asn_sequence_add(&packet->packetTypeP.choice.dataObjectSyncP.syncListP.choice.blockSyncListP.list, syncOp);
 }
 
 SyncOperandP_t* dataobject_factory::syncOperandP(const char *fieldName)

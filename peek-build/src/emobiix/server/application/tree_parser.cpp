@@ -17,25 +17,26 @@ tree_parser::tree_parser(const char* doc, const std::string& app_path, const std
 {
 }
 
-FRIPacketP* tree_parser::create(DOMNode *node)
+bool tree_parser::create(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
   string nodeName = xml_parser::XMLToString(node->getNodeName());
-  if (nodeName == "application")
-    return createApplication(node);
-  else if (nodeName == "view")
-    return createView(node);
-  else if (nodeName == "box")
-    return createBox(node);
-  else if (nodeName == "button")
-    return createButton(node);
-  else if (nodeName == "label")
-    return createLabel(node);
-  else if (nodeName == "entry")
-    return createEntry(node);
-  else if (nodeName == "image")
-    return createImage(node);
 
-  return NULL;
+  if (nodeName == "application")
+    return createApplication(node, packets);
+  else if (nodeName == "view")
+    return createView(node, packets);
+  else if (nodeName == "box")
+    return createBox(node, packets);
+  else if (nodeName == "button")
+    return createButton(node, packets);
+  else if (nodeName == "label")
+    return createLabel(node, packets);
+  else if (nodeName == "entry")
+    return createEntry(node, packets);
+  else if (nodeName == "image")
+    return createImage(node, packets);
+
+  return false;
 }
 
 bool tree_parser::parseTree(DOMNode *node, std::vector<FRIPacketP *>& packets, int& nodeCount)
@@ -44,11 +45,8 @@ bool tree_parser::parseTree(DOMNode *node, std::vector<FRIPacketP *>& packets, i
 		return false;
 
 	int self = nodeCount;
-	if (FRIPacketP *dataObject = create(node))
-	{
-		packets.push_back(dataObject);
+	if (create(node, packets))
 		nodeCount++;
-	}
 
 	node = node->getFirstChild();
 	while (node) 
@@ -82,24 +80,28 @@ bool tree_parser::parse(std::vector<FRIPacketP *>& packets)
 	return true;
 }
 
-FRIPacketP* tree_parser::createApplication(DOMNode *node)
+bool tree_parser::createApplication(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
 	FRIPacketP *application = dataobject_factory::blockSyncListP();
 	setCommonAttributes(application, node);
 	dataobject_factory::addStringAttribute(application, "description", xml_parser::GetAttribute(node, "description").c_str());
 	dataobject_factory::addStringAttribute(application, "icon", xml_parser::GetAttribute(node, "icon").c_str());
 	dataobject_factory::addStringAttribute(application, "startupview", xml_parser::GetAttribute(node, "startupview").c_str());
-	return application;
+
+	packets.push_back(application);
+	return true;
 }
 
-FRIPacketP* tree_parser::createView(DOMNode *node)
+bool tree_parser::createView(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
 	FRIPacketP *view = dataobject_factory::blockSyncListP();
 	setCommonAttributes(view, node);
-	return view;
+
+	packets.push_back(view);
+	return true;
 }
 
-FRIPacketP* tree_parser::createBox(DOMNode *node)
+bool tree_parser::createBox(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
 	FRIPacketP *box = dataobject_factory::blockSyncListP();
 	setCommonAttributes(box, node);
@@ -108,10 +110,12 @@ FRIPacketP* tree_parser::createBox(DOMNode *node)
 	dataobject_factory::addStringAttribute(box, "width", xml_parser::GetAttribute(node, "width").c_str());
 	dataobject_factory::addStringAttribute(box, "height", xml_parser::GetAttribute(node, "height").c_str());
 	dataobject_factory::addStringAttribute(box, "canfocus", xml_parser::GetAttribute(node, "canfocus").c_str());
-	return box;
+
+	packets.push_back(box);
+	return true;
 }
 
-FRIPacketP* tree_parser::createButton(DOMNode *node)
+bool tree_parser::createButton(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
 	FRIPacketP *button = dataobject_factory::blockSyncListP();
 	setCommonAttributes(button, node);
@@ -126,40 +130,53 @@ FRIPacketP* tree_parser::createButton(DOMNode *node)
 	if (prop != "")
 		dataobject_factory::addStringAttribute(button, "accesskey", prop.c_str());
 
-	return button;
+	packets.push_back(button);
+	return true;
 }
 
-FRIPacketP* tree_parser::createLabel(DOMNode *node)
+bool tree_parser::createLabel(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
 	FRIPacketP *label = dataobject_factory::blockSyncListP();
 	setCommonAttributes(label, node);
 	dataobject_factory::addStringAttribute(label, "alignment", xml_parser::GetAttribute(node, "alignment").c_str());
 	dataobject_factory::addStringAttribute(label, "data", xml_parser::XMLToString(node->getFirstChild()->getNodeValue()).c_str());
-	return label;
+
+	packets.push_back(label);
+	return true;
 }
 
-FRIPacketP* tree_parser::createEntry(DOMNode *node)
+bool tree_parser::createEntry(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
 	FRIPacketP *entry = dataobject_factory::blockSyncListP();
 	setCommonAttributes(entry, node);
 	dataobject_factory::addStringAttribute(entry, "data", xml_parser::XMLToString(node->getFirstChild()->getNodeValue()).c_str());
-	return entry;
+
+	packets.push_back(entry);
+	return true;
 }
 
-FRIPacketP* tree_parser::createImage(DOMNode *node)
+bool tree_parser::createImage(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
-	FRIPacketP *image = dataobject_factory::blockSyncListP();
-	setCommonAttributes(image, node);
-
-	std::string src = xml_parser::GetAttribute(node, "src").c_str();
-
 	std::string mime;
 	vector<pair<size_t, unsigned char *> > blocks;
-	soap_request::GetBlockDataObject(m_appPath, m_connectionToken, src, mime, blocks);
+	soap_request::GetBlockDataObject(m_appPath, m_connectionToken, xml_parser::GetAttribute(node, "src"), mime, blocks);
 
-	dataobject_factory::addStringAttribute(image, "mime-type", mime.c_str());
-	dataobject_factory::addDataAttribute(image, "src", blocks);
-	return image;
+	FRIPacketP *image = NULL;
+	size_t offset = 0;
+	for (size_t i = 0; i < blocks.size(); ++i)
+	{
+		image = dataobject_factory::blockSyncListP();
+		setCommonAttributes(image, node);
+		dataobject_factory::addStringAttribute(image, "mime-type", mime.c_str());
+		dataobject_factory::addDataAttribute(image, "src", blocks[i].second, blocks[i].first, offset);
+
+		TRACELOG("Adding data chunk " << i << " of size " << blocks[i].first << " at offset " << offset);
+
+		packets.push_back(image);
+		offset += blocks[i].first;
+	}
+
+	return true;
 }
 
 void tree_parser::setCommonAttributes(FRIPacketP *packet, DOMNode *node)

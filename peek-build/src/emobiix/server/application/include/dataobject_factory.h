@@ -29,6 +29,7 @@ public:
 
 	static void addStringAttribute(FRIPacketP *packet, const char *attribute, const char *value);
 	static void addDataAttribute(FRIPacketP *packet, const char *attribute, std::vector<std::pair<size_t, unsigned char *> >& data);
+	static void addDataAttribute(FRIPacketP *packet, const char *attribute, unsigned char *data, size_t length, size_t offset);
 };
 
 }

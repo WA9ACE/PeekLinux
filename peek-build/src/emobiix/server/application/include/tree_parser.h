@@ -19,16 +19,16 @@ public:
 	bool parse(std::vector<FRIPacketP *>& packets);
 
 private:
-	FRIPacketP* create(DOMNode *node);
+	bool create(DOMNode *node, std::vector<FRIPacketP *>& packets);
 	bool parseTree(DOMNode *node, std::vector<FRIPacketP *>& packets, int& nodeCount);
 
-	FRIPacketP* createApplication(DOMNode *node);
-	FRIPacketP* createView(DOMNode *node);
-	FRIPacketP* createBox(DOMNode *node);
-	FRIPacketP* createButton(DOMNode *node);
-	FRIPacketP* createLabel(DOMNode *node);
-	FRIPacketP* createEntry(DOMNode *node);
-	FRIPacketP* createImage(DOMNode *node);
+	bool createApplication(DOMNode *node, std::vector<FRIPacketP *>& packets);
+	bool createView(DOMNode *node, std::vector<FRIPacketP *>& packets);
+	bool createBox(DOMNode *node, std::vector<FRIPacketP *>& packets);
+	bool createButton(DOMNode *node, std::vector<FRIPacketP *>& packets);
+	bool createLabel(DOMNode *node, std::vector<FRIPacketP *>& packets);
+	bool createEntry(DOMNode *node, std::vector<FRIPacketP *>& packets);
+	bool createImage(DOMNode *node, std::vector<FRIPacketP *>& packets);
 	
 	void setCommonAttributes(FRIPacketP *packet, DOMNode *node);
 

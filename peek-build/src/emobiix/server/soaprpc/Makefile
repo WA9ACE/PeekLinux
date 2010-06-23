@@ -19,7 +19,7 @@ SERVER_OBJ = emobiix.o test_server.o emobiix_rpc_C.o
 CLIENT_OBJ = test_client.o
 
 LIB  = $(GSOAPLIB)/libgsoapssl++.a -lssl -lcrypto -lz
-LIB += -lcurl
+LIB += /usr/lib/libcurl.a -lidn
 
 all: $(TARGET) $(SERVERLIB) $(SERVER) $(CLIENT)
 

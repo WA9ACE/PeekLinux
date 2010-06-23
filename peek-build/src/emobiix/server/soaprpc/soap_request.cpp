@@ -35,7 +35,7 @@ int GetBlockDataObject(const std::string& URL, const std::string& deviceId, cons
 	xsd__base64Binary raw;
 	int ret = soap_call_ns__BlockDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, raw);
 
-	const int BLOCK = 2 * 1024;
+	const int BLOCK = 3 * 1024;
 	size_t rawSize = raw.getSize();
 	unsigned char *rawPtr = raw.getPtr();
 
