@@ -170,6 +170,11 @@ void manager_handleKey(int key)
 	}
 #endif
 
+	if (key == 42) { /* lock symbol */
+		manager_focusNextApplication();
+		return;
+	}
+
 	focus = NULL;
 	if (appManager->rootApplicationWindow != NULL)
 		focus = widget_focusWhichOneNF(appManager->rootApplicationWindow);
@@ -217,7 +222,7 @@ void manager_handleKey(int key)
 
 void manager_launchApplication(Application *app)
 {
-
+	list_append(appManager->applications, app);
 }
 
 ListIterator *manager_applications(void)
@@ -254,7 +259,36 @@ void manager_focusApplication(Application *app)
 
 	widget_markDirty(appManager->rootApplicationWindow);
 
+	appManager->focus = app;
+
 	/*dataobject_debugPrint(appManager->rootApplicationWindow);*/
+}
+
+void manager_focusNextApplication(void)
+{
+	ListIterator *iter;
+	Application *newFocus = NULL, *item;
+	int found = 0;
+
+	iter = list_begin(appManager->applications);
+	while (!listIterator_finished(iter)) {
+		item = (Application *)listIterator_item(iter);
+		if (!found && item == appManager->focus)
+			found = 1;
+		else if (found) {
+			newFocus = item;
+			break;
+		}
+		listIterator_next(iter);
+	}
+	listIterator_delete(iter);
+
+	if (newFocus == NULL) {
+		iter = list_begin(appManager->applications);
+		newFocus = (Application *)listIterator_item(iter);
+		listIterator_delete(iter);
+	}
+	manager_focusApplication(newFocus);	
 }
 
 #ifdef __cplusplus
