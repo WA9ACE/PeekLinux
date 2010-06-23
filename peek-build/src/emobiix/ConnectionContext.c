@@ -422,7 +422,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 				/*widget_resolveLayout(sreq->dobj, currentStyle);*/
 				widget_markDirty(sreq->dobj);
 				mime_loadAll(sreq->dobj);
-				/*dataobject_debugPrint(sreq->dobj);*/
+				dataobject_debugPrint(sreq->dobj);
 				field = dataobject_getValue(sreq->dobj, "type");
 				if (field != NULL && field->type == DOF_STRING)
 					emo_printf("Finished Type: %s" NL, field->field.string); 

@@ -39,7 +39,7 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	/* focus index */
 	focusindex = dataobject_getValue(w, "focusindex");
 	if (focusindex == NULL) {
-		focusindex = dataobjectfield_int(0);
+		focusindex = dataobjectfield_int(-1);
 		dataobject_setValue(w, "focusindex", startindex);
 	}
 	focusidx = focusindex->field.integer;
@@ -64,7 +64,7 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	shimBox = widget_getBox(shim);
 	shimBox->x = box->x+margin->x;
 	shimBox->y = box->y+margin->y;
-	shimBox->width = box->width-10;
+	shimBox->width = box->width-9;
 	shimBox->height = box->height;
 
 	recordCount = dataobject_getChildCount(dobj);

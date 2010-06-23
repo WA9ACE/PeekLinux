@@ -276,11 +276,16 @@ int widget_focusFirst(Widget *w, List *l)
 	ListIterator *iter;
 	int result;
 	
+	
+
 	if (widget_canFocus(w)) {
 		widget_setFocus(w, 1);
 		list_append(l, (void *)w);
 		return 1;
 	}
+
+	if (widget_typeNoChildRender(dataobject_getValue(w, "type")))
+		return 0;
 
 	iter = widget_getChildren(w);
 	while (!listIterator_finished(iter)) {
@@ -338,6 +343,9 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 			return 2;
 		}
 	}
+
+	if (widget_typeNoChildRender(dataobject_getValue(w, "type")))
+		return 0;
 
 	iter = widget_getChildren(w);
 	while (!listIterator_finished(iter)) {
@@ -399,18 +407,20 @@ Widget *widget_focusPrevD(Widget *w)
 	ListIterator *iter;
 	Widget *cw, *iw;
 
-	iter = list_rbegin(w->children);
-	while (!listIterator_finished(iter)) {
-		cw = (Widget *)listIterator_item(iter);
-		iw = widget_focusPrevD(cw);
-		if (iw != NULL) {
-			listIterator_delete(iter);
-			return iw;
+	if (!widget_typeNoChildRender(dataobject_getValue(w, "type"))) {
+		iter = list_rbegin(w->children);
+		while (!listIterator_finished(iter)) {
+			cw = (Widget *)listIterator_item(iter);
+			iw = widget_focusPrevD(cw);
+			if (iw != NULL) {
+				listIterator_delete(iter);
+				return iw;
+			}
+			listIterator_next(iter);
 		}
-		listIterator_next(iter);
-	}
 
-	listIterator_delete(iter);
+		listIterator_delete(iter);
+	}
 
 	if (widget_canFocus(w)) {
 		widget_setFocus(w, 1);
@@ -476,15 +486,17 @@ static Widget *widget_focusLast(Widget *w)
 	ListIterator *iter;
 	DataObjectField *field;
 
-	iter = list_rbegin(w->children);
-	while (!listIterator_finished(iter)) {
-		child = (Widget *)listIterator_item(iter);
-		child = widget_focusLast(child);
-		if (child != NULL)
-			return child;
-		listIterator_next(iter);
+	if (!widget_typeNoChildRender(dataobject_getValue(w, "type"))) {
+		iter = list_rbegin(w->children);
+		while (!listIterator_finished(iter)) {
+			child = (Widget *)listIterator_item(iter);
+			child = widget_focusLast(child);
+			if (child != NULL)
+				return child;
+			listIterator_next(iter);
+		}
+		listIterator_delete(iter);
 	}
-	listIterator_delete(iter);
 	
 	if (widget_canFocus(w)) {
 		field = dataobject_getValue(w, "type");
