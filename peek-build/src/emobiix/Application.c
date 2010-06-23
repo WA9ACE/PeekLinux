@@ -19,6 +19,7 @@ Application *application_load(DataObject *dobj)
 	output = (Application *)p_malloc(sizeof(Application));
 	output->dobj = dobj;
 	output->currentScreen = NULL;
+	dataobject_resolveReferences(dobj);
 	field = dataobject_getValue(dobj, "startupview");
 	if (field != NULL && field->type == DOF_STRING)
 		output->currentScreen = dataobject_findByName(dobj, field->field.string);

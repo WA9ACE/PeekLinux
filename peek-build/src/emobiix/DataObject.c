@@ -458,6 +458,7 @@ static void dataobject_debugPrintR(DataObject *dobj, int level)
 		dataobject_debugPrintR((DataObject *)listIterator_item(citer), level+1);
 		listIterator_next(citer);
 	}
+	listIterator_delete(citer);
 }
 
 
@@ -597,4 +598,36 @@ DataObjectField *dataobjectfield_uint(unsigned int val)
 	output->field.uinteger = val;
 
 	return output;
+}
+
+void dataobject_resolveReferences(DataObject *dobj)
+{
+	ListIterator *iter;
+	DataObject *ref, *parent;
+	DataObjectField *field;
+
+	ref = widget_getDataObject(dobj);
+
+	if (ref == dobj) {
+		field = dataobject_getValue(dobj, "reference");
+		if (field != NULL && field->type == DOF_STRING) {
+			if (strchr(field->field.string, ':') != NULL) {
+				ref = dataobject_locateStr(field->field.string);
+				if (ref != NULL)	
+					widget_setDataObject(dobj, ref);
+			} else {
+				parent = dataobject_superparent(dobj);
+				ref = dataobject_findByName(parent, field->field.string);
+				if (ref != NULL)
+					widget_setDataObject(dobj, ref);
+			}
+		}
+	}
+
+	iter = list_begin(dobj->children);
+	while (!listIterator_finished(iter)) {
+		dataobject_resolveReferences((DataObject *)listIterator_item(iter));
+		listIterator_next(iter);
+	}
+	listIterator_delete(iter);
 }

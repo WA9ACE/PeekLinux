@@ -518,10 +518,29 @@ void widget_focusPrev(Widget *tree, Style *s)
 {
 	Widget *oldW, *newW;
 	Rectangle rect;
+	int result;
+	DataObjectField *type;
 
 	oldW = widget_focusWhichOne(tree);
 	if (oldW == NULL)
 		return;
+
+	type = dataobject_getValue(oldW, "type");
+	if (type != NULL && type->type == DOF_STRING
+			&& strcmp(type->field.string, "array") == 0) {
+		result = arraywidget_focusPrev(oldW);
+		if (result) {
+			widget_markDirty(oldW);
+			lgui_clip_identity();
+			widget_getClipRectangle(oldW, &rect);
+			lgui_clip_set(&rect);
+
+			lgui_push_region();
+			style_renderWidgetTree(s, tree);
+
+			return;
+		}
+	}
 
 	widget_setFocus(oldW, 0);
 

@@ -76,6 +76,7 @@ void dataobject_platformInit(void);
 DataObject *dataobject_locateStr(const char *str);
 DataObject *dataobject_locate(URL *url);
 DataObject *dataobject_construct(URL *url, int isLocal);
+void dataobject_resolveReferences(DataObject *dobj);
 
 #ifdef __cplusplus
 }

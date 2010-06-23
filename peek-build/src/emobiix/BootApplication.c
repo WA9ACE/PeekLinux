@@ -72,7 +72,7 @@ DataObject *BootApplication(void)
 	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
 
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
-			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/dataobject\"); dobj:toScreen();"));
+			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/helloworld\"); dobj:toScreen();"));
 	widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 	/*widget_setPacking(dobj1, WP_VERTICAL);*/
