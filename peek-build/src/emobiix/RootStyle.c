@@ -236,14 +236,12 @@ Style *RootStyle(void)
 	style_setProperty(defaultStyle, NULL, "gradboxr", "array",
 			"gradient", (void *)grad1);
 	style_setProperty(defaultStyle, NULL, "gradboxr", "array",
-			"focusgradient", (void *)grad2);
+			"focusgradient", (void *)grad1);
 	style_setProperty(defaultStyle, NULL, "gradboxr", "array",
 			"radius", (void *)7);
 	color.value = 0x696969FF;
 	style_setProperty(defaultStyle, NULL, "gradboxr", "array",
 			"outline", (void *)color.value);
-	color.value = 0x69F969FF;
-	color.value = 0x696989FF;
 	style_setProperty(defaultStyle, NULL, "gradboxr", "array",
 			"focusoutline", (void *)color.value);
 #if 0

@@ -42,11 +42,15 @@ static int __dataobject_getValue(lua_State *L)
 {
 	DataObjectField *field;
 	DataObject *dobj;
+	const char *fieldName;
 
 	dobj = checkDataObject(L, 1);
-	field = dataobject_getValue(dobj, "data");
+	fieldName = luaL_checkstring(L, 2);
+	if (fieldName == NULL)
+		fieldName = "data";
+	field = dataobject_getValue(dobj, fieldName);
         if (field == NULL) {
-                lua_pushstring(L, "");
+                lua_pushnil(L);
         } else {
                lua_pushstring(L, field->field.string);
         }

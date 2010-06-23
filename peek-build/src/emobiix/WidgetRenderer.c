@@ -142,16 +142,21 @@ static void gradboxr_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	const char *id;
 	int radius;
 	Color outline;
+	DataObjectField *type;
+	const char *typestr = NULL;
 
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
 	id = widget_getID(w);
+	type = dataobject_getValue(w, "type");
+	if (type != NULL && type->type == DOF_STRING)
+		typestr = type->field.string;
 	if (widget_hasFocus(w)) {
-		g = (Gradient *)style_getProperty(s, NULL, id, "box", "focusgradient");
+		g = (Gradient *)style_getProperty(s, NULL, id, typestr, "focusgradient");
 		outline.value = (unsigned int)style_getProperty(s, NULL, id, NULL, "focusoutline");
 	} else {
-		g = (Gradient *)style_getProperty(s, NULL, id, "box", "gradient");
-		outline.value = (unsigned int)style_getProperty(s, NULL, id, NULL, "outline");
+		g = (Gradient *)style_getProperty(s, NULL, id, typestr, "gradient");
+		outline.value = (unsigned int)style_getProperty(s, NULL, id, typestr, "outline");
 	}
 	if (g == NULL)
 		return;

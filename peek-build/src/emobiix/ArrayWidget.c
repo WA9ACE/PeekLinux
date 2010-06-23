@@ -40,7 +40,7 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	focusindex = dataobject_getValue(w, "focusindex");
 	if (focusindex == NULL) {
 		focusindex = dataobjectfield_int(-1);
-		dataobject_setValue(w, "focusindex", startindex);
+		dataobject_setValue(w, "focusindex", focusindex);
 	}
 	focusidx = focusindex->field.integer;
 
@@ -178,17 +178,32 @@ WidgetRenderer *widgetrenderer_array(void)
 	return output;
 }
 
-int arraywidget_focusNext(Widget *w)
+int arraywidget_focusNext(Widget *w, int *alreadyUnset, int *alreadySet)
 {
 	DataObjectField *focusindex;
+	DataObject *record;
 
 	/* focus index */
 	focusindex = dataobject_getValue(w, "focusindex");
 	if (focusindex == NULL)
 		return 0;
+
+	if (*alreadyUnset == 0 && focusindex->field.integer < 0)
+		return 0;
+
+	record = widget_getDataObject(w);
+
 	++focusindex->field.integer;
+	if (focusindex->field.integer >= dataobject_getChildCount(record)) {
+		focusindex->field.integer = -1;
+		widget_setFocus(w, 0);
+		return 1;
+	}
+
+	*alreadySet = 1;
+	widget_setFocus(w, 1);
 
 	emo_printf("Focusing on %d now" NL, focusindex->field.integer);
 
-	return 1;
+	return 2;
 }

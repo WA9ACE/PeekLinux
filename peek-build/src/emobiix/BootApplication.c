@@ -2,6 +2,7 @@
 
 #include "DataObject.h"
 #include "Widget.h"
+#include "URL.h"
 
 #include <stdio.h>
 
@@ -9,6 +10,9 @@ DataObject *BootApplication(void)
 {
     static DataObject *output = NULL;
     DataObject *view, *root, *dobj1, *dobj2, *box;
+#ifdef SIMULATOR
+	URL *durl;
+#endif
 
 	DataObject *recordobj, *rec;
 	DataObject *sbox, *label;
@@ -87,9 +91,18 @@ DataObject *BootApplication(void)
     dataobject_setValue(dobj2, "data", dataobjectfield_string("Calculator"));
     widget_setAlignment(dobj2, WA_CENTER);
 
+#ifdef SIMULATOR
+	durl = url_parse("system://localhost/gps", URL_ALL);
+	dobj1 = dataobject_construct(durl, 1);
+	dataobject_setValue(dobj1, "long", dataobjectfield_string("40.702147"));
+	dataobject_setValue(dobj1, "lat", dataobjectfield_string("-74.015794"));
+#endif
+
 	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
-			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/whereami\"); dobj:toScreen();"));
+			"gps = DataObject.locate(\"system://localhost/gps\");\n"
+			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/whereami?\" .. gps:getValue(\"long\") .. \",\" .. gps:getValue(\"lat\"));\n"
+			"dobj:toScreen();"));
     widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 

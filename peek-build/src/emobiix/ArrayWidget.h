@@ -8,7 +8,7 @@ extern "C" {
 #endif
 
 WidgetRenderer *widgetrenderer_array(void);
-int arraywidget_focusNext(Widget *w);
+int arraywidget_focusNext(Widget *w, int *alreadyUnset, int *alreadySet);
 
 #ifdef __cplusplus
 }

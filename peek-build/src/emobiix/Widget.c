@@ -348,7 +348,7 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 	if (widget_typeNoChildRender(type)) {
 		if (type != NULL && type->type == DOF_STRING
 				&& strcmp(type->field.string, "array") == 0)
-			result = arraywidget_focusNext(w);
+			result = arraywidget_focusNext(w, alreadyUnset, alreadySet);
 		return result;
 	}
 
@@ -640,7 +640,7 @@ static void widget_markDirtyChild(Widget *w)
 
 	iter = list_begin(w->children);
 	while (!listIterator_finished(iter)) {
-		widget_markDirty((Widget *)listIterator_item(iter));
+		widget_markDirtyChild((Widget *)listIterator_item(iter));
 		listIterator_next(iter);
 	}
 	listIterator_delete(iter);
@@ -816,8 +816,6 @@ void widget_resolveMeasureRelative(Widget *w)
 				sumWidth += child->box.width + child->margin.x + child->margin.width;
 				sumNew = child->box.height + child->margin.y + child->margin.height;
 				sumHeight = sumNew > sumHeight ? sumNew : sumHeight;
-				emo_printf("sumHeight now :%d" NL, sumHeight);
-				emo_printf("sumWidth now :%d" NL, sumWidth);
 			} else {
 				sumNew = child->box.width + child->margin.x + child->margin.width;
 				sumWidth = sumNew > sumWidth ? sumNew : sumWidth;
