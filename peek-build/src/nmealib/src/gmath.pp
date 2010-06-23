@@ -473,6 +473,12 @@ int     nmea_move_horz_ellipsoid(
 
 
 
+int isnan(double var)
+{
+    volatile double temp = var;
+    return temp != temp;
+}
+
 
 
  

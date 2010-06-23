@@ -24,10 +24,15 @@ This task receive signal and Msg and handle it.
 	Include File Section
 =====================================================================================*/
 #include "sysdefs.h"
+#include "stdio.h"
 #include "bal_os.h"
 #include "bal_def.h"
 #include "amdb.h"
 #include "nmea/nmea.h"
+#include "DataObject.h"
+#include "URL.h"
+
+#define GPS_URI "system://local/gps"
 
 
 /*******************************************************************************
@@ -133,22 +138,54 @@ uint32 UA_ReadNChars (uint32 uart_id,
                            char *buffer,
                            uint32 chars_to_read);
 
+static char lat[100];
+static char lon[100];
+
+static DataObject* GPS;
+static DataObjectField* GPS_LAT;
+static DataObjectField* GPS_LONG;
+static void gps_set_location(char *lat, char *lon)
+{
+        if (!GPS)
+                return;
+        GPS_LAT->field.string = lat;
+        GPS_LONG->field.string = lon;
+        dataobject_setValue(GPS, "lat", GPS_LAT);
+        dataobject_setValue(GPS, "long", GPS_LONG);
+}
+
+void gps_init()
+{
+        URL *url = url_parse(GPS_URI, URL_ALL);
+
+        GPS = dataobject_construct(url, 1);
+        GPS_LAT = dataobjectfield_string("");
+        GPS_LONG = dataobjectfield_string("");
+        dataobject_setValue(GPS, "lat", GPS_LAT);
+        dataobject_setValue(GPS, "long", GPS_LONG);
+}
+
 static void serial_read_cb(void) {
 
     int it;
     nmeaINFO info;
     nmeaPARSER parser;
     nmeaPOS dpos;
-    char buf[1024];
+    char locbuf[1024];
 
     nmea_zero_INFO(&info);
     nmea_parser_init(&parser);
 
-    memset(buf, 0, 1024);
+    memset(locbuf, 0, 1024);
 
-    if(UA_ReadNChars(0, buf, 1024) > 0) {
-    	nmea_parse(&parser, buf, 1024, &info);
+    if(UA_ReadNChars(0, locbuf, 1024) > 0) {
+    	nmea_parse(&parser, locbuf, 1024, &info);
     	nmea_info2pos(&info, &dpos);
+	sprintf(lat, "%f", dpos.lat);
+	sprintf(lon, "%f", dpos.lon);
+	if(GPS) {
+		gps_set_location(lat, lon);
+	}
     	//emo_printf("Lat: %f, Lon: %f, Sig: %d, Fix: %d\n", dpos.lat, dpos.lon, info.sig, info.fix);
     }
     nmea_parser_destroy(&parser);
@@ -165,7 +202,7 @@ extern "C" void AmdbTask(uint32 /*argc*/, void * /*argv*/)
 	uint8         MailBoxId;
 	BOSEventWaitT MailBoxIndex;
 	int i;
-  
+  	GPS = NULL;
 	//wait until BAL is Ready.
 	while (BalStatusGet()==FALSE)
 	{
