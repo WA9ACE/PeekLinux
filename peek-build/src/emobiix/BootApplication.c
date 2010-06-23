@@ -8,7 +8,7 @@
 DataObject *BootApplication(void)
 {
     static DataObject *output = NULL;
-    DataObject *view, *root, *dobj1, *dobj2;
+    DataObject *view, *root, *dobj1, *dobj2, *box;
 
 	DataObject *recordobj, *rec;
 	DataObject *sbox, *label;
@@ -61,7 +61,11 @@ DataObject *BootApplication(void)
     dataobject_setValue(dobj1, "data", dataobjectfield_string("Application Boot Environment"));
     widget_setAlignment(dobj1, WA_CENTER);
 
-	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, root);
+	box = widget_newTypeIdName("box", NULL, NULL, root);
+	widget_setPacking(box, WP_HORIZONTAL);
+	widget_setAlignment(box, WA_CENTER);
+
+	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
 
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
 			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/dataobject\"); dobj:toScreen();"));
@@ -73,25 +77,49 @@ DataObject *BootApplication(void)
     dataobject_setValue(dobj2, "data", dataobjectfield_string("Hello World"));
     widget_setAlignment(dobj2, WA_CENTER);
 
-	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, root);
+	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
 			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/calc\"); dobj:toScreen();"));
     widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
-	/*widget_setPacking(dobj1, WP_VERTICAL);*/
 
 	dobj2 = widget_newTypeIdName("string", "label", NULL, dobj1);
     dataobject_setValue(dobj2, "data", dataobjectfield_string("Calculator"));
     widget_setAlignment(dobj2, WA_CENTER);
 
+	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
+    dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
+			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/whereami\"); dobj:toScreen();"));
+    widget_setAlignment(dobj1, WA_CENTER);
+	widget_setCanFocus(dobj1, 1);
+
+	dobj2 = widget_newTypeIdName("string", "label", NULL, dobj1);
+    dataobject_setValue(dobj2, "data", dataobjectfield_string("Where am I?"));
+    widget_setAlignment(dobj2, WA_CENTER);
+
+	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
+    dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
+			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/mail\"); dobj:toScreen();"));
+    widget_setAlignment(dobj1, WA_CENTER);
+	widget_setCanFocus(dobj1, 1);
+
+	dobj2 = widget_newTypeIdName("string", "label", NULL, dobj1);
+    dataobject_setValue(dobj2, "data", dataobjectfield_string("Mail"));
+    widget_setAlignment(dobj2, WA_CENTER);
+
 	dobj1 = widget_newTypeIdName("entry", NULL, "output", root);
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("80%"));
-	dataobject_setValue(dobj1, "data", dataobjectfield_string("tcp://69.114.111.9:12345/idontcare"));
+	dataobject_setValue(dobj1, "data", dataobjectfield_string("tcp://69.114.111.9:12345/"));
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
 			"ths = DataObject.find(\"output\"); str = ths:getValue(); dobj = DataObject.locate(str); dobj:toScreen();"));
     widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 	/*widget_setPacking(dobj1, WP_VERTICAL);*/
+
+	dobj2 = widget_newTypeIdName("string", "label", NULL, root);
+    dataobject_setValue(dobj2, "data", dataobjectfield_string("Running Applications"));
+	dataobject_setValue(dobj2, "margintop", dataobjectfield_int(10));
+    widget_setAlignment(dobj2, WA_LEFT);
 
 #if 1
 	recordobj = dataobject_new();
