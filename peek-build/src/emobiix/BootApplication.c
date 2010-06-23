@@ -112,6 +112,18 @@ DataObject *BootApplication(void)
 
 	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
+			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/whereami?40.702147,-74.015794\");\n"
+			"dobj:toScreen();"));
+    widget_setAlignment(dobj1, WA_CENTER);
+	widget_setCanFocus(dobj1, 1);
+
+	dobj2 = widget_newTypeIdName("string", "label", NULL, dobj1);
+    dataobject_setValue(dobj2, "data", dataobjectfield_string("NoGPS"));
+    widget_setAlignment(dobj2, WA_CENTER);
+
+
+	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
+    dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
 			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/mail\"); dobj:toScreen();"));
     widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);

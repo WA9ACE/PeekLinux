@@ -145,6 +145,8 @@ int listIterator_finished(ListIterator *iter)
 
 void *listIterator_item(ListIterator *iter)
 {
+	if (iter->node == NULL)
+		return NULL;
     return iter->node->data;
 }
 

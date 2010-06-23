@@ -44,11 +44,16 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	}
 	focusidx = focusindex->field.integer;
 
+	emo_printf("start: %d, focus: %d" NL, startindex->field.integer,
+			focusindex->field.integer);
+
 	iter = dataobject_childIterator(w);
 	wchild = listIterator_item(iter);
 	listIterator_delete(iter);
-	if (wchild == NULL)
+	if (wchild == NULL) {
+		emo_printf("wchild was NULL" NL);	
 		return;
+	}
 	
 	canFocus = widget_canFocus(wchild);
 
@@ -68,15 +73,20 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	shimBox->height = box->height;
 
 	recordCount = dataobject_getChildCount(dobj);
+	if (recordCount == -2) {
+		recordCount = 2;	
+		goto skip_record_draw;
+	}
 	if (recordCount < 2)
 		recordCount = 2;
+	emo_printf("Record count %d" NL, recordCount);
 	idx = 0;
 	dataobject_pack(shim, wchild);
 	lgui_clip_push();
 	lgui_clip_and(box);
 	for (iter = dataobject_childIterator(dobj);
 			!listIterator_finished(iter); listIterator_next(iter)) {
-		/*emo_printf("Drawing Array index %d" NL, idx);*/
+		emo_printf("Drawing Array index %d" NL, idx);
 		if (idx < startidx) {
 			++idx;
 			continue;
@@ -117,6 +127,8 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		dataobject_setValue(w, "endindex", endindex);
 	}
 	endindex->field.integer = endidx;
+
+skip_record_draw:
 
 	dataobject_delete(shim);
 
@@ -198,12 +210,25 @@ int arraywidget_focusNext(Widget *w, int *alreadyUnset, int *alreadySet)
 	DataObjectField *focusindex, *startindex, *endindex;
 	DataObject *record;
 
+	startindex = dataobject_getValue(w, "startindex");
+	if (startindex == NULL) {
+		startindex = dataobjectfield_int(0);
+		dataobject_setValue(w, "startindex", startindex);
+	}
+
 	/* focus index */
 	focusindex = dataobject_getValue(w, "focusindex");
-	if (focusindex == NULL)
-		return 0;
-	startindex = dataobject_getValue(w, "startindex");
+	if (focusindex == NULL) {
+		focusindex = dataobjectfield_int(-1);
+		dataobject_setValue(w, "focusindex", focusindex);
+	}
+
+	/* end index */
 	endindex = dataobject_getValue(w, "endindex");
+	if (endindex == NULL) {
+		endindex = dataobjectfield_int(dataobject_getChildCount(w));
+		dataobject_setValue(w, "endindex", endindex);
+	}
 
 	if (*alreadyUnset == 0 && focusindex->field.integer < 0)
 		return 0;
@@ -235,13 +260,26 @@ int arraywidget_focusPrev(Widget *w)
 	DataObjectField *focusindex, *startindex, *endindex;
 	DataObject *record;
 
+	startindex = dataobject_getValue(w, "startindex");
+	if (startindex == NULL) {
+		startindex = dataobjectfield_int(0);
+		dataobject_setValue(w, "startindex", startindex);
+	}
+
 	/* focus index */
 	focusindex = dataobject_getValue(w, "focusindex");
-	if (focusindex == NULL)
-		return 0;
-	startindex = dataobject_getValue(w, "startindex");
-	endindex = dataobject_getValue(w, "endindex");
+	if (focusindex == NULL) {
+		focusindex = dataobjectfield_int(-1);
+		dataobject_setValue(w, "focusindex", focusindex);
+	}
 
+	/* end index */
+	endindex = dataobject_getValue(w, "endindex");
+	if (endindex == NULL) {
+		endindex = dataobjectfield_int(dataobject_getChildCount(w));
+		dataobject_setValue(w, "endindex", endindex);
+	}
+	
 	record = widget_getDataObject(w);
 
 	--focusindex->field.integer;

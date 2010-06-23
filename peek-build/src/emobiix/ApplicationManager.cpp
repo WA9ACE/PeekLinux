@@ -240,6 +240,7 @@ void manager_focusApplication(Application *app)
     DataObject *currentScreen;
     ListIterator *iter;
 
+	emo_printf("Focusing Application" NL);
     currentScreen = application_getCurrentScreen(app);
 	if (currentScreen == NULL) {
 		emo_printf("No current screen when focusing application" NL);
