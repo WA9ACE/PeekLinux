@@ -407,6 +407,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 		case packetTypeP_PR_dataObjectSyncFinishP:
 			emo_printf( "DataObjectSyncFinish packet" NL);
 			mapKey = generate_mapKey(ctx->endpoint, packet->packetTypeP.choice.dataObjectSyncFinishP.syncSequenceIDP);
+			emo_printf("Map Key: %s" NL, mapKey);
 			sreq = map_find(ctx->syncRequests, mapKey);
 			if (sreq == NULL) {
 				emo_printf("recvd sync finished for request not in progress: %d" NL, 
@@ -423,11 +424,14 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 				mime_loadAll(sreq->dobj);
 				/*dataobject_debugPrint(sreq->dobj);*/
 				field = dataobject_getValue(sreq->dobj, "type");
+				if (field != NULL && field->type == DOF_STRING)
+					emo_printf("Finished Type: %s" NL, field->field.string); 
 				if (field != NULL && field->type == DOF_STRING &&
 						strcmp(field->field.string, "application") == 0) {
 					app = application_load(sreq->dobj);
 					manager_launchApplication(app);
 					manager_focusApplication(app);
+					dataobject_debugPrint(sreq->dobj);
 				}
 			}
 			break;
@@ -682,6 +686,7 @@ static void connectionContext_processSyncOperand(ConnectionContext *ctx,
 	DataObject *cobj;
 
 	fieldName = (char *)syncOp->fieldNameP.buf;
+	/*emo_printf("Field is '%s'" NL, fieldName);*/
 	if (syncOp->syncP.present == syncP_PR_syncSetP) {
 		dof = dataobjectfield_string((const char *)syncOp->syncP.choice.syncSetP.buf);
 		dataobject_setValue(sobj, fieldName, dof);
@@ -716,6 +721,7 @@ static void connectionContext_processSyncOperand(ConnectionContext *ctx,
 			sreq->objectIndex = syncOp->syncP.choice.nodeOperationP.choice.nodeGotoTreeP;
 			sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
 			emo_printf("#### GoTo index: %d" NL, sreq->objectIndex);
+			/*dataobject_debugPrint(sreq->dobj);*/
 			if (sobj == NULL) {
 				emo_printf("Going to invalid index" NL);
 #ifdef SIMULATOR
@@ -740,6 +746,7 @@ static void connectionContext_processBlockSyncList(ConnectionContext *ctx,
 
 	for (i = 0; i < p->list.count; ++i) {
 		syncOp = p->list.array[i];
+		sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
 		connectionContext_processSyncOperand(ctx, sreq, sobj, syncOp);
 	}
 }

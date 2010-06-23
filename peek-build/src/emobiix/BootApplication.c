@@ -93,6 +93,7 @@ DataObject *BootApplication(void)
 	widget_setCanFocus(dobj1, 1);
 	/*widget_setPacking(dobj1, WP_VERTICAL);*/
 
+#if 0
 	recordobj = dataobject_new();
 	dataobject_setRecordType(recordobj, 1);
 	
@@ -137,6 +138,7 @@ DataObject *BootApplication(void)
 	label = widget_newTypeIdName("string", "label", NULL, sbox);
 	dataobject_setValue(label, "width", dataobjectfield_string("45%"));
 	dataobject_setValue(label, "data", dataobjectfield_string("RyanK"));
+#endif
 
     return output;
 }

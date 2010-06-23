@@ -146,6 +146,7 @@ Style *RootStyle(void)
 	style_setProperty(defaultStyle, NULL, "solid", "box",
 			"color", (void *)color.value);
 	color.value = 0x263914FF;
+
 	style_setProperty(defaultStyle, NULL, "label", "string",
 			"renderer", (void *)widgetrenderer_string());
 	style_setProperty(defaultStyle, NULL, "label", "string",
@@ -171,6 +172,35 @@ Style *RootStyle(void)
 			"font", (void *)defaultFont);
 	color.value = 0xFFFFFFFF;
 	style_setProperty(defaultStyle, NULL, "labelw", "string",
+			"color", (void *)color.value);
+	color.value = 0xFFFFFFFF;
+
+	color.value = 0x263914FF;
+	style_setProperty(defaultStyle, NULL, "label", "label",
+			"renderer", (void *)widgetrenderer_string());
+	style_setProperty(defaultStyle, NULL, "label", "label",
+			"font", (void *)defaultFont);
+	color.value = 0xFFFFFFFF;
+	style_setProperty(defaultStyle, NULL, "biglabel", "label",
+			"renderer", (void *)widgetrenderer_string());
+	style_setProperty(defaultStyle, NULL, "biglabel", "label",
+			"font", (void *)hugeFont);
+	color.value = 0xFFFFFFFF;
+	
+	style_setProperty(defaultStyle, NULL, "biglabelw", "label",
+			"renderer", (void *)widgetrenderer_string());
+	style_setProperty(defaultStyle, NULL, "biglabelw", "label",
+			"font", (void *)hugeFont);
+	color.value = 0xFFFFFFFF;
+	style_setProperty(defaultStyle, NULL, "biglabelw", "label",
+			"color", (void *)color.value);
+	
+	style_setProperty(defaultStyle, NULL, "labelw", "label",
+			"renderer", (void *)widgetrenderer_string());
+	style_setProperty(defaultStyle, NULL, "labelw", "label",
+			"font", (void *)defaultFont);
+	color.value = 0xFFFFFFFF;
+	style_setProperty(defaultStyle, NULL, "labelw", "label",
 			"color", (void *)color.value);
 	color.value = 0xFFFFFFFF;
 	
