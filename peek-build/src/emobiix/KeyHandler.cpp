@@ -65,8 +65,8 @@ void updateScreen(void) {
 
                 dc.BitBlt(rect->x, rect->y, rect->width, rect->height, Bmp,
                         rect->x, rect->y);
+                dc.UpdateDisplay();
             }
-            dc.UpdateDisplay();
         }
 	lgui_blit_done();
 #endif
