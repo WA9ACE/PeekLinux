@@ -67,7 +67,7 @@ int GetRecordDataObject(const std::string& URL, const std::string& deviceId, con
 	struct soap *s = soap_new();
 
 	ns__Timestamp ts(1, 5);
-	int ret = soap_call_ns__TreeDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, recordData);
+	int ret = soap_call_ns__RecordDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, recordData);
 
  	soap_end(s);
 	soap_free(s); 

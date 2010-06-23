@@ -22,11 +22,15 @@ bool record_parser::parseTree(DOMNode *node, std::vector<FRIPacketP *>& packets)
 	if (!node)
 		return false;
 
+	node = node->getFirstChild();
+
 	int index = 0;
 	while (node) 
 	{
 		if (node->getNodeType() == DOMNode::ELEMENT_NODE) 
 			addElement(node, packets.back(), ++index);
+
+		node = node->getNextSibling();
 	}
 }
 
@@ -57,12 +61,14 @@ void record_parser::addElement(DOMNode *node, FRIPacketP* packet, int index)
 		string attribute = xml_parser::XMLToString(attr->item(i)->getNodeName());
 		string value = xml_parser::XMLToString(attr->item(i)->getNodeValue());
 
+		TRACELOG("Adding record field [" << attribute << "] = [" << value << "]");
+
 		SyncOperandP_t *syncOp = dataobject_factory::syncOperandP(attribute.c_str());
 		syncOp->syncP.present = syncP_PR_syncSetP;
 		syncOp->syncP.choice.syncSetP.buf = NULL;
 		OCTET_STRING_fromBuf(&syncOp->syncP.choice.syncSetP, value.c_str(), strlen(value.c_str()) + 1);
 
-		asn_sequence_add(&packet->packetTypeP.choice.dataObjectSyncP.syncListP.choice.recordSyncListP.list, syncOp);
+		asn_sequence_add(&record->recordFieldListP->list, syncOp);
 	}
 
 	DataObjectSyncP &s = packet->packetTypeP.choice.dataObjectSyncP;

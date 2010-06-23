@@ -331,7 +331,7 @@ void connection::start_arraySync(reply& rep)
 
 	TRACELOG("Record data received: " << recordData);
 
-	tree_parser parser(recordData.c_str(), app_path_, connection_token_);
+	record_parser parser(recordData.c_str(), app_path_, connection_token_);
 	parser.parse(rep.packets);
 
 	DEBUGLOG("Finishing array sync");

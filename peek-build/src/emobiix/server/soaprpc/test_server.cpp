@@ -134,10 +134,15 @@ int ns__BlockDataObjectRequest(struct soap* soap, std::string deviceId, std::str
 
 int ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::string& recordData)
 {
+	cerr << "Received record request: " << deviceId << " " << dataObjectURI << endl;
+	
 	recordData = "<array>" \
-								"<element id=\"0\" sender=\"santa@npole.com\" subject=\"hello world\" body=\"this is the body\">" \
-								"<element id=\"1\" sender=\"mrsclaus@npole.com\" subject=\"elves\" body=\"need to pay\">" \
+								"<element id=\"0\" sender=\"santa@npole.com\" subject=\"hello world\" body=\"this is the body\" />" \
+								"<element id=\"1\" sender=\"mrsclaus@npole.com\" subject=\"elves\" body=\"need to pay\" />" \
 								"</array>";
+
+	cerr << "Will send back: " << recordData << endl;
+
 	return SOAP_OK;
 }
 
