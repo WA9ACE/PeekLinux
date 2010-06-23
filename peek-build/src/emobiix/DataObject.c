@@ -4,6 +4,7 @@
 #include "Map.h"
 #include "List.h"
 #include "Debug.h"
+#include "ConnectionContext.h"
 
 #include "p_malloc.h"
 
@@ -600,11 +601,14 @@ DataObjectField *dataobjectfield_uint(unsigned int val)
 	return output;
 }
 
+extern ConnectionContext *connectionContext;
+
 void dataobject_resolveReferences(DataObject *dobj)
 {
 	ListIterator *iter;
 	DataObject *ref, *parent;
 	DataObjectField *field;
+	URL *url;
 
 	ref = widget_getDataObject(dobj);
 
@@ -612,7 +616,12 @@ void dataobject_resolveReferences(DataObject *dobj)
 		field = dataobject_getValue(dobj, "reference");
 		if (field != NULL && field->type == DOF_STRING) {
 			if (strchr(field->field.string, ':') != NULL) {
-				ref = dataobject_locateStr(field->field.string);
+				url = url_parse(field->field.string, URL_ALL);	
+				ref = dataobject_locate(url);
+				if (ref == NULL) {
+					connectionContext_syncRequest(connectionContext, url);
+					ref = dataobject_locate(url);
+				}
 				if (ref != NULL)	
 					widget_setDataObject(dobj, ref);
 			} else {
@@ -631,3 +640,4 @@ void dataobject_resolveReferences(DataObject *dobj)
 	}
 	listIterator_delete(iter);
 }
+

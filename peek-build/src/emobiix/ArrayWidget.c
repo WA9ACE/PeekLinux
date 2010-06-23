@@ -68,6 +68,8 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	shimBox->height = box->height;
 
 	recordCount = dataobject_getChildCount(dobj);
+	if (recordCount < 2)
+		recordCount = 2;
 	idx = 0;
 	dataobject_pack(shim, wchild);
 	lgui_clip_push();

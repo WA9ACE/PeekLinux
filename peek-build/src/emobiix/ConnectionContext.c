@@ -265,7 +265,7 @@ int connectionContext_syncRequest(ConnectionContext *ctx, URL *url)
 	sreq->hasStarted = 0;
 	sreq->sequenceID = endpoint_getTransport(ctx->endpoint)->sequenceID(ctx->endpoint);
 	snprintf(mapKey, 64, "%p,%d", ctx->endpoint, sreq->sequenceID);
-	/*emo_printf("mapKey: %s" NL, mapKey);*/
+	emo_printf("@New Sync Request mapKey: %s" NL, mapKey);
 	map_append(ctx->syncRequests, mapKey, sreq);
 
 	return 1;
@@ -432,6 +432,9 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 					manager_launchApplication(app);
 					manager_focusApplication(app);
 					dataobject_debugPrint(sreq->dobj);
+				} else {
+					/* shouldnt refocus, should force a reloayout and draw instead */
+					manager_focusApplication(manager_getFocusedApplication());
 				}
 			}
 			break;

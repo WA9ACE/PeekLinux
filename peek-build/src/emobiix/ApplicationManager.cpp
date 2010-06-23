@@ -227,7 +227,12 @@ void manager_launchApplication(Application *app)
 
 ListIterator *manager_applications(void)
 {
-	return NULL;
+	return list_begin(appManager->applications);
+}
+
+Application *manager_getFocusedApplication(void)
+{
+	return appManager->focus;
 }
 
 void manager_focusApplication(Application *app)

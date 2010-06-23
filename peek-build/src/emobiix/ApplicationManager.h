@@ -16,6 +16,7 @@ void manager_handleKey(int key);
 void manager_launchApplication(Application *app);
 ListIterator *manager_applications(void);
 void manager_focusApplication(Application *app);
+Application *manager_getFocusedApplication(void);
 void manager_focusNextApplication(void);
 
 #ifdef __cplusplus
