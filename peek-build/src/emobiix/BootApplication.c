@@ -110,17 +110,6 @@ DataObject *BootApplication(void)
     dataobject_setValue(dobj2, "data", dataobjectfield_string("Where am I?"));
     widget_setAlignment(dobj2, WA_CENTER);
 
-	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
-    dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
-			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/whereami?40.702147,-74.015794\");\n"
-			"dobj:toScreen();"));
-    widget_setAlignment(dobj1, WA_CENTER);
-	widget_setCanFocus(dobj1, 1);
-
-	dobj2 = widget_newTypeIdName("string", "label", NULL, dobj1);
-    dataobject_setValue(dobj2, "data", dataobjectfield_string("NoGPS"));
-    widget_setAlignment(dobj2, WA_CENTER);
-
 
 	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
@@ -132,6 +121,36 @@ DataObject *BootApplication(void)
     dataobject_setValue(dobj2, "data", dataobjectfield_string("Mail"));
     widget_setAlignment(dobj2, WA_CENTER);
 
+	box = widget_newTypeIdName("box", NULL, NULL, root);
+	widget_setPacking(box, WP_HORIZONTAL);
+	widget_setAlignment(box, WA_CENTER);
+
+	dobj1 = widget_newTypeIdName("entry", NULL, "lat", box);
+	dataobject_setValue(dobj1, "width", dataobjectfield_string("30%"));
+	dataobject_setValue(dobj1, "data", dataobjectfield_string("40.702147"));
+	widget_setAlignment(dobj1, WA_CENTER);
+	widget_setCanFocus(dobj1, 1);
+
+	dobj1 = widget_newTypeIdName("entry", NULL, "long", box);
+	dataobject_setValue(dobj1, "width", dataobjectfield_string("30%"));
+	dataobject_setValue(dobj1, "data", dataobjectfield_string("-74.015794"));
+	widget_setAlignment(dobj1, WA_CENTER);
+	widget_setCanFocus(dobj1, 1);
+
+	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
+    dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
+			"Llat = DataObject.find(\"lat\");\n"
+			"Llong = DataObject.find(\"long\");\n"
+			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/whereami?\" .. Llat:getValue() .. \",\" .. Llong:getValue());\n"
+			"dobj:toScreen();"));
+    widget_setAlignment(dobj1, WA_CENTER);
+	widget_setCanFocus(dobj1, 1);
+
+	dobj2 = widget_newTypeIdName("string", "label", NULL, dobj1);
+    dataobject_setValue(dobj2, "data", dataobjectfield_string("NoGPS"));
+    widget_setAlignment(dobj2, WA_CENTER);
+
+#if 0
 	dobj1 = widget_newTypeIdName("entry", NULL, "output", root);
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("80%"));
 	dataobject_setValue(dobj1, "data", dataobjectfield_string("tcp://69.114.111.9:12345/"));
@@ -140,6 +159,7 @@ DataObject *BootApplication(void)
     widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 	/*widget_setPacking(dobj1, WP_VERTICAL);*/
+#endif
 
 	dobj2 = widget_newTypeIdName("string", "label", NULL, root);
     dataobject_setValue(dobj2, "data", dataobjectfield_string("Running Applications"));
