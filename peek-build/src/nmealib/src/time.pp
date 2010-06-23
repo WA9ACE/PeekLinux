@@ -1,4 +1,4 @@
-#line 1 "/home/cmw/dev/clean/non-lcd/peek-build/src/nmealib/src/time.c"
+#line 1 "/home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/time.c"
 
 
 
@@ -167,7 +167,7 @@ void nmea_time_now(nmeaTIME *t);
 
 
 
-#line 14 "/home/cmw/dev/clean/non-lcd/peek-build/src/nmealib/src/time.c"
+#line 14 "/home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/time.c"
 
 #line 1 "/opt/TI/TMS470CGT4.6.1/include/time.h"
  
@@ -267,10 +267,10 @@ extern  TZ _tz;
 
 #line 131 "/opt/TI/TMS470CGT4.6.1/include/time.h"
 
-#line 25 "/home/cmw/dev/clean/non-lcd/peek-build/src/nmealib/src/time.c"
+#line 25 "/home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/time.c"
 
 
-#line 45 "/home/cmw/dev/clean/non-lcd/peek-build/src/nmealib/src/time.c"
+#line 45 "/home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/time.c"
 
 void nmea_time_now(nmeaTIME *stm)
 {

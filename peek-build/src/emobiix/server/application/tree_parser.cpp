@@ -105,7 +105,6 @@ bool tree_parser::createBox(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
 	FRIPacketP *box = dataobject_factory::blockSyncListP();
 	setCommonAttributes(box, node);
-	dataobject_factory::addStringAttribute(box, "alignment", xml_parser::GetAttribute(node, "alignment").c_str());
 	dataobject_factory::addStringAttribute(box, "packing", xml_parser::GetAttribute(node, "packing").c_str());
 	dataobject_factory::addStringAttribute(box, "width", xml_parser::GetAttribute(node, "width").c_str());
 	dataobject_factory::addStringAttribute(box, "height", xml_parser::GetAttribute(node, "height").c_str());
@@ -119,7 +118,6 @@ bool tree_parser::createButton(DOMNode *node, std::vector<FRIPacketP *>& packets
 {
 	FRIPacketP *button = dataobject_factory::blockSyncListP();
 	setCommonAttributes(button, node);
-	dataobject_factory::addStringAttribute(button, "alignment", xml_parser::GetAttribute(node, "alignment").c_str());
 	dataobject_factory::addStringAttribute(button, "packing", xml_parser::GetAttribute(node, "packing").c_str());
 	dataobject_factory::addStringAttribute(button, "width", xml_parser::GetAttribute(node, "width").c_str());
 	dataobject_factory::addStringAttribute(button, "height", xml_parser::GetAttribute(node, "height").c_str());
@@ -138,7 +136,6 @@ bool tree_parser::createLabel(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
 	FRIPacketP *label = dataobject_factory::blockSyncListP();
 	setCommonAttributes(label, node);
-	dataobject_factory::addStringAttribute(label, "alignment", xml_parser::GetAttribute(node, "alignment").c_str());
 	dataobject_factory::addStringAttribute(label, "data", xml_parser::XMLToString(node->getFirstChild()->getNodeValue()).c_str());
 
 	packets.push_back(label);
@@ -197,6 +194,9 @@ void tree_parser::setCommonAttributes(FRIPacketP *packet, DOMNode *node)
 
 	if ((prop = xml_parser::GetAttribute(node, "onreturn")) != "")
 	  dataobject_factory::addStringAttribute(packet, "onreturn", prop.c_str());
+
+	if ((prop = xml_parser::GetAttribute(node, "alignment")) != "")
+	  dataobject_factory::addStringAttribute(packet, "alignment", prop.c_str());
 }
 
 }

@@ -39,3 +39,4 @@ DataObject *application_getCurrentScreen(Application *app)
 {
 	return app->currentScreen;
 }
+

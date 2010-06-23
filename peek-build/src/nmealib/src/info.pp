@@ -1,4 +1,4 @@
-#line 1 "/home/cmw/dev/clean/non-lcd/peek-build/src/nmealib/src/info.c"
+#line 1 "/home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/info.c"
 
 
 
@@ -93,7 +93,7 @@ typedef unsigned size_t;
 
 #line 299 "/opt/TI/TMS470CGT4.6.1/include/string.h"
 
-#line 12 "/home/cmw/dev/clean/non-lcd/peek-build/src/nmealib/src/info.c"
+#line 12 "/home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/info.c"
 
 #line 1 "./include/nmea/info.h"
 
@@ -343,7 +343,7 @@ void nmea_zero_INFO(nmeaINFO *info);
 
 
 
-#line 14 "/home/cmw/dev/clean/non-lcd/peek-build/src/nmealib/src/info.c"
+#line 14 "/home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/info.c"
 
 void nmea_zero_INFO(nmeaINFO *info)
 {

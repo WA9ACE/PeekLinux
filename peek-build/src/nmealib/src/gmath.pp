@@ -1,4 +1,4 @@
-#line 1 "/home/cmw/dev/clean/non-lcd/peek-build/src/nmealib/src/gmath.c"
+#line 1 "/home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/gmath.c"
 
 
 
@@ -364,7 +364,7 @@ int     nmea_move_horz_ellipsoid(
 
 
 
-#line 14 "/home/cmw/dev/clean/non-lcd/peek-build/src/nmealib/src/gmath.c"
+#line 14 "/home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/gmath.c"
 
 #line 1 "/opt/TI/TMS470CGT4.6.1/include/math.h"
  
@@ -469,7 +469,7 @@ int     nmea_move_horz_ellipsoid(
 #line 120 "/opt/TI/TMS470CGT4.6.1/include/math.h"
 
 
-#line 16 "/home/cmw/dev/clean/non-lcd/peek-build/src/nmealib/src/gmath.c"
+#line 16 "/home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/gmath.c"
 
 
 
@@ -574,8 +574,8 @@ double nmea_distance_ellipsoid(
     double sqr_u, A, B, delta_sigma;
 
      
-     _assert((from_pos != 0) != 0, "Assertion failed, (" "from_pos != 0" "), file " "/home/cmw/dev/clean/non-lcd/peek-build/src/nmealib/src/gmath.c" ", line " "120" "\n");
-     _assert((to_pos != 0) != 0, "Assertion failed, (" "to_pos != 0" "), file " "/home/cmw/dev/clean/non-lcd/peek-build/src/nmealib/src/gmath.c" ", line " "121" "\n");
+     _assert((from_pos != 0) != 0, "Assertion failed, (" "from_pos != 0" "), file " "/home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/gmath.c" ", line " "120" "\n");
+     _assert((to_pos != 0) != 0, "Assertion failed, (" "to_pos != 0" "), file " "/home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/gmath.c" ", line " "121" "\n");
 
     if ((from_pos->lat == to_pos->lat) && (from_pos->lon == to_pos->lon))
     {  
@@ -724,8 +724,8 @@ int nmea_move_horz_ellipsoid(
     double tmp1, phi2, lambda, C, L;
     
      
-     _assert((start_pos != 0) != 0, "Assertion failed, (" "start_pos != 0" "), file " "/home/cmw/dev/clean/non-lcd/peek-build/src/nmealib/src/gmath.c" ", line " "270" "\n");
-     _assert((end_pos != 0) != 0, "Assertion failed, (" "end_pos != 0" "), file " "/home/cmw/dev/clean/non-lcd/peek-build/src/nmealib/src/gmath.c" ", line " "271" "\n");
+     _assert((start_pos != 0) != 0, "Assertion failed, (" "start_pos != 0" "), file " "/home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/gmath.c" ", line " "270" "\n");
+     _assert((end_pos != 0) != 0, "Assertion failed, (" "end_pos != 0" "), file " "/home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/gmath.c" ", line " "271" "\n");
     
     if (fabs(distance) < 1e-12)
     {  

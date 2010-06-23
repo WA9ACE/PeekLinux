@@ -1081,3 +1081,4 @@ int widget_typeNoChildRender(DataObjectField *field)
 		return 1;
 	return 0;
 }
+
