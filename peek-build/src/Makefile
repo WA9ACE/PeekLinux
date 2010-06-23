@@ -12,7 +12,8 @@ SUBDIR_DEPEND = $(SRCDIR)/freetype2/freetype2.a \
 								$(SRCDIR)/zlib/libz.a \
                 $(SRCDIR)/bam/bam.a \
                 $(SRCDIR)/baf/baf.a \
-								$(SRCDIR)/lua/lua.a \
+		$(SRCDIR)/lua/lua.a \
+		$(SRCDIR)/nmealib/nmealib.a \
                 $(SRCDIR)/emobiix/emobiix.a \
                 $(SRCDIR)/emobiix/protocol/protocol.a \
                 $(SRCDIR)/bui/bui.a
@@ -27,7 +28,7 @@ ACI = $(SRCDIR)/aci/aci.a
 
 TARGET = $(SRCDIR)/vin.a
 
-SUBDIR = zlib libpng freetype2 lua bam baf emobiix bui
+SUBDIR = zlib libpng freetype2 lua nmealib bam baf emobiix bui
 
 .PHONY: $(VIN_DEPEND) $(SUBDIR)
 
@@ -54,6 +55,7 @@ clean:
 	$(RM) *.o
 	$(MAKE) -C aci clean
 	$(MAKE) -C lua clean
+	$(MAKE) -C nmealib clean
 	$(MAKE) -C freetype2 clean
 	$(MAKE) -C libpng clean
 	$(MAKE) -C zlib clean

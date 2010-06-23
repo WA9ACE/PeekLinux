@@ -1,0 +1,139 @@
+.TH "info.h" 3 "18 Jun 2010" "Version 0.5.3" "NMEA" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+info.h \- 
+.SH SYNOPSIS
+.br
+.PP
+\fC#include 'time.h'\fP
+.br
+
+.SS "Data Structures"
+
+.in +1c
+.ti -1c
+.RI "struct \fB_nmeaPOS\fP"
+.br
+.ti -1c
+.RI "struct \fB_nmeaSATELLITE\fP"
+.br
+.ti -1c
+.RI "struct \fB_nmeaSATINFO\fP"
+.br
+.ti -1c
+.RI "struct \fB_nmeaINFO\fP"
+.br
+.in -1c
+.SS "Defines"
+
+.in +1c
+.ti -1c
+.RI "#define \fBNMEA_SIG_BAD\fP   (0)"
+.br
+.ti -1c
+.RI "#define \fBNMEA_SIG_LOW\fP   (1)"
+.br
+.ti -1c
+.RI "#define \fBNMEA_SIG_MID\fP   (2)"
+.br
+.ti -1c
+.RI "#define \fBNMEA_SIG_HIGH\fP   (3)"
+.br
+.ti -1c
+.RI "#define \fBNMEA_FIX_BAD\fP   (1)"
+.br
+.ti -1c
+.RI "#define \fBNMEA_FIX_2D\fP   (2)"
+.br
+.ti -1c
+.RI "#define \fBNMEA_FIX_3D\fP   (3)"
+.br
+.ti -1c
+.RI "#define \fBNMEA_MAXSAT\fP   (12)"
+.br
+.ti -1c
+.RI "#define \fBNMEA_SATINPACK\fP   (4)"
+.br
+.ti -1c
+.RI "#define \fBNMEA_NSATPACKS\fP   (NMEA_MAXSAT / NMEA_SATINPACK)"
+.br
+.ti -1c
+.RI "#define \fBNMEA_DEF_LAT\fP   (5001.2621)"
+.br
+.ti -1c
+.RI "#define \fBNMEA_DEF_LON\fP   (3613.0595)"
+.br
+.in -1c
+.SS "Typedefs"
+
+.in +1c
+.ti -1c
+.RI "typedef \fB_nmeaPOS\fP \fBnmeaPOS\fP"
+.br
+.ti -1c
+.RI "typedef \fB_nmeaSATELLITE\fP \fBnmeaSATELLITE\fP"
+.br
+.ti -1c
+.RI "typedef \fB_nmeaSATINFO\fP \fBnmeaSATINFO\fP"
+.br
+.ti -1c
+.RI "typedef \fB_nmeaINFO\fP \fBnmeaINFO\fP"
+.br
+.in -1c
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBnmea_zero_INFO\fP (\fBnmeaINFO\fP *info)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+
+.PP
+Definition in file \fBinfo.h\fP.
+.SH "Typedef Documentation"
+.PP 
+.SS "typedef struct \fB_nmeaINFO\fP  \fBnmeaINFO\fP"
+.PP
+Summary GPS information from all parsed packets, used also for generating NMEA stream 
+.PP
+\fBSee also:\fP
+.RS 4
+\fBnmea_parse\fP 
+.PP
+\fBnmea_GPGGA2info\fP, nmea_...2info 
+.RE
+.PP
+
+.SS "typedef struct \fB_nmeaPOS\fP  \fBnmeaPOS\fP"
+.PP
+Position data in fractional degrees or radians 
+.SS "typedef struct \fB_nmeaSATELLITE\fP  \fBnmeaSATELLITE\fP"
+.PP
+Information about satellite 
+.PP
+\fBSee also:\fP
+.RS 4
+\fBnmeaSATINFO\fP 
+.PP
+\fBnmeaGPGSV\fP 
+.RE
+.PP
+
+.SS "typedef struct \fB_nmeaSATINFO\fP  \fBnmeaSATINFO\fP"
+.PP
+Information about all satellites in view 
+.PP
+\fBSee also:\fP
+.RS 4
+\fBnmeaINFO\fP 
+.PP
+\fBnmeaGPGSV\fP 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for NMEA from the source code.
