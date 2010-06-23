@@ -92,7 +92,7 @@ DataObject *BootApplication(void)
     widget_setAlignment(dobj2, WA_CENTER);
 
 #ifdef SIMULATOR
-	durl = url_parse("system://localhost/gps", URL_ALL);
+	durl = url_parse("system://local/gps", URL_ALL);
 	dobj1 = dataobject_construct(durl, 1);
 	dataobject_setValue(dobj1, "long", dataobjectfield_string("40.702147"));
 	dataobject_setValue(dobj1, "lat", dataobjectfield_string("-74.015794"));
@@ -100,7 +100,7 @@ DataObject *BootApplication(void)
 
 	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
-			"gps = DataObject.locate(\"system://localhost/gps\");\n"
+			"gps = DataObject.locate(\"system://local/gps\");\n"
 			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/whereami?\" .. gps:getValue(\"long\") .. \",\" .. gps:getValue(\"lat\"));\n"
 			"dobj:toScreen();"));
     widget_setAlignment(dobj1, WA_CENTER);
@@ -171,8 +171,6 @@ DataObject *BootApplication(void)
 	dataobject_setValue(sbox, "margin", dataobjectfield_int(2));
 	widget_setCanFocus(sbox, 1);
 	widget_setPacking(sbox, WP_HORIZONTAL);
-
-	/*0xE2 0x98 0x85*/
 
 	label = widget_newTypeIdName("string", "label", NULL, sbox);
 	dataobject_setValue(label, "width", dataobjectfield_string("10%"));
