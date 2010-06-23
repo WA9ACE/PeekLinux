@@ -1,0 +1,9 @@
+<application name="Where am I?" description="emobiix gps locator demo application" icon="app-icon" startupview="location">
+<image id="image" src="star.png" onreturn="" script="" name="app-icon" />
+<view name="location">
+	<box alignment="center" width="100%" height="100%" packing="vertical" id="gradboxr">
+    		<label alignment="center" id="biglabel" name=""> Where Am I? </label>
+		<image alignment="center" id="image" src="map.png" onreturn="" script="" name="location" />
+	</box>
+</view>
+</application>
