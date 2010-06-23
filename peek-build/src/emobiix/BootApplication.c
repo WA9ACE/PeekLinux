@@ -121,7 +121,7 @@ DataObject *BootApplication(void)
 	widget_setDataObject(dobj1, recordobj);
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("90%"));
 	dataobject_setValue(dobj1, "height", dataobjectfield_string("100"));
-	dataobject_setValue(dobj1, "margin", dataobjectfield_int(3));
+	dataobject_setValue(dobj1, "margin", dataobjectfield_int(2));
 	widget_setPacking(dobj1, WP_VERTICAL);
 	widget_setAlignment(dobj1, WA_CENTER);
 
@@ -131,17 +131,22 @@ DataObject *BootApplication(void)
 	widget_setCanFocus(sbox, 1);
 	widget_setPacking(sbox, WP_HORIZONTAL);
 
+	/*0xE2 0x98 0x85*/
+
+	label = widget_newTypeIdName("string", "label", NULL, sbox);
+	dataobject_setValue(label, "width", dataobjectfield_string("10%"));
+	dataobject_setValue(label, "data", dataobjectfield_string("M"));
+	widget_setAlignment(label, WA_CENTER);
+
 	label = widget_newTypeIdName("string", "label", NULL, sbox);
 	dataobject_setValue(label, "datafield", dataobjectfield_string("str2"));
 	dataobject_setValue(label, "arraysource", dataobjectfield_string("true"));
-	dataobject_setValue(label, "width", dataobjectfield_string("45%"));
-	dataobject_setValue(label, "data", dataobjectfield_string("TestLabel"));
+	dataobject_setValue(label, "width", dataobjectfield_string("40%"));
 
 	label = widget_newTypeIdName("string", "label", NULL, sbox);
 	dataobject_setValue(label, "datafield", dataobjectfield_string("str1"));
 	dataobject_setValue(label, "arraysource", dataobjectfield_string("true"));
-	dataobject_setValue(label, "width", dataobjectfield_string("45%"));
-	dataobject_setValue(label, "data", dataobjectfield_string("RyanK"));
+	dataobject_setValue(label, "width", dataobjectfield_string("40%"));
 #endif
 
     return output;

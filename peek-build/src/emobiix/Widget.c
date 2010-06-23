@@ -799,6 +799,8 @@ void widget_resolveMeasureRelative(Widget *w)
 				sumWidth += child->box.width + child->margin.x + child->margin.width;
 				sumNew = child->box.height + child->margin.y + child->margin.height;
 				sumHeight = sumNew > sumHeight ? sumNew : sumHeight;
+				emo_printf("sumHeight now :%d" NL, sumHeight);
+				emo_printf("sumWidth now :%d" NL, sumWidth);
 			} else {
 				sumNew = child->box.width + child->margin.x + child->margin.width;
 				sumWidth = sumNew > sumWidth ? sumNew : sumWidth;
@@ -908,7 +910,7 @@ void widget_resolvePosition(Widget *w)
 			default:
 				if (packing == WP_HORIZONTAL) {
 					cw->box.x = xpos;
-					cw->box.y = ypos+cw->margin.y;
+					cw->box.y = ypos;/*+cw->margin.y;*/
 					if (!positionStatic)
 						xpos += cw->box.width+cw->margin.x+cw->margin.width;
 				} else {
