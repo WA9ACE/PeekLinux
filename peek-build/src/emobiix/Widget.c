@@ -61,7 +61,8 @@ int widget_isArraySource(Widget *w)
 	field = dataobject_getValue(w, "arraysource");
 	if (field == NULL)
 		return 0;
-	if (field->type == DOF_STRING && strcmp(field->field.string, "true") == 0)
+	if (field->type == DOF_STRING &&
+			(field->field.string[0] == '0' || strcmp(field->field.string, "true") == 0))
 		return 1;
 	if (field->type == DOF_INT && field->field.integer)
 		return 1;

@@ -253,7 +253,7 @@ static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		return;
 	str = (const char *)field->field.string;
 
-	lgui_draw_font(box->x+margin->x, box->y+margin->y, str, f, c);
+	lgui_draw_font(box->x+margin->x, box->y+margin->y, box->width, box->height, str, f, c);
 }
 
 static void string_measure(WidgetRenderer *wr, Style *s, Widget *w,
@@ -345,7 +345,7 @@ static void entry_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width-1, box->height-1, 7,
 			line.rgba.red, line.rgba.green, line.rgba.blue);
 
-	lgui_draw_font(box->x+4+margin->x, box->y+margin->y, str, f, c);
+	lgui_draw_font(box->x+4+margin->x, box->y+margin->y, box->width, box->height, str, f, c);
 }
 
 static void entry_measure(WidgetRenderer *wr, Style *s, Widget *w,

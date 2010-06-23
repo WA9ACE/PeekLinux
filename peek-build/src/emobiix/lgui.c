@@ -711,7 +711,7 @@ void lgui_circlefill(int xc, int yc, int r,
     }
 }
 
-void lgui_draw_font(int x, int y, const char *utf8, Font *f, Color c)
+void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f, Color c)
 {
 	const char *p;
 	unsigned int val;
@@ -721,6 +721,8 @@ void lgui_draw_font(int x, int y, const char *utf8, Font *f, Color c)
 	int fontHeight;
 	
 	fontHeight = font_getHeight(f);
+	maxw += x;
+	maxh += y;
 
 	p = utf8;
 	while (*p != 0) {
@@ -739,6 +741,8 @@ void lgui_draw_font(int x, int y, const char *utf8, Font *f, Color c)
 		}
 		x += xadvance;
 		y += yadvance;
+		if (x > maxw || y > maxh)
+			break;
 		p += adv;
 	}
 }
