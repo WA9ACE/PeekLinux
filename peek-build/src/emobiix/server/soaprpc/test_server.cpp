@@ -64,6 +64,8 @@ static int writer(char *data, size_t size, size_t nmemb,
  
 bool curl_get_file(const std::string& filename, const char *szUrl)
 {
+	cerr << "Will fetch: " << szUrl << endl;
+
 	// Our curl objects  
 	CURL *curl;  
 	CURLcode result;  
@@ -109,9 +111,15 @@ int ns__BlockDataObjectRequest(struct soap* soap, std::string deviceId, std::str
 
 	if (dataObjectURI == "map.png")
 	{
-		if (!curl_get_file(dataObjectURI, "http://maps.google.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=14&size=305x185&maptype=roadmap&markers=color:blue|label:S|40.702147,-74.015794&markers=color:green|label:G|40.711614,-74.012318&markers=color:red|color:red|label:C|40.718217,-73.998284&sensor=false"))
-		{
+		char url[4096] = "";
+		const char *tok = strchr(deviceId.c_str(), '|');
+		if (!tok && !curl_get_file(dataObjectURI, "http://maps.google.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=14&size=305x185&maptype=roadmap&markers=color:blue|label:S|40.702147,-74.015794&markers=color:green|label:G|40.711614,-74.012318&markers=color:red|color:red|label:C|40.718217,-73.998284&sensor=false"))
 			return 404;
+		else if (tok)
+		{
+			sprintf(url, "http://maps.google.com/maps/api/staticmap?center=%s&zoom=14&size=305x185&maptype=roadmap&sensor=false", tok + 1);
+			if (!curl_get_file(dataObjectURI, url))
+				return 404;
 		}
 	}
 

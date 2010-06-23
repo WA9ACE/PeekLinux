@@ -290,10 +290,19 @@ void connection::handle_dataObjectSyncStart(FRIPacketP* packet, reply& rep)
 	DataObjectSyncStartP &s = packet->packetTypeP.choice.dataObjectSyncStartP;
 	DEBUGLOG("Client Sync started for " << s.urlP.buf << ", revision: " << s.dataObjectStampMinorP << "." << s.dataObjectStampMajorP << ", seqId: " << s.syncSequenceIDP);
 
+	// TODO Remove hack
+	if (char *quest = strrchr((const char *)s.urlP.buf, '?'))
+	{
+		connection_token_ += "|";
+		connection_token_ += quest + 1;
+		*quest = 0;
+	}
+
 	if (char *slash = strrchr((const char *)s.urlP.buf, '/'))
 		url_request_ = slash + 1;
 	else
 		url_request_ = "sample";
+
 
 	// clean up the packet!
 	free(s.urlP.buf);
