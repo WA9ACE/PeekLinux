@@ -11,13 +11,10 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/enable_shared_from_this.hpp>
 
-#include <xercesc/dom/DOM.hpp>
-
 #include "reply.h"
 #include "request.h"
 #include "request_parser.h"
-
-XERCES_CPP_NAMESPACE_USE
+#include "xml_parser.h"
 
 struct FRIPacketP;
 
@@ -69,8 +66,12 @@ private:
   void handle_dataObjectSync(FRIPacketP*, reply& rep);
   void handle_dataObjectSyncFinish(FRIPacketP*, reply& rep);
 	void start_serverSync(reply& rep);
+	void start_arraySync(reply& rep);
+
 	bool parse(const char *doc, std::vector<FRIPacketP *>& packets);
 	bool parseTree(DOMNode *node, std::vector<FRIPacketP *>& packets, int& nodeCount);
+	bool parseArray(const char *doc, std::vector<FRIPacketP *>& packets);
+	bool parseTreeArray(DOMNode *node, std::vector<FRIPacketP *>& packets, int& nodeCount);
 
 	std::string url_request_;
 

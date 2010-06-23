@@ -4,16 +4,27 @@
 #include <string>
 
 #include <xercesc/dom/DOM.hpp>
+#include <xercesc/parsers/XercesDOMParser.hpp>
+
 XERCES_CPP_NAMESPACE_USE
 
 namespace emobiix
 {
 
-class XML
+class xml_parser
 {
+public:
+	xml_parser(const char* doc);
+	virtual ~xml_parser();
+
+	DOMDocument *getDocument();
+
 public:
 	static std::string XMLToString(const XMLCh *xszValue);
 	static std::string GetAttribute(DOMNode* pElem, const char* szAttr);
+
+protected:
+	XercesDOMParser *m_parser;
 };
 
 }

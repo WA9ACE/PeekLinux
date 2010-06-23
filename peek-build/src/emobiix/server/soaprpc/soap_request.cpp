@@ -62,9 +62,17 @@ int GetBlockDataObject(const std::string& URL, const std::string& deviceId, cons
 	return ret == SOAP_OK;
 }
 
-int GetRecordDataObject(const std::string& uri, int id, std::vector<char *>& recordData)
+int GetRecordDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, std::string& recordData)
 {
-	return 1;
+	struct soap *s = soap_new();
+
+	ns__Timestamp ts(1, 5);
+	int ret = soap_call_ns__TreeDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, recordData);
+
+ 	soap_end(s);
+	soap_free(s); 
+
+	return ret == SOAP_OK;
 }
 
 int GetTextDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, std::string& textData)

@@ -7,7 +7,7 @@
 #include <xercesc/dom/DOM.hpp>
 XERCES_CPP_NAMESPACE_USE
 
-struct FRIPacketP;
+#include "FRIPacketP.h"
 
 namespace emobiix
 {
@@ -15,24 +15,21 @@ namespace emobiix
 class dataobject_factory
 {
 public:
-	static FRIPacketP *create(const std::string& app_path, const std::string& deviceId, DOMNode *node);
-	static void addChild(FRIPacketP* packet);
-	static void goToTree(FRIPacketP* packet, int index);
+	static FRIPacketP* dataObjectSyncP();
+	static FRIPacketP* blockSyncListP();
+	static FRIPacketP* recordSyncListP();
+	static FRIPacketP* dataObjectSyncFinishP(RequestResponseP requestResponse);
 
-private:
-	static FRIPacketP* createDataObject(const char *szType, DOMNode *node);
-	static FRIPacketP* createApplication(DOMNode *node);
-	static FRIPacketP* createView(DOMNode *node);
-	static FRIPacketP* createBox(DOMNode *node);
-	static FRIPacketP* createButton(DOMNode *node);
-	static FRIPacketP* createLabel(DOMNode *node);
-	static FRIPacketP* createEntry(DOMNode *node);
-	static FRIPacketP* createImage(DOMNode *node, const std::string& app_path, const std::string& deviceId);
-	static void setCommonAttributes(FRIPacketP *packet, DOMNode *node);
+	static SyncOperandP_t* syncOperandP(const char *fieldName = "");
+	static SyncOperandP_t* syncOperandP_nodeAddP();
+	static SyncOperandP_t* syncOperandP_nodeGotoTreeP(int index);
+
+	static void syncOperandP_nodeGotoTreeP(FRIPacketP* packet, int index);
+	static RecordSyncListP_t* recordSyncP(int stampMinor, int stampMajor);
+
 	static void addStringAttribute(FRIPacketP *packet, const char *attribute, const char *value);
 	static void addDataAttribute(FRIPacketP *packet, const char *attribute, std::vector<std::pair<size_t, unsigned char *> >& data);
 };
-
 
 }
 

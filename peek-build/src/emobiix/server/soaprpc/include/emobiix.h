@@ -21,18 +21,6 @@ public:
 	const xsd__string& getMime();
 };
 
-class recordArray
-{
-public:
-	xsd__string* __ptr;
-	int __size;
-
-	recordArray();
-	recordArray(struct soap* soap, int n);
-	int getSize() const;
-	xsd__string& operator[](int i);
-};
-
 class ns__Timestamp
 {
 public:
@@ -41,6 +29,7 @@ public:
 	int stampMinor;
 };
 
+//gsoap ns service method-documentation: AuthenticationRequest Returns whether the given deviceId, userName, password combination is authenticated
 int ns__AuthenticationRequest(
 	xsd__string deviceId,
 	xsd__string userName, 
@@ -48,6 +37,7 @@ int ns__AuthenticationRequest(
 	bool &isAuthenticated
 );
 
+//gsoap ns service method-documentation: BlockDataObjectRequest Returns the raw encoded data for a given deviceId, dataObjectURI, and timeStamp combination
 int ns__BlockDataObjectRequest(
 	xsd__string deviceId,
 	xsd__string dataObjectURI, 
@@ -55,6 +45,7 @@ int ns__BlockDataObjectRequest(
 	xsd__base64Binary &binaryData
 );
 
+//gsoap ns service method-documentation: TreeDataObjectRequest Returns the data tree for a given deviceId, dataObjectURI, and timeStamp combination
 int ns__TreeDataObjectRequest(
 	xsd__string deviceId, 
 	xsd__string dataObjectURI, 
@@ -62,13 +53,15 @@ int ns__TreeDataObjectRequest(
 	XML& m__treeData
 );
 
+//gsoap ns service method-documentation: RecordDataObjectRequest Returns the record array for a given deviceId, dataObjectURI, and timeStamp combination
 int ns__RecordDataObjectRequest(
 	xsd__string deviceId, 
 	xsd__string dataObjectURI, 
 	ns__Timestamp timestamp, 
-	recordArray &recordData
+	XML& m__recordData
 );
 
+//gsoap ns service method-documentation: TextDataObjectRequest Returns the pure textual data for a given deviceId, dataObjectURI, and timeStamp combination
 int ns__TextDataObjectRequest(
 	xsd__string deviceId, 
 	xsd__string dataObjectURI, 
@@ -76,6 +69,7 @@ int ns__TextDataObjectRequest(
 	xsd__string& textData
 );
 
+//gsoap ns service method-documentation: DataObjectPushRequest Returns whether the deviceId, dataObjectURI push request has been delivered
 int ns__DataObjectPushRequest(
 	xsd__string deviceId, 
 	xsd__string dataObjectURI, 

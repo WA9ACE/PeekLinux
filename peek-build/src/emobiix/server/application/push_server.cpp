@@ -88,8 +88,8 @@ int ns__DataObjectPushRequest(struct soap*, std::string deviceId, std::string da
 	return SOAP_OK;
 }
 
-int ns__AuthenticationRequest(struct soap*, std::string deviceId, std::string userName, std::string password, bool &isAuthenticated) { return 403; }
-int ns__BlockDataObjectRequest(struct soap*, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, xsd__base64Binary &binaryData) { return 403; }
-int ns__TreeDataObjectRequest(struct soap*, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, std::string &m__treeData) { return 403; }
-int ns__RecordDataObjectRequest(struct soap*, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, recordArray &recordData) { return 403; }
-int ns__TextDataObjectRequest(struct soap*, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::string &textData) { return 403; }
+int ns__AuthenticationRequest(struct soap*, std::string deviceId, std::string userName, std::string password, bool& isAuthenticated) { return 403; }
+int ns__BlockDataObjectRequest(struct soap*, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, xsd__base64Binary& binaryData) { return 403; }
+int ns__TreeDataObjectRequest(struct soap*, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, std::string& m__treeData) { return 403; }
+int ns__RecordDataObjectRequest(struct soap*, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::string& m__recordData) { return 403; }
+int ns__TextDataObjectRequest(struct soap*, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::string& textData) { return 403; }

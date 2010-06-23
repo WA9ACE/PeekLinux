@@ -16,6 +16,8 @@
 
 #include "connection.h"
 #include "logger.h"
+#include "tree_parser.h"
+#include "record_parser.h"
 #include "soap_request.h"
 #include "shared_appdata.h"
 #include "dataobject_factory.h"
@@ -308,24 +310,38 @@ void connection::handle_dataObjectSyncFinish(FRIPacketP* packet, reply& rep)
 	DataObjectSyncFinishP &s = packet->packetTypeP.choice.dataObjectSyncFinishP;
 	DEBUGLOG("Client Sync finished, seqId: " << s.syncSequenceIDP << ", response: " << s.responseP);
 
-	start_serverSync(rep);
+	if (url_request_ == "idontcare")
+		start_arraySync(rep);
+	else
+		start_serverSync(rep);
+}
+
+void connection::start_arraySync(reply& rep)
+{
+	DEBUGLOG("Starting array sync");
+
+	rep.packets.push_back(dataobject_factory::recordSyncListP());
+
+	string recordData;
+	if (!soap_request::GetRecordDataObject(app_path_, connection_token_, url_request_, recordData))
+	{
+		ERRORLOG("NO record data...");
+		return;
+	}
+
+	TRACELOG("Record data received: " << recordData);
+
+	tree_parser parser(recordData.c_str(), app_path_, connection_token_);
+	parser.parse(rep.packets);
+
+	DEBUGLOG("Finishing array sync");
+	rep.packets.push_back(dataobject_factory::dataObjectSyncFinishP(RequestResponseP_responseOKP));
 }
 
 void connection::start_serverSync(reply& rep)
 {
 	DEBUGLOG("Starting server sync");
-
-	FRIPacketP *start = new FRIPacketP;
-	start->packetTypeP.present = packetTypeP_PR_dataObjectSyncP;
-	DataObjectSyncP &s = start->packetTypeP.choice.dataObjectSyncP;
-
-	s.syncListP.present = SyncListP_PR_blockSyncListP;
-	s.syncListP.choice.blockSyncListP.list.array = NULL;
-	s.syncListP.choice.blockSyncListP.list.size = 0;
-	s.syncListP.choice.blockSyncListP.list.count = 0;
-	s.syncSequenceIDP = 1;
-
-	rep.packets.push_back(start);
+	rep.packets.push_back(dataobject_factory::blockSyncListP());
 
 	string treeData;
 	if (!soap_request::GetTreeDataObject(app_path_, connection_token_, url_request_, treeData))
@@ -335,67 +351,12 @@ void connection::start_serverSync(reply& rep)
 	}
 
 	TRACELOG("Tree data received: " << treeData);
-	parse(treeData.c_str(), rep.packets);
+	
+	tree_parser parser(treeData.c_str(), app_path_, connection_token_);
+	parser.parse(rep.packets);
 
 	DEBUGLOG("Finishing server sync");
-	FRIPacketP *finish = new FRIPacketP;
-	finish->packetTypeP.present = packetTypeP_PR_dataObjectSyncFinishP;
-	finish->packetTypeP.choice.dataObjectSyncFinishP.responseP = RequestResponseP_responseExpiredP;
-	finish->packetTypeP.choice.dataObjectSyncFinishP.syncSequenceIDP = 1;
-
-	rep.packets.push_back(finish);
-}
-
-bool connection::parseTree(DOMNode *node, vector<FRIPacketP *>& packets, int& nodeCount)
-{
-	if (!node)
-		return false;
-
-	int self = nodeCount;
-	if (FRIPacketP *dataObject = dataobject_factory::create(app_path_, connection_token_, node))
-	{
-		packets.push_back(dataObject);
-		nodeCount++;
-	}
-
-	node = node->getFirstChild();
-	while (node) 
-	{
-		if (node->getNodeType() == DOMNode::ELEMENT_NODE) 
-		{
-			if (self != nodeCount)
-				dataobject_factory::addChild(packets.back());
-
-			parseTree(node, packets, nodeCount);
-		}
-
-		node = node->getNextSibling();
-		if (node && node->getNodeType() == DOMNode::ELEMENT_NODE) 
-			dataobject_factory::goToTree(packets.back(), self);
-	}
-}
-
-bool connection::parse(const char *doc, vector<FRIPacketP *>& packets)
-{
-	XMLPlatformUtils::Initialize();
-	{
-		XercesDOMParser *parser = new XercesDOMParser;
-		parser->setValidationScheme(XercesDOMParser::Val_Always);
-		parser->setDoNamespaces(false);
-		parser->setDoSchema(false);
-		parser->setLoadExternalDTD(false); // perhaps later?
-
-		MemBufInputSource buffer((const XMLByte *)doc, strlen(doc), "MemoryBuffer");
-		parser->parse(buffer);
-
-		DOMDocument *document = parser->getDocument();
-
-		int nodeCount = 0;
-		parseTree(document->getFirstChild(), packets, nodeCount);
-
-		delete parser;
-	}
-	XMLPlatformUtils::Terminate();
+	rep.packets.push_back(dataobject_factory::dataObjectSyncFinishP(RequestResponseP_responseOKP));
 }
 
 void connection::push(const std::string &data)

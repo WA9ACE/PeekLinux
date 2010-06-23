@@ -132,14 +132,12 @@ int ns__BlockDataObjectRequest(struct soap* soap, std::string deviceId, std::str
 	return SOAP_OK;
 }
 
-int ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, recordArray &recordData)
+int ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::string& recordData)
 {
-	recordData = recordArray(soap, 3);
-
-	recordData[0] = "Record #1";
-	recordData[1] = "Record #2";
-	recordData[2] = "Record #3";
-	
+	recordData = "<array>" \
+								"<element id=\"0\" sender=\"santa@npole.com\" subject=\"hello world\" body=\"this is the body\">" \
+								"<element id=\"1\" sender=\"mrsclaus@npole.com\" subject=\"elves\" body=\"need to pay\">" \
+								"</array>";
 	return SOAP_OK;
 }
 
