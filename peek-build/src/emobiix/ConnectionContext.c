@@ -689,7 +689,7 @@ static void connectionContext_processSyncOperand(ConnectionContext *ctx,
 	DataObject *cobj;
 
 	fieldName = (char *)syncOp->fieldNameP.buf;
-	/*emo_printf("Field is '%s'" NL, fieldName);*/
+	emo_printf("Field is '%s'" NL, fieldName);
 	if (syncOp->syncP.present == syncP_PR_syncSetP) {
 		dof = dataobjectfield_string((const char *)syncOp->syncP.choice.syncSetP.buf);
 		dataobject_setValue(sobj, fieldName, dof);

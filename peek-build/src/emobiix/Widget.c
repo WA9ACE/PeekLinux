@@ -62,7 +62,7 @@ int widget_isArraySource(Widget *w)
 	if (field == NULL)
 		return 0;
 	if (field->type == DOF_STRING &&
-			(field->field.string[0] == '0' || strcmp(field->field.string, "true") == 0))
+			(field->field.string[0] == '1' || strcmp(field->field.string, "true") == 0))
 		return 1;
 	if (field->type == DOF_INT && field->field.integer)
 		return 1;

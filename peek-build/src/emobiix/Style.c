@@ -92,6 +92,7 @@ void *style_getProperty(Style *s, const char *className, const char *id,
 		const char *type, const char *lvalue)
 {
 	char key[KEY_LEN];
+	/*emo_printf("getStyle(%s, %s, %s, %s)" NL, className, id, type, lvalue);*/
 	makekey(key, className, id, type, lvalue);
 	return map_find(s->prop, key);
 }

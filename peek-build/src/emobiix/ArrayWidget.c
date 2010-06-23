@@ -88,6 +88,7 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 			!listIterator_finished(iter); listIterator_next(iter)) {
 		emo_printf("Drawing Array index %d" NL, idx);
 		if (idx < startidx) {
+			emo_printf("Skipping %d - %d" NL, idx, startidx);
 			++idx;
 			continue;
 		}
@@ -98,6 +99,7 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 			widget_setFocus(wchild, 0);
 		widget_setDataObjectArray(shim, rec);
 		widget_resolveLayoutRoot(shim, s, 0);
+		/*dataobject_debugPrint(shim);*/
 		widget_markDirty(shim);
 		style_renderWidgetTree(s, shim);
 

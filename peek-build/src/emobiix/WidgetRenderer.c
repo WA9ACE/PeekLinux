@@ -252,6 +252,7 @@ static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	if (field == NULL)
 		return;
 	str = (const char *)field->field.string;
+	emo_printf("Rendering %s" NL, str);
 
 	lgui_draw_font(box->x+margin->x, box->y+margin->y, box->width, box->height, str, f, c);
 }
@@ -275,6 +276,12 @@ static void string_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	else
 		field = dataobject_getValue(dobj, "data");
 	
+	if (field != NULL)
+		emo_printf("Measuring '%s'" NL, field->field.string);
+	else {
+		emo_printf("Measuring NULL" NL);
+		/*dataobject_debugPrint(dobj);*/
+	}
 	if (field == NULL) {
 		p->x = 0;
 		p->y = 0;
