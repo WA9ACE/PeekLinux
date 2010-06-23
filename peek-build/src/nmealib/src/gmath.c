@@ -15,6 +15,12 @@
 #include <math.h>
 #include <float.h>
 
+
+int isnan(double var)
+{
+    volatile double temp = var;
+    return temp != temp;
+}
 /**
  * \fn nmea_degree2radian
  * \brief Convert degree to radian

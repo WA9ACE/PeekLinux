@@ -17,6 +17,7 @@ INCLUDE += $(SRCDIR)/bui
 INCLUDE += $(SRCDIR)/bui/uiex
 INCLUDE += $(SRCDIR)/bam
 INCLUDE += $(SRCDIR)/emobiix
+INCLUDE += $(SRCDIR)/nmealib/include
 
 SRC  = amdb.cpp
 SRC += amdb_task.cpp

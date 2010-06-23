@@ -27,7 +27,7 @@ This task receive signal and Msg and handle it.
 #include "bal_os.h"
 #include "bal_def.h"
 #include "amdb.h"
-
+#include "nmea/nmea.h"
 
 
 /*******************************************************************************
@@ -101,6 +101,60 @@ CALL BY:
 IMPORTANT NOTES:
 this the entry AMDB task, 
 =====================================================================================*/
+
+typedef enum {
+    TR_BAUD_406250,
+    TR_BAUD_115200,
+    TR_BAUD_57600,
+    TR_BAUD_38400,
+    TR_BAUD_33900,
+    TR_BAUD_28800,
+    TR_BAUD_19200,
+    TR_BAUD_14400,
+    TR_BAUD_9600,
+    TR_BAUD_4800,
+    TR_BAUD_2400,
+    TR_BAUD_1200,
+    TR_BAUD_600,
+    TR_BAUD_300,
+    TR_BAUD_150,
+    TR_BAUD_75
+} T_tr_Baudrate;
+
+extern "C" {
+void UA_Init (uint32 uart_id,
+              T_tr_Baudrate baudrate,
+              void (callback_function (void)));
+
+void UA_WriteString (uint32 uart_id,
+                     char *buffer);
+
+uint32 UA_ReadNChars (uint32 uart_id,
+                           char *buffer,
+                           uint32 chars_to_read);
+
+static void serial_read_cb(void) {
+
+    int it;
+    nmeaINFO info;
+    nmeaPARSER parser;
+    nmeaPOS dpos;
+    char buf[1024];
+
+    nmea_zero_INFO(&info);
+    nmea_parser_init(&parser);
+
+    memset(buf, 0, 1024);
+
+    if(UA_ReadNChars(0, buf, 1024) > 0) {
+    	nmea_parse(&parser, buf, 1024, &info);
+    	nmea_info2pos(&info, &dpos);
+    	//emo_printf("Lat: %f, Lon: %f, Sig: %d, Fix: %d\n", dpos.lat, dpos.lon, info.sig, info.fix);
+    }
+    nmea_parser_destroy(&parser);
+}
+}
+
 extern "C" void AmdbTask(uint32 /*argc*/, void * /*argv*/) 
 {
 	BOSEventWaitT EvtStatus;
@@ -118,6 +172,8 @@ extern "C" void AmdbTask(uint32 /*argc*/, void * /*argv*/)
 	    	//the function below is same as NU_Sleep(100);
     		BOSEventWait( BOS_AMDB_S_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_FALSE, BOSCalMsec(100) );
   	}
+
+	UA_Init(0, TR_BAUD_600, &serial_read_cb); // Switch Baud to 4800 for GPS / Bluetooth
 
   	for (MailBoxId = 0; MailBoxId < AMDB_S_MAX_MAILBOXES; MailBoxId++) 
   	{
