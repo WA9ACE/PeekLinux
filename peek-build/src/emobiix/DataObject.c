@@ -52,7 +52,7 @@ void dataobject_delete(DataObject *dobj)
 			mapIterator_delete(iter);
 			break;
 		}
-		item = mapIterator_item(iter, &key);
+		item = mapIterator_item(iter, (void **)&key);
 		p_free(item);
 		mapIterator_remove(iter);
 		mapIterator_delete(iter);
