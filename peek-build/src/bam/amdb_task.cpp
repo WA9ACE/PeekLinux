@@ -150,8 +150,6 @@ static void gps_set_location(char *lat, char *lon)
                 return;
         GPS_LAT->field.string = lat;
         GPS_LONG->field.string = lon;
-        dataobject_setValue(GPS, "lat", GPS_LAT);
-        dataobject_setValue(GPS, "long", GPS_LONG);
 }
 
 void gps_init()
