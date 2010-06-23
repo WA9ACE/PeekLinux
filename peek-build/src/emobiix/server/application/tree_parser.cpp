@@ -10,10 +10,11 @@ using namespace std;
 namespace emobiix
 {
 
-tree_parser::tree_parser(const char* doc, const std::string& app_path, const std::string& connection_token)
+tree_parser::tree_parser(const char* doc, const std::string& app_path, const std::string& connection_token, int syncId)
 : xml_parser(doc), 
 	m_appPath(app_path),
-	m_connectionToken(connection_token)
+	m_connectionToken(connection_token),
+	m_currentSyncId(syncId)
 {
 }
 
@@ -35,6 +36,8 @@ bool tree_parser::create(DOMNode *node, std::vector<FRIPacketP *>& packets)
     return createEntry(node, packets);
   else if (nodeName == "image")
     return createImage(node, packets);
+  else if (nodeName == "array")
+    return createArray(node, packets);
 
   return false;
 }
@@ -82,7 +85,7 @@ bool tree_parser::parse(std::vector<FRIPacketP *>& packets)
 
 bool tree_parser::createApplication(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
-	FRIPacketP *application = dataobject_factory::blockSyncListP();
+	FRIPacketP *application = dataobject_factory::blockSyncListP(m_currentSyncId);
 	setCommonAttributes(application, node);
 	dataobject_factory::addStringAttribute(application, "description", xml_parser::GetAttribute(node, "description").c_str());
 	dataobject_factory::addStringAttribute(application, "icon", xml_parser::GetAttribute(node, "icon").c_str());
@@ -94,7 +97,7 @@ bool tree_parser::createApplication(DOMNode *node, std::vector<FRIPacketP *>& pa
 
 bool tree_parser::createView(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
-	FRIPacketP *view = dataobject_factory::blockSyncListP();
+	FRIPacketP *view = dataobject_factory::blockSyncListP(m_currentSyncId);
 	setCommonAttributes(view, node);
 
 	packets.push_back(view);
@@ -103,7 +106,7 @@ bool tree_parser::createView(DOMNode *node, std::vector<FRIPacketP *>& packets)
 
 bool tree_parser::createBox(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
-	FRIPacketP *box = dataobject_factory::blockSyncListP();
+	FRIPacketP *box = dataobject_factory::blockSyncListP(m_currentSyncId);
 	setCommonAttributes(box, node);
 	dataobject_factory::addStringAttribute(box, "packing", xml_parser::GetAttribute(node, "packing").c_str());
 	dataobject_factory::addStringAttribute(box, "width", xml_parser::GetAttribute(node, "width").c_str());
@@ -114,9 +117,23 @@ bool tree_parser::createBox(DOMNode *node, std::vector<FRIPacketP *>& packets)
 	return true;
 }
 
+bool tree_parser::createArray(DOMNode *node, std::vector<FRIPacketP *>& packets)
+{
+	FRIPacketP *array = dataobject_factory::blockSyncListP(m_currentSyncId);
+	setCommonAttributes(array, node);
+	dataobject_factory::addStringAttribute(array, "packing", xml_parser::GetAttribute(node, "packing").c_str());
+	dataobject_factory::addStringAttribute(array, "width", xml_parser::GetAttribute(node, "width").c_str());
+	dataobject_factory::addStringAttribute(array, "height", xml_parser::GetAttribute(node, "height").c_str());
+	dataobject_factory::addStringAttribute(array, "canfocus", xml_parser::GetAttribute(node, "canfocus").c_str());
+	dataobject_factory::addStringAttribute(array, "reference", xml_parser::GetAttribute(node, "reference").c_str());
+
+	packets.push_back(array);
+	return true;
+}
+
 bool tree_parser::createButton(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
-	FRIPacketP *button = dataobject_factory::blockSyncListP();
+	FRIPacketP *button = dataobject_factory::blockSyncListP(m_currentSyncId);
 	setCommonAttributes(button, node);
 	dataobject_factory::addStringAttribute(button, "packing", xml_parser::GetAttribute(node, "packing").c_str());
 	dataobject_factory::addStringAttribute(button, "width", xml_parser::GetAttribute(node, "width").c_str());
@@ -134,9 +151,20 @@ bool tree_parser::createButton(DOMNode *node, std::vector<FRIPacketP *>& packets
 
 bool tree_parser::createLabel(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
-	FRIPacketP *label = dataobject_factory::blockSyncListP();
+	FRIPacketP *label = dataobject_factory::blockSyncListP(m_currentSyncId);
 	setCommonAttributes(label, node);
-	dataobject_factory::addStringAttribute(label, "data", xml_parser::XMLToString(node->getFirstChild()->getNodeValue()).c_str());
+
+	if (node->getFirstChild())
+		dataobject_factory::addStringAttribute(label, "data", xml_parser::XMLToString(node->getFirstChild()->getNodeValue()).c_str());
+	else
+		dataobject_factory::addStringAttribute(label, "data", "");
+
+	std::string prop;
+	prop = xml_parser::GetAttribute(node, "datafield");
+	if (prop != "") dataobject_factory::addStringAttribute(label, "datafield", prop.c_str());
+
+	prop = xml_parser::GetAttribute(node, "arraysource");
+	if (prop != "") dataobject_factory::addStringAttribute(label, "arraysource", prop.c_str());
 
 	packets.push_back(label);
 	return true;
@@ -144,7 +172,7 @@ bool tree_parser::createLabel(DOMNode *node, std::vector<FRIPacketP *>& packets)
 
 bool tree_parser::createEntry(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
-	FRIPacketP *entry = dataobject_factory::blockSyncListP();
+	FRIPacketP *entry = dataobject_factory::blockSyncListP(m_currentSyncId);
 	setCommonAttributes(entry, node);
 	dataobject_factory::addStringAttribute(entry, "data", xml_parser::XMLToString(node->getFirstChild()->getNodeValue()).c_str());
 
@@ -162,7 +190,7 @@ bool tree_parser::createImage(DOMNode *node, std::vector<FRIPacketP *>& packets)
 	size_t offset = 0;
 	for (size_t i = 0; i < blocks.size(); ++i)
 	{
-		image = dataobject_factory::blockSyncListP();
+		image = dataobject_factory::blockSyncListP(m_currentSyncId);
 		setCommonAttributes(image, node);
 		dataobject_factory::addStringAttribute(image, "mime-type", mime.c_str());
 		dataobject_factory::addDataAttribute(image, "src", blocks[i].second, blocks[i].first, offset);
@@ -197,6 +225,21 @@ void tree_parser::setCommonAttributes(FRIPacketP *packet, DOMNode *node)
 
 	if ((prop = xml_parser::GetAttribute(node, "alignment")) != "")
 	  dataobject_factory::addStringAttribute(packet, "alignment", prop.c_str());
+
+	if ((prop = xml_parser::GetAttribute(node, "margin")) != "")
+	  dataobject_factory::addStringAttribute(packet, "margin", prop.c_str());
+
+	if ((prop = xml_parser::GetAttribute(node, "margintop")) != "")
+	  dataobject_factory::addStringAttribute(packet, "margintop", prop.c_str());
+
+	if ((prop = xml_parser::GetAttribute(node, "marginleft")) != "")
+	  dataobject_factory::addStringAttribute(packet, "marginleft", prop.c_str());
+
+	if ((prop = xml_parser::GetAttribute(node, "marginbottom")) != "")
+	  dataobject_factory::addStringAttribute(packet, "marginbottom", prop.c_str());
+
+	if ((prop = xml_parser::GetAttribute(node, "marginright")) != "")
+	  dataobject_factory::addStringAttribute(packet, "marginright", prop.c_str());
 }
 
 }

@@ -33,7 +33,8 @@ using namespace boost::asio;
 connection::connection(io_service& io_service, const std::string app_path)
 	: strand_(io_service),
 	socket_(io_service),
-	app_path_(app_path)
+	app_path_(app_path),
+	m_currentSyncId(0)
 {
 }
 
@@ -290,6 +291,8 @@ void connection::handle_dataObjectSyncStart(FRIPacketP* packet, reply& rep)
 	DataObjectSyncStartP &s = packet->packetTypeP.choice.dataObjectSyncStartP;
 	DEBUGLOG("Client Sync started for " << s.urlP.buf << ", revision: " << s.dataObjectStampMinorP << "." << s.dataObjectStampMajorP << ", seqId: " << s.syncSequenceIDP);
 
+	m_currentSyncId = s.syncSequenceIDP;
+
 	// TODO Remove hack
 	if (char *quest = strrchr((const char *)s.urlP.buf, '?'))
 	{
@@ -323,13 +326,15 @@ void connection::handle_dataObjectSyncFinish(FRIPacketP* packet, reply& rep)
 		start_arraySync(rep);
 	else
 		start_serverSync(rep);
+
+	m_currentSyncId = 0;
 }
 
 void connection::start_arraySync(reply& rep)
 {
-	DEBUGLOG("Starting array sync");
+	DEBUGLOG("Starting array sync: " << m_currentSyncId);
 
-	rep.packets.push_back(dataobject_factory::recordSyncListP());
+	rep.packets.push_back(dataobject_factory::recordSyncListP(m_currentSyncId));
 
 	string recordData;
 	if (!soap_request::GetRecordDataObject(app_path_, connection_token_, url_request_, recordData))
@@ -343,14 +348,14 @@ void connection::start_arraySync(reply& rep)
 	record_parser parser(recordData.c_str(), app_path_, connection_token_);
 	parser.parse(rep.packets);
 
-	DEBUGLOG("Finishing array sync");
-	rep.packets.push_back(dataobject_factory::dataObjectSyncFinishP(RequestResponseP_responseOKP));
+	DEBUGLOG("Finishing array sync: " << m_currentSyncId);
+	rep.packets.push_back(dataobject_factory::dataObjectSyncFinishP(RequestResponseP_responseOKP, m_currentSyncId));
 }
 
 void connection::start_serverSync(reply& rep)
 {
-	DEBUGLOG("Starting server sync");
-	rep.packets.push_back(dataobject_factory::blockSyncListP());
+	DEBUGLOG("Starting server sync: " << m_currentSyncId);
+	rep.packets.push_back(dataobject_factory::blockSyncListP(m_currentSyncId));
 
 	string treeData;
 	if (!soap_request::GetTreeDataObject(app_path_, connection_token_, url_request_, treeData))
@@ -361,11 +366,11 @@ void connection::start_serverSync(reply& rep)
 
 	TRACELOG("Tree data received: " << treeData);
 	
-	tree_parser parser(treeData.c_str(), app_path_, connection_token_);
+	tree_parser parser(treeData.c_str(), app_path_, connection_token_, m_currentSyncId);
 	parser.parse(rep.packets);
 
-	DEBUGLOG("Finishing server sync");
-	rep.packets.push_back(dataobject_factory::dataObjectSyncFinishP(RequestResponseP_responseOKP));
+	DEBUGLOG("Finishing server sync: " << m_currentSyncId);
+	rep.packets.push_back(dataobject_factory::dataObjectSyncFinishP(RequestResponseP_responseOKP, m_currentSyncId));
 }
 
 void connection::push(const std::string &data)

@@ -16,9 +16,9 @@ class dataobject_factory
 {
 public:
 	static FRIPacketP* dataObjectSyncP();
-	static FRIPacketP* blockSyncListP();
-	static FRIPacketP* recordSyncListP();
-	static FRIPacketP* dataObjectSyncFinishP(RequestResponseP requestResponse);
+	static FRIPacketP* blockSyncListP(int sequenceId);
+	static FRIPacketP* recordSyncListP(int sequenceId);
+	static FRIPacketP* dataObjectSyncFinishP(RequestResponseP requestResponse, int sequenceId);
 
 	static SyncOperandP_t* syncOperandP(const char *fieldName = "");
 	static SyncOperandP_t* syncOperandP_nodeAddP();

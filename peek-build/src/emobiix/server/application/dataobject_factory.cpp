@@ -72,7 +72,7 @@ FRIPacketP* dataobject_factory::dataObjectSyncP()
 	return packet;
 }
 
-FRIPacketP* dataobject_factory::recordSyncListP()
+FRIPacketP* dataobject_factory::recordSyncListP(int sequenceId)
 {
 	FRIPacketP *packet = dataObjectSyncP();
 
@@ -82,7 +82,7 @@ FRIPacketP* dataobject_factory::recordSyncListP()
 	s.syncListP.choice.recordSyncListP.list.size = 0;
 	s.syncListP.choice.recordSyncListP.list.count = 0;
 	s.syncListP.choice.recordSyncListP.list.free = NULL;
-	s.syncSequenceIDP = 1;
+	s.syncSequenceIDP = sequenceId;
 
 	return packet;
 }
@@ -107,7 +107,7 @@ RecordSyncListP_t* dataobject_factory::recordSyncP(int stampMinor, int stampMajo
 	return record;
 }
 
-FRIPacketP* dataobject_factory::blockSyncListP()
+FRIPacketP* dataobject_factory::blockSyncListP(int sequenceId)
 {
 	FRIPacketP *packet = dataObjectSyncP();
 
@@ -116,17 +116,17 @@ FRIPacketP* dataobject_factory::blockSyncListP()
 	s.syncListP.choice.blockSyncListP.list.array = NULL;
 	s.syncListP.choice.blockSyncListP.list.size = 0;
 	s.syncListP.choice.blockSyncListP.list.count = 0;
-	s.syncSequenceIDP = 1;
+	s.syncSequenceIDP = sequenceId;
 
 	return packet;
 }
 
-FRIPacketP* dataobject_factory::dataObjectSyncFinishP(RequestResponseP requestResponse)
+FRIPacketP* dataobject_factory::dataObjectSyncFinishP(RequestResponseP requestResponse, int sequenceId)
 {
 	FRIPacketP *packet = new FRIPacketP;
 	packet->packetTypeP.present = packetTypeP_PR_dataObjectSyncFinishP;
 	packet->packetTypeP.choice.dataObjectSyncFinishP.responseP = requestResponse;
-	packet->packetTypeP.choice.dataObjectSyncFinishP.syncSequenceIDP = 1;
+	packet->packetTypeP.choice.dataObjectSyncFinishP.syncSequenceIDP = sequenceId;
 
 	return packet;
 }

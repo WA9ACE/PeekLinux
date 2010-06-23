@@ -14,7 +14,7 @@ namespace emobiix
 class tree_parser : public xml_parser
 {
 public:
-	tree_parser(const char* doc, const std::string& app_path, const std::string& connection_token);
+	tree_parser(const char* doc, const std::string& app_path, const std::string& connection_token, int syncId);
 	virtual ~tree_parser() { }
 	bool parse(std::vector<FRIPacketP *>& packets);
 
@@ -29,11 +29,13 @@ private:
 	bool createLabel(DOMNode *node, std::vector<FRIPacketP *>& packets);
 	bool createEntry(DOMNode *node, std::vector<FRIPacketP *>& packets);
 	bool createImage(DOMNode *node, std::vector<FRIPacketP *>& packets);
+	bool createArray(DOMNode *node, std::vector<FRIPacketP *>& packets);
 	
 	void setCommonAttributes(FRIPacketP *packet, DOMNode *node);
 
 	std::string m_appPath;
 	std::string m_connectionToken;
+	int m_currentSyncId;
 };
 
 }

@@ -97,6 +97,8 @@ private:
 
   /// The reply to be sent back to the client.
   reply reply_;
+
+	int m_currentSyncId;
 };
 
 typedef boost::shared_ptr<connection> connection_ptr;
