@@ -700,7 +700,8 @@ static void connectionContext_processSyncOperand(ConnectionContext *ctx,
 			dataobject_setValue(sobj, fieldName, dof);
 		} else {
 			/* we assume they are always doing an append atm */
-			p_realloc(dof->field.data.bytes, dof->field.data.size+syncOp->syncP.choice.syncSetP.size);
+			dof->field.data.bytes = (unsigned char *)p_realloc(dof->field.data.bytes,
+					dof->field.data.size+syncOp->syncP.choice.syncSetP.size);
 			memcpy(dof->field.data.bytes+dof->field.data.size, syncOp->syncP.choice.syncSetP.buf,
 					syncOp->syncP.choice.syncSetP.size);
 			dof->field.data.size += syncOp->syncP.choice.syncSetP.size;

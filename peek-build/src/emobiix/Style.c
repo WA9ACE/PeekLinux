@@ -61,7 +61,8 @@ void style_renderWidgetTree(Style *s, Widget *w)
 	}
 
 	/* we dont render array children - they render themselves */
-	if (strcmp(type->field.string, "array") == 0)
+	if (type != NULL && type->type == DOF_STRING &&
+			strcmp(type->field.string, "array") == 0)
 		return;
 
 	iter = widget_getChildren(w);

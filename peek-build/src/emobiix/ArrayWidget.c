@@ -177,3 +177,18 @@ WidgetRenderer *widgetrenderer_array(void)
 
 	return output;
 }
+
+int arraywidget_focusNext(Widget *w)
+{
+	DataObjectField *focusindex;
+
+	/* focus index */
+	focusindex = dataobject_getValue(w, "focusindex");
+	if (focusindex == NULL)
+		return 0;
+	++focusindex->field.integer;
+
+	emo_printf("Focusing on %d now" NL, focusindex->field.integer);
+
+	return 1;
+}

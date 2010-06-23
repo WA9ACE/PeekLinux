@@ -85,6 +85,11 @@ Style *RootStyle(void)
 	color.value = 0x000000FF;
 	style_setProperty(defaultStyle, NULL, "image", NULL,
 			"color", (void *)color.value);
+	style_setProperty(defaultStyle, NULL, "image", "image",
+			"renderer", (void *)widgetrenderer_image());
+	color.value = 0x000000FF;
+	style_setProperty(defaultStyle, NULL, "image", "image",
+			"color", (void *)color.value);
 	color.value = 0xFFFFFFFF;
 	style_setProperty(defaultStyle, NULL, "gradbox", "box",
 			"renderer", (void *)widgetrenderer_gradbox());

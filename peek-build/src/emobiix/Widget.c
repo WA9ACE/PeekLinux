@@ -6,6 +6,7 @@
 #include "List.h"
 #include "Style.h"
 #include "WidgetRenderer.h"
+#include "ArrayWidget.h"
 #include "lgui.h"
 #include "Debug.h"
 
@@ -275,8 +276,6 @@ int widget_focusFirst(Widget *w, List *l)
 {
 	ListIterator *iter;
 	int result;
-	
-	
 
 	if (widget_canFocus(w)) {
 		widget_setFocus(w, 1);
@@ -307,6 +306,7 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 {
 	ListIterator *iter;
 	int result, thisUnset;
+	DataObjectField *type;
 
 	/*printf("Widget(%p) %d, %d, %d\n", w, parentRedraw, alreadyUnset, alreadySet);*/
 
@@ -344,8 +344,13 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 		}
 	}
 
-	if (widget_typeNoChildRender(dataobject_getValue(w, "type")))
-		return 0;
+	type = dataobject_getValue(w, "type");
+	if (widget_typeNoChildRender(type)) {
+		if (type != NULL && type->type == DOF_STRING
+				&& strcmp(type->field.string, "array") == 0)
+			result = arraywidget_focusNext(w);
+		return result;
+	}
 
 	iter = widget_getChildren(w);
 	while (!listIterator_finished(iter)) {

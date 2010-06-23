@@ -105,8 +105,10 @@ static int load_png(DataObject *dobj)
 	if (data == NULL || data->type != DOF_DATA)
 		return 0;
 
-	if (!png_check_sig(data->field.data.bytes, PNG_BYTES_TO_CHECK))
+	if (!png_check_sig(data->field.data.bytes, PNG_BYTES_TO_CHECK)) {
+		emo_printf("PNG failed signature check" NL);
         return 0;
+	}
  
 	/*
      * Create a read and info structure
