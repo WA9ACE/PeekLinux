@@ -142,16 +142,31 @@ int ns__BlockDataObjectRequest(struct soap* soap, std::string deviceId, std::str
 	return SOAP_OK;
 }
 
-int ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::string& recordData)
+int ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::string& m__recordData)
 {
 	cerr << "Received record request: " << deviceId << " " << dataObjectURI << endl;
 	
-	recordData = "<array>" \
-								"<element id=\"0\" sender=\"santa@npole.com\" subject=\"hello world\" body=\"this is the body\" />" \
-								"<element id=\"1\" sender=\"mrsclaus@npole.com\" subject=\"elves\" body=\"need to pay\" />" \
-								"</array>";
+	char path[2048] = "";
+	sprintf(path, "%s.xml", dataObjectURI.c_str());
 
-	cerr << "Will send back: " << recordData << endl;
+	struct stat st;
+	if (stat(path, &st) != 0)
+	{
+		m__recordData = "<array></array>";
+		return SOAP_OK;
+	}
+
+	ifstream file(path, ios::in);
+	if (!file)
+	{
+		m__recordData = "<array></array>";
+		return SOAP_OK;
+	}
+
+	std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+	m__recordData = str;
+
+	cerr << "Will send back: " << m__recordData << endl;
 
 	return SOAP_OK;
 }

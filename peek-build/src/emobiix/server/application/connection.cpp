@@ -322,7 +322,7 @@ void connection::handle_dataObjectSyncFinish(FRIPacketP* packet, reply& rep)
 	DataObjectSyncFinishP &s = packet->packetTypeP.choice.dataObjectSyncFinishP;
 	DEBUGLOG("Client Sync finished, seqId: " << s.syncSequenceIDP << ", response: " << s.responseP);
 
-	if (url_request_ == "idontcare")
+	if (url_request_ == "inbox")
 		start_arraySync(rep);
 	else
 		start_serverSync(rep);
