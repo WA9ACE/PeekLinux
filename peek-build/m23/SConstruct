@@ -1,0 +1,673 @@
+###############################################################################
+# ---SConstruct---
+# vim: ft=python
+#
+# This is a SConstruct file from the TI build system.
+#
+# SConstruct
+#
+###############################################################################
+import re, os, sys, sbuild, anydbm, copy
+from sbuild import SBuildInternalDir
+import sbuild.variant
+import sbuild.utilities as utilities
+import sbuild.highLevelUtils as highLevelUtils
+
+global Environment
+
+#-------------------------------------------------------------------------------
+# SCons Environment creation
+#-------------------------------------------------------------------------------
+GlobalEnv = Environment()
+GlobalEnv['TopDir'] = utilities.getcwd()
+
+import SCons.SConf
+
+try: dryrun = SCons.SConf.dryrun
+except:
+   dryrun = 0
+   
+GlobalEnv['dryRun'] = dryrun
+
+#-------------------------------------------------------------------------------
+# Make the specified targets being built in the proper order
+#-------------------------------------------------------------------------------
+cmdLineTargets = COMMAND_LINE_TARGETS
+
+#-------------------------------------------------------------------------------
+#SConstruct up to date check
+#-------------------------------------------------------------------------------
+orgSConstruct = os.path.join(os.path.dirname(sbuild.__file__),
+                             'internals', 'SConstruct')
+upToDate, md5s = sbuild.utilities.compareFiles('SConstruct', orgSConstruct)
+if not upToDate:
+   print >> sys.stderr, '''
+#
+#WARNING:
+#-------
+#   Your SConstruct is not up to date.
+#   This may lead SBuild to behave incorrectly.
+#   Please update it using the 'sbuild.py --init ...' command line option.
+#
+'''
+   utilities.beep()
+
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
+Quiet = ARGUMENTS.get('quiet', None)
+GlobalEnv['Quiet'] = Quiet
+
+#-------------------------------------------------------------------------------
+#Trace settings
+#-------------------------------------------------------------------------------
+level = int(ARGUMENTS.get('level', 0))
+if level:
+   if not Quiet: print 'Setting trace level to: ', level
+GlobalEnv['level'] = level
+
+log = sbuild.log
+log.setenv(GlobalEnv)
+log.setLevel(level)
+
+topics = ARGUMENTS.get('topics', None)
+if topics:
+   if not Quiet: print 'Setting trace topics to: ', topics
+log.setTopics(topics)
+GlobalEnv['topics'] = topics.split(',')
+
+if ARGUMENTS.get('timeStamps', None):
+   log.setTimeStamps()
+
+#-------------------------------------------------------------------------------
+# CPU mask settings, if any
+#-------------------------------------------------------------------------------
+CpuMaskSBuild  = int(ARGUMENTS.get('CpuMaskSBuild', '0'), 16)
+if CpuMaskSBuild:
+   CpuMaskSBuild = sbuild.utilities.normalizeCPUmask(mask=CpuMaskSBuild,
+                                                     verbose=True, log=log)
+   sbuild.utilities.setProcessorAffinity(mask=CpuMaskSBuild,
+                                         verbose=True, log=log)
+GlobalEnv['CpuMaskSBuild'] = CpuMaskSBuild
+
+CpuMaskActions = int(ARGUMENTS.get('CpuMaskActions', '0'), 16)
+if CpuMaskActions:
+   CpuMaskActions = sbuild.utilities.normalizeCPUmask(mask=CpuMaskActions,
+                                                      verbose=True, log=log)
+GlobalEnv['CpuMaskActions'] = CpuMaskActions
+
+#-------------------------------------------------------------------------------
+#No scanner to speed-up the build: No dependency check
+#-------------------------------------------------------------------------------
+noIncDepScan = ARGUMENTS.get('noIncDepScan', None)
+
+noCheckEnv = ARGUMENTS.get('noCheckEnv', None)
+
+alternateScanner = ARGUMENTS.get('alternateScanner', None)
+
+linkOnly = ARGUMENTS.get('linkOnly', None)
+GlobalEnv['LinkOnly'] = linkOnly
+
+dumpTargets = ARGUMENTS.get('dumpTargets', None)
+GlobalEnv['DumpTargets'] = dumpTargets
+
+forcedRebuild = ARGUMENTS.get('forcedRebuild', None)
+GlobalEnv['ForcedRebuild'] = forcedRebuild
+if forcedRebuild:
+   GlobalEnv['__missingList'] = []
+   GlobalEnv['__depTree']     = {}
+
+import SCons.exitfuncs
+
+ignoreCharacterCaseErrors = ARGUMENTS.get('ignoreCharacterCaseErrors', None)
+if utilities.isWindowsPlatform() and not ignoreCharacterCaseErrors:
+   checkPathCaseIsOn = True
+   checkPathCase = utilities.CheckPathEntry(log)
+   GlobalEnv['checkPathCase'] = checkPathCase
+   checkPathCase(os.getcwd().replace('\\', '/'))
+   SCons.exitfuncs.register(checkPathCase.dumpInfo)
+else:
+   checkPathCaseIsOn = False
+
+#-------------------------------------------------------------------------------
+#
+#-------------------------------------------------------------------------------
+globalVariant = ARGUMENTS.get('Variant', 'novariant')
+
+GlobalEnv['Variant'] = globalVariant # The variant name
+
+#-------------------------------------------------------------------------------
+#Build thread numbers: Only 1 for clean mode (Slow otherwise)
+#-------------------------------------------------------------------------------
+if GetOption('clean'): SetOption('num_jobs', 1)
+
+#-------------------------------------------------------------------------------
+numJobs = GetOption('num_jobs')
+
+if int(numJobs) <= 1: plural = ''
+else:                 plural = 's'
+print 'Build using', numJobs, 'thread' + plural
+
+#===============================================================================
+#Preliminary checks: Tools version
+#===============================================================================
+EnsurePythonVersion(2,4)
+#EnsureSConsVersion(0,96,92)
+SBuildMinVersion = '2.1.0'
+if cmp(sbuild.__version__, SBuildMinVersion) < 0:
+   print 'SBuild version should be greater than:', SBuildMinVersion
+   print 'You have', sbuild.__version__
+   Exit(-1)
+
+#===============================================================================
+#Importing the local or global toolset
+#   Tries local and global. Local has precedence.
+#   The toolset files are listed for online help.
+#   If the same toolset name is found both locally and globally, the global
+#   toolset can be referenced adding the _global_ suffix.
+#===============================================================================
+# The Toolset list is indexed by toolset file name
+
+# Needed to filter out other files
+envFileMatch = re.compile('[^_].*\.py$').match
+
+# The ToolsetDict dictionary is keyed by toolset name.
+# The value is the module in which it has been found.
+ToolsetDict = {}
+
+# Global environment list
+import sbuild.internals.environments as globalEnvironments
+globalEnvDir = os.path.dirname(globalEnvironments.__file__)
+
+topDirPath         = Dir('#').path.replace('\\', '/')
+sbuildPath         = topDirPath + '/' + SBuildInternalDir
+sbuildEnvironments = sbuildPath + '/environments'
+
+if not os.path.isdir(sbuildEnvironments):
+   os.makedirs(sbuildEnvironments)
+initModFile = sbuildEnvironments + '/' + '__init__.py'
+if not os.path.isfile(initModFile):
+   file(initModFile, 'w').write(file(globalEnvDir+'/'+'__init__.py').read())
+
+# The [TopOfTheSourceTree]/_sbuild path is inserted first position to have
+#    precedence in the Python module search.
+localEnv = ARGUMENTS.get('localEnv', None)
+if localEnv:
+   sysPathOrg = sys.path
+   sys.path = [sbuildPath,]
+
+   # The 'environments' module is searched / imported locally.
+   try: import environments as localEnvironments
+   except ImportError:
+      sys.path = sysPathOrg
+      print >> sys.stderr, \
+         'No local ' + SBuildInternalDir + '/environments toolset files'
+      print >> sys.stderr, \
+         'Terminating.'
+      Exit(-1)
+   else: # The import works: The directory can be listed.
+         # Build the list of locally available modules
+      sys.path = sysPathOrg
+      sys.path.insert(0, sbuildPath)
+      for filename in filter(envFileMatch, os.listdir(sbuildEnvironments)):
+         module = filename.replace('.py', '')
+         ToolsetDict[module] = localEnvironments
+   sys.path = sysPathOrg
+
+# Global toolset list
+for filename in filter(envFileMatch, os.listdir(globalEnvDir)):
+   module = filename.replace('.py', '')
+   # It module name exists locally and globally, suffix with _global_
+   #    to discriminate them.
+   if module in ToolsetDict:
+      ToolsetDict[module + '_global_'] = globalEnvironments
+   else:
+      ToolsetDict[module] = globalEnvironments
+
+#-------------------------------------------------------------------------------
+#Setting up the toolset: Get it from command line
+#-------------------------------------------------------------------------------
+toolset     = ARGUMENTS.get('Toolset', None)
+
+if not toolset:
+   print >> sys.stderr, 'A Toolset must be specified to work with SBuild.'
+   Exit(-1)
+if not Quiet: print 'Configuring the environment to: [', toolset, ']'
+if not toolset in ToolsetDict:
+   print 'I cannot find', toolset + '.'
+   print '   I only know about:'
+   toolsetList = sorted(map(
+      lambda x: os.path.dirname(x[1].__file__.replace('\\', '/')) + ': ' + x[0],
+      [(key, ToolsetDict[key]) for key in ToolsetDict]))
+   for t in toolsetList: print t
+   Exit(-1)
+
+
+#-------------------------------------------------------------------------------
+# To be defined / confirmed in the toolset.conf file
+#-------------------------------------------------------------------------------
+ArmAsmFilePat = r'.*\.s$' # Default value
+
+#-------------------------------------------------------------------------------
+#Those values have to be defined in the toolset (Used by the packaging)
+#-------------------------------------------------------------------------------
+
+# Loads the identified toolset: Key name may have _global_, real name has not
+toolsetOrgName = toolset.replace('_global_', '')
+GlobalEnv['Toolset'] = toolsetOrgName # Used for output directory indexing
+
+toolsetDir = os.path.dirname(ToolsetDict[toolset].__file__).replace('\\', '/')
+
+#-------------------------------------------------------------------------------
+# globalDict points to the current Python namespace
+#-------------------------------------------------------------------------------
+globalDict = globals()
+
+#-------------------------------------------------------------------------------
+# Toolset configuration file:
+#    First have a look in the SConstruct location (top dir)
+#    If not found have a look in local _sbuild/environments to find xyz.conf
+#    If not found have a look in the SBuild package environments
+#    If not found create an empty one in topDirPath
+#-------------------------------------------------------------------------------
+toolsetConfFileName = ARGUMENTS.get('ToolsetConf', toolsetOrgName+'.conf')
+
+if localEnv: toolsetDirList = [topDirPath, sbuildEnvironments, toolsetDir]
+else:        toolsetDirList = [toolsetDir]
+
+toolsetConfDirs = [d+'/'+toolsetConfFileName for d in toolsetDirList]
+
+toolsetConfFound = False
+for toolsetConfFilePath in toolsetConfDirs:
+   if os.path.isfile(toolsetConfFilePath):
+      toolsetConfFound = True
+      break
+
+if not toolsetConfFound:
+   toolsetConfFilePath = toolsetConfDirs[0]
+   highLevelUtils.createEmptyToolsetConf(toolsetConfFilePath)
+   if not Quiet:
+      log(level=0, error=True, warning=True, topics='toolset', name='toolsetConf',
+          txt='No toolset configuration file [%s] in dir(s): [%s]' % \
+              (toolsetConfFileName, str(toolsetConfDirs)))
+   if not Quiet:
+      log(level=0, error=True, warning=True, topics='toolset', name='toolsetConf',
+          txt='   Created an empty one in [%s].' % toolsetConfDirs[0])
+
+if not Quiet:
+   log(level=0,topics='general', name='toolsetConf',
+       txt='Reading: [%s].' % toolsetConfFilePath)
+
+highLevelUtils.toolsetConfRead(log=log, env=GlobalEnv, glob=globalDict,
+                               configFile=toolsetConfFilePath)
+if not Quiet:
+   log(level=0,topics='general', name='toolsetConf', txt='... OK.')
+
+if toolsetConfFilePath == toolsetConfDirs[0]:     # Local toolsetConf file
+   sbuild.FrameworkFiles.add(toolsetConfFilePath) # Added to the package
+
+#-------------------------------------------------------------------------------
+#Global environment general settings
+#-------------------------------------------------------------------------------
+toolsetPath  = os.path.dirname(ToolsetDict[toolset].__file__).replace('\\', '/')
+toolsetPath += '/' + toolsetOrgName + '.py'
+if not Quiet:
+   log(level=0,topics='general', name='toolset',
+       txt='Reading: [%s].' % toolsetPath)
+status = ToolsetDict[toolset].load(toolsetOrgName, globalDict)
+if not status:
+   Exit(-1)
+if not Quiet:
+   log(level=0,topics='general', name='toolset', txt='... OK.')
+
+#-------------------------------------------------------------------------------
+#Dependency mode: timestamp or md5
+#-------------------------------------------------------------------------------
+depMode = ARGUMENTS.get('depMode', 'MD5')
+if not Quiet: print 'SCons dependency mode: [' + depMode + ']'
+GlobalEnv.SourceSignatures(depMode)
+
+#===============================================================================
+#Signature files
+#   The way chosen here is to have the signature localized in a db file from
+#   type anydbm. The other way is to have them distributed along the source
+#   file tree in .sconsign files
+#===============================================================================
+distributedSignatures = ARGUMENTS.get('distributedSignatures', None)
+if not distributedSignatures:
+   sconsignDir = Dir('#' + SBuildInternalDir + \
+                     '/signatures').path.replace('\\', '/')
+   if not os.path.isdir(sconsignDir):
+      if not Quiet: print 'Creating:', sconsignDir
+      os.makedirs(sconsignDir)
+
+   if noIncDepScan:
+      sconsSignatures = 'sconsSignatures_NIDS'
+   else:
+      if alternateScanner:
+         sconsSignatures = 'sconsSignatures_'+alternateScanner
+      else:
+         sconsSignatures = 'sconsSignatures'
+
+   sconsSignatures = sconsignDir + '/' + \
+                     sconsSignatures + '_' + globalVariant + '_' + depMode
+   if not Quiet:
+      log(level=0, topics='general', name='SCons signature database file',
+          txt=sconsSignatures)
+
+   SConsignFile(sconsSignatures, anydbm)
+
+#-------------------------------------------------------------------------------
+# Definitions of variables using the command line:
+#    Done here to come after the toolset load and then superseed variables
+#    defined there.
+#-------------------------------------------------------------------------------
+defVars = ARGUMENTS.get('defVars', None)
+legalSConsIdMatch = re.compile(r'\w+$').match
+
+if defVars:
+   globDict = globals()
+   defVars = defVars.split(';')
+
+   cmdLineDefs = {}
+   for defVar in defVars:
+      defVar = defVar.split(':', 1)
+      var = defVar[0]
+      if len(defVar) > 1: val = defVar[1]
+      else:               val = True
+      if legalSConsIdMatch(var):
+         GlobalEnv[var] = val
+      if var not in cmdLineDefs:
+         cmdLineDefs[var] = []
+      cmdLineDefs[var].append(val)
+   for var in sorted(cmdLineDefs):
+      val = cmdLineDefs[var]
+      print 'Setting:', var, '=', val
+      globDict[var] = val
+
+   GlobalEnv['cmdLineDefs'] = cmdLineDefs
+
+#-------------------------------------------------------------------------------
+#Scanner statistics
+#-------------------------------------------------------------------------------
+if ARGUMENTS.get('scannerStatistics', None):
+   SCons.exitfuncs.register(scannerTimes.dumpData)
+
+#-------------------------------------------------------------------------------
+# cscope source file list dump
+#-------------------------------------------------------------------------------
+if ARGUMENTS.get('cscope', None):
+   SCons.exitfuncs.register(scannerCscope.dumpFileList)
+   GlobalEnv['cscope'] = True
+
+#-------------------------------------------------------------------------------
+# C preprocessed output
+#-------------------------------------------------------------------------------
+if ARGUMENTS.get('leavePreProcessed', None):
+   SCons.exitfuncs.register(scannerPreprocessed.dumpFileList)
+   GlobalEnv['leavePreProcessed'] = True
+
+#-------------------------------------------------------------------------------
+#Include path match statistics
+#-------------------------------------------------------------------------------
+class IncludeStatsClass:
+   def __init__(self):
+      self.includePaths    = {}
+      self.includeFileList = {}
+   def dumpData(self):
+      if not noIncDepScan and 'incPathMatch' in GlobalEnv['topics']:
+         buf = '''
+Dumping include path usage results:
+'''
+         for tDict in [self.includePaths, self.includeFileList]:
+            buf += '-' * 78 + '\n'
+            for inc in reversed(
+                sorted(tDict, cmp=lambda x,y: cmp(tDict[x], tDict[y]))):
+               buf += '%4d: %s\n' % (tDict[inc], inc)
+            buf += '-' * 78 + '\n'
+         print buf
+
+includeStats = IncludeStatsClass()
+GlobalEnv['IncludeStats'] = includeStats
+SCons.exitfuncs.register(includeStats.dumpData)
+
+GlobalEnv['DepDict']      = {}
+
+#-------------------------------------------------------------------------------
+#Output a trace to deliver the Source Name Filter defined in the toolset
+#   This is used by the packaging in the object delivery mode.
+#-------------------------------------------------------------------------------
+try:    SourceNameFilter = GlobalEnv.Dictionary('SourceNameFilter')
+except:
+   print >> sys.stderr, 'SourceNameFilter Not in GlobalEnv'
+   SourceNameFilter = None
+if SourceNameFilter:
+   print '[SourceNameFilter]:', SourceNameFilter
+
+#-------------------------------------------------------------------------------
+#Configuration: Variant management
+#-------------------------------------------------------------------------------
+
+#try:
+variantMgr = sbuild.variant.VariantManager(log, variant=globalVariant,
+   env=GlobalEnv,
+   startVariantConfFile=sbuild.sbuildNames.StartVariantConfigFile,
+   variantConfFile=sbuild.sbuildNames.VariantConfigFile)
+#except:
+#   log(0, txt='WARNING: No usable variant environment defined.',
+#       topics='general', error=True)
+#   GlobalEnv['VariantDef'] = lambda x,y,z: None
+#else:
+log(level=1, txt='Loaded config:', topics='variantConfig')
+GlobalEnv['VariantDef'] = variantMgr  # The variant object
+
+#-------------------------------------------------------------------------------
+#Build configuration file name
+#-------------------------------------------------------------------------------
+buildConfFile = ARGUMENTS.get('BuildConfFile', sbuild.BuildConfFile)
+if not Quiet:
+   print 'The build configuration files are named: [', buildConfFile, ']'
+GlobalEnv['BuildConfFile'] = buildConfFile
+sbuild.BuildConfFile = buildConfFile
+
+#-------------------------------------------------------------------------------
+#Start build configuration file name
+#-------------------------------------------------------------------------------
+startBuildConfFile = ARGUMENTS.get('StartBuildConfFile',
+                                     sbuild.BuildConfFile)
+if not Quiet and startBuildConfFile != buildConfFile:
+   print 'The start build configuration file is: [', startBuildConfFile, ']'
+GlobalEnv['StartBuildConfFile'] = startBuildConfFile
+sbuild.StartBuildConfFile = startBuildConfFile
+
+#-------------------------------------------------------------------------------
+#Start variant configuration file name
+#-------------------------------------------------------------------------------
+startVariantConfigFile = ARGUMENTS.get('StartVariantConfigFile',
+                                       sbuild.sbuildNames.VariantConfigFile)
+if not Quiet and startVariantConfigFile != sbuild.sbuildNames.VariantConfigFile:
+   print 'The start variant configuration file is: [', startVariantConfigFile, ']'
+GlobalEnv['StartVariantConfFile'] = startVariantConfigFile
+
+#-------------------------------------------------------------------------------
+#SCons internal settings
+#-------------------------------------------------------------------------------
+# No SCCS or RCS fetch: Explicit None definition to save computer time.
+GlobalEnv.SourceCode('.', None)
+
+#-------------------------------------------------------------------------------
+#Create an expanded view of the SCons Environment and make it persistent.
+#   This will be used by the packaging to expand the variables defined in SCons
+#   and used in the paths.
+#-------------------------------------------------------------------------------
+from types import *
+exportedEnv = {}
+envDictionary = GlobalEnv.Dictionary()
+for k in sorted(envDictionary):
+   value = envDictionary[k]
+   nonNeeded = ['MSVSSCONSCRIPT', ]
+   if k == '__builtins__' or isinstance(value, FunctionType) or \
+      isinstance(value, InstanceType) or isinstance(value, file) or \
+      k in nonNeeded:
+      log(level=4, txt='Rejecting('+str(type(value))+'): '+k+' '+str(value),
+          topics='environment')
+   else:
+      log(level=4, txt=k+' '+str(type(value))+' '+str(value),
+          topics='environment')
+      try:  expandedValue = GlobalEnv.subst(value)
+      except:
+         log(level=4, txt='---Unexpandable---', topics='environment')
+      else:
+         log(level=4, txt=k+' '+str(expandedValue), topics='environment')
+         exportedEnv[k] = expandedValue
+
+from sbuild.utilities   import Persistence
+import sbuild.sbuildNames as sbuildNames
+persistenceEnvDump = Persistence(sbuildNames.SBuildEnvDump)
+persistenceEnvDump.dump(exportedEnv)
+
+#-------------------------------------------------------------------------------
+# Use objectBuild option
+#-------------------------------------------------------------------------------
+objectBuild = ARGUMENTS.get('objectBuild', None)
+objectList  = None
+
+if objectBuild:
+   if not Quiet:
+      log(level=0, txt='Object delivery build requested', topics='general')
+   persistenceObjectList = Persistence(sbuildNames.DeliveredObjects)
+   try:
+      objectList = persistenceObjectList.load()
+   except sbuild.utilities.SBuildError, e:
+      log(level=0, name='ObjectBuild', txt=str(e), topics='all', error=True)
+      log(level=0, name='ObjectBuild',
+          txt='I cannot continue in this mode: Exit.',
+          topics='all', error=True)
+      Exit(-1)
+GlobalEnv['ObjectBuild'] = objectBuild
+GlobalEnv['ObjectList']  = objectList
+
+log(level=1, name='object list', txt=str(objectList), topics='objectBuild')
+
+#-------------------------------------------------------------------------------
+#Persistent data handling: Used by the Interface and Deliverables functions
+#-------------------------------------------------------------------------------
+persistentData = utilities.PersistentData(log)
+persistentData.add(sbuildNames.Interfaces, {})
+persistentData.add(sbuildNames.Deliverables, {})
+persistentData.add(sbuildNames.SBuildFramework, sbuildNames.FrameworkFiles)
+persistentData.add(sbuildNames.SrcObjFilters, {'srcFilter': SourceNameFilter})
+
+LibExtVarNameMatch = re.compile(r'.*(?:Lib|Dll)Ext$').match
+ObjExtVarNameMatch = re.compile(r'.*ObjExt$').match
+
+#Namespace copy is needed: Dictionary size change during loop otherwise
+globCopy = copy.copy(globalDict)
+persistentData.add(sbuildNames.LibObjExt,
+   {
+   'LibExts': [globCopy[ext] for ext in globCopy if LibExtVarNameMatch(ext)],
+   'ObjExts': [globCopy[ext] for ext in globCopy if ObjExtVarNameMatch(ext)],
+   })
+persistentData.add(sbuildNames.SrcObjDict, {})
+persistentData.add(sbuildNames.SrcObjDirDict, {})
+
+GlobalEnv['PersistentData'] = persistentData
+#-------------------------------------------------------------------------------
+#FUTURE: Implement -I validity checking as an option (Info about unneeded paths)
+#        -- include paths check --
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+#Starting the SConscript call chain
+#-------------------------------------------------------------------------------
+if not utilities.checkBuildConfHere(startBuildConfFile):
+   Exit(-1)
+
+if not Quiet:
+   log(level=0, txt='Output directory: '+GlobalEnv.subst(OutDir), topics='none')
+
+#-------------------------------------------------------------------------------
+# Starting to read the build configuration files
+#-------------------------------------------------------------------------------
+def cmpMostConstrainedPatterns(x, y):
+   if x.SourcePattern and y.TargetPattern:
+      return -1
+   else:
+      return 0
+
+noBuild = ARGUMENTS.get('noBuild', None)
+if not noBuild:
+   #----------------------------------------------------------------------------
+   # Snapshot config spec generation
+   #----------------------------------------------------------------------------
+   GlobalEnv['snapshotCS'] = None
+   if ARGUMENTS.get('snapshotCS', None):
+      from toolset import snapShotCS
+      snapShotCS.setParams(outDir=GlobalEnv.subst(OutDir))
+      SCons.exitfuncs.register(snapShotCS.dumpSnapshotCS)
+
+   #----------------------------------------------------------------------------
+   # Exe log handling
+   #----------------------------------------------------------------------------
+   from toolset import exeLog
+   ExeLogFileName = GlobalEnv.subst(OutDir)+'/'+sbuildNames.ExeLogFileName
+   if ARGUMENTS.get('exeLogReset', None): exeLogReset = True
+   else:                                  exeLogReset = False
+   exeLog.setParams(fileName=ExeLogFileName, reset=exeLogReset)
+   SCons.exitfuncs.register(exeLog.dumpExeList)
+   GlobalEnv['exeLog'] = exeLog
+
+   # Need to sort the SBuild builders: The most constrained first
+   GlobalEnv["TargetsActions"].sort(cmp=cmpMostConstrainedPatterns)
+   GlobalEnv['aliasDict'] = {}
+   for i in range(len(BUILD_TARGETS)):
+      BUILD_TARGETS[i] = GlobalEnv.subst(str(BUILD_TARGETS[i]))
+   if not Quiet: log(level=0, txt='Launching the build', topics='general')
+   sbuild.callSubBuildScripts(globalEnv=GlobalEnv, srcDir='.', subDirs=['.'])
+   if not Quiet: log(level=0, txt='End of SConstruct...', topics='general')
+
+   if checkPathCaseIsOn and checkPathCase.pathErrors:
+      log(level=0, topics='general', txt='''\
+Character case errors found in the build configuration files. Stop.
+''', error=True)
+      Exit(-1)
+
+   if forcedRebuild and len(GlobalEnv['__missingList']):
+      missing = set(GlobalEnv['__missingList'])
+      File = GlobalEnv.File
+      log(level=0, name='forcedRebuild',
+          txt='Missing %s' % str(sorted([File(m).path.replace('\\', '/')
+                                         for m in missing])),
+          topics='general')
+      depTree = GlobalEnv['__depTree']
+
+      def addMissing(missing, depTree):
+         for m in missing.copy():
+            if m in depTree:
+               for t in depTree[m]:
+                  if not t in missing:
+                     missing.add(t)
+                     missing |= addMissing(set([t]), depTree)
+         return missing
+
+      missing |= addMissing(missing, depTree)
+      for t in sorted(filter(os.path.isfile, missing)):
+         log(level=0, name='forcedRebuild',
+             txt='Removing %s' % File(t).path.replace('\\', '/'),
+             topics='general')
+         os.unlink(t)
+      # Releasing memory: Those list and dictionary can be big
+      del missing
+      del GlobalEnv['__missingList']
+      del depTree
+      del GlobalEnv['__depTree']
+
+#------------------------------------------------------------------------------
+# Making Alias definitions persistent on the disk for packaging reuse
+#------------------------------------------------------------------------------
+   persistentData.add(sbuildNames.Aliases, GlobalEnv['aliasDict'])
+   GlobalEnv['PersistentData'] = None
+   persistentData.flush()
+   log(level=0, txt='Persistent data flushed', topics='general')
+else:
+   if not Quiet: log(level=0, topics='general', txt='Skipping the build')
+

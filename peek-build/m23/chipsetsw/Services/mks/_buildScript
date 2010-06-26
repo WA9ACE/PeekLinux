@@ -1,0 +1,45 @@
+##############################################################################
+# ---_buildScript---
+# vim: ft=python
+#
+# This is a SConscript file from the TI build system.
+#
+# *** DO NOT MODIFY THIS FILE ***
+#
+###############################################################################
+import sbuild, os
+#
+# SCons import:
+#    GlobalEnv: The SCons Environment
+#    BuildDir:  The current directory build information (Parsed from
+#               _buildConf.ini and read by the caller)
+#    SubDirs:   The sub-directories information (Parsed from _buildConf.ini and
+#               read by the caller))
+#    SrcDir:    The current source directory path
+#
+Import('GlobalEnv BuildDir SubDirs SrcDir')
+
+# Environment copy to enforce the inheritance / specialization between modules
+#    and sub-modules
+
+GlobalEnv = GlobalEnv.Copy() # Very needed, otherwise polluting the caller
+                             #    environment
+
+log = sbuild.log
+curDir = GlobalEnv.Dir('.').path.replace('\\', '/')
+
+GlobalEnvDict = GlobalEnv.Dictionary()
+if 'checkPathCase' in GlobalEnvDict:
+   GlobalEnvDict['checkPathCase'](SrcDir,
+      curPath='SubDir section of _buildConf.ini file')
+
+log(level=1, topics='tree', txt='#' * 75)
+log(level=1, topics='tree', txt='CurDir: ' + curDir)
+log(level=1, topics='tree', txt="SrcDir: " + SrcDir)
+
+sbuild.buildLocalAndCallSubDirs(globalEnv=GlobalEnv, buildDir=BuildDir,
+                                srcDir=SrcDir, curDir=curDir, subDirs=SubDirs)
+
+log(level=1, topics='tree', txt="EndOfCurDir: " + curDir)
+log(level=1, topics='tree', txt="EndOfSrcDir: " + SrcDir)
+log(level=1, topics='tree', txt='#' * 75)

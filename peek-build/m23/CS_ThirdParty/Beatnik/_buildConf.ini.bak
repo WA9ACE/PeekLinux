@@ -1,0 +1,90 @@
+//=============================================================================
+// Copyright 2006 Texas Instruments Inc. All Rights Reserved.
+// SBuild configuration file for component: $ MIDI
+// Directory: CS_ThirdParty/Beatnik
+// Comments:
+//=============================================================================
+
+[BuildDirs]
+   [BuildDir]
+      #$OutDir/$SrcDir
+
+   [includes+]
+      #chipsetsw/system/bootloader/include
+
+
+   [Targets]
+      [Target]
+         #$OutDir/CS_ThirdParty/Beatnik/bae.a
+         [OnlyIf]
+           set('SET_MIDI') != 'OFF'
+
+    [Dependencies]
+        [Dependency]
+
+            [OnlyIf]
+              set('SET_MIDI') != 'OFF'
+                  
+       [cflags+]
+	    $CcDebugOptimize
+	    $CcOptimize2
+	    
+       [cflags-]           
+            $CcThumb
+            $CcAlignStructs
+		 
+
+       [Dependency]
+               
+//            code/services/bae/Engine/Common_FLASH/AC_Synth.c
+//            code/services/bae/Engine/Common_FLASH/AC_Mixer.c
+//            code/services/bae/Engine/Common_FLASH/AC_DLSVoiceLoops.c
+            [OnlyIf]
+              set('SET_MIDI') != 'OFF'
+
+
+       [cflags+]
+	    $CcDebugOptimize
+	    $CcNoOptimize
+	    
+
+       [cflags-]
+       	    $CcThumb
+       	    $CcAlignStructs
+		
+       [Target]
+            #$OutDir/CS_ThirdParty/Beatnik/bae_sram.a
+            [OnlyIf]
+              set('SET_MIDI') != 'OFF'
+
+
+     [Dependencies]
+        [Dependency]
+              
+            code/services/bae/stub.s
+            [OnlyIf]
+              set('SET_MIDI') != 'OFF'
+
+			
+        [asflags-]           
+            $CcThumb 
+            
+        [Dependency]
+        
+//            code/services/bae/Engine/Common_SRAM/AC_DLSRenderer.c
+//            code/services/bae/Engine/Common_SRAM/AC_DLSVoiceInnerLoops.c
+//            code/services/bae/Engine/Common_SRAM/AC_DLSVoiceLoops.c
+            [OnlyIf]
+              set('SET_MIDI') != 'OFF'
+
+	    
+	[cflags+]
+	    $CcDebugOptimize
+	    $CcOptimize2
+	    
+		 
+        [cflags-]           
+            $CcThumb
+            $CcAlignStructs    
+
+			   

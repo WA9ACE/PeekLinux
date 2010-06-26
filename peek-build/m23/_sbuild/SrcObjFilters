@@ -1,0 +1,6 @@
+(dp1
+S'srcFilter'
+p2
+S'.*\\.(?:c|cc|cpp|h|s|asm|sap|aim|java)'
+p3
+s.

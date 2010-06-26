@@ -1,0 +1,60 @@
+//=============================================================================
+// Copyright 2006 Texas Instruments Inc. All Rights Reserved.
+//
+// SBuild configuration file for component: stack
+//
+// Directory: B_TIPS/btstack
+//
+// Comments:
+//    -
+//=============================================================================
+[BuildDirs]
+   [BuildDir]
+      #$OutDir/B_TIPS/btstack
+
+      [includes+]
+         inc
+         inc/sys
+         ../../ebtips/btl/inc
+         ../../ebtips/btl/inc/int
+         ../../ebtips/bthal/inc
+	 ../../ebtips/bthal/inc/int
+         ../../HSW_FMStack/stack
+         #gpf/FRAME
+         #gpf/inc/nuc
+         #g23m-aci/aci
+         #g23m-fad/app
+         #g23m-aci/bat
+         #g23m-aci/gdd_dio
+         #g23m-aci/l2p
+
+
+      [Targets]
+         [Target]
+            btstack.a
+            
+            [Dependencies]
+               [Dependency]
+                  
+                  [OnlyIf]		
+		  set('SET_BTS')=='ON'
+                 
+               [Dependency]
+				  stack/l2cap/l2cap.c
+				  stack/l2cap/l2cap_if.c
+				  [OnlyIf]		
+		  		  set('SET_BTS')=='ON'
+				  [cflags+] 
+				  $CcOptimizePerf
+				  
+               [Dependency]
+				  stack/utils.c
+				  hcitrans/uart/uarttran.c
+				  stack/hci/hci_proc.c
+				  [OnlyIf]		
+		  		  set('SET_BTS')=='ON'
+				  [cflags+]
+				  $CcOptimizePerf
+				  [cflags-]
+				  $CcThumb
+				  

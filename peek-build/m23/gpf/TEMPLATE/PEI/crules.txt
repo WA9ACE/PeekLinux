@@ -1,0 +1,22 @@
+                     C-Rules and and the Pei-Templates
+                     =================================
+
+This file contains some remarks to the C programming rules
+and how they are applied in the pei template files xxx_pei.c,
+xxx.h, (and mon_xxx.h).
+
+- xxx_pei.c contains a prototype definition for a static function.
+  This is permitted (e.g. to avoid warnings), but not mandatory.
+
+- #define for compiler switches (e.g. '#define ENTITY_XXX' in xxx_pei.c)
+  usually appear before the "sections", like INCLUDES, CONSTS, TYPES,...
+
+- T_QMSG is a structure written before the C Coding Standard was in force.
+  Therefore, its members don't diverge from the rules about names.
+
+- ClearCase - in contrast to some other versioning systems - does not
+  support default string replacements like $Version:$ in the controlled files.
+  Nevertheless it is possible to apply a self-written function that inserts
+  an identification string in the files. This function usually is not
+  called on each checkin, but e.g. for a delivery. The string $Identity:$
+  in the header of the files is assigned for keeping this possibility.

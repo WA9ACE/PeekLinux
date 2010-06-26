@@ -1,0 +1,259 @@
+/*
+ * Locosto Standalone PSP build for Virtio Linker Command file 
+ *
+ * Target : ARM
+ *
+ * Platform : Locosto Virtio 
+ *
+ * Copyright (c) Texas Instruments 2005
+ *
+ * Flash size -- 16MB, check I-sample spec
+ * remove Internal ROM
+ * Jump table check from release notes
+ * .out file is extracted and placed in Flash, copied to RAM in Cal+, store addresses for future reference
+ */
+
+-c /* Autoinitialize variables at runtime */
+
+/*********************************/
+/* SPECIFY THE SYSTEM MEMORY MAP */
+/*********************************/
+
+MEMORY
+{
+  /* Secure Boot ROM */
+  BOOT_MEM (RXI)  : org = 0x00000000   len = 0x00100000
+
+  /* CS0: External SRAM 2 Mbytes */
+  D_MEM0   (RW)  : org = 0x00400000   len = 0x00800000
+
+  /* CS3: Flash 6 Mbytes */
+  /* Breaking into Multiple Segments , Thanks to V1.22E the Pre
+   * historic Tool chain */
+  P_MEMINIT   (RXI) : org = 0x06000000   len = 0x00000004
+  DRP_FW_CERT (RXI) : org = 0x06000550   len = 0x00000060
+  DRP_FW      (RXI) : org = 0x060005B0   len = 0x00008000
+  P_MEM0      (RXI) : org = 0x060085B0   len = 0x00407A50
+  P_MEM1   (RXI) : org = 0x06410000   len = 0x0000A000
+  P_MEM2   (RXI) : org = 0x0641A000   len = 0x00026000
+  P_MEM3   (RXI) : org = 0x06440000   len = 0x002C0000
+
+  /* FFS Area  */
+  FFS_MEM  (RI)  : org = 0x06700000   len = 0x00200000 
+
+   /* NOR BM Area */
+ /* NOR_BM   (RI)  : org = 0x06900000   len = 0x00200000 */
+ 
+  /* CS3: Flash 8 Mbytes */
+  /* Breaking into Multiple Segments , Thanks to V1.22E the Pre
+   * historic Tool chain */
+
+
+ S_ROM   (RXI) : org = 0x08050000   len = 0x00030000
+
+  S_MEM    (RXW) : org = 0x08000000   len = 0x0004FB5C
+   /*OMAPS00094058*/
+  S_MEM1   (RXW) : org=  0x0804FB5C  len =  0x00000004
+  /* Allocate memory for MIDI and JPEG */
+
+  S_MEM_JPEG_JUMPTABLE  (RXW) : org = 0x0804FB60   len = 0x00000250  /* JPEG Jump Table */
+  S_MEM_JUMPTABLE		(RXW) : org = 0x0804FDB0   len = 0x00000250  /* MIDI Jump Table */
+
+
+  /* CS6: Calypso+ Internal SRAM 320 kbytes */
+  /* Code & Variables Memory */
+ 
+}
+
+/***********************************************/
+/* SPECIFY THE SECTIONS ALLOCATION INTO MEMORY */
+/***********************************************/
+
+/*
+ * Since the bootloader directly calls the INT_Initialize() routine located
+ * in int.s, this int.s code must always be mapped at the same address
+ * (usually in the second flash sector). Its length is about 0x500 bytes.
+ * Then comes the code that need to be loaded into the internal RAM.
+ */
+
+SECTIONS
+{
+    /* Entry point of the Firmware */
+    .start   : {} > 0x06000000
+
+    /*
+     *  Interrupt vector re-mapping management
+     */
+    .intload : {} > P_MEM0
+    .indint  : {} load = P_MEM0, run = 0x0800000C
+    /* Memory Pointer Locations */
+    .drp_ptr  : {} > 0x08000044
+    .drp_cert : fill = 0xFFFFFFFF { } > DRP_FW_CERT
+    .drp_fw :   fill = 0xFFFFFFFF { .+= 8000h; } > DRP_FW
+    .drp_data : {} > S_MEM
+
+    /*
+     *  Firmware's certificate location
+     */
+    .cert : {} > P_MEM0
+
+    .inttext : {} > P_MEM0     /* int.s Code */
+
+   /*OMAPS00094058*/ 
+    .powerdebounce  : > S_MEM1 
+    
+    .bss_dar : > D_MEM0        /* DAR SWE Variables */
+    {
+        $(BSS_DAR_LIB)
+    }
+    .bss     : > D_MEM0        /* Global & Static Variables */
+    {
+        $(BSS_BOOT_LIB)
+    }
+
+    /*
+     * All .bss sections, which must be mapped in internal RAM must be
+     * grouped in order to initialized the corresponding memory to 0.
+     * This initialization is done in int.s file before calling the Nucleus
+     * routine.
+     */
+
+    GROUP
+    {
+      S_D_Mem /* Label of start address of .bss section in Int. RAM */
+      .DintMem
+      {
+
+        /*
+         * .bss sections of the application
+         */
+
+        $(BSS_LIBS)
+        $(AUDIO_BSS_LIBS)
+
+      }
+      E_D_Mem /* Label of end address of .bss section in Int. RAM */
+    } > S_MEM
+
+    /*
+     * .text and .const sections which must be mapped in internal RAM.
+     */
+
+
+    .ldfl  : {} > P_MEM2 /* Used to know the start load address */
+    GROUP load = P_MEM2, run = 0x0800004C
+    {
+      S_P_Mem  /* Label of start address of .text & .const sections in Int. RAM */
+      .PIntMem
+      {
+        /*
+         * .text and .const sections of the application.
+         *
+         * The .veneer sections correspond exactly to .text:v&n sections
+         * implementing the veneer functions. The .text:v$n -> .veneer
+         * translation is performed by PTOOL software when PTOOL_OPTIONS
+         * environement variable is set to veneer_section.
+         */
+
+        $(CONST_LIBS)
+
+      }
+       /* Add for EMIFS changes into internal RAM  */
+      .emifconf
+      .uartintram  /*New section Added to improve Uart performance*/
+      .spiread
+      .spiwrite
+      .nop_delay_sect
+      E_P_Mem /* Label of end address of .text and .const sections in Int. RAM */
+    }
+
+    /*
+     * The rest of the code is mapped in flash, however the trampolines
+     * load address should be consistent with .text.
+     */
+
+    COMMENT2START
+    `trampolines load = P_MEM2 , run = S_MEM
+    COMMENT2END
+    
+    .SECT_16BIT:{                        
+      $(BAE_LINK_LIBS)
+    } > P_MEM3 
+
+    .text    : {} >>   P_MEM0 | P_MEM1 | P_MEM3  /* Code */
+
+    /*
+     * The rest of the constants is mapped in flash.
+     */
+
+    
+	
+    .cinit   : {} >   P_MEM3  /* Initialization Tables */
+    /* OMAPS00058957 start */
+    .pinit   : {} >  P_MEM2   /* C++ constructors if they exist         */
+    /* OMAPS00058957 end */
+    .const   : {} >>  P_MEM3 | P_MEM1 | P_MEM0  /* Constant Data */
+    .drp_flash_data : {} > P_MEM1
+    .flashcnst : {} > P_MEM1
+    .drp_dummy_flash : {} > P_MEM1
+
+    .l1s_global: {} > S_MEM
+    .HISR_stack: {} > S_MEM
+    API_HISR_global    : {} > S_MEM
+    API_HISR_stack     : {} > S_MEM
+    
+    
+
+    .stackandheap :> S_MEM   /* System Stacks, etc... */
+    {
+      /* Leave 20 32bit words for register pushes. */
+      . = align(8);
+      . += 20 * 4;
+
+      /* Stack for abort and/or undefined modes. */
+      exception_stack = .;
+
+      /* Leave 38 32bit words for state saving on exceptions. */
+    /*  _xdump_buffer = .;*/
+    . += 38 * 4;
+      . = align(8);
+
+      /* Beginning of stacks and heap area - 2.75 kbytes (int.s) */
+      stack_segment = .;
+      . += 0xB00;
+    }
+
+    .data    : {} > D_MEM0     /* Initialized Data */
+    .sysmem  : {} > D_MEM0     /* Dynamic Memory Allocation Area */
+    S_MEM_JUMPTABLE : {} > S_MEM_JUMPTABLE  /* OMAPS00082333: MIDI Jump table */
+	JPEG_JUMP_TABLE : {} > S_MEM_JPEG_JUMPTABLE /* JPEG Jump Table */
+
+    /* AAC DMA input buffers are placed in ARM internal memory */
+    /* AAC_dma_input_buffer : {} > S_MEM */
+
+
+/*We need to point to the global variables of JPEG components in the ROM */
+
+	emz_acChromCodeLen_var_sec: {} > 0x0807618c
+	emz_acChromCodeWord_var_sec: {} > 0x08075fa4
+	emz_ACCountTable0_var_sec: {} > 0x08076418
+	emz_ACCountTable1_var_sec: {} > 0x08076428
+	emz_acLumCodeLen_var_sec: {} > 0x080760e8
+	emz_acLumCodeWord_var_sec: {} > 0x08075e60
+	emz_ACLumTable0_var_sec: {} > 0x08076438
+	emz_ACLumTable1_var_sec: {} > 0x080764dc
+	emz_dcChromCodeLen_var_sec: {} > 0x0807626c
+	emz_dcChromCodeWord_var_sec: {} > 0x08076254
+	emz_DCChromTable_var_sec: {} > 0x08076408
+	emz_dcLumCodeLen_var_sec: {} > 0x08076248
+	emz_dcLumCodeWord_var_sec: {} > 0x08076230
+	emz_DCLumTable_var_sec: {} > 0x080763f8
+	emz_QuantTable_var_sec: {} > 0x080762f8
+	emz_sInvZigzagScan_EzdJpgEnc_var_sec: {} > 0x080762b8
+	emz_sInvZigzagScanMtx_var_sec: {} > 0x080766c0
+	emz_sPrePostMult_Jpeg_enc_var_sec: {} > 0x08076780
+	emz_sZigzagPreMult_var_sec: {} > 0x08076700
+	emz_zigzagScan_EzdJpgEnc_var_sec: {} > 0x08076278
+      .r2dbuffer : {} > D_MEM0   /* This Has to remain in external Memory */
+}
+

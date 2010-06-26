@@ -1,0 +1,139 @@
+#!/bin/sh
+
+help ()
+{
+  echo "Usage: $0 { -help|-gmake|-l <LABEL>|-clean|-exp|-unco}"
+  exit 0
+}
+
+error ()
+{
+  grep "error " $err_file
+  echo "Errors occurred! See $err_file for details."
+  exit 1
+}
+
+if [ "$WINWORD" != "" ] ; then
+# Windows environment
+  OSENV=windows
+  if [ "$CLEARCASE_PRIMARY_GROUP" == "" ] ; then
+    HAVE_CC=0
+  else
+    cleartool lsview -cview >nul 2>&1
+    if [ $? == 0 ] ; then
+      HAVE_CC=1
+    else
+      HAVE_CC=0
+    fi
+  fi
+else
+  OSENV=`uname`
+  cleartool lsview -cview >/dev/null 2>&1
+  if [ $? == 0 ] ; then
+    HAVE_CC=1
+  else
+    HAVE_CC=0
+  fi
+fi
+
+if [ $HAVE_CC == 1 ] ; then
+  M="clearmake -V -C gnu"
+else
+  if [ $OSENV == windows ] ; then
+    M="gnumake -r"
+  else
+    M="make -r"
+  fi
+fi
+
+name=CCD
+name_small=ccd
+err_file=../$name_small.err
+ver=0
+maketarget="colibs all"
+
+if [ "$1" != "" ] ; then 
+
+  case "$1" in
+    -clean)
+       maketarget=clean
+       ;;
+    -gmake)
+       if [ $OSENV == windows ] ; then
+         M="gnumake -r"
+       else
+         M="make -r"
+       fi
+       ;;
+    -test)
+       echo testing not yet implemented
+       exit 0
+       ;;
+    -exp)
+       maketarget="colibs all cilibs"
+       ;;
+    -l)
+       echo labelling not yet implemented
+       exit 0
+       ;;
+    -help)
+       help
+       ;;
+    *) 
+       echo Unknown option "$1"
+       help
+       ;;
+  esac
+
+fi
+
+rm -f $err_file
+
+if [ "$maketarget" == clean ] ; then
+  echo "*** cleaning $name ***" | tee -a $err_file
+elif [ "$maketarget" == "colibs all cilibs" ] ; then
+  echo "*** making and checking in $name ***" | tee -a $err_file
+else
+  echo "*** making $name ***" | tee -a $err_file
+fi
+
+case "$OSENV" in
+  windows)
+	   echo "Use mall.bat to build under windows environments." >> $err_file
+		 error
+     ;;
+
+  Linux)
+     echo $M $maketarget TARGET=linuxpc DEBUG=0 TRACE=0 MEMSUPER=0 >> $err_file
+     $M $maketarget TARGET=linuxpc DEBUG=0 TRACE=0 MEMSUPER=0 >> $err_file 2>&1
+     if [ $? != 0 ] ; then error ; fi
+     echo $M $maketarget TARGET=linuxpc DEBUG=1 TRACE=0 MEMSUPER=0 >> $err_file
+     $M $maketarget TARGET=linuxpc DEBUG=1 TRACE=0 MEMSUPER=0 >> $err_file 2>&1
+     if [ $? != 0 ] ; then error ; fi
+     echo $M $maketarget TARGET=linuxpc DEBUG=1 TRACE=1 MEMSUPER=0 >> $err_file
+     $M $maketarget TARGET=linuxpc DEBUG=1 TRACE=1 MEMSUPER=0 >> $err_file 2>&1
+     if [ $? != 0 ] ; then error ; fi
+     echo $M $maketarget TARGET=linuxarm DEBUG=0 TRACE=0 MEMSUPER=0 >> $err_file
+     $M $maketarget TARGET=linuxarm DEBUG=0 TRACE=0 MEMSUPER=0 >> $err_file 2>&1
+     if [ $? != 0 ] ; then error ; fi
+     echo $M $maketarget TARGET=linuxarm DEBUG=1 TRACE=0 MEMSUPER=0 >> $err_file
+     $M $maketarget TARGET=linuxarm DEBUG=1 TRACE=0 MEMSUPER=0 >> $err_file 2>&1
+     if [ $? != 0 ] ; then error ; fi
+     echo $M $maketarget TARGET=linuxarm DEBUG=1 TRACE=1 MEMSUPER=0 >> $err_file
+     $M $maketarget TARGET=linuxarm DEBUG=1 TRACE=1 MEMSUPER=0 >> $err_file 2>&1
+     if [ $? != 0 ] ; then error ; fi
+     ;;
+  Solaris)
+     echo $M $maketarget TARGET=solsparc DEBUG=0 TRACE=0 MEMSUPER=0 >> $err_file
+     $M $maketarget TARGET=solsparc DEBUG=0 TRACE=0 MEMSUPER=0 >> $err_file 2>&1
+     if [ $? != 0 ] ; then error ; fi
+     echo $M $maketarget TARGET=solsparc DEBUG=1 TRACE=0 MEMSUPER=0 >> $err_file
+     $M $maketarget TARGET=solsparc DEBUG=1 TRACE=0 MEMSUPER=0 >> $err_file 2>&1
+     if [ $? != 0 ] ; then error ; fi
+     echo $M $maketarget TARGET=solsparc DEBUG=1 TRACE=1 MEMSUPER=0 >> $err_file
+     $M $maketarget TARGET=solsparc DEBUG=1 TRACE=1 MEMSUPER=0 >> $err_file 2>&1
+     if [ $? != 0 ] ; then error ; fi
+     ;;
+esac
+
+exit 0
