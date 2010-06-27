@@ -61,7 +61,7 @@
 
 #endif
 
-#include "DL_trc.h"
+#include "dl_trc.h"
 
 #if defined(DL_TRACE_WIN32)
 

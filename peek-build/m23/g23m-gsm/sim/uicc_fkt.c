@@ -41,7 +41,7 @@
 #include "tok.h"
 #include "sim.h"
 #include "sim_em.h"
-#include "8010_136_SIMDRV_SAP_inline.h"
+#include "8010_136_simdrv_sap_inline.h"
 
 /*==== EXPORT =====================================================*/
 

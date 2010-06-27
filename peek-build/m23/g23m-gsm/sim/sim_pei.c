@@ -45,7 +45,7 @@
 #include "cl_shrd.h"
 
 #ifdef TI_PS_UICC_CHIPSET_15
-#include "8010_136_SIMDRV_SAP_inline.h"
+#include "8010_136_simdrv_sap_inline.h"
 #endif
 
 

@@ -43,7 +43,7 @@
 #include "ccdapi.h"
 #include "dl.h"
 #include "dl_em.h"
-#include "DL_trc.h"
+#include "dl_trc.h"
 
 /*==== TYPEDEFS ===================================================*/
 typedef struct

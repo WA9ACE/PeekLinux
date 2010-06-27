@@ -43,7 +43,7 @@
 #include "tok.h"
 #include "cc.h"
 
-#include "M_rr_com.h"
+#include "m_rr_com.h"
 
 /*==== EXPORT =====================================================*/
 

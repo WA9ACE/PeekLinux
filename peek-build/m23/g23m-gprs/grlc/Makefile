@@ -1,0 +1,48 @@
+DEFINE += 
+
+UNDEFINE += RELEASE99
+
+VARIANT_INCLUDE=$(M23_VARIANT_INCLUDE)
+INCLUDE += $(M23DIR)/gpf/inc
+INCLUDE += $(M23DIR)/g23m/condat/com/inc
+INCLUDE += $(M23DIR)/g23m/condat/com/include
+
+SRC  = grlc_f.c
+SRC += grlc_gfff.c
+SRC += grlc_gffp.c
+SRC += grlc_gffs.c
+SRC += grlc_measf.c
+SRC += grlc_measp.c
+SRC += grlc_meass.c
+SRC += grlc_pei.c
+SRC += grlc_rdf.c
+SRC += grlc_rdp.c
+SRC += grlc_rds.c
+SRC += grlc_ruf.c
+SRC += grlc_rup.c
+SRC += grlc_rus.c
+SRC += grlc_tmf.c
+SRC += grlc_tmp.c
+SRC += grlc_tms.c
+SRC += grlc_tpcg.c
+SRC += grlc_tpcs.c
+SRC += grlc_em.c
+
+OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+TARGET = $(CURDIR)/grlc.a
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $(OBJ)
+
+clean:
+	$(RM) $(OBJ)
+	$(RM) $(TARGET)
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules

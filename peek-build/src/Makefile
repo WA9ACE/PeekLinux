@@ -5,7 +5,6 @@ DEFINE += BAL_IP_PUSH
 VIN_DEPEND = $(SRCDIR)/bal/bal.a \
              $(SRCDIR)/bal/ata.a \
              $(SRCDIR)/bal/gprs.a \
-             $(M23DIR)/g23m-aci/aci/aci.a \
              $(SRCDIR)/bal/bget.a
 
 SUBDIR_DEPEND = $(SRCDIR)/freetype2/freetype2.a \
