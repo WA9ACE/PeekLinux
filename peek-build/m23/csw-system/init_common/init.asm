@@ -36,9 +36,11 @@
     .if CHIPSET = 15
       .if PSP_FAILSAFE = 1
 CS0_MEM_REG   .word  0x0000FFF9   ; Asynch Read/write, 15-RDWST,15-WRWST, 15-WELEN
+CS1_MEM_REG   .word  0x0000FFF9   ; Asynch Read/write, 15-RDWST,15-WRWST, 15-WELEN
 CS3_MEM_REG   .word  0x0000FFF9   ; Asynch Read/write, 4-RDWST,5-WRWST, 3-WELEN
       .else
 CS0_MEM_REG   .word  0x00002031   ; Asynch Read/write, 3-RDWST,0-WRWST, 2-WELEN
+CS1_MEM_REG   .word  0x00002031   ; Asynch Read/write, 3-RDWST,0-WRWST, 2-WELEN
 CS3_MEM_REG   .word  0x00002031   ; Asynch Read/write, 3-RDWST,0-WRWST, 2-WELEN
       .endif
       .endif ; CHIPSET

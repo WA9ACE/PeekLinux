@@ -525,6 +525,10 @@ Wait_DPLL_Lock
 	ldr	r2,CS0_MEM_REG	; pSRAM initialization
 	str	r2,[r1]		; CS0
 
+	ldr	r2,CS1_MEM_REG	; pSRAM initialization
+	str	r2,[r1, #0x04]	; CS1
+
+
 	ldr	r2,CS3_MEM_REG	; NOR flash initialization
 	str	r2,[r1,#0x0C]	; CS3 
 
