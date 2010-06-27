@@ -5,6 +5,7 @@ DEFINE += BAL_IP_PUSH
 VIN_DEPEND = $(SRCDIR)/bal/bal.a \
              $(SRCDIR)/bal/ata.a \
              $(SRCDIR)/bal/gprs.a \
+             $(M23DIR)/g23m-aci/aci/aci.a \
              $(SRCDIR)/bal/bget.a
 
 SUBDIR_DEPEND = $(SRCDIR)/freetype2/freetype2.a \
@@ -24,8 +25,6 @@ else
 	SUBDIR_DEPEND += $(SRCDIR)/emobiix/socket_sim.a
 endif
 
-ACI = $(SRCDIR)/aci/aci.a
-
 TARGET = $(SRCDIR)/vin.a
 
 SUBDIR = zlib libpng freetype2 lua nmealib bam baf emobiix bui
@@ -34,15 +33,12 @@ SUBDIR = zlib libpng freetype2 lua nmealib bam baf emobiix bui
 
 all: $(TARGET)
 
-$(TARGET): $(ACI) $(VIN_DEPEND) $(SUBDIR_DEPEND)
+$(TARGET): $(VIN_DEPEND) $(SUBDIR_DEPEND)
 	$(AR) $(ARFLAGS) $@ *.o
 	$(RM) *.o
 
 $(VIN_DEPEND): 
 	$(AR) -xv $@
-
-$(ACI):
-	$(MAKE) -C aci 
 
 $(SUBDIR_DEPEND): $(SUBDIR)
 	$(AR) -xv $@
@@ -53,7 +49,6 @@ $(SUBDIR):
 clean: 
 	$(RM) $(TARGET)
 	$(RM) *.o
-	$(MAKE) -C aci clean
 	$(MAKE) -C lua clean
 	$(MAKE) -C nmealib clean
 	$(MAKE) -C freetype2 clean

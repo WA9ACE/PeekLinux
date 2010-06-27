@@ -1,10 +1,13 @@
 DEFINE += 
 UNDEFINE +=
 
-DEPEND = ../g23m-aci/aci/aci.a
-SUBDIR = ../g23m-aci/aci
+DEPEND =	$(M23DIR)/g23m-aci/aci/aci.a \
+					#$(M23DIR)/g23m-gprs/grlc/grlc.a
 
-TARGET = $(SRCDIR)/g23m.a
+SUBDIR =	$(M23DIR)/g23m-aci/aci \
+					#$(M23DIR)/g23m-gprs/grlc
+
+TARGET = $(CURDIR)/g23m.a
 
 .PHONY: $(DEPEND) $(SUBDIR)
 
