@@ -155,7 +155,7 @@
 #include "AUIEditor.h"
 #include "MmiMidiTest.h"
 #include "MmiMain.h"
-#include "Mmisounds.h"
+#include "MmiSounds.h"
 #include "MmiBookShared.h" //Sep 11, 2006 DR: OMAPS00094182 xrashmic
 /*******************************************************************************
 

@@ -136,7 +136,7 @@
 #include "MmiMenu.h"
 #include "MmiSoftKeys.h"
 #include "MmiSounds.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 
 #include "mmiSat_i.h"
 

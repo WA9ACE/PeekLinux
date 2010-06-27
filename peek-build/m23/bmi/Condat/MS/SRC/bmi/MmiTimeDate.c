@@ -128,7 +128,7 @@
 #include "psa.h"
 #include "mfw_sms.h"
 #include "mfw_sat.h"
-#include "Mfw_td.h"/*SPR 2639*/
+#include "mfw_td.h"/*SPR 2639*/
 
 //x0pleela 22 May, 2007 DR: OMAPS00127483
 #ifdef FF_PHONE_LOCK
@@ -167,7 +167,7 @@
 
 // Apr 05, 2005    REF: ENH 29994 xdeepadh
 #ifdef FF_MIDI_RINGER  
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "mfw_midi.h"
 extern T_call call_data;
 #endif

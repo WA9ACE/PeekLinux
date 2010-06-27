@@ -159,7 +159,7 @@ $End
 #include "mfw_sms.h"
 #include "mfw_cphs.h"
 #include "mfw_sat.h"
-#include "Mfw_td.h"
+#include "mfw_td.h"
 
 #include "mfw_mme.h"//xashmic 27 Sep 2006, OMAPS00096389 
 

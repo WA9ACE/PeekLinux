@@ -177,7 +177,7 @@
 #include "mfw_mnu.h"
 #include "mfw_phb.h"
 #include "mfw_sms.h"
-#include "Mfw_td.h"/*SPR 1725*/
+#include "mfw_td.h"/*SPR 1725*/
 #ifdef SIM_TOOLKIT
 #include "mfw_sat.h"
 #endif
@@ -217,7 +217,7 @@
 #include "MmiDialogs.h"
 #include "MmiIdle.h"
 #include "MmiStart.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "MmiSimToolkit.h"
 
 #include "MmiLists.h"
@@ -242,7 +242,7 @@
 //x0pleela 21 Apr, 2006 DR: OMAPS00075178
 //Removing the AUDIO_PROFILE flag as Mmicolours.h is also required for Battery/charger indication fix
 //#ifdef FF_MMI_AUDIO_PROFILE
-#include "MmiColours.h"
+#include "mmiColours.h"
 //#endif
 static MfwHnd times;	      /* clock via software timer */
 static MfwHnd times_switchoff;		/* timer switch off (GB)*/
@@ -348,9 +348,9 @@ T_MFW_CFLAG_STATUS DivertStatus = MFW_CFLAG_NOTSet;
 static UBYTE buffer[100];
 /* Amounts to: 128 (format mode) + 8 (overwrite mode) */
 
-
+#ifdef FF_MMI_A2DP_AVRCP
 extern BMI_BT_STRUCTTYPE tGlobalBmiBtStruct; 
-
+#endif
 /*******************************************************************************
 
  $Function:

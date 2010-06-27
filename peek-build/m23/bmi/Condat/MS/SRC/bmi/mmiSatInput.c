@@ -112,7 +112,7 @@
 #include "MmiMenu.h"
 #include "MmiSoftKeys.h"
 #include "MmiSounds.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 
 #include "mmiSat_i.h"
 /* SPR#1428 - SH - New Editor changes */

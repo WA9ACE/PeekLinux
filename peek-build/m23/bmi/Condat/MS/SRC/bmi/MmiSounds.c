@@ -241,7 +241,7 @@
 #include "MmiDialogs.h"
 #include "MmiIdle.h"
 #include "MmiStart.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "MmiSimToolkit.h"
 #include "gdi.h"
 #include "audio.h"

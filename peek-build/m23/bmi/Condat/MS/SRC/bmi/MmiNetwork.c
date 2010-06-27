@@ -271,7 +271,7 @@
 
 #include "MmiMenu.h"
 #include "MmiIdle.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "MmiBookController.h"
 #include "MmiNetwork.h"
 #include "MmiSoftKeys.h"

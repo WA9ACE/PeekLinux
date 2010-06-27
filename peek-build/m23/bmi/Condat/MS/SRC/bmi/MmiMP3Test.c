@@ -124,7 +124,7 @@
 #include "MmiMP3Test.h"
 #include "MmiMain.h"
 #include "Mmiicons.h"
-#include "Icons\IcnDefs.h"
+#include "IcnDefs.h"
  //Sep 27,2005 REF: SPR 34402 xdeepadh  
 #include "MmiBookShared.h" 
 #include "mfw_ffs.h"
@@ -1493,7 +1493,7 @@ GLOBAL int  mmi_audio_player_Application (MfwMnu* m, MfwMnuItem* i)
 	T_MFW_HND 		win;
 	T_MFW_HND 		parent_win = mfw_parent(mfw_header());
 	TRACE_FUNCTION("mmi_audio_player_Application");
-	win=bookMenuStart(parent_win, AudioPlayerAppMenuAttributes(),0);
+	win=bookMenuStart(parent_win, (MfwMnuAttr *)AudioPlayerAppMenuAttributes(),0);
 	SEND_EVENT(win, ADD_CALLBACK, NULL, (void *)mmi_audio_player_Application_cb);
 	return MFW_EVENT_CONSUMED;
 }

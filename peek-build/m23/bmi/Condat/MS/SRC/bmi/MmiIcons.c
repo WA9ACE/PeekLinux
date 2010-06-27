@@ -120,7 +120,7 @@
 
 
 #include "MmiMenu.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "Mmiicons.h"
 #include "MmiIdle.h"
 
@@ -144,7 +144,7 @@
 #include "MmiResources.h"
 #include "mmiColours.h"
 
-#include "Icons\IcnDefs.h"
+#include "IcnDefs.h"
 
 // Oct 28, 2004    REF: CRR 25886 xnkulkar
 // Description: SMS Icon is not seen in Idle Screen.

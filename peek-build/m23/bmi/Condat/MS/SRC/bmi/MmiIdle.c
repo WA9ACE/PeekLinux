@@ -369,7 +369,7 @@
 
 #include "mmiSmsRead.h"
 
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "MmiNetwork.h"
 #include "Mmiicons.h"
 /* SPR#1428 - SH - New Editor changes */
@@ -398,7 +398,7 @@
 #include "mmiSmsBroadcast.h"
 #include "MmiCPHS.h"
 
-#include "Mfw_td.h"/*SPR 1725*/
+#include "mfw_td.h"/*SPR 1725*/
 #ifdef MMI_HOMEZONE_ENABLED
 #include "MmiHomezone.h"	/* SPR759 - SH*/
 #endif

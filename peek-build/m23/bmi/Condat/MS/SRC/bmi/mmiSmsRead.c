@@ -172,7 +172,7 @@
 #include "MmiMain.h"
 #include "MmiDummy.h"
 #include "MmiMmi.h"
-#include "mmiCall.h"//GW 29/11/01 for 'callNumber'
+#include "MmiCall.h"//GW 29/11/01 for 'callNumber'
 
 #include "MmiDialogs.h"
 #include "MmiLists.h"

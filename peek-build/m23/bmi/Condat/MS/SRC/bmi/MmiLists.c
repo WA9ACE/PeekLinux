@@ -161,7 +161,7 @@
 
 
 #include "MmiMenu.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "Mmiicons.h"
 #include "MmiIdle.h"
 

@@ -424,7 +424,7 @@
 #include "MmiMenu.h"
 #include "MmiSoftKeys.h"
 #include "MmiIdle.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "MmiNetwork.h"
 #include "MmiSounds.h"
 #include "MmiSettings.h"

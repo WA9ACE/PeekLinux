@@ -94,7 +94,7 @@
 #include "MmiMenu.h"
 #include "MmiSoftKeys.h"
 #include "MmiSounds.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 
 #include "gdi.h"
 #include "audio.h"

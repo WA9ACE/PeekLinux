@@ -128,7 +128,7 @@
 #include "MmiLists.h"
 
 #include "MmiMain.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "MmiStart.h"
 #include "MmiPins.h"
 #include "MmiIdle.h"

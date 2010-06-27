@@ -110,7 +110,7 @@
 #include "MmiMenu.h"
 #include "MmiSoftKeys.h"
 #include "MmiSounds.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 
 #include "MmiBookController.h"
 
@@ -124,7 +124,7 @@
 
 #include "prim.h"
 #ifndef PCM_2_FFS
-#include "pcm.h"
+#include "include/pcm.h"
 #endif
 
 

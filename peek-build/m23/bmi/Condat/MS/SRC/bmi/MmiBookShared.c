@@ -296,7 +296,7 @@ $End
 #include "MmiDialogs.h"
 #include "MmiLists.h"
 #include "MmiMenu.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "Mmiicons.h"
 #include "MmiIdle.h"
 
@@ -410,7 +410,7 @@ EXTERN int mmi_PowerManagement(MfwMnu* m, MfwMnuItem* i);
 #endif
 
 #ifdef BTE_MOBILE
-#include "mmiBluetooth.h"
+#include "MmiBluetooth.h"
 #endif
 
 extern int M_exeSendNew(MfwMnu* m, MfwMnuItem* i); // MZ

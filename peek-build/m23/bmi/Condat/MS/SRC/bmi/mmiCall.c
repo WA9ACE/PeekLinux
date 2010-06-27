@@ -452,7 +452,7 @@
 
 
 #include "MmiMenu.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "Mmiicons.h"
 #include "MmiIdle.h"
 
@@ -484,7 +484,7 @@
 
 //x0pleela 09 Mar, 2006  ER:OMAPS00067709
 #ifdef FF_PCM_VM_VB 
-#include "Mfw_aud.h"
+#include "mfw_aud.h"
 #endif
 //  June 08, 2004 REF: CRR MMI-SPR-13877 Ajith K P
 //  Issue description: CHW : AUDIO : CW tone not stopped

@@ -62,14 +62,14 @@
 //#include "\bmi\condat\ms\src\mms\Color.h"
 #include "mfw_sys.h"
 #include "ATBPb.h"
-#include "Mfw_mfw.h"
+#include "mfw_mfw.h"
 
 //#include "\bmi\Condat\MS\SRC\mfw\Mfw_win.h"
 //#include "MmiDummy.h"
 #include "mfw_tim.h"
 #include "mfw_icn.h"
-#include "Mfw_mnu.h"
-#include "Mfw_sat.h"
+#include "mfw_mnu.h"
+#include "mfw_sat.h"
 #include "mfw_kbd.h"
 #include "mmiColours.h"
 #include "MmiDummy.h"
@@ -81,7 +81,7 @@
 #include "MmiSoftKeys.h"
 #include "MmiDialogs.h"
 #include "MmiLists.h"
-#include "mmiFileManager.h" 
+#include "mmifilemanager.h" 
 #include "Mmiprogressbar.h"
 
 #define FWD_REW_TIME 10

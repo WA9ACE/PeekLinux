@@ -196,7 +196,7 @@ Solution: Defined new macro PCM_VOICE_MEMO_MAX_DURATION which defines maximum
 //x0pleela 09 Mar, 2006  ER:OMAPS00067709
 //Including this header to support number editor
 #ifdef FF_PCM_VM_VB
-#include "MmiBookshared.h"
+#include "MmiBookShared.h"
 #endif
 /*******************************************************************************
 

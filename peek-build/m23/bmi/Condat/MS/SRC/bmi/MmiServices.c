@@ -236,7 +236,7 @@ Fix: Basic service code 10(All teleservices) is sent for activation and deactiva
 #include "MmiMenu.h"
 #include "MmiSoftKeys.h"
 #include "Mmiicons.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "MmiServices.h"
 /* SPR#1428 - SH - New Editor changes */
 #ifdef NEW_EDITOR
@@ -253,7 +253,7 @@ Fix: Basic service code 10(All teleservices) is sent for activation and deactiva
 
 
 #include "MmiBookUtils.h"
-#include "MmiBookShared.h " // MZ 26/02/01
+#include "MmiBookShared.h" // MZ 26/02/01
 #include "cus_aci.h"
 
 #include "prim.h"

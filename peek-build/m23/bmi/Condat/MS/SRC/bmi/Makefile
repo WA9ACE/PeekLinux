@@ -1,9 +1,10 @@
 DEFINE += 
-UNDEFINE += 
+UNDEFINE += RSSI
+UNDEFINE += PCM_2_FFS
 
 VARIANT_INCLUDE = 
 INCLUDE += $(M23_VARIANT_INCLUDE)
-INCLUDE += $(M23DIR)/zi/include
+INCLUDE += $(M23DIR)/bmi/ZI/include
 INCLUDE += $(M23DIR)/CS_ThirdParty/Beatnik/code/services
 INCLUDE += $(M23DIR)/CS_ThirdParty/Beatnik/code/services/bae/Engine/Client_API/Private
 INCLUDE += $(M23DIR)/CS_ThirdParty/Beatnik/code/services/bae/Engine/Client_API/Public
@@ -14,9 +15,15 @@ INCLUDE += $(M23DIR)/CS_ThirdParty/Beatnik/code/services/bae/Libraries/zlib_Sour
 INCLUDE += $(M23DIR)/CS_ThirdParty/Beatnik/code/services/bae/PAL_Impls/Riviera
 INCLUDE += $(M23DIR)/bmi/Condat/MS/SRC/mfw
 INCLUDE += $(M23DIR)/bmi/Condat/MS/SRC/atb
+INCLUDE += $(M23DIR)/bmi/Condat/MS/SRC/bmi/Icons
 INCLUDE += $(M23DIR)/g23m/condat/com/include
+INCLUDE += $(M23DIR)/g23m/condat/com
+INCLUDE += $(M23DIR)/g23m/condat/com/inc
 INCLUDE += $(M23DIR)/g23m/condat/ms/src/aci
 INCLUDE += $(M23DIR)/g23m/condat/ms/src/ksd
+INCLUDE += $(M23DIR)/g23m/condat/ms/src/aci_dti_mng
+INCLUDE += $(M23DIR)/g23m-aci/aci
+INCLUDE += $(M23DIR)/cdginc
 
 
 SRC  = AUICalcEditor.c

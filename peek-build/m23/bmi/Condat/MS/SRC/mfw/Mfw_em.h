@@ -81,10 +81,10 @@ typedef struct
 
 typedef struct
 {
-	USHORT		arfcn;
-	UBYTE		RSSI; //Received field strength
-	UBYTE		RXQ; //received quality
-	UBYTE		RLT; //radio link timeout counter
+  USHORT		arfcn;
+  UBYTE		RSSI; //Received field strength
+  UBYTE		RXQ; //received quality
+  UBYTE		RLT; //radio link timeout counter
   SHORT   C1; //C1 Path lost criterion
   SHORT   C2; //C2 Parameter - often the same as RSSI for SC
   UBYTE   BSIC; //Base Station ID Code

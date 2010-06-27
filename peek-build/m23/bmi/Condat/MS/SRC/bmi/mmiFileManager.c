@@ -175,8 +175,8 @@
 
 #include "mfw_ffs.h"
 
-#include "mmiFileManager.h" 
-#include "mmiBookShared.h"
+#include "mmifilemanager.h"
+#include "MmiBookShared.h"
 
 
 
