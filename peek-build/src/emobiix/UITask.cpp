@@ -118,8 +118,8 @@ static int UIInit(void)
 	 */
         dataobject_platformInit();
 	system_battery_init();
-	gprs_dataobject_init();
-	extern void gps_init();
+	//gprs_dataobject_init();
+	//extern void gps_init();
 
 
 	return 1;

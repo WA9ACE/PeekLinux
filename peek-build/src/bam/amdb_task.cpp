@@ -208,7 +208,7 @@ extern "C" void AmdbTask(uint32 /*argc*/, void * /*argv*/)
     		BOSEventWait( BOS_AMDB_S_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_FALSE, BOSCalMsec(100) );
   	}
 
-	UA_Init(0, TR_BAUD_600, &serial_read_cb); // Switch Baud to 4800 for GPS / Bluetooth
+//	UA_Init(0, TR_BAUD_600, &serial_read_cb); // Switch Baud to 4800 for GPS / Bluetooth
 
   	for (MailBoxId = 0; MailBoxId < AMDB_S_MAX_MAILBOXES; MailBoxId++) 
   	{
