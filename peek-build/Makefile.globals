@@ -37,7 +37,8 @@ LDFLAGS     = -x --trampolines -w -wr --no_sym_merge --issue_remarks --verbose_d
 ARFLAGS	    = -rvu
 HEXFLAGS    = -m -memwidth 16 -romwidth 16
 
-CCTHUMB         = -mt -mv4 --abi=tiabi --strict_ansi
+CCBASE					= -mv4 --abi=tiabi --strict_ansi
+CCTHUMB         = -mt 
 CCDEBUG         = --symdebug:dwarf
 CCDEBUGOPTIMIZE = -mn
 CCNODEBUG       = --symdebug:none
@@ -169,7 +170,7 @@ VARIANT_DEFINE += CO_TCPIP_TESTAPP
 VARIANT_DEFINE += CO_UDP_IP
 VARIANT_DEFINE += COLOURDISPLAY
 VARIANT_DEFINE += CONFIG=28
-VARIANT_DEFINE += CONFIG_MODULE
+#VARIANT_DEFINE += CONFIG_MODULE
 VARIANT_DEFINE += COPY_DOCS=0
 VARIANT_DEFINE += CPHS=1
 VARIANT_DEFINE += CPHS_BAT_ERR=0

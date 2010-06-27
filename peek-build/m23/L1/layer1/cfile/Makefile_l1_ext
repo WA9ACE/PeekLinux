@@ -1,0 +1,81 @@
+DEFINE += L1_BT_AUDIO=1
+DEFINE += L1_AAC=1
+DEFINE += L1_MP3=1
+
+UNDEFINE += RSSI
+UNDEFINE += AUDIO_MIDI
+UNDEFINE += CONFIG
+
+VARIANT_INCLUDE = 
+INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(M23DIR)/L1/layer1/p_include
+INCLUDE += $(M23DIR)/L1/layer1/tm_cust0
+INCLUDE += $(M23DIR)/L1/layer1/hint
+INCLUDE += $(M23DIR)/L1/layer1/hmacs
+INCLUDE += $(M23DIR)/L1/layer1/aac_include
+INCLUDE += $(M23DIR)/L1/layer1/mp3_include
+INCLUDE += $(M23DIR)/csw-system/drv_core/dsp_dwnld
+INCLUDE += $(M23DIR)/csw-system/drv_core/spi
+INCLUDE += $(M23DIR)/csw-system/drv_core/pld
+
+SRC  = l1_pwmgr.c
+SRC += l1_afunc.c
+SRC += l1_trace.c
+SRC += l1_init.c
+SRC += l1_sync.c
+SRC += l1_cmplx.c
+SRC += ../tm_cfile/l1tm_async.c
+SRC += ../tm_cfile/l1tm_func.c
+SRC += ../tm_cfile/l1tm_stats.c
+SRC += ../audio_cfile/l1audio_async.c
+SRC += ../audio_cfile/l1audio_afunc.c
+SRC += ../audio_cfile/l1audio_init.c
+SRC += ../audio_cfile/l1audio_drive.c
+SRC += ../audio_cfile/l1audio_back.c
+SRC += ../audio_cfile/l1audio_stereo.c
+SRC += ../audio_cfile/l1audio_abb.c
+SRC += ../dyn_dwl_cfile/l1_dyn_dwl_afunc.c
+SRC += ../dyn_dwl_cfile/l1_dyn_dwl_async.c
+SRC += ../dyn_dwl_cfile/l1_dyn_dwl_init.c
+SRC += ../dyn_dwl_cfile/l1_dyn_dwl_sync.c
+SRC += ../dyn_dwl_cfile/l1_dyn_dwl_func.c
+SRC += ../dsp1/patch_file39_15_dyn_dwl.c
+SRC += ../dsp1/Dyn_dwnld/amr_mms_patch_file39_15.c
+SRC += ../dsp1/Dyn_dwnld/speech_acoustic_patch_file39_15.c
+SRC += ../dsp1/Dyn_dwnld/aac_patch_file39_15.c
+SRC += ../dsp1/Dyn_dwnld/pcm_patch_file39_15.c
+SRC += ../drp/l1_drp_wrapper.c
+SRC += ../dsp1/leadboot.c
+SRC += ../p_cfile/l1p_afun.c
+SRC += ../p_cfile/l1p_asyn.c
+SRC += ../p_cfile/l1p_cmpl.c
+SRC += ../p_cfile/l1p_sync.c
+SRC += ../aac_cfile/l1aac_afunc.c
+SRC += ../aac_cfile/l1aac_async.c
+SRC += ../aac_cfile/l1aac_func.c
+SRC += ../aac_cfile/l1aac_init.c
+SRC += ../aac_cfile/l1aac_sync.c
+SRC += ../dsp1/Dyn_dwnld/tty_patch_file39_15.c
+SRC += l1_small.c
+SRC += l1_async.c
+
+OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(patsubst %.s,%.o,$(SRC)))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+TARGET = $(CURDIR)/l1_ext.a
+
+all: $(TARGET)
+
+$(CURDIR)/l1_small.o: CCTHUMB=
+
+$(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $?
+
+clean:
+	$(RM) $(OBJ) 
+	$(RM) $(TARGET) 
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules

@@ -30,7 +30,7 @@ Date            Id          Author            Comment
 #include "texture_decode.h"
 #include "exp_texture_decode.h"
 #include "exp_stream_parse.h"
-#include "JpegMacros.h"
+#include "jpegmacros.h"
 #include "transform_scaled_chen.h"
 
 int32 JDEmz_sDecodeScan_patched(tJpegDecoder_JDEmz *jpegDecoder, int32 numMcuRow);

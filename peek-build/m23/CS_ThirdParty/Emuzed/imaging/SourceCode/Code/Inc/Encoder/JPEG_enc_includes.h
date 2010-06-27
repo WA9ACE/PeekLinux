@@ -38,7 +38,7 @@ Nov 23,  2001               Sudhindra		     Initial code
 #include "formMCU.h"
 #include "encoder.h"
 
-#include "basebitout.h"
+#include "baseBitOut.h"
 #include "memory_manage_jpegenc.h"
 #include "JpegEncoder_rom_jmptab.h"
 

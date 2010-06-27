@@ -33,6 +33,6 @@ prepare:
 	$(ASN1C) -R -gen-PER -fnative-types $(PROTOCOL)
 
 clean:
-	$(RM) $(TARGET) *.o *.d *.pp Makefile.am.sample *P.h *P.c
+	$(RM) $(TARGET) *.o *.d *.pp *.pp_ Makefile.am.sample *P.h *P.c
 
 include $(BASEDIR)/Makefile.rules

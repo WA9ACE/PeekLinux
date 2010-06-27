@@ -46,9 +46,9 @@
 #include "tools.h"      /* to get common tools */
 #include "mon_img.h"    /* to get mon-definitions */
 #include "OMX_Types.h"
-#include "omx_imgcomponent.h" /* Defines for the Client-Core interface */
+#include "OMX_IMGComponent.h" /* Defines for the Client-Core interface */
 #include "OMX_IMG_Private.h"
-#include "OMX_TIImage.h"
+#include "omx_tiimage.h"
 #include "common.h"
 #include "baseImageEnc.h"
 #include "JpegEncoder_rom_jmptab.h"

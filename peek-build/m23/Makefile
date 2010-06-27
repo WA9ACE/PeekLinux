@@ -24,6 +24,7 @@ m23:
 	$(MAKE) -C $(M23DIR)/csw-system/drv_app/uicc $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/csw-system/drv_app/usb $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/csw-system/drv_app/usbfax $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/L1/layer1/cfile -f Makefile_l1_ext $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/L1/layer1/tpu_drivers $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/L1/layer1/cust1 $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/L1/layer1/gtt_cfile -f Makefile_l1_gtt_ext $(MAKECMDGOALS)
@@ -35,6 +36,8 @@ m23:
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/as $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/cst $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/etm $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/chipsetsw/Services/img $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/chipsetsw/Services/lls $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/bmi $(MAKECMDGOALS)
 #	$(MAKE) -C $(M23DIR)/bmi/Condat/MS/SRC/bmi $(MAKECMDGOALS)
 

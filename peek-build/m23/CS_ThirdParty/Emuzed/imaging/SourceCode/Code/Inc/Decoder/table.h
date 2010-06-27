@@ -28,7 +28,7 @@ July 6, 2001                 Rajiv Kumar Bajpai  Initial Code
 #include "common.h"
 #include <stdlib.h>
 #include "baseBitIn.h"
-#include "JpegMacros.h" 	
+#include "jpegmacros.h" 	
 
 #ifndef VLC_STRUCT_INLINE
 typedef struct VlcTbl_JDEmz

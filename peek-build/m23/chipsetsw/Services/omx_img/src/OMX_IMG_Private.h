@@ -39,7 +39,7 @@ extern "C" {
 #include "frm_glob.h"
 
 #include "OMX_IMGComponent.h"
-#include "OMX_component.h"
+#include "OMX_Component.h"
 
 
 /*******************************************************************************

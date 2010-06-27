@@ -32,8 +32,8 @@ extern "C" {
 #endif /* __cplusplus */
 
 #include "OMX_Types.h"
-#include "OMX_TIImage.h"
-#include "OMX_component.h"
+#include "omx_tiimage.h"
+#include "OMX_Component.h"
 
 
 /** Component name for the OMX Imaging component **/

@@ -30,7 +30,7 @@
 #include "vsi.h"
 #include "pei.h"
 #include "tools.h"
-#include "omx_img_private.h"
+#include "OMX_IMG_Private.h"
 #include "img.h"
 #include "exp_JPEG_Enc.h"
 #include "common.h"

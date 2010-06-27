@@ -33,7 +33,7 @@ July 6, 2001				 Rajiv Kumar Bajpai  Initial Code
 #include "table.h"
 #include "common.h"
 #include "jpgDecoderStructure.h"
-#include "JpegMacros.h"
+#include "jpegmacros.h"
 #include "jpegDecoder.h"
 #include "bit_in_jpeg.h"
 #include "exp_transform_scaled_chen.h"

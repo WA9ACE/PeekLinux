@@ -66,7 +66,7 @@
 
 
 #include "timer/timer2.h"
-#include "armio/armio.h"
+#include "armio/Armio.h"
 
 //omaps00090550 #include "l1_macro.h"
 #include "l1_confg.h"

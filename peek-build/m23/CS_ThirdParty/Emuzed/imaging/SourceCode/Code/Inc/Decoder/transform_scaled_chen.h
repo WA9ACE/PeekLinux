@@ -28,7 +28,7 @@ Jan 31, 2001                Tushar Adhikary   Initial code
 
 #include <stdlib.h>
 #include "common.h"
-#include "JpegMacros.h"
+#include "jpegmacros.h"
 #include "exp_transform_scaled_chen.h"
 
 /* Constant multipliers */
