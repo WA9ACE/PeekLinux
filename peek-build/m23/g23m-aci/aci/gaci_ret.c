@@ -633,7 +633,7 @@ GLOBAL void rAT_PlusCGREG ( T_CGREG_STAT stat, USHORT lac, USHORT ci )
   PURPOSE : inform over the network initiated QOS modification
 
 */
-GLOBAL void rAT_changedQOS( U8 cid, T_PS_qos *qos )
+GLOBAL void rAT_changedQOS( SHORT cid, T_PS_qos *qos )
 {
 
   TRACE_FUNCTION("rAT_changedQOS()");

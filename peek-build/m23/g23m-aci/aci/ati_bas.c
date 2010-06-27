@@ -35,7 +35,6 @@
 #include "line_edit.h"
 #include "aci_lst.h"
 
-#include "pcm.h"
 #include "audio.h"
 #include "aci.h"
 #include "rx.h"
@@ -72,6 +71,8 @@
 #include "ati_bat.h"
 
 #endif /*FF_ATI_BAT*/
+
+#include "pcm.h"
 
 LOCAL T_ATI_RSLT aciPrcsPlusCG (UBYTE srcId, CHAR* cl, CHAR* ef);
 LOCAL T_ATI_RSLT setaciPrcsVolLevel ( CHAR* cl, UBYTE device );

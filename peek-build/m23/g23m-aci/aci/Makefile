@@ -1,7 +1,7 @@
 DEFINE += FF_BAT
 DEFINE += TI_PS_FFS_PHB
 
-UNDEFINE += SMI
+UNDEFINE += L1
 
 VARIANT_INCLUDE=$(M23_VARIANT_INCLUDE)
 INCLUDE += $(M23DIR)/csw-system/rtslib/v2_70
@@ -250,8 +250,8 @@ SRC += psa_tcpips.c
 SRC += psa_upmp.c
 SRC += psa_upms.c
 #SRC += phb.c
-SRC += ../ksd/ksd.c
-SRC += ../ksd/ksd_utl.c
+#SRC += ../ksd/ksd.c
+#SRC += ../ksd/ksd_utl.c
 
 OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))
 DEPS = $(patsubst %.o,%.d,$(OBJ))
