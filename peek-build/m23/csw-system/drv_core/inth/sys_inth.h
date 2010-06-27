@@ -96,7 +96,7 @@
 
     #include "sys_types.h"
     #include "sys_map.h"
-    #include "Nucleus.h"
+    #include "nucleus.h"
 
 
     /*

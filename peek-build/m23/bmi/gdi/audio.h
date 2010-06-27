@@ -43,7 +43,7 @@
 */
 #ifdef FF_MMI_AUDIO_PROFILE
 #include "rv/rv_general.h"
-#include "audio/audio_api.h"
+#include "Audio/audio_api.h"
 #endif
 #ifndef AUDIO_H
 #define AUDIO_H

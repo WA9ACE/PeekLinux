@@ -83,7 +83,7 @@ LOCAL void pwr_batstatus     (UBYTE status);
 drv_SignalCB_Type  pwr_signal_callback = NULL;
 #ifdef USE_LCC  //x0pleela 10 Apr, 2006 ER: OMAPS00075178
 
-#include "lcc\lcc_api.h"
+#include "lcc/lcc_api.h"
 
 T_PWR_MMI_INFO_IND_EVENT lcc_event;
 T_RV_RETURN_PATH  lcc_cb={0, NULL};

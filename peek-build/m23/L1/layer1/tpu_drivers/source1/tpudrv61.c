@@ -49,7 +49,7 @@
 
 #include "mem.h"
 
-#include "armio.h"
+#include "Armio.h"
 #include "clkm.h"
 
 #if (L1_RF_KBD_FIX == 1)
@@ -420,7 +420,7 @@ SYS_UWORD16 Convert_l1_radio_freq(SYS_UWORD16 radio_freq)
 {
     UWORD8 band_index;
     return(rf_convert_l1freq_to_arfcn_rfband(rf_convert_rffreq_to_l1freq(radio_freq),
-        &band_index));
+        (WORD8 *)&band_index));
 }
 
 #endif
@@ -492,9 +492,9 @@ UWORD32 rf_program(UWORD32 t, SYS_UWORD16 radio_freq, UWORD32 rx)
 {
     UWORD8 rf_band_index;
 //    rf_index = rf_band_idx_to_locosto_idx[rf_convert_l1freq_to_rf_band_idx(radio_freq)];
-    arfcn=rf_convert_rffreq_to_l1freq_rfband(radio_freq, &rf_band_index);
+    arfcn=rf_convert_rffreq_to_l1freq_rfband(radio_freq, (WORD8 *)&rf_band_index);
     rf_index = rf_band_idx_to_locosto_idx[rf_subband2band[rf_band_index]];
-    arfcn=rf_convert_l1freq_to_arfcn_rfband(arfcn, &rf_band_index);
+    arfcn=rf_convert_l1freq_to_arfcn_rfband(arfcn, (WORD8 *)&rf_band_index);
 }
 #endif
   rfdiv = calc_rf_freq(arfcn, rx);

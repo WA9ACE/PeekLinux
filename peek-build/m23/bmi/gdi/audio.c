@@ -131,7 +131,7 @@ ti15++ version do have the riveria frame it needs to be disabled for the rest
 #if /*!defined (_TTY_SIMU) &&*/ defined (FF_TTY)
 #include "tty/tty_api.h"
 #endif
-#include "audio/audio_api.h"
+#include "Audio/audio_api.h"
 #endif
 
 /*==== DEFINE =====================================================*/
@@ -2300,7 +2300,7 @@ LOCAL void audio_save_def_return (void *result)
   T_AUDIO_MODE_LOAD audio_mode;
   T_RV_RETURN_PATH load_ret = {NOT_PRESENT_8BIT, NULL};
   T_AUDIO_RET audio_ret;
-  uint8 FFS_ttyAlwaysOn, FFS_ttyPfType;
+  unsigned char FFS_ttyAlwaysOn, FFS_ttyPfType;
   UBYTE calldata_tty;
 
   if (((T_AUDIO_SAVE_DONE *)result)->status NEQ AUDIO_OK)

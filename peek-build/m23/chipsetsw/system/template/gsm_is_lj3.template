@@ -25,7 +25,7 @@ MEMORY
   BOOT_MEM (RXI)  : org = 0x00000000   len = 0x00100000
 
   /* CS0: External SRAM 2 Mbytes */
-  D_MEM0   (RW)  : org = 0x00400000   len = 0x00800000
+  D_MEM0   (RW)  : org = 0x00400000   len = 0x00400000
 
   /* CS3: Flash 6 Mbytes */
   /* Breaking into Multiple Segments , Thanks to V1.22E the Pre
@@ -33,21 +33,18 @@ MEMORY
   P_MEMINIT   (RXI) : org = 0x06000000   len = 0x00000004
   DRP_FW_CERT (RXI) : org = 0x06000550   len = 0x00000060
   DRP_FW      (RXI) : org = 0x060005B0   len = 0x00008000
-  P_MEM0      (RXI) : org = 0x060085B0   len = 0x00407A50
-  P_MEM1   (RXI) : org = 0x06410000   len = 0x0000A000
-  P_MEM2   (RXI) : org = 0x0641A000   len = 0x00026000
-  P_MEM3   (RXI) : org = 0x06440000   len = 0x002C0000
-
-  /* FFS Area  */
-  FFS_MEM  (RI)  : org = 0x06700000   len = 0x00200000 
-
-   /* NOR BM Area */
- /* NOR_BM   (RI)  : org = 0x06900000   len = 0x00200000 */
  
+  P_MEM0      (RXI) : org = 0x060085B0   len = 0x0026f000
+  P_MEM1      (RXI) : org = 0x062775B0   len = 0x00001000
   /* CS3: Flash 8 Mbytes */
   /* Breaking into Multiple Segments , Thanks to V1.22E the Pre
    * historic Tool chain */
-
+  P_MEM2      (RXI) : org = 0x062785B0   len = 0x00020000
+  P_MEM3      (RXI) : org = 0x062985B0   len = 0x00567A50
+  
+  /* FFS Area  */
+  FFS_MEM     (RI)  : org = 0x06800000   len = 0x00800000 
+  
 
  S_ROM   (RXI) : org = 0x08050000   len = 0x00030000
 
@@ -85,7 +82,7 @@ SECTIONS
      *  Interrupt vector re-mapping management
      */
     .intload : {} > P_MEM0
-    .indint  : {} load = P_MEM0, run = 0x0800000C
+    .indint  : {} load = 0x060085b4, run = 0x0800000C
     /* Memory Pointer Locations */
     .drp_ptr  : {} > 0x08000044
     .drp_cert : fill = 0xFFFFFFFF { } > DRP_FW_CERT
@@ -102,7 +99,7 @@ SECTIONS
    /*OMAPS00094058*/ 
     .powerdebounce  : > S_MEM1 
     
-    .bss_dar : > D_MEM0        /* DAR SWE Variables */
+    .bss_dar : > 0x00400000        /* DAR SWE Variables */
     {
         $(BSS_DAR_LIB)
     }
@@ -140,7 +137,7 @@ SECTIONS
      */
 
 
-    .ldfl  : {} > P_MEM2 /* Used to know the start load address */
+    .ldfl  : {} > 0x062785b0 /* Used to know the start load address */
     GROUP load = P_MEM2, run = 0x0800004C
     {
       S_P_Mem  /* Label of start address of .text & .const sections in Int. RAM */
@@ -164,6 +161,7 @@ SECTIONS
       .spiread
       .spiwrite
       .nop_delay_sect
+      .bgetcode    /* Added by fanxujun for improve BGet performance */
       E_P_Mem /* Label of end address of .text and .const sections in Int. RAM */
     }
 
@@ -188,11 +186,11 @@ SECTIONS
 
     
 	
-    .cinit   : {} >   P_MEM3  /* Initialization Tables */
+    .cinit   : {} >  0x062f3b28  /* Initialization Tables */
     /* OMAPS00058957 start */
     .pinit   : {} >  P_MEM2   /* C++ constructors if they exist         */
     /* OMAPS00058957 end */
-    .const   : {} >>  P_MEM3 | P_MEM1 | P_MEM0  /* Constant Data */
+    .const   : {} >>  P_MEM3 | P_MEM1   /* Constant Data */
     .drp_flash_data : {} > P_MEM1
     .flashcnst : {} > P_MEM1
     .drp_dummy_flash : {} > P_MEM1
@@ -225,6 +223,10 @@ SECTIONS
 
     .data    : {} > D_MEM0     /* Initialized Data */
     .sysmem  : {} > D_MEM0     /* Dynamic Memory Allocation Area */
+    
+    /* deleted by xipeng */
+    /* .bdmem   : {} > D_MEM0 */    /* added by Randolph Wang 080303 */
+   
     S_MEM_JUMPTABLE : {} > S_MEM_JUMPTABLE  /* OMAPS00082333: MIDI Jump table */
 	JPEG_JUMP_TABLE : {} > S_MEM_JPEG_JUMPTABLE /* JPEG Jump Table */
 
@@ -254,6 +256,7 @@ SECTIONS
 	emz_sPrePostMult_Jpeg_enc_var_sec: {} > 0x08076780
 	emz_sZigzagPreMult_var_sec: {} > 0x08076700
 	emz_zigzagScan_EzdJpgEnc_var_sec: {} > 0x08076278
-      .r2dbuffer : {} > D_MEM0   /* This Has to remain in external Memory */
+      .r2dbuffer : {} > 0x007DA800 /*D_MEM0*/   /* This Has to remain in external Memory */
+  .bgetdata : {} >  S_MEM /* Added by fanxujun for improve BGet performance */
 }
 

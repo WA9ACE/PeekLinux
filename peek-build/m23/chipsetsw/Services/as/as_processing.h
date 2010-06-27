@@ -23,7 +23,7 @@
 
 #include "as/as_message.h"
 
-#include "audio/audio_api.h"
+#include "Audio/audio_api.h"
 
 /// Save the passed START request @a msg for future processing.
 extern void

@@ -44,7 +44,7 @@
 #include "l1tm_ver.h" // needed for l1tm versions
 // #include "l1_ver.h" // Version of Layer 1
 // #include "l1p_ver.h" // contain GPRS-VERSION
-#include "armio/armio.h"// For GPIO
+#include "armio/Armio.h"// For GPIO
 
 
 extern void tr_etm_init(unsigned int mask);

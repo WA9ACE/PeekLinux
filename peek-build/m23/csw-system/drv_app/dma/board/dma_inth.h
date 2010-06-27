@@ -29,7 +29,7 @@
 #endif
 
 #ifndef _INC_STRING
-#include "STRING.h"
+#include "string.h"
 #endif
 
 #ifndef __SYS_TYPES_H__

@@ -46,7 +46,7 @@
 #include "l1_time.h"
 #include "tpudrv.h"
 #include "tpudrv61.h"
-#include "armio.h"
+#include "Armio.h"
 
 #if (L1_RF_KBD_FIX == 1)
 #include "l1_varex.h"

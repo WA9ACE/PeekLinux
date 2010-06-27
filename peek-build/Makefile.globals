@@ -10,6 +10,7 @@ PERL_PATH     = /usr/bin
 BASEDIR=$(CURDIR)
 SRCDIR=$(BASEDIR)/src
 LIBSDIR=$(BASEDIR)/lib
+M23DIR=$(BASEDIR)/m23
 BUILDDIR=$(BASEDIR)/build
 INCDIR=$(BASEDIR)/include
 
@@ -17,6 +18,7 @@ COMPILER_PATH = /opt/TI/TMS470CGT4.6.1
 COMPILER_INC  = $(COMPILER_PATH)/include
 
 CC      = $(COMPILER_PATH)/bin/cl470
+AS	    = $(COMPILER_PATH)/bin/cl470
 LD      = $(COMPILER_PATH)/bin/lnk470
 AR	    = $(COMPILER_PATH)/bin/ar470
 HEX     = $(COMPILER_PATH)/bin/hex470
@@ -471,7 +473,7 @@ VARIANT_DEFINE += RTC_STATE=1
 VARIANT_DEFINE += RTS_MK=0
 VARIANT_DEFINE += RV_CJK
 VARIANT_DEFINE += RVF_ALLOC_INT_RAM=1
-VARIANT_DEFINE += RVM_RNET_RT_SWE
+#VARIANT_DEFINE += RVM_RNET_RT_SWE
 VARIANT_DEFINE += RVTDIO=0
 VARIANT_DEFINE += RVTOOL=0
 VARIANT_DEFINE += SAM_STATE=0
@@ -674,3 +676,58 @@ VARIANT_UNDEFINE += SMS_PDU_SUPPORT
 VARIANT_UNDEFINE += USBMS_STATE
 VARIANT_UNDEFINE += USBTRC_STATE
 #VARIANT_UNDEFINE += EMO_DEBUG
+
+
+M23_VARIANT_INCLUDE  = $(M23DIR)
+M23_VARIANT_INCLUDE += $(M23DIR)/config
+M23_VARIANT_INCLUDE += $(M23DIR)/chipsetsw/riviera
+M23_VARIANT_INCLUDE += $(M23DIR)/chipsetsw/riviera/rv
+M23_VARIANT_INCLUDE += $(M23DIR)/chipsetsw/riviera/rvt
+M23_VARIANT_INCLUDE += $(M23DIR)/chipsetsw/riviera/rvf
+M23_VARIANT_INCLUDE += $(M23DIR)/chipsetsw/Services
+M23_VARIANT_INCLUDE += $(M23DIR)/chipsetsw/Services/tty
+M23_VARIANT_INCLUDE += $(M23DIR)/chipsetsw/Services/Audio
+M23_VARIANT_INCLUDE += $(M23DIR)/CS_ThirdParty/Beatnik/code/services
+M23_VARIANT_INCLUDE += $(M23DIR)/CS_ThirdParty/Beatnik/code/services/bae/Engine/Client_API/Public
+M23_VARIANT_INCLUDE += $(M23DIR)/CS_ThirdParty/Beatnik/code/services/bae/PAL_Impls/Riviera
+M23_VARIANT_INCLUDE += $(M23DIR)/CS_ThirdParty/Beatnik/code/services/bae/Engine/Common
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/os/nucleus/1_15
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/os/nucleus/1_15/plus
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/os/nucleus/1_15/plus/inc
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_app
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_app/rfsfat
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_app/ffs
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_app/ffs/reliance
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_app/uicc/board
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_app/usb
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_core
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_core/conf
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_core/timer
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_core/dma
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_core/rhea
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_core/uart
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_core/abb
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_core/security
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_core/ulpd
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_core/i2c
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_core/util
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_core/clkm
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_core/inth
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_core/memif
+M23_VARIANT_INCLUDE += $(M23DIR)/csw-system/drv_core/armio
+M23_VARIANT_INCLUDE += $(M23DIR)/L1/layer1/audio_include
+M23_VARIANT_INCLUDE += $(M23DIR)/L1/layer1/audio_cust0
+M23_VARIANT_INCLUDE += $(M23DIR)/L1/layer1/include
+M23_VARIANT_INCLUDE += $(M23DIR)/L1/layer1/drp
+M23_VARIANT_INCLUDE += $(M23DIR)/L1/layer1/dyn_dwl_include
+M23_VARIANT_INCLUDE += $(M23DIR)/L1/layer1/tm_include
+M23_VARIANT_INCLUDE += $(M23DIR)/L1/layer1/gtt_include
+M23_VARIANT_INCLUDE += $(M23DIR)/L1/layer1/gtt_include/ctm
+M23_VARIANT_INCLUDE += $(M23DIR)/L1/layer1/tpu_drivers/source
+M23_VARIANT_INCLUDE += $(M23DIR)/L1/layer1/tpu_drivers/source1
+M23_VARIANT_INCLUDE += $(M23DIR)/L1/layer1/cust1
+M23_VARIANT_INCLUDE += $(M23DIR)/gpf/inc
+M23_VARIANT_INCLUDE += $(M23DIR)/gpf/inc/nuc
+M23_VARIANT_INCLUDE += $(M23DIR)/gpf/FRAME/cust_os
+

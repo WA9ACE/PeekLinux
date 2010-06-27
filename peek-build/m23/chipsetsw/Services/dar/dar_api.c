@@ -54,7 +54,7 @@
 
 
    #include "bspI2cMultiMaster_Map.h"
-   #include "Sys_map.h"
+   #include "sys_map.h"
    #include"bspUtil_BitUtil.h"
    #include "bspI2cMultiMaster_Llif.h"
    #include "Uart.h"

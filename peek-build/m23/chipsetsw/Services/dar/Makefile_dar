@@ -1,0 +1,34 @@
+DEFINE += 
+UNDEFINE += 
+
+VARIANT_INCLUDE = 
+INCLUDE += $(M23_VARIANT_INCLUDE)
+
+SRC  = dar_pei.c
+SRC += dar_api.c
+SRC += dar_task.c
+SRC += dar_handle_message.c
+SRC += dar_diagnose.c
+SRC += dar_error_hdlr.c
+SRC += dar_msg_ft.c
+SRC += dar_watchdog.c
+SRC += dar_emergency.c
+
+OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(patsubst %.s,%.o,$(SRC)))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+TARGET = $(CURDIR)/dar.a
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $?
+
+clean:
+	$(RM) $(OBJ) 
+	$(RM) $(TARGET) 
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules

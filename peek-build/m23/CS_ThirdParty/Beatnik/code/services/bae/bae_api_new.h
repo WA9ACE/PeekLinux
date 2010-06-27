@@ -86,7 +86,7 @@
 #define baePreroll(A) \
 	    mbPreroll((A))
 
-static inline mbResult baeStart(mbObjectID playerID)
+static /*inline*/ mbResult baeStart(mbObjectID playerID)
 {	
 	mbResult result;
 	mbBool engaged = mbIsOutputHardwareEngaged(bae_env_ctrl_blk_p->system, &result);

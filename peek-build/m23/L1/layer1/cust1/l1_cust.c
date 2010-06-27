@@ -911,7 +911,7 @@ WORD8 Cust_get_agc_from_IL(UWORD16 radio_freq, UWORD16 agc_index, UWORD8 table_i
   #if (CODE_VERSION == SIMULATION)
     UWORD16 Cust_get_agc_band(UWORD16 arfcn, UWORD8 gsm_band)
   #else
-    UWORD16 inline Cust_get_agc_band(UWORD16 arfcn, UWORD8 gsm_band)
+    UWORD16 /* inline */ Cust_get_agc_band(UWORD16 arfcn, UWORD8 gsm_band)
   #endif
     {
 //      WORD32 i =0 ;  //omaps00090550

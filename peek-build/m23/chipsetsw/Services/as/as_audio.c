@@ -20,7 +20,7 @@
 #include "as/as_state_i.h"
 
 #include "rvf/rvf_api.h"
-#include "audio/audio_api.h"
+#include "Audio/audio_api.h"
 
 
 // Static function prototypes.

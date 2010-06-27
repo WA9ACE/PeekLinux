@@ -33,10 +33,10 @@
     #endif
     #include "l1_confg.h"
     #include "rvm/rvm_gen.h"
-    #include "audio/audio_features_i.h"
-    #include "audio/audio_ffs_i.h"
+    #include "Audio/audio_features_i.h"
+    #include "Audio/audio_ffs_i.h"
 
-    #include "audio/audio_const_i.h"
+    #include "Audio/audio_const_i.h"
 #if (AS_RFS_API == 1)
   #include "rfs/rfs_api.h"
 #else

@@ -160,7 +160,7 @@
 #include "MmiMain.h"
 #include "MmiMenu.h"
 #include "MmiPins.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "MmiIdle.h"
 
 

@@ -12,7 +12,7 @@
 #include "lcc/lcc_env.h"
 #include "lcc/lcc_trace.h"
 #include "rv/rv_defined_swe.h"
-#include "lcc/Lcc_task.h"
+#include "lcc/lcc_task.h"
 #include "drv_power.h"
 
 /* Global variables */

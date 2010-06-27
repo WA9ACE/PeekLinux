@@ -62,7 +62,7 @@
   /* This function is used instead 'hamming_distance' when a soft-decision  */
   /* decoding is performed                                                  */
 
-  INLINE void butterfly (WORD16* inputvalue, node_t *nodes);
+  /*INLINE */void butterfly (WORD16* inputvalue, node_t *nodes);
   /* Calculates the new metrics of 4 paths in the trellis diagram at a time */
   /* These four paths define a 'butterfly'                                  */
 
@@ -327,7 +327,7 @@
     return(dist);
   }
 
-  INLINE void butterfly (WORD16* inputvalue, node_t *nodes)
+  /*INLINE */void butterfly (WORD16* inputvalue, node_t *nodes)
   {      
    WORD32 num;
    WORD32 halfnum;

@@ -5130,3 +5130,724 @@ Opening the trace table file: /home/cmw/dev/peek-build/build/trace/str2ind.tab .
 
 Opening the file: /home/cmw/dev/peek-build/src/baf/baf_version.pp ... done!
 Opening the trace table file: /home/cmw/dev/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/aci/ati_cmd.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/libpng/pngerror.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/aci/ati_cmd.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/time.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/lua/ldo.pp ... done!
+
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/aci/cmh_smss.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/libpng/pngmem.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/lua/lfunc.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/sentence.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/freetype2/src/base/ftapi.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/lua/lgc.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/freetype2/src/base/basepic.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/lua/lcode.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/lua/lapi.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/lua/ldebug.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/aci/aci_version.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/zlib/crc32.pp ... done!
+
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/freetype2/src/base/ftadvanc.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/bam/amdb.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/bam/emailstask.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/zlib/gzclose.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/emobiix/BalTCPTransport.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/zlib/compress.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/emobiix/BitmapCache.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/libpng/pngget.pp ... done!
+
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/freetype2/src/base/ftbitmap.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/libpng/pngpread.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/bam/ems.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/zlib/adler32.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/context.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/zlib/inffast.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/libpng/png.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/zlib/infback.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/zlib/gzread.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/bam/markup.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/info.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/zlib/gzwrite.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: AuthExtraP.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/zlib/deflate.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/freetype2/src/base/ftbbox.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/bam/amdb_task.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/libpng/pngrio.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: asn_SEQUENCE_OF.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/libpng/pngrutil.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/generate.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/freetype2/src/base/ftcid.pp ... done!
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/parse.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: AuthRequestP.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/emobiix/Cache.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/emobiix/Boot.pp ... done!
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/freetype2/src/base/ftbase.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/zlib/inftrees.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/zlib/zutil.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/zlib/trees.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/lua/ldump.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/zlib/gzlib.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: asn_SET_OF.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: asn_codecs_prim.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/gmath.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/zlib/inflate.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/generator.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/lua/llex.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+
+
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/libpng/pngset.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/libpng/pngtrans.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/libpng/pngrtran.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/libpng/pngwrite.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/libpng/pngwio.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/freetype2/src/base/ftbdf.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/nmealib/src/parser.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/libpng/pngwtran.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/zlib/uncompr.pp ... done!
+
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/libpng/pngwutil.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/emobiix/Array.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/freetype2/src/base/ftdbgmem.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/freetype2/src/base/ftcalc.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/emobiix/ConnectionContext.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/freetype2/src/base/ftgloadr.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/emobiix/Application.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/freetype2/src/base/ftfstype.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/libpng/pngread.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/freetype2/src/base/ftdebug.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+
+
+
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Opening the file: /home/andrey/dev/repo/trunk/peek-build/src/freetype2/src/base/ftgasp.pp ... done!
+Opening the trace table file: /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab ... done!
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+
+
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+Output file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << could not be created/modified - aborting !
+
+File: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << contains the modifications intended for file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << !
+Rename file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab~ << to file: >> /home/andrey/dev/repo/trunk/peek-build/build/trace/str2ind.tab << to preserve the changes !
+
+

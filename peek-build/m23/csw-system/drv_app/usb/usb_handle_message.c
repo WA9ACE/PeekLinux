@@ -21,7 +21,7 @@
 #include "usb/usb_i.h"
 #include "usb/usb_env.h"
 #include "rvf/rvf_api.h"
-#include "usb/USB_inth.h"
+#include "usb/usb_inth.h"
 #include "chipset.cfg"
 
 #if (CHIPSET==15)

@@ -30,7 +30,7 @@
 
 #include "atp/atp_messages.h" // For ATP_TXT_CMD_RDY definition
 #if(PSP_STANDALONE==0)
-#include "audio/audio_api.h"
+#include "Audio/audio_api.h"
 #endif
 
 #include "rv/rv_general.h"

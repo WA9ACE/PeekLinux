@@ -55,7 +55,7 @@
  * AUDIO SWE
  */
 #ifdef RVM_AUDIO_MAIN_SWE
-  #include "audio/audio_pool_size.h"
+  #include "Audio/audio_pool_size.h"
   #define RVF_AUDIO_POOL_SIZE  (AUDIO_POOL_SIZE)
   #define RVF_AUDIO_INT_POOL_SIZE  (AUDIO_INT_POOL_SIZE)
 #else
@@ -67,7 +67,7 @@
  * Background AUDIO SWE
  */
 #ifdef RVM_AUDIO_BGD_SWE
-  #include "audio/audio_pool_size.h"
+  #include "Audio/audio_pool_size.h"
   #define RVF_AUDIO_BGD_POOL_SIZE  (AUDIO_BGD_POOL_SIZE)
   #define RVF_AUDIO_BGD_INT_POOL_SIZE  (AUDIO_BGD_INT_POOL_SIZE)
 #else

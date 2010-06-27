@@ -43,7 +43,7 @@
 
  #include "bspTwl3029.h"
  #include "bspTwl3029_I2c.h"
- #include "bspTwl3029_IntC.h"
+ #include "bspTwl3029_Intc.h"
  #include "bspTwl3029_Rtc.h"
 #endif
 

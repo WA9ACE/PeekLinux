@@ -25,9 +25,9 @@
 #include "as/as_processing.h"
 #include "as/as_utils.h"
 
-#include "audio/audio_api.h"
-//#include "audio/audio_mp3_i.h"
-//#include "audio/audio_aac_i.h"
+#include "Audio/audio_api.h"
+//#include "Audio/audio_mp3_i.h"
+//#include "Audio/audio_aac_i.h"
 
 #include "rv/rv_general.h"
 

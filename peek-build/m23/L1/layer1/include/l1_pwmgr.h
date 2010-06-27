@@ -12,7 +12,7 @@
 #define __L1_PWMGR_H__
 
 #include "types.h"
-#include "L1_types.h"
+#include "l1_types.h"
 #include "bspTwl3029.h"
 #include "bspTwl3029_I2c.h"
 #include "bspI2c.h"
@@ -22,7 +22,7 @@
 #include "bspTwl3029_Audio.h"
 #include "bspTwl3029_Aud_Map.h"
 #include "bspTwl3029_Int_Map.h"
-#include "armio.h"
+#include "Armio.h"
 
 #define PWDNSTATUS                       0x6A /*Decimal 106*/
 

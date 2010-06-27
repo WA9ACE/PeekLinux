@@ -1,0 +1,27 @@
+DEFINE += 
+UNDEFINE += 
+
+VARIANT_INCLUDE = 
+INCLUDE += $(M23_VARIANT_INCLUDE)
+
+SRC  = ctm/viterbi.c
+SRC += ctm/wait_for_sync.c	     
+
+OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(patsubst %.s,%.o,$(SRC)))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+TARGET = $(CURDIR)/l1_gtt_int.a
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $?
+
+clean:
+	$(RM) $(OBJ) 
+	$(RM) $(TARGET) 
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules

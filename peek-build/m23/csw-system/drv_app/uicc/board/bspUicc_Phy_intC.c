@@ -17,7 +17,7 @@
 #include "bspUtil_Assert.h"
 
 #include "bspTwl3029.h"
-#include "bspTwl3029_IntC.h"
+#include "bspTwl3029_Intc.h"
 #include "nucleus.h"
 /*=============================================================================
  * File Contents:

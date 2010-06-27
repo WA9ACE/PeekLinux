@@ -145,7 +145,7 @@
 
 
 #include "MmiMenu.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "Mmiicons.h"
 #include "MmiIdle.h"
 
@@ -171,7 +171,7 @@
 #include "MmiPins.h"
 #include "mmiSmsMenu.h"
 #include "mmismssend.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "MmiIdle.h"
 #include "MmiCPHS.h"
 

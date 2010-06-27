@@ -26,7 +26,7 @@
 	#if (L1_EXT_AUDIO_MGT==1)
 
 		#include "rv/rv_general.h"
-    #include "audio/audio_api.h"
+    #include "Audio/audio_api.h"
 	
 		
     /**** Global variables ****/

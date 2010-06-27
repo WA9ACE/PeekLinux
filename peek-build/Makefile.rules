@@ -13,11 +13,15 @@ CFLAGS_BASE += $(CCTHUMB)
 CFLAGS_BASE += $(CCOPTIMIZE2)
 CFLAGS_BASE += $(CCDEBUGOPTIMIZE)
 
+ASFLAGS_BASE = -me -mt --symdebug:coff
+
 CFLAGS := $(addprefix -D,$(VARIANT_DEFINE)) \
 					$(addprefix -U,$(VARIANT_UNDEFINE)) \
 					$(addprefix -D,$(DEFINE)) \
 					$(addprefix -U,$(UNDEFINE)) \
 					$(addprefix -I,$(COMPILER_INC) $(BASEOUT_INC) $(addprefix $(INCDIR)/,$(VARIANT_INCLUDE)) $(INCLUDE))
+
+ASFLAGS := $(ASFLAGS_BASE) $(CFLAGS_BASE) $(CFLAGS)
 
 THISDIR = $(subst $(BASEDIR)/,,$(CURDIR))
 OUTDIR  = $(BASEOUTDIR)/$(THISDIR)
@@ -35,22 +39,26 @@ STR2IND_C   = $(BUILDDIR)/trace/str2ind.c
 
 %.o: %.cpp
 	@echo "  Compiling: $< => $@"
-	@$(subst /cygdrive/c,C:,$(CC) -ppl $(CFLAGS) $<)
-	@#$(subst /cygdrive/c,C:,$(STR2IND) -a -t$(STR2IND_TAB) -l$(STR2IND_LOG) -v$(STR2IND_C) -f$(patsubst %.o,%.pp,$@))
-	@$(subst /cygdrive/c,C:,$(CC) $(CFLAGS_BASE) -eoo -fr $(@D) -fp $(patsubst %.o,%.pp,$@))
+	@$(CC) -ppl $(CFLAGS) $<
+	@#$(STR2IND) -a -t$(STR2IND_TAB) -l$(STR2IND_LOG) -v$(STR2IND_C) -f$(patsubst %.o,%.pp,$@)
+	@$(CC) $(CFLAGS_BASE) -eoo -fr $(@D) -fp $(patsubst %.o,%.pp,$@)
 
 %.o: %.c
 	@echo "  Compiling: $< => $@"
-	@$(subst /cygdrive/c,C:,$(CC) -ppl $(CFLAGS) $<)
-	@#$(subst /cygdrive/c,C:,$(STR2IND) -a -t$(STR2IND_TAB) -l$(STR2IND_LOG) -v$(STR2IND_C) -f$(patsubst %.o,%.pp,$@))
-	@$(subst /cygdrive/c,C:,$(CC) $(CFLAGS_BASE) -eoo -fr $(@D) -fc $(patsubst %.o,%.pp,$@))
+	@$(CC) -ppl $(CFLAGS) $<
+	@#$(STR2IND) -a -t$(STR2IND_TAB) -l$(STR2IND_LOG) -v$(STR2IND_C) -f$(patsubst %.o,%.pp,$@)
+	@$(CC) $(CFLAGS_BASE) -eoo -fr $(@D) -fc $(patsubst %.o,%.pp,$@)
+
+%.o: %.s
+	@echo "  Assembling: $< => $@"
+	@$(CC) $(ASFLAGS) -eoo -fr $(@D) $<
 
 %.d: %.cpp
-	@echo "  Dependencies for $<"
-	@$(subst /cygdrive/c,C:,$(CC) -ppi $(CFLAGS) $<)
+	@#echo "  Dependencies for $<"
+	@$(CC) -ppi $(CFLAGS) $<
 	@sed -e 's%\\%/%g' -e '1,1 s%^\s*%$(patsubst %.d,%.o,$@) $@ : $< %' -e 's%\s*$$% \\%g' -e '$$ s%\\%%' $(patsubst %.d,%.pp,$@) > $@
 
 %.d: %.c
-	@echo "  Dependencies for $<"
-	@$(subst /cygdrive/c,C:,$(CC) -ppi $(CFLAGS) $<)
+	@#echo "  Dependencies for $<"
+	@$(CC) -ppi $(CFLAGS) $<
 	@sed -e 's%\\%/%g' -e '1,1 s%^\s*%$(patsubst %.d,%.o,$@) $@ : $< %' -e 's%\s*$$% \\%g' -e '$$ s%\\%%' $(patsubst %.d,%.pp,$@) > $@

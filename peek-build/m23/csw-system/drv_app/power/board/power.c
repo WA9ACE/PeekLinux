@@ -28,7 +28,7 @@
 #include "abb/bspTwl3029.h"
 #include "abb/bspTwl3029_I2c.h"
 #include "abb/bspTwl3029_Power.h"
-#include "abb/bspTwl3029_IntC.h"
+#include "abb/bspTwl3029_Intc.h"
 #endif
 #include "rvm/rvm_use_id_list.h"
 #if (ANLG_FAM!=11)

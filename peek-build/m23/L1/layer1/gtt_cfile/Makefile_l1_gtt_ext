@@ -1,0 +1,42 @@
+DEFINE += 
+UNDEFINE += 
+
+VARIANT_INCLUDE = 
+INCLUDE += $(M23_VARIANT_INCLUDE)
+
+SRC  = l1gtt_async.c  		
+SRC += l1gtt_sync.c
+SRC += l1gtt_func.c
+SRC += l1gtt_drive.c
+SRC += l1gtt_init.c
+SRC += l1gtt_back.c
+SRC += l1gtt_baudot_functions.c
+SRC += ctm/conv_encoder.c
+SRC += ctm/conv_poly.c
+SRC += ctm/ctm_receiver.c
+SRC += ctm/ctm_transmitter.c
+SRC += ctm/diag_interleaver.c
+SRC += ctm/m_sequence.c
+SRC += ctm/ucs_functions.c
+SRC += ctm/diag_deinterleaver.c
+SRC += ctm/fifo.c
+SRC += ctm/init_interleaver.c
+
+OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(patsubst %.s,%.o,$(SRC)))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+TARGET = $(CURDIR)/l1_gtt_ext.a
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $?
+
+clean:
+	$(RM) $(OBJ) 
+	$(RM) $(TARGET) 
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules

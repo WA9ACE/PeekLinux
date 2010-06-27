@@ -136,7 +136,7 @@
     #include "l1_mftab.h"
     #include "l1_tabs.h"
     #include "mem.h"
-    #include "armio.h"
+    #include "Armio.h"
     #include "timer.h"
     #include "timer1.h"
     #include "dma.h"

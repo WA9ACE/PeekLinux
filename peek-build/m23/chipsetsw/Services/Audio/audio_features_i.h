@@ -1,7 +1,7 @@
 #ifndef AUDIO_FEATURES_I_H
 #define AUDIO_FEATURES_I_H
 
-  #include "audio/audio_api.h"
+  #include "Audio/audio_api.h"
   #ifndef _WINDOWS
     #include "cust_os.h"
   #else

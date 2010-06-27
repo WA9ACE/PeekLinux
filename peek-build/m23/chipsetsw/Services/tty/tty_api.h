@@ -23,7 +23,7 @@
 #include "rvm/rvm_gen.h"		/* Generic RVM types and functions. */
 
 /* TTY entity (Background Task) is highly linked to the Audio entity. */
-#include "audio/audio_api.h"
+#include "Audio/audio_api.h"
 
 
 #ifdef __cplusplus

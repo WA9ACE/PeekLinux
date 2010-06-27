@@ -12,7 +12,7 @@
 
 #include "sys_types.h"
 #include "memif/mem.h"
-#include "armio/armio.h"
+#include "armio/Armio.h"
 #include "buzzer/buzzer.h"
 #include "timer/timer.h"
 

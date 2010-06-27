@@ -112,7 +112,7 @@
 
 
 #include "MmiMenu.h"
-#include "mmiCall.h"
+#include "MmiCall.h"
 #include "Mmiicons.h"
 #include "MmiIdle.h"
 
@@ -290,7 +290,7 @@ void bookMenuDialog( T_MFW_HND win, USHORT event, SHORT value, void *parameter )
 		{
 			/* Change the callback from the default menu callback to one specified
 			 * in parameter */
-			data->Callback = (T_VOID_FUNC)parameter;
+			data->Callback = (T_VOID_FUNC)(parameter);
 		}
 		break;
 

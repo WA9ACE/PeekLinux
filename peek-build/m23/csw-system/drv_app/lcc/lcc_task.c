@@ -23,7 +23,7 @@
 #if (ANLG_FAM==11)
 #include "abb/bspTwl3029.h"
 #include "abb/bspTwl3029_I2c.h"
-#include "abb/bspTwl3029_IntC.h"
+#include "abb/bspTwl3029_Intc.h"
 #include "abb/bspTwl3029_Madc.h"
 #include "abb/bspTwl3029_Bci.h"
 #include "abb/bspTwl3029_Power.h"

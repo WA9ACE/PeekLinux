@@ -57,7 +57,7 @@
 
 #endif 
 
-#include "audio/audio_api.h"
+#include "Audio/audio_api.h"
 
 #include "rvm/rvm_use_id_list.h"
 #include "rvf/rvf_api.h"

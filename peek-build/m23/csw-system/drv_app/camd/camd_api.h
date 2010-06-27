@@ -25,7 +25,7 @@
 
 
 #include "rvm/rvm_gen.h"		/* Generic RVM types and functions. */
-#include "rvm/rvm_ext_use_Id_list.h"
+#include "rvm/rvm_ext_use_id_list.h"
 
 
 

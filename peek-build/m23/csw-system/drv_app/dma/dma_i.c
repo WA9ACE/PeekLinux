@@ -21,7 +21,7 @@
 #include "camd/camd_api.h"
 #include "camd/camd_i.h"
 #include "camd/camd_operations.h"
-#include "camd/camcore/camcore_api.h"
+#include "camd/camcore/Camcore_api.h"
 #include "camd/camcore/camcore_hwapi.h"
 #include "dma/board/dma_inth.h"
 

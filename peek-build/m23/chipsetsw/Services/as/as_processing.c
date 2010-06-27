@@ -27,9 +27,9 @@
 
 
 
-#include "audio/audio_api.h"
+#include "Audio/audio_api.h"
 #include "tty/tty_api.h"
-#include "audio/audio_compatibilities.h"
+#include "Audio/audio_compatibilities.h"
 
 
 

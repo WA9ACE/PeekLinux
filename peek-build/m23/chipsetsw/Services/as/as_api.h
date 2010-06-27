@@ -31,7 +31,7 @@
 #include "rvf/rvf_api.h"
 
 #include "rv/rv_general.h"
-#include "audio/audio_api.h"
+#include "Audio/audio_api.h"
 #if(AS_RFS_API == 1)
 #include "rfs/rfs_api.h"
 #endif

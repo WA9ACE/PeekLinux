@@ -27,7 +27,7 @@
 #include "rvm/rvm_use_id_list.h"
 
 /* TTY entity (Background Task) is HIGHLY linked to the Audio entity. */
-#include "audio/audio_api.h"
+#include "Audio/audio_api.h"
 
 /* Macro definition for sending trace */
 #define TTY_SEND_TRACE(text,level) rvf_send_trace(text, sizeof(text)-1, NULL_PARAM, level, TTY_USE_ID )

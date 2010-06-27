@@ -56,7 +56,7 @@ void uicc_nop_delay(SYS_UWORD32 us)
 
    loop_count = us * LOOPS_FOR_1MICROSECOND;
    
-   for (a = 0; a < loop_count; a++) asm(" nop");
+   for (a = 0; a < loop_count; a++) __asm(" nop");
 }
 
 static void uicc_callback(Uint8 i)

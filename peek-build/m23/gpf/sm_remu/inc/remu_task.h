@@ -23,7 +23,7 @@
 /*==== INCLUDES =============================================================*/
 
 #include "arm7/nucleus.h"
-#include "PEI.H"
+#include "pei.h"
 #include "vsi.h"
 
 
