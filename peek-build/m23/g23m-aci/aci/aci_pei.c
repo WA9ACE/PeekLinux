@@ -27,7 +27,7 @@
 #include "ccdapi.h"
 #include "cnf_aci.h"
 #include "mon_aci.h"  /* mouais... */
-#include "P_ACI.val"    /* SKA 2002-09-02 for MAX_CMD_LEN */
+#include "p_aci.val"    /* SKA 2002-09-02 for MAX_CMD_LEN */
 #include "line_edit.h"  /* SKA 2002-09-02                 */
 #include "aci_cmh.h"
 #include "ati_cmd.h"

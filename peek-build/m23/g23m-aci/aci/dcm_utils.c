@@ -23,7 +23,7 @@
 
 #include "aci.h"
 #include "aci_cmh.h"
-#include "Gaci_cmh.h"
+#include "gaci_cmh.h"
 #include "dcm.h"
 #include "dcm_utils.h"
 #include "dcm_state.h"

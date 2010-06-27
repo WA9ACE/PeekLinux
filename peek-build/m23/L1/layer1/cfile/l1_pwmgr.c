@@ -2040,8 +2040,8 @@ local_sleep_status = Peripheral_interface[BCI_ID](SLEEP_CMD);
           //             1 ?OCP clock is the divided DSP clock
           //   Bit 31:1  Not Used
           (drp_regs->CKM_OCPCLKL) &= (~(0x1));
-          asm(" NOP");
-		      asm(" NOP");
+          __asm(" NOP");
+		      __asm(" NOP");
         #endif
 
 
@@ -2165,15 +2165,15 @@ local_sleep_status = Peripheral_interface[BCI_ID](SLEEP_CMD);
               f_arm_sleep_cmd(DEEP_SLEEP);
             #else
 			  	//EMIF_SetConfReg ( 0, 0, 2 ,1 ,0);
-				asm(" NOP");
-				asm(" NOP");
-				asm(" NOP");
-				asm(" NOP");
+				__asm(" NOP");
+				__asm(" NOP");
+				__asm(" NOP");
+				__asm(" NOP");
             *((volatile UWORD16 *)CLKM_ARM_CLK) &= ~(CLKM_DEEP_SLEEP);  // set deep sleep mode
-				asm(" NOP");
-				asm(" NOP");
-				asm(" NOP");
-				asm(" NOP");
+				__asm(" NOP");
+				__asm(" NOP");
+				__asm(" NOP");
+				__asm(" NOP");
 // set deep sleep mode in case it is not set back by hardware
                                *((volatile UWORD16 *)CLKM_ARM_CLK) |= (CLKM_DEEP_SLEEP);
 
@@ -2247,8 +2247,8 @@ local_sleep_status = Peripheral_interface[BCI_ID](SLEEP_CMD);
          //             1 ?OCP clock is the divided DSP clock
          //   Bit 31:1  Not Used
          (drp_regs->CKM_OCPCLKL) |= (0x1);
-     	   asm(" NOP");
-         asm(" NOP");
+     	   __asm(" NOP");
+         __asm(" NOP");
        #endif
 
       l1s.pw_mgr.wakeup_time = l1s.actual_time.fn_mod42432;

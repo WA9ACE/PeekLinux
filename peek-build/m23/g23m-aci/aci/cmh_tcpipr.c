@@ -42,7 +42,7 @@
 #include "cmh.h"
 #include "cmh_ra.h"
 #include "dti_conn_mng.h"
-#include "Dti_cntrl_mng.h"
+#include "dti_cntrl_mng.h"
 
 #include "wap_aci.h"
 

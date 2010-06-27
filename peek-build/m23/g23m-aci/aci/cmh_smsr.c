@@ -52,7 +52,7 @@
 #include "psa_sim.h"
 #include "cmh_sim.h"
 #include "psa_util.h"
-#include "Phb.h"
+#include "phb.h"
 
 #ifdef SIM_TOOLKIT
 #include "psa_sat.h"

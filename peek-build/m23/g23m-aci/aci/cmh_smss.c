@@ -48,7 +48,7 @@
 #include "cmh.h"
 #include "cmh_sms.h"
 #include "pcm.h"
-#include "Phb.h"
+#include "phb.h"
 #include "cmh_phb.h"
 
 #ifdef SIM_TOOLKIT

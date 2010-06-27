@@ -1,0 +1,53 @@
+DEFINE += _INLINE
+DEFINE += AUDIO_TASK=1
+
+UNDEFINE += AUDIO_MIDI
+UNDEFINE += RSSI
+UNDEFINE += LNA_OFF
+
+VARIANT_INCLUDE = 
+INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(M23DIR)/L1/layer1/p_include
+INCLUDE += $(M23DIR)/L1/layer1/hint
+INCLUDE += $(M23DIR)/L1/layer1/hmacs
+INCLUDE += $(M23DIR)/csw-system/drv_core/dsp_dwnld
+
+SRC  = l1_func.c
+SRC += l1_drive.c
+SRC += l1_mfmgr.c
+SRC += l1_api_hisr.c
+SRC += ../audio_cfile/l1audio_func.c
+SRC += ../audio_cfile/l1audio_sync.c
+SRC += ../dyn_dwl_cfile/l1_dyn_dwl_apihisr.c
+SRC += ../p_cfile/l1p_ctl.c
+SRC += ../p_cfile/l1p_func.c
+SRC += ../p_cfile/l1p_driv.c
+SRC += ../cmacs/macs.c
+#SRC += ../mp3_cfile/l1mp3_dma_isr.c
+SRC += ../aac_cfile/l1aac_apihisr.c
+#SRC += ../aac_cfile/l1aac_dma_isr.c
+SRC += l1_ctl.c
+SRC += l1_cmplx.c
+SRC += l1_sync.c
+SRC += ../p_cfile/l1p_cmpl.c
+SRC += ../p_cfile/l1p_sync.c
+#SRC += l1_intram.c
+
+OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(patsubst %.s,%.o,$(SRC)))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+TARGET = $(CURDIR)/l1_int.a
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $?
+
+clean:
+	$(RM) $(OBJ) 
+	$(RM) $(TARGET) 
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules

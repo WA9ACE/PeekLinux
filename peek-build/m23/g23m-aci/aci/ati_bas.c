@@ -60,7 +60,7 @@
 #include "ati_int.h"
 
 #ifndef _SIMULATION_
-#include "ffs\ffs.h"
+#include "ffs/ffs.h"
 #endif
 
 #ifdef FF_ATI_BAT

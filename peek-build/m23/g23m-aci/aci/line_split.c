@@ -27,7 +27,7 @@
 #include "vsi.h"
 #include "pei.h"
 #include "aci_mem.h"
-#include "P_ACI.val"
+#include "p_aci.val"
 
 #include "line_edit.h"
 #include "line_edit_intern.h"
