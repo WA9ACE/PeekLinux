@@ -43,20 +43,20 @@ DataObject *dataobject_new(void)
 
 void dataobject_delete(DataObject *dobj)
 {
-	MapIterator *iter;
+	MapIterator iter;
 	void *item;
 	char *key;
 	
 	do {
-		iter = map_begin(dobj->data);
-		if (mapIterator_finished(iter)) {
-			mapIterator_delete(iter);
+		map_begin(dobj->data, &iter);
+		if (mapIterator_finished(&iter)) {
+			/*mapIterator_delete(&iter);*/
 			break;
 		}
-		item = mapIterator_item(iter, (void **)&key);
+		item = mapIterator_item(&iter, (void **)&key);
 		p_free(item);
-		mapIterator_remove(iter);
-		mapIterator_delete(iter);
+		mapIterator_remove(&iter);
+		/*mapIterator_delete(iter);*/
 	} while (1);
 
 	list_delete(dobj->children);
@@ -163,19 +163,19 @@ void dataobject_setStamp(DataObject *dobj, unsigned int stampMinor,
 	dobj->stampMajor = stampMajor;
 }
 
-MapIterator *dataobject_fieldIterator(DataObject *dobj)
+void dataobject_fieldIterator(DataObject *dobj, MapIterator *iter)
 {
-	return map_begin(dobj->data);
+	return map_begin(dobj->data, iter);
 }
 
-ListIterator *dataobject_childIterator(DataObject *dobj)
+void dataobject_childIterator(DataObject *dobj, ListIterator *iter)
 {
-	return list_begin(dobj->children);
+	list_begin(dobj->children, iter);
 }
 
 static DataObject *dataobject_getTreeR(DataObject *dobj, int *index)
 {
-	ListIterator *iter;
+	ListIterator iter;
 	DataObject *output;
 
 	/*fprintf(stderr, "GetTree - %d\n", *index);*/
@@ -183,17 +183,17 @@ static DataObject *dataobject_getTreeR(DataObject *dobj, int *index)
 	if (*index == 0)
 		return dobj;
 
-	iter = list_begin(dobj->children);
-	while (!listIterator_finished(iter)) {
+	list_begin(dobj->children, &iter);
+	while (!listIterator_finished(&iter)) {
 		*index = *index - 1;
-		output = dataobject_getTreeR((DataObject *)listIterator_item(iter), index);
+		output = dataobject_getTreeR((DataObject *)listIterator_item(&iter), index);
 		if (output != NULL) {
-			listIterator_delete(iter);
+			/*listIterator_delete(iter);*/
 			return output;
 		}
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 	return NULL;
 }
 
@@ -207,18 +207,18 @@ DataObject *dataobject_getTree(DataObject *dobj, int index)
 
 int dataobject_getTreeNextOp(DataObject *dobj, int *ischild)
 {
-	ListIterator *iter;
+	ListIterator iter;
 	DataObject *parent;
 	DataObject *last;
 
 	/* check for add child */
-	iter = list_begin(dobj->children);
-	if (!listIterator_finished(iter)) {
+	list_begin(dobj->children, &iter);
+	if (!listIterator_finished(&iter)) {
 		*ischild = -1;
-		listIterator_delete(iter);
+		/*listIterator_delete(iter);*/
 		return 1;
 	}
-	listIterator_delete(iter);
+	/*listIterator_deleteiter);*/
 
 	/* check for root since we have no children */
 	if (dobj->parent == NULL) {
@@ -230,33 +230,33 @@ int dataobject_getTreeNextOp(DataObject *dobj, int *ischild)
 
 	/* search for the child in parent */
 next_iteration:
-	iter = list_begin(parent->children);
-	while (!listIterator_finished(iter)) {
-		if (last == (DataObject *)listIterator_item(iter)) {
-			listIterator_next(iter);
-			if (!listIterator_finished(iter)) {
+	list_begin(parent->children, &iter);
+	while (!listIterator_finished(&iter)) {
+		if (last == (DataObject *)listIterator_item(&iter)) {
+			listIterator_next(&iter);
+			if (!listIterator_finished(&iter)) {
 				*ischild = dataobject_treeIndex(parent);
-				listIterator_delete(iter);
+				/*listIterator_delete(iter);*/
 				return 1;
 			} else {
 				parent = parent->parent;
 				last = last->parent;
-				listIterator_delete(iter);
+				/*listIterator_delete(iter);*/
 				if (parent == NULL)
 					return 0;
 				goto next_iteration;
 			}
 		}
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 
 	return 0;
 }
 
 static int dataobject_treeIndexR(DataObject *parent, DataObject *dobj, int *index)
 {
-	ListIterator *iter;
+	ListIterator iter;
 	int output;
 
 	/*fprintf(stderr, "TreeIndex - %d\n", *index);*/
@@ -264,17 +264,17 @@ static int dataobject_treeIndexR(DataObject *parent, DataObject *dobj, int *inde
 	if (parent == dobj)
 		return *index;
 
-	iter = list_begin(parent->children);
-	while (!listIterator_finished(iter)) {
+	list_begin(parent->children, &iter);
+	while (!listIterator_finished(&iter)) {
 		*index += 1;
-		output = dataobject_treeIndexR((DataObject *)listIterator_item(iter), dobj, index);
+		output = dataobject_treeIndexR((DataObject *)listIterator_item(&iter), dobj, index);
 		if (output >= 0) {
-			listIterator_delete(iter);
+			/*listIterator_delete(iter);*/
 			return output;
 		}
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 	return -1;
 }
 
@@ -331,7 +331,7 @@ DataObject *dataobject_superparent(DataObject *dobj)
 DataObject *dataobject_findByName(DataObject *dobj, const char *name)
 {
 	DataObjectField *field;
-	ListIterator *iter;
+	ListIterator iter;
 	DataObject *child;
 
 	field = dataobject_getValue(dobj, "name");
@@ -343,18 +343,18 @@ DataObject *dataobject_findByName(DataObject *dobj, const char *name)
 	if (list_size(dobj->children) == 0)
 		return NULL;
 
-	iter = list_begin(dobj->children);
-	while (!listIterator_finished(iter)) {
-		child = listIterator_item(iter);
+	list_begin(dobj->children, &iter);
+	while (!listIterator_finished(&iter)) {
+		child = listIterator_item(&iter);
 		child = dataobject_findByName(child, name);
 		if (child != NULL) {
-			listIterator_delete(iter);
+			/*listIterator_delete(iter);*/
 			return child;
 		}
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
 
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 	return NULL;
 }
 
@@ -385,18 +385,18 @@ void dataobject_setLayoutDirty(DataObject *dobj, unsigned int wh)
 
 void dataobject_setLayoutDirtyAll(DataObject *dobj)
 {
-	ListIterator *iter;
+	ListIterator iter;
 
 	dobj->flags1 |= DO_FLAG_LAYOUT_DIRTY_WIDTH;
 	dobj->flags1 |= DO_FLAG_LAYOUT_DIRTY_HEIGHT;
 
-	iter = list_begin(dobj->children);
-	while (!listIterator_finished(iter)) {
+	list_begin(dobj->children, &iter);
+	while (!listIterator_finished(&iter)) {
 		dataobject_setLayoutDirtyAll(
-				(DataObject *)listIterator_item(iter));
-		listIterator_next(iter);
+				(DataObject *)listIterator_item(&iter));
+		listIterator_next(&iter);
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 }
 
 void dataobject_setLayoutClean(DataObject *dobj, unsigned int wh)
@@ -407,8 +407,8 @@ void dataobject_setLayoutClean(DataObject *dobj, unsigned int wh)
 
 static void dataobject_debugPrintR(DataObject *dobj, int level)
 {
-	MapIterator *iter;
-	ListIterator *citer;
+	MapIterator iter;
+	ListIterator citer;
 	DataObjectField *dof;
 	const char *key;
 	int i;
@@ -430,11 +430,11 @@ static void dataobject_debugPrintR(DataObject *dobj, int level)
 	}
 
 	i = 0;
-	iter = map_begin(dobj->data);
-	while (!mapIterator_finished(iter)) {
+	map_begin(dobj->data, &iter);
+	while (!mapIterator_finished(&iter)) {
 		if (i != 0)
 			emo_printf(", ");
-		dof = (DataObjectField *)mapIterator_item(iter, (void **)&key);
+		dof = (DataObjectField *)mapIterator_item(&iter, (void **)&key);
 		switch (dof->type) {
 			case DOF_STRING:
 				emo_printf("%s=\"%s\"", key, dof->field.string);
@@ -449,17 +449,17 @@ static void dataobject_debugPrintR(DataObject *dobj, int level)
 				emo_printf("%s=\"DATA-%d bytes\"", key, dof->field.data.size);
 				break;
 		}
-		mapIterator_next(iter);
+		mapIterator_next(&iter);
 		++i;
 	}
 	emo_printf(">" NL);
 
-	citer = list_begin(dobj->children);
-	while (!listIterator_finished(citer)) {
-		dataobject_debugPrintR((DataObject *)listIterator_item(citer), level+1);
-		listIterator_next(citer);
+	list_begin(dobj->children, &citer);
+	while (!listIterator_finished(&citer)) {
+		dataobject_debugPrintR((DataObject *)listIterator_item(&citer), level+1);
+		listIterator_next(&citer);
 	}
-	listIterator_delete(citer);
+	/*listIterator_delete(citer);*/
 }
 
 
@@ -605,7 +605,7 @@ extern ConnectionContext *connectionContext;
 
 void dataobject_resolveReferences(DataObject *dobj)
 {
-	ListIterator *iter;
+	ListIterator iter;
 	DataObject *ref, *parent;
 	DataObjectField *field;
 	URL *url;
@@ -633,11 +633,11 @@ void dataobject_resolveReferences(DataObject *dobj)
 		}
 	}
 
-	iter = list_begin(dobj->children);
-	while (!listIterator_finished(iter)) {
-		dataobject_resolveReferences((DataObject *)listIterator_item(iter));
-		listIterator_next(iter);
+	list_begin(dobj->children, &iter);
+	while (!listIterator_finished(&iter)) {
+		dataobject_resolveReferences((DataObject *)listIterator_item(&iter));
+		listIterator_next(&iter);
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 }
 

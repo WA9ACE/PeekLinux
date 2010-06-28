@@ -72,30 +72,30 @@ void map_append(Map *ht, const void *key, void *data)
 void *map_find(Map *ht, const void *key)
 {
     MapNode *output;
-    ListIterator *iter;
+    ListIterator iter;
 
-    iter = list_begin(ht->list);
-    while (!listIterator_finished(iter)) {
-        output = (MapNode *)listIterator_item(iter);
+    list_begin(ht->list, &iter);
+    while (!listIterator_finished(&iter)) {
+        output = (MapNode *)listIterator_item(&iter);
         switch (ht->type) {
             case STRING:
 				if (strcmp(output->key.kstring, (const char *)key) == 0) {
-					listIterator_delete(iter);
+					/*listIterator_delete(iter);*/
                     return output->data;
 				}
                 break;
             case NUMBER:
             default:
 				if (output->key.number == (int)key) {
-					listIterator_delete(iter);
+					/*listIterator_delete(iter);*/
                     return output->data;
 				}
                 break;
         }
-        listIterator_next(iter);
+        listIterator_next(&iter);
     }
 
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 
     return NULL;
 }
@@ -103,32 +103,32 @@ void *map_find(Map *ht, const void *key)
 void map_remove(Map *ht, const void *key)
 {
     MapNode *output;
-    ListIterator *iter;
+    ListIterator iter;
 
-    iter = list_begin(ht->list);
-    while (!listIterator_finished(iter)) {
-        output = (MapNode *)listIterator_item(iter);
+    list_begin(ht->list, &iter);
+    while (!listIterator_finished(&iter)) {
+        output = (MapNode *)listIterator_item(&iter);
         switch (ht->type) {
             case STRING:
 				if (strcmp(output->key.kstring, (const char *)key) == 0) {
-					listIterator_remove(iter);
-					listIterator_delete(iter);
+					listIterator_remove(&iter);
+					/*listIterator_delete(iter);*/
                     return;
 				}
                 break;
             case NUMBER:
             default:
 				if (output->key.number == (int)key) {
-					listIterator_remove(iter);
-					listIterator_delete(iter);
+					listIterator_remove(&iter);
+					/*listIterator_delete(iter);*/
                     return;
 				}
                 break;
         }
-        listIterator_next(iter);
+        listIterator_next(&iter);
     }
 
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 }
 
 void map_delete(Map *ht)
@@ -137,9 +137,10 @@ void map_delete(Map *ht)
     p_free(ht);
 }
 
-MapIterator *map_begin(Map *ht)
+void map_begin(Map *ht, MapIterator *iter)
 {
-	return (MapIterator *)list_begin(ht->list);
+	/*return (MapIterator *)*/
+	list_begin(ht->list, iter);
 }
 
 int mapIterator_finished(MapIterator *iter)
@@ -170,7 +171,7 @@ void mapIterator_next(MapIterator *iter)
 	listIterator_next((ListIterator *)iter);
 }
 
-void mapIterator_delete(MapIterator *iter)
+/*void mapIterator_delete(MapIterator *iter)
 {
 	listIterator_delete((ListIterator *)iter);
-}
+}*/

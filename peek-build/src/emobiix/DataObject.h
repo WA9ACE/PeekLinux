@@ -39,8 +39,8 @@ void dataobject_getStamp(DataObject *dobj, unsigned int *stampMinor,
 		unsigned int *stampMajor);
 void dataobject_setStamp(DataObject *dobj, unsigned int stampMinor,
 		unsigned int stampMajor);
-MapIterator *dataobject_fieldIterator(DataObject *dobj);
-ListIterator *dataobject_childIterator(DataObject *dobj);
+void dataobject_fieldIterator(DataObject *dobj, MapIterator *iter);
+void dataobject_childIterator(DataObject *dobj, ListIterator *iter);
 DataObject *dataobject_getTree(DataObject *dobj, int index);
 int dataobject_getTreeNextOp(DataObject *dobj, int *ischild);
 int dataobject_treeIndex(DataObject *dobj);

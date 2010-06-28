@@ -21,7 +21,7 @@ void widget_setDataObjectArray(Widget *w, DataObject *dobj);
 void widget_setPacking(Widget *w, WidgetPacking p);
 WidgetPacking widget_getPacking(Widget *w);
 void widget_pack(Widget *w, Widget *parent);
-ListIterator *widget_getChildren(Widget *w);
+void widget_getChildren(Widget *w, ListIterator *iter);
 void widget_setClass(Widget *w, const char *className);
 const char *widget_getClass(Widget *w);
 void widget_setID(Widget *w, const char *idName);

@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-typedef struct ListNode_t ListNode;
 struct ListNode_t {
     void *data;
     ListNode *prev, *next;
@@ -15,12 +14,6 @@ struct ListNode_t {
 struct List_t {
     int length;
     ListNode *head, *tail;
-};
-
-struct ListIterator_t {
-    List *list;
-    ListNode *node;
-    int offset;
 };
 
 List *list_new(void)
@@ -83,17 +76,17 @@ void list_delete(List *l)
 
 void *list_find(List *l, void *obj, ListComparitor lc)
 {
-	ListIterator *iter;
+	ListIterator iter;
 	void *output;
 
-	iter = list_begin(l);
-	while (!listIterator_finished(iter)) {
-		output = listIterator_item(iter);
+	list_begin(l, &iter);
+	while (!listIterator_finished(&iter)) {
+		output = listIterator_item(&iter);
 		if (lc(obj, output) == 0) {
-			listIterator_delete(iter);
+			/*listIterator_delete(iter);*/
 			return output;
 		}
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
 	return NULL;
 }
@@ -104,38 +97,38 @@ int list_size(List *l)
 }
 void list_debug(List *l)
 {
-	ListIterator *iter;
+	ListIterator iter;
 
 	emo_printf("List<");
-	for (iter = list_begin(l); !listIterator_finished(iter); listIterator_next(iter)) {
-		emo_printf("%p, ", listIterator_item(iter));
+	for (list_begin(l, &iter); !listIterator_finished(&iter); listIterator_next(&iter)) {
+		emo_printf("%p, ", listIterator_item(&iter));
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 	emo_printf(">" NL);
 }
 
-ListIterator *list_begin(List *l)
+void list_begin(List *l, ListIterator *output)
 {
-    ListIterator *output;
+/*    ListIterator *output;
 
-    output = (ListIterator *)p_malloc(sizeof(ListIterator));
+    output = (ListIterator *)p_malloc(sizeof(ListIterator));*/
     output->list = l;
     output->node = l->head;
     output->offset = (char *)&output->node->next - (char *)output->node;
 
-    return output;
+    /*return output;*/
 }
 
-ListIterator *list_rbegin(List *l)
+void list_rbegin(List *l, ListIterator *output)
 {
-    ListIterator *output;
+/*    ListIterator *output;
 
-    output = (ListIterator *)p_malloc(sizeof(ListIterator));
+    output = (ListIterator *)p_malloc(sizeof(ListIterator));*/
     output->list = l;
     output->node = l->tail;
     output->offset = (char *)&output->node->prev - (char *)output->node;
 
-    return output;
+    /*return output;*/
 }
 
 int listIterator_finished(ListIterator *iter)
@@ -155,10 +148,10 @@ void listIterator_next(ListIterator *iter)
     iter->node = *(ListNode **)(((char *)(iter->node))+iter->offset);
 }
 
-void listIterator_delete(ListIterator *iter)
+/*void listIterator_delete(ListIterator *iter)
 {
     p_free(iter);
-}
+}*/
 
 void listIterator_remove(ListIterator *iter)
 {

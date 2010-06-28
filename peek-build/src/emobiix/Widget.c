@@ -71,15 +71,15 @@ int widget_isArraySource(Widget *w)
 
 void widget_setDataObjectArray(Widget *w, DataObject *dobj)
 {
-	ListIterator *iter;
+	ListIterator iter;
 
 	if (widget_isArraySource(w))
 		widget_setDataObject(w, dobj);
 	
-	for (iter = list_begin(w->children);
-			!listIterator_finished(iter);
-			listIterator_next(iter)) {
-		widget_setDataObjectArray((Widget *)listIterator_item(iter),
+	for (list_begin(w->children, &iter);
+			!listIterator_finished(&iter);
+			listIterator_next(&iter)) {
+		widget_setDataObjectArray((Widget *)listIterator_item(&iter),
 				dobj);
 	}
 }
@@ -133,9 +133,9 @@ void widget_pack(Widget *w, Widget *parent)
 	list_append(parent->children, w);
 }
 
-ListIterator *widget_getChildren(Widget *w)
+void widget_getChildren(Widget *w, ListIterator *iter)
 {
-	return list_begin(w->children);
+	list_begin(w->children, iter);
 }
 
 void widget_setClass(Widget *w, const char *className)
@@ -259,23 +259,23 @@ void widget_printTree(Widget *w, int level)
 {
 #ifdef SIMULATOR
 	int i;
-	ListIterator *iter;
+	ListIterator iter;
 
 	for (i = 0; i < level; ++i)
 		printf("  ");
 
-	iter = widget_getChildren(w);
-	while (!listIterator_finished(iter)) {
-		widget_printTree((Widget *)listIterator_item(iter), level+1);
-		listIterator_next(iter);
+	widget_getChildren(w, &iter);
+	while (!listIterator_finished(&iter)) {
+		widget_printTree((Widget *)listIterator_item(&iter), level+1);
+		listIterator_next(&iter);
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 #endif
 }
 
 int widget_focusFirst(Widget *w, List *l)
 {
-	ListIterator *iter;
+	ListIterator iter;
 	int result;
 
 	if (widget_canFocus(w)) {
@@ -287,25 +287,25 @@ int widget_focusFirst(Widget *w, List *l)
 	if (widget_typeNoChildRender(dataobject_getValue(w, "type")))
 		return 0;
 
-	iter = widget_getChildren(w);
-	while (!listIterator_finished(iter)) {
-		result = widget_focusFirst((Widget *)listIterator_item(iter),
+	widget_getChildren(w, &iter);
+	while (!listIterator_finished(&iter)) {
+		result = widget_focusFirst((Widget *)listIterator_item(&iter),
 				l);
 		if (result) {
-			listIterator_delete(iter);
+			/*listIterator_delete(iter);*/
 			return 1;
 		}
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
 
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 
 	return 0;
 }
 
 int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, int *alreadySet)
 {
-	ListIterator *iter;
+	ListIterator iter;
 	int result, thisUnset;
 	DataObjectField *type;
 
@@ -353,18 +353,18 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 		return result;
 	}
 
-	iter = widget_getChildren(w);
-	while (!listIterator_finished(iter)) {
-		result = widget_focusNextR((Widget *)listIterator_item(iter),
+	widget_getChildren(w, &iter);
+	while (!listIterator_finished(&iter)) {
+		result = widget_focusNextR((Widget *)listIterator_item(&iter),
 				l, parentRedraw, alreadyUnset, alreadySet);
 		if (result == 2) {
-			listIterator_delete(iter);
+			/*listIterator_delete(iter);*/
 			return 2;
 		}
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
 
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 
 	return 0;
 }
@@ -372,7 +372,7 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 void widget_focusNext(Widget *tree, Style *s)
 {
 	List *redrawlist;
-	ListIterator *iter;
+	ListIterator iter;
 	int unset, iset;
 	Widget *w1;
 	Rectangle rect;
@@ -388,9 +388,9 @@ void widget_focusNext(Widget *tree, Style *s)
 
 	/*emo_printf("Redraw list: %d\n", list_size(redrawlist));*/
 
-	iter = list_begin(redrawlist);
-	while (!listIterator_finished(iter)) {
-		w1 = (Widget *)listIterator_item(iter);
+	list_begin(redrawlist, &iter);
+	while (!listIterator_finished(&iter)) {
+		w1 = (Widget *)listIterator_item(&iter);
 		/*emo_printf("redrawlist: %p\n", w1);*/
 		widget_markDirty(w1);
 
@@ -402,30 +402,30 @@ void widget_focusNext(Widget *tree, Style *s)
 #ifdef CLIP_DEBUG
 		lgui_box(rect.x, rect.y, rect.width, rect.height, 1, 0, 0, 0);
 #endif
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 	list_delete(redrawlist);
 }
 
 Widget *widget_focusPrevD(Widget *w)
 {
-	ListIterator *iter;
+	ListIterator iter;
 	Widget *cw, *iw;
 
 	if (!widget_typeNoChildRender(dataobject_getValue(w, "type"))) {
-		iter = list_rbegin(w->children);
-		while (!listIterator_finished(iter)) {
-			cw = (Widget *)listIterator_item(iter);
+		list_rbegin(w->children, &iter);
+		while (!listIterator_finished(&iter)) {
+			cw = (Widget *)listIterator_item(&iter);
 			iw = widget_focusPrevD(cw);
 			if (iw != NULL) {
-				listIterator_delete(iter);
+				/*listIterator_delete(iter);*/
 				return iw;
 			}
-			listIterator_next(iter);
+			listIterator_next(&iter);
 		}
 
-		listIterator_delete(iter);
+		/*listIterator_delete(iter);*/
 	}
 
 	if (widget_canFocus(w)) {
@@ -439,44 +439,44 @@ Widget *widget_focusPrevD(Widget *w)
 Widget *widget_focusPrevR(Widget *old)
 {
 	Widget *w, *cw, *iw;
-	ListIterator *iter;
+	ListIterator iter;
 
 	w = old->parent;
 	if (w == NULL)
 		return NULL;
 	
-	iter = list_rbegin(w->children);
-	while (!listIterator_finished(iter)) {
-		cw = (Widget *)listIterator_item(iter);
+	list_rbegin(w->children, &iter);
+	while (!listIterator_finished(&iter)) {
+		cw = (Widget *)listIterator_item(&iter);
 		if (cw == old) {
 			break;
 		}
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
 
-	if (listIterator_finished(iter)) {
-		listIterator_delete(iter);
+	if (listIterator_finished(&iter)) {
+		/*listIterator_delete(iter);*/
 		return widget_focusPrevR(w);
 	}
 
-	listIterator_next(iter);
+	listIterator_next(&iter);
 
-	while (!listIterator_finished(iter)) {
-		cw = (Widget *)listIterator_item(iter);
+	while (!listIterator_finished(&iter)) {
+		cw = (Widget *)listIterator_item(&iter);
 		iw = widget_focusPrevD(cw);
 		if (iw == NULL && widget_canFocus(cw)) {
 			widget_setFocus(cw, 1);
-			listIterator_delete(iter);
+			/*listIterator_delete(iter);*/
 			return cw;
 		}
 		if (iw != NULL) {
-			listIterator_delete(iter);
+			/*listIterator_delete(iter);*/
 			return iw;
 		}
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
 
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 
 	if (widget_canFocus(w)) {
 		widget_setFocus(w, 1);
@@ -489,19 +489,19 @@ Widget *widget_focusPrevR(Widget *old)
 static Widget *widget_focusLast(Widget *w)
 {
 	Widget *child;
-	ListIterator *iter;
+	ListIterator iter;
 	DataObjectField *field;
 
 	if (!widget_typeNoChildRender(dataobject_getValue(w, "type"))) {
-		iter = list_rbegin(w->children);
-		while (!listIterator_finished(iter)) {
-			child = (Widget *)listIterator_item(iter);
+		list_rbegin(w->children, &iter);
+		while (!listIterator_finished(&iter)) {
+			child = (Widget *)listIterator_item(&iter);
 			child = widget_focusLast(child);
 			if (child != NULL)
 				return child;
-			listIterator_next(iter);
+			listIterator_next(&iter);
 		}
-		listIterator_delete(iter);
+		/*listIterator_delete(iter);*/
 	}
 	
 	if (widget_canFocus(w)) {
@@ -571,7 +571,7 @@ void widget_focusPrev(Widget *tree, Style *s)
 
 Widget *widget_focusNoneR(Widget *w)
 {
-	ListIterator *iter;
+	ListIterator iter;
 	Widget *result;
 	
 	if (widget_hasFocus(w)) {
@@ -579,17 +579,17 @@ Widget *widget_focusNoneR(Widget *w)
 		return w;
 	}
 
-	iter = widget_getChildren(w);
-	while (!listIterator_finished(iter)) {
-		result = widget_focusNoneR((Widget *)listIterator_item(iter));
+	widget_getChildren(w, &iter);
+	while (!listIterator_finished(&iter)) {
+		result = widget_focusNoneR((Widget *)listIterator_item(&iter));
 		if (result) {
-			listIterator_delete(iter);
+			/*listIterator_delete(iter);*/
 			return result;
 		}
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
 
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 
 	return NULL;
 }
@@ -606,31 +606,31 @@ void widget_focusNone(Widget *w, Style *s)
 
 Widget *widget_focusWhichOneNF(Widget *w)
 {
-	ListIterator *iter;
+	ListIterator iter;
 	Widget *result;
 	
 	if (widget_hasFocus(w)) {
 		return w;
 	}
 
-	iter = widget_getChildren(w);
-	while (!listIterator_finished(iter)) {
-		result = widget_focusWhichOneNF((Widget *)listIterator_item(iter));
+	widget_getChildren(w, &iter);
+	while (!listIterator_finished(&iter)) {
+		result = widget_focusWhichOneNF((Widget *)listIterator_item(&iter));
 		if (result) {
-			listIterator_delete(iter);
+			/*listIterator_delete(iter);*/
 			return result;
 		}
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
 
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 
 	return NULL;
 }
 
 Widget *widget_focusWhichOne(Widget *w)
 {
-	ListIterator *iter;
+	ListIterator iter;
 	Widget *result;
 	
 	if (widget_hasFocus(w)) {
@@ -638,32 +638,32 @@ Widget *widget_focusWhichOne(Widget *w)
 		return w;
 	}
 
-	iter = widget_getChildren(w);
-	while (!listIterator_finished(iter)) {
-		result = widget_focusWhichOne((Widget *)listIterator_item(iter));
+	widget_getChildren(w, &iter);
+	while (!listIterator_finished(&iter)) {
+		result = widget_focusWhichOne((Widget *)listIterator_item(&iter));
 		if (result) {
-			listIterator_delete(iter);
+			/*listIterator_delete(iter);*/
 			return result;
 		}
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
 
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 
 	return NULL;
 }
 
 static void widget_markDirtyChild(Widget *w)
 {
-	ListIterator *iter;
+	ListIterator iter;
 	dataobject_setDirty(w);
 
-	iter = list_begin(w->children);
-	while (!listIterator_finished(iter)) {
-		widget_markDirtyChild((Widget *)listIterator_item(iter));
-		listIterator_next(iter);
+	list_begin(w->children, &iter);
+	while (!listIterator_finished(&iter)) {
+		widget_markDirtyChild((Widget *)listIterator_item(&iter));
+		listIterator_next(&iter);
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 }
 
 void widget_markDirty(Widget *w)
@@ -682,7 +682,7 @@ void widget_markDirty(Widget *w)
 Widget *widget_findStringField(Widget *w, const char *key, const char *value)
 {
 	DataObjectField *field;
-	ListIterator *iter;
+	ListIterator iter;
 	Widget *retval;
 
 	field = dataobject_getValue(w, key);
@@ -691,16 +691,16 @@ Widget *widget_findStringField(Widget *w, const char *key, const char *value)
 			return w;
 	}
 
-	iter = widget_getChildren(w);
-	while (!listIterator_finished(iter)) {
-		retval = widget_findStringField((Widget *)listIterator_item(iter), key, value);
+	widget_getChildren(w, &iter);
+	while (!listIterator_finished(&iter)) {
+		retval = widget_findStringField((Widget *)listIterator_item(&iter), key, value);
 		if (retval != NULL) {
-			listIterator_delete(iter);
+			/*listIterator_delete(iter);*/
 			return retval;
 		}
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 
 	return NULL;
 }
@@ -711,7 +711,7 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 	WidgetRenderer *wr;
 	DataObject *dobj;
 	const char *className, *id;
-	ListIterator *iter;
+	ListIterator iter;
 	IPoint p;
 	int slen, tmpint;
 
@@ -767,12 +767,12 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 	}
 #endif
 
-	iter = list_begin(w->children);
-	while (!listIterator_finished(iter)) {
-		widget_layoutMeasureAbsolute(listIterator_item(iter), s);
-		listIterator_next(iter);
+	list_begin(w->children, &iter);
+	while (!listIterator_finished(&iter)) {
+		widget_layoutMeasureAbsolute(listIterator_item(&iter), s);
+		listIterator_next(&iter);
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 }
 
 void widget_layoutForceResolveParent(Widget *w, unsigned int flag)
@@ -798,7 +798,7 @@ void widget_resolveMeasureRelative(Widget *w)
 	int sumWidth, sumHeight, sumNew;
 	DataObject *child;
 	DataObjectField *sField;
-	ListIterator *iter;
+	ListIterator iter;
 	int tmpint, slen;
 
 	/* get specified absolute values */
@@ -828,9 +828,9 @@ void widget_resolveMeasureRelative(Widget *w)
 
 	sField = dataobject_getValue(w, "type");
 	if (!widget_typeNoChildRender(sField)) {
-		iter = list_begin(w->children);
-		while (!listIterator_finished(iter)) {
-			child = (DataObject *)listIterator_item(iter);
+		list_begin(w->children, &iter);
+		while (!listIterator_finished(&iter)) {
+			child = (DataObject *)listIterator_item(&iter);
 			widget_resolveMeasureRelative(child);
 			if (widget_getPacking(w) == WP_HORIZONTAL) {
 				sumWidth += child->box.width + child->margin.x + child->margin.width;
@@ -841,9 +841,9 @@ void widget_resolveMeasureRelative(Widget *w)
 				sumWidth = sumNew > sumWidth ? sumNew : sumWidth;
 				sumHeight += child->box.height + child->margin.y + child->margin.height;
 			}
-			listIterator_next(iter);
+			listIterator_next(&iter);
 		}
-		listIterator_delete(iter);
+		/*listIterator_delete(iter);*/
 	}
 
 	if (dataobject_isLayoutDirty(w, LAYOUT_DIRTY_WIDTH)) {
@@ -860,7 +860,7 @@ void widget_resolveMargin(Widget *w, Style *s)
 {
 	DataObjectField *field, *type;
 	WidgetRenderer *wr;
-	ListIterator *iter;
+	ListIterator iter;
 	const char *className, *id;
 	DataObject *dobj;
 
@@ -900,19 +900,19 @@ void widget_resolveMargin(Widget *w, Style *s)
 	if (widget_typeNoChildRender(type))
 		return;
 
-	iter = list_begin(w->children);
-	while (!listIterator_finished(iter)) {
-		widget_resolveMargin(listIterator_item(iter), s);
-		listIterator_next(iter);
+	list_begin(w->children, &iter);
+	while (!listIterator_finished(&iter)) {
+		widget_resolveMargin(listIterator_item(&iter), s);
+		listIterator_next(&iter);
 	}
 
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 }
 
 void widget_resolvePosition(Widget *w)
 {
 	int xpos, ypos, width, height;
-	ListIterator *iter;
+	ListIterator iter;
 	WidgetAlignment alignment;
 	WidgetPacking packing;
 	Widget *cw;
@@ -934,10 +934,10 @@ void widget_resolvePosition(Widget *w)
 			strcmp(field->field.string, "stack") == 0)
 		positionStatic = 1;
 
-	iter = list_begin(w->children);
+	list_begin(w->children, &iter);
 
-	while (!listIterator_finished(iter)) {
-		cw = (Widget *)listIterator_item(iter);
+	while (!listIterator_finished(&iter)) {
+		cw = (Widget *)listIterator_item(&iter);
 		alignment = widget_getAlignment(cw);
 		
 		switch (alignment) {
@@ -991,15 +991,15 @@ void widget_resolvePosition(Widget *w)
 				ypos += 2;
 		}
 #endif
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
 
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 }
 
 void widget_resolveLayoutRoot(Widget *w, Style *s, int resizeRoot)
 {
-	ListIterator *iter;
+	ListIterator iter;
 
 	dataobject_setLayoutDirtyAll(w);
 
@@ -1020,20 +1020,20 @@ void widget_resolveLayoutRoot(Widget *w, Style *s, int resizeRoot)
 	}
 
 	/* measure those with explicit sizes or measurable content */
-	iter = list_begin(w->children);
-	while (!listIterator_finished(iter)) {
-		widget_layoutMeasureAbsolute(listIterator_item(iter), s);
-		listIterator_next(iter);
+	list_begin(w->children, &iter);
+	while (!listIterator_finished(&iter)) {
+		widget_layoutMeasureAbsolute(listIterator_item(&iter), s);
+		listIterator_next(&iter);
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 
 	/* measure those whos size is based on their children or parent */
-	iter = list_begin(w->children);
-	while (!listIterator_finished(iter)) {
-		widget_resolveMeasureRelative((DataObject *)listIterator_item(iter));
-		listIterator_next(iter);
+	list_begin(w->children, &iter);
+	while (!listIterator_finished(&iter)) {
+		widget_resolveMeasureRelative((DataObject *)listIterator_item(&iter));
+		listIterator_next(&iter);
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 
 	/* position widgets based on packing and alignment */
 #if 0

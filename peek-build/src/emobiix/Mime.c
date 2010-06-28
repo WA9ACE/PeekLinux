@@ -37,16 +37,15 @@ int mime_load(DataObject *dobj)
 
 void mime_loadAll(DataObject *dobj)
 {
-	ListIterator *iter;
+	ListIterator iter;
 
 	mime_load(dobj);
 	
-	iter = widget_getChildren(dobj);
-	while (!listIterator_finished(iter)) {
-		mime_loadAll((DataObject *)listIterator_item(iter));
-		listIterator_next(iter);
+	widget_getChildren(dobj, &iter);
+	while (!listIterator_finished(&iter)) {
+		mime_loadAll((DataObject *)listIterator_item(&iter));
+		listIterator_next(&iter);
 	}
-	listIterator_delete(iter);
 }
 
 struct PNG_memory_t {

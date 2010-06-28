@@ -225,9 +225,9 @@ void manager_launchApplication(Application *app)
 	list_append(appManager->applications, app);
 }
 
-ListIterator *manager_applications(void)
+void manager_applications(ListIterator *iter)
 {
-	return list_begin(appManager->applications);
+	list_begin(appManager->applications, iter);
 }
 
 Application *manager_getFocusedApplication(void)
@@ -238,7 +238,7 @@ Application *manager_getFocusedApplication(void)
 void manager_focusApplication(Application *app)
 {
     DataObject *currentScreen;
-    ListIterator *iter;
+    ListIterator iter;
 
 	emo_printf("Focusing Application" NL);
     currentScreen = application_getCurrentScreen(app);
@@ -247,13 +247,13 @@ void manager_focusApplication(Application *app)
 		return;
 	}
 
-    iter = widget_getChildren(appManager->rootApplicationPlaceHolder);
-    if (listIterator_finished(iter)) {
-        listIterator_delete(iter);
+    widget_getChildren(appManager->rootApplicationPlaceHolder, &iter);
+    if (listIterator_finished(&iter)) {
+        /*listIterator_delete(iter);*/
         return;
     }
-    listIterator_remove(iter);
-    listIterator_delete(iter);
+    listIterator_remove(&iter);
+    /*listIterator_delete(iter);*/
     dataobject_packStart(appManager->rootApplicationPlaceHolder,
             currentScreen);
 
@@ -272,27 +272,27 @@ void manager_focusApplication(Application *app)
 
 void manager_focusNextApplication(void)
 {
-	ListIterator *iter;
+	ListIterator iter;
 	Application *newFocus = NULL, *item;
 	int found = 0;
 
-	iter = list_begin(appManager->applications);
-	while (!listIterator_finished(iter)) {
-		item = (Application *)listIterator_item(iter);
+	list_begin(appManager->applications, &iter);
+	while (!listIterator_finished(&iter)) {
+		item = (Application *)listIterator_item(&iter);
 		if (!found && item == appManager->focus)
 			found = 1;
 		else if (found) {
 			newFocus = item;
 			break;
 		}
-		listIterator_next(iter);
+		listIterator_next(&iter);
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 
 	if (newFocus == NULL) {
-		iter = list_begin(appManager->applications);
-		newFocus = (Application *)listIterator_item(iter);
-		listIterator_delete(iter);
+		list_begin(appManager->applications, &iter);
+		newFocus = (Application *)listIterator_item(&iter);
+		/*listIterator_delete(iter);*/
 	}
 	manager_focusApplication(newFocus);	
 }

@@ -17,7 +17,7 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	DataObjectField *startindex, *focusindex, *endindex;
 	DataObject *rec, *shim, *wchild;
 	WidgetPacking packing;
-	ListIterator *iter;
+	ListIterator iter;
 	int sfHeight, sfStartY, recordCount;
 	int startidx, focusidx, endidx, idx, canFocus;
 
@@ -47,9 +47,9 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	emo_printf("start: %d, focus: %d" NL, startindex->field.integer,
 			focusindex->field.integer);
 
-	iter = dataobject_childIterator(w);
-	wchild = listIterator_item(iter);
-	listIterator_delete(iter);
+	dataobject_childIterator(w, &iter);
+	wchild = listIterator_item(&iter);
+	/*listIterator_delete(iter);*/
 	if (wchild == NULL) {
 		emo_printf("wchild was NULL" NL);	
 		return;
@@ -84,15 +84,15 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	dataobject_pack(shim, wchild);
 	lgui_clip_push();
 	lgui_clip_and(box);
-	for (iter = dataobject_childIterator(dobj);
-			!listIterator_finished(iter); listIterator_next(iter)) {
+	for (dataobject_childIterator(dobj, &iter);
+			!listIterator_finished(&iter); listIterator_next(&iter)) {
 		/*emo_printf("Drawing Array index %d" NL, idx);*/
 		if (idx < startidx) {
 			/*emo_printf("Skipping %d - %d" NL, idx, startidx);*/
 			++idx;
 			continue;
 		}
-		rec = (DataObject *)listIterator_item(iter);
+		rec = (DataObject *)listIterator_item(&iter);
 		if (idx == focusidx && canFocus)
 			widget_setFocus(wchild, 1);
 		else
@@ -117,7 +117,7 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 
 		++idx;
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 	dataobject_setParent(wchild, w);
 	lgui_clip_pop();
 	endidx = idx;

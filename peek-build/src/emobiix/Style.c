@@ -38,7 +38,7 @@ Style *style_new(void)
 
 void style_renderWidgetTree(Style *s, Widget *w)
 {
-	ListIterator *iter;
+	ListIterator iter;
 	const char *id, *className;
 	DataObjectField *type = NULL;
 	DataObject *dobj = NULL;
@@ -65,12 +65,11 @@ void style_renderWidgetTree(Style *s, Widget *w)
 			strcmp(type->field.string, "array") == 0)
 		return;
 
-	iter = widget_getChildren(w);
-	while (!listIterator_finished(iter)) {
-		style_renderWidgetTree(s, (Widget *)listIterator_item(iter));
-		listIterator_next(iter);
+	widget_getChildren(w, &iter);
+	while (!listIterator_finished(&iter)) {
+		style_renderWidgetTree(s, (Widget *)listIterator_item(&iter));
+		listIterator_next(&iter);
 	}
-	listIterator_delete(iter);
 }
 
 void style_setProperty(Style *s, const char *className, const char *id,

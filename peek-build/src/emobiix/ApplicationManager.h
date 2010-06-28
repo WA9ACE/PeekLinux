@@ -14,7 +14,7 @@ void manager_drawScreenPartial(void);
 void manager_resolveLayout(void);
 void manager_handleKey(int key);
 void manager_launchApplication(Application *app);
-ListIterator *manager_applications(void);
+void manager_applications(ListIterator *iter);
 void manager_focusApplication(Application *app);
 Application *manager_getFocusedApplication(void);
 void manager_focusNextApplication(void);

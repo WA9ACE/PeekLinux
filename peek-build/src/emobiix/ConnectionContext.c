@@ -167,7 +167,7 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 {
 	Transport *transport;
 	int response;
-	MapIterator *iter;
+	MapIterator iter;
 	void *key;
 	SyncRequest *sreq;
 
@@ -205,17 +205,17 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 	/*emo_printf("Outgoing sync");*/
 
 	/* perform any outgoing sync requests */
-	iter = map_begin(ctx->syncRequests);
-	while (!mapIterator_finished(iter)) {
-		sreq = (SyncRequest *)mapIterator_item(iter, &key);
+	map_begin(ctx->syncRequests, &iter);
+	while (!mapIterator_finished(&iter)) {
+		sreq = (SyncRequest *)mapIterator_item(&iter, &key);
 #if 0
 		emo_printf("Processing sync request %s" NL, sreq->url->all);
 #endif
 		connectionContext_processSyncRequest(ctx, sreq);
 		if (sreq->finalize)
-			mapIterator_remove(iter);
+			mapIterator_remove(&iter);
 		else
-			mapIterator_next(iter);
+			mapIterator_next(&iter);
 		return 1;
 	}
 
@@ -759,7 +759,7 @@ static void connectionContext_processRecordSyncList(ConnectionContext *ctx,
 		SyncRequest *sreq, struct recordSyncListP *p)
 {
 	RecordSyncListP_t *rsl;
-	ListIterator *iter;
+	ListIterator iter;
 	unsigned int minor, major;
 	DataObject *robj;
 	SyncOperandP_t *syncOp;
@@ -774,9 +774,9 @@ static void connectionContext_processRecordSyncList(ConnectionContext *ctx,
 			continue;
 		}
 		robj = NULL;
-		for (iter = dataobject_childIterator(sreq->dobj);
-				!listIterator_finished(iter); listIterator_next(iter)) {
-			robj = listIterator_item(iter);
+		for (dataobject_childIterator(sreq->dobj, &iter);
+				!listIterator_finished(&iter); listIterator_next(&iter)) {
+			robj = listIterator_item(&iter);
 			dataobject_getStamp(robj, &minor, &major);
 			if (minor == rsl->recordIdMinorP && major == rsl->recordIdMajorP) {
 				robj = dataobject_getTree(robj, sreq->objectIndex);			
@@ -876,20 +876,20 @@ static void connectionContext_processAuthResponse(ConnectionContext *ctx,
 static void connectionContext_recordSyncList(ConnectionContext *ctx,
 		SyncRequest *sreq, SyncListP_t *p)
 {
-	ListIterator *iter;
+	ListIterator iter;
 	RecordSyncListP_t *rsync;
 	int idx = 0;
 	DataObject *sobj;
 
-	for (iter = widget_getChildren(sreq->dobj); !listIterator_finished(iter);
-			listIterator_next(iter)) {
+	for (widget_getChildren(sreq->dobj, &iter); !listIterator_finished(&iter);
+			listIterator_next(&iter)) {
 		if (idx != sreq->recordIndex) {
 			++idx;
 			continue;
 		}
 		fprintf(stderr, "RecordSync for index %d - object index %d\n",
 				idx, sreq->objectIndex);
-		sobj = dataobject_getTree((DataObject *)listIterator_item(iter),
+		sobj = dataobject_getTree((DataObject *)listIterator_item(&iter),
 				sreq->objectIndex);
 		rsync = connectionContext_recordSync(ctx, sreq, sobj);
 		if (rsync != NULL)
@@ -903,7 +903,7 @@ static void connectionContext_recordSyncList(ConnectionContext *ctx,
 		}
 		break;
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 
 	if (sreq->recordIndex == dataobject_getChildCount(sreq->dobj))
 		sreq->hasFinished = 1;
@@ -930,11 +930,11 @@ static void connectionContext_syncOperand(ConnectionContext *ctx,
 	SyncOperandP_t *syncOp;
 	int childOp;
 	char *fieldName;
-	ListIterator *citer;
+	ListIterator citer;
 	DataObjectField *field;
-	MapIterator *iter;
+	MapIterator iter;
 
-	iter = dataobject_fieldIterator(sobj);
+	dataobject_fieldIterator(sobj, &iter);
 
 	if (sreq->childOp >= -1) {
 		/* node operation */
@@ -949,18 +949,18 @@ next_childop:
 				asn_sequence_add(&listr->recordFieldListP->list, syncOp);
 
 			sreq->childOp = -2;
-			citer = dataobject_childIterator(sobj);
-			while (!listIterator_finished(citer)) {
-				if (list_find(sreq->completeNodes, listIterator_item(citer), ListEqualComparitor) == NULL) {
-					sreq->objectIndex = dataobject_treeIndex((DataObject *)listIterator_item(citer));
+			dataobject_childIterator(sobj, &citer);
+			while (!listIterator_finished(&citer)) {
+				if (list_find(sreq->completeNodes, listIterator_item(&citer), ListEqualComparitor) == NULL) {
+					sreq->objectIndex = dataobject_treeIndex((DataObject *)listIterator_item(&citer));
 					/*emo_printf("Node to go to %p with index %d" NL, listIterator_item(citer),
 							sreq->objectIndex);
 					list_debug(sreq->completeNodes);*/
 					break;
 				}
-				listIterator_next(citer);
+				listIterator_next(&citer);
 			}
-			listIterator_delete(citer);
+			/*listIterator_delete(citer);*/
 		} else {
 			/* go to tree operation */
 			/*emo_printf("GoTo Child %d" NL, sreq->childOp);*/
@@ -976,8 +976,8 @@ next_childop:
 		}
 		return;
 	}
-	while (!mapIterator_finished(iter)) {
-		field = (DataObjectField *)mapIterator_item(iter, (void **)&fieldName);
+	while (!mapIterator_finished(&iter)) {
+		field = (DataObjectField *)mapIterator_item(&iter, (void **)&fieldName);
 		if (list_find(sreq->completeFields, fieldName, (ListComparitor)strcmp) == NULL) {
 			/* serialize field */
 			syncOp = protocol_serializeField(sobj, fieldName);
@@ -990,7 +990,7 @@ next_childop:
 				asn_sequence_add(&listr->recordFieldListP->list, syncOp);
 			list_append(sreq->completeFields, fieldName);
 		}
-		mapIterator_next(iter);
+		mapIterator_next(&iter);
 	}
 	list_append(sreq->completeNodes, sobj);
 	/*emo_printf("Node Complete %p" NL, sobj);

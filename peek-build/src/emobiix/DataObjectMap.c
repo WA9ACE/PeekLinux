@@ -32,19 +32,19 @@ void dataobjectmap_setTranslation(DataObjectMap *dmap, const char *from,
 		const char *to)
 {
 	Mapping *item;
-	ListIterator *iter;
+	ListIterator iter;
 	int wasFound;
 
 	wasFound = 0;
-	iter = list_begin(dmap->mapping);
-	while (!listIterator_finished(iter)) {
-		item = (Mapping *)listIterator_item(iter);
+	list_begin(dmap->mapping, &iter);
+	while (!listIterator_finished(&iter)) {
+		item = (Mapping *)listIterator_item(&iter);
 		if (strcmp(item->from, from) == 0) {
 			wasFound = 1;
 			break;
 		}
 	}
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 
 	if (!wasFound) {
 		item = (Mapping *)p_malloc(sizeof(Mapping));
@@ -58,20 +58,20 @@ void dataobjectmap_setTranslation(DataObjectMap *dmap, const char *from,
 List *dataobjectmap_translate(DataObjectMap *dmap, const char *field)
 {
 	Mapping *item;
-	ListIterator *iter;
+	ListIterator iter;
 	List *output;
 	
-	iter = list_begin(dmap->mapping);
-	while (!listIterator_finished(iter)) {
-		item = (Mapping *)listIterator_item(iter);
+	list_begin(dmap->mapping, &iter);
+	while (!listIterator_finished(&iter)) {
+		item = (Mapping *)listIterator_item(&iter);
 		if (strcmp(item->from, field) == 0) {
 			output = item->to;
-			listIterator_delete(iter);
+			/*listIterator_delete(iter);*/
 			return output;
 		}
 	}
 
-	listIterator_delete(iter);
+	/*listIterator_delete(iter);*/
 
 	return NULL;
 }
