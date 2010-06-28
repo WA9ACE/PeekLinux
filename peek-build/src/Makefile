@@ -3,9 +3,9 @@ DEFINE += BGET
 DEFINE += BAL_IP_PUSH
 
 VIN_DEPEND = $(SRCDIR)/bal/bal.a \
-             $(SRCDIR)/bal/ata.a \
              $(SRCDIR)/bal/gprs.a \
-             $(SRCDIR)/bal/bget.a
+             $(SRCDIR)/bal/bget.a \
+             $(SRCDIR)/bal/ata.a 
 
 SUBDIR_DEPEND = $(SRCDIR)/freetype2/freetype2.a \
 								$(SRCDIR)/libpng/libpng.a \

@@ -104,6 +104,47 @@ subdir:
 clean: 
 	$(RM) $(TARGET)
 	$(RM) *.o
-	$(MAKE) -C ../g23m-aci/aci clean
+	$(MAKE) -C $(M23DIR)/g23m-gsm/sim clean
+	$(MAKE) -C $(M23DIR)/g23m-gsm/cc clean
+	$(MAKE) -C $(M23DIR)/g23m-gsm/dl clean
+	$(MAKE) -C $(M23DIR)/g23m-gsm/ss clean
+	$(MAKE) -C $(M23DIR)/g23m-gsm/alr clean
+	$(MAKE) -C $(M23DIR)/g23m-gsm/l1 clean
+	$(MAKE) -C $(M23DIR)/g23m-gsm/mm clean
+	$(MAKE) -C $(M23DIR)/g23m-gsm/sms clean
+	$(MAKE) -C $(M23DIR)/g23m-gsm/rr clean
+	$(MAKE) -C $(M23DIR)/g23m-gprs/cci clean
+	$(MAKE) -C $(M23DIR)/g23m-gprs/cl clean
+	$(MAKE) -C $(M23DIR)/g23m-gprs/sm clean
+	$(MAKE) -C $(M23DIR)/g23m-gprs/grlc clean
+	$(MAKE) -C $(M23DIR)/g23m-gprs/llc clean
+	$(MAKE) -C $(M23DIR)/g23m-gprs/gmm clean
+	$(MAKE) -C $(M23DIR)/g23m-gprs/grr clean
+	$(MAKE) -C $(M23DIR)/g23m-gprs/sndcp clean
+	$(MAKE) -C $(M23DIR)/g23m-fad/fad clean
+	$(MAKE) -C $(M23DIR)/g23m-fad/ra clean
+	$(MAKE) -C $(M23DIR)/g23m-fad/rlp clean
+	$(MAKE) -C $(M23DIR)/g23m-fad/t30 clean
+	$(MAKE) -C $(M23DIR)/g23m-fad/l2r clean
+	$(MAKE) -C $(M23DIR)/g23m-fad/app clean
+	$(MAKE) -C $(M23DIR)/g23m-fad/tcpip -f Makefile_tcpip clean
+	$(MAKE) -C $(M23DIR)/g23m-fad/tcpip -f Makefile_socket_lib clean
+	$(MAKE) -C $(M23DIR)/g23m-fad/ip clean
+	$(MAKE) -C $(M23DIR)/g23m-fad/udp clean
+	$(MAKE) -C $(M23DIR)/g23m-fad/ppp clean
+	$(MAKE) -C $(M23DIR)/g23m-aci/aci clean
+	$(MAKE) -C $(M23DIR)/g23m-aci/aci_ext clean
+	$(MAKE) -C $(M23DIR)/g23m-aci/aci_dti_mng clean
+	$(MAKE) -C $(M23DIR)/g23m-aci/dti clean
+	$(MAKE) -C $(M23DIR)/g23m-aci/uart clean
+	$(MAKE) -C $(M23DIR)/g23m-aci/bat clean
+	$(MAKE) -C $(M23DIR)/g23m-aci/gdd_dio clean
+	$(MAKE) -C $(M23DIR)/g23m-aci/l2p clean
+	$(MAKE) -C $(M23DIR)/g23m/condat/ms/src/ati_ext clean
+	$(MAKE) -C $(M23DIR)/g23m/condat/com/src/comlib clean
+	$(MAKE) -C $(M23DIR)/g23m/condat/ms/src/psi clean
+	$(MAKE) -C $(M23DIR)/g23m/condat/com/src/driver clean
+	$(MAKE) -C $(M23DIR)/g23m/condat/ms/src/upm clean
+	$(MAKE) -C $(M23DIR)/g23m/nexgen/coreip clean
 
 include $(BASEDIR)/Makefile.rules

@@ -27,6 +27,8 @@ SRC += psi_rxf.c
 SRC += psi_rxp.c
 SRC += psi_rxs.c
 SRC += psi_txf.c
+SRC += psi_txp.c
+SRC += psi_txs.c
 
 OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))
 DEPS = $(patsubst %.o,%.d,$(OBJ))
