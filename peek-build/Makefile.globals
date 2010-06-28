@@ -37,7 +37,7 @@ LDFLAGS     = -x --trampolines -w -wr --no_sym_merge --issue_remarks --verbose_d
 ARFLAGS	    = -rvu
 HEXFLAGS    = -m -memwidth 16 -romwidth 16
 
-CCBASE					= -mv4 --abi=tiabi --strict_ansi
+CCBASE		= -mv4 --abi=tiabi --strict_ansi
 CCTHUMB         = -mt 
 CCDEBUG         = --symdebug:dwarf
 CCDEBUGOPTIMIZE = -mn
@@ -149,7 +149,7 @@ VARIANT_DEFINE += BOARD=71
 VARIANT_DEFINE += BPR_STATE=0
 VARIANT_DEFINE += BT=0
 VARIANT_DEFINE += BTAV=1
-VARIANT_DEFINE += BTE_MOBILE=0
+#VARIANT_DEFINE += BTE_MOBILE=0
 VARIANT_DEFINE += BTS_FFS=0
 VARIANT_DEFINE += BTS_PVT=0
 VARIANT_DEFINE += BTW=0
