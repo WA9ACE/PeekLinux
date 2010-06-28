@@ -1,8 +1,7 @@
 DEFINE += 
 UNDEFINE +=
 
-DEPEND =	$(M23DIR)/g23m-aci/aci/aci.a \
-					$(M23DIR)/g23m-gsm/rr/rr.a \
+DEPEND =	$(M23DIR)/g23m-gsm/rr/rr.a \
 					$(M23DIR)/g23m-gsm/cc/cc.a \
 					$(M23DIR)/g23m-gsm/dl/dl.a \
 					$(M23DIR)/g23m-gsm/ss/ss.a \
@@ -29,7 +28,16 @@ DEPEND =	$(M23DIR)/g23m-aci/aci/aci.a \
 					$(M23DIR)/g23m-fad/tcpip/socket_lib.a \
 					$(M23DIR)/g23m-fad/ip/ip.a \
 					$(M23DIR)/g23m-fad/udp/udp.a \
-					$(M23DIR)/g23m-fad/ppp/ppp.a 
+					$(M23DIR)/g23m-fad/ppp/ppp.a \
+					$(M23DIR)/g23m-aci/aci/aci.a \
+					$(M23DIR)/g23m-aci/aci_ext/aciext.a \
+					$(M23DIR)/g23m-aci/aci_dti_mng/aci_dti_mng.a \
+					$(M23DIR)/g23m-aci/dti/dti.a \
+					$(M23DIR)/g23m-aci/uart/uart_b_lib.a \
+					$(M23DIR)/g23m-aci/bat/bat.a \
+					$(M23DIR)/g23m-aci/gdd_dio/gdd_dio.a \
+					$(M23DIR)/g23m-aci/l2p/l2p.a 
+
 
 TARGET = $(CURDIR)/g23m.a
 
@@ -45,7 +53,6 @@ $(DEPEND): subdir
 	$(AR) -xv $@
 
 subdir:
-	$(MAKE) -C $(M23DIR)/g23m-aci/aci 
 	$(MAKE) -C $(M23DIR)/g23m-gsm/sim 
 	$(MAKE) -C $(M23DIR)/g23m-gsm/cc 
 	$(MAKE) -C $(M23DIR)/g23m-gsm/dl 
@@ -74,29 +81,14 @@ subdir:
 	$(MAKE) -C $(M23DIR)/g23m-fad/ip 
 	$(MAKE) -C $(M23DIR)/g23m-fad/udp 
 	$(MAKE) -C $(M23DIR)/g23m-fad/ppp 
-
-clean: 
-	$(RM) $(TARGET)
-	$(RM) *.o
-	$(MAKE) -C ../g23m-aci/aci clean
-
-include $(BASEDIR)/Makefile.rules
-
-TARGET = $(CURDIR)/g23m.a
-
-.PHONY: $(DEPEND) $(SUBDIR)
-
-all: $(TARGET)
-
-$(TARGET): $(DEPEND)
-	$(AR) $(ARFLAGS) $@ *.o
-	$(RM) *.o
-
-$(DEPEND): $(SUBDIR)
-	$(AR) -xv $@
-
-$(SUBDIR):
-	$(MAKE) -C $@
+	$(MAKE) -C $(M23DIR)/g23m-aci/aci
+	$(MAKE) -C $(M23DIR)/g23m-aci/aci_ext
+	$(MAKE) -C $(M23DIR)/g23m-aci/aci_dti_mng
+	$(MAKE) -C $(M23DIR)/g23m-aci/dti
+	$(MAKE) -C $(M23DIR)/g23m-aci/uart
+	$(MAKE) -C $(M23DIR)/g23m-aci/bat
+	$(MAKE) -C $(M23DIR)/g23m-aci/gdd_dio
+	$(MAKE) -C $(M23DIR)/g23m-aci/l2p
 
 clean: 
 	$(RM) $(TARGET)
