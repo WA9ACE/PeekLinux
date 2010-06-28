@@ -165,7 +165,7 @@ void dataobject_setStamp(DataObject *dobj, unsigned int stampMinor,
 
 void dataobject_fieldIterator(DataObject *dobj, MapIterator *iter)
 {
-	return map_begin(dobj->data, iter);
+	map_begin(dobj->data, iter);
 }
 
 void dataobject_childIterator(DataObject *dobj, ListIterator *iter)
