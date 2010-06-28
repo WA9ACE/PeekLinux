@@ -16,6 +16,7 @@ INCLUDE += $(M23DIR)/csw-system/drv_core
 INCLUDE += $(M23DIR)/g23m-fad/ra
 
 SRC  = ra_tra.c
+SRC += ra_version.c
 SRC += ra_shm.c
 SRC += ra_rlp.c
 SRC += ra_l1int.c

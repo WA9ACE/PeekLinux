@@ -1,36 +1,30 @@
 DEFINE += 
-UNDEFINE += FF_MIDI_LOAD_FROM_MEM
-UNDEFINE += FF_MIDI_LOAD_FROM_LFS
+UNDEFINE +=
 
-VARIANT_INCLUDE = 
-INCLUDE += $(M23_VARIANT_INCLUDE)
-INCLUDE += $(M23DIR)/g23m/condat/com/include
-INCLUDE += $(M23DIR)/chipsetsw/Services/omx_core/inc
-
-SRC  = gdi/audio.c
-SRC += gdi/display.c
-SRC += gdi/font_bitmaps.c
-SRC += gdi/keypad.c
-SRC += gdi/light.c
-SRC += gdi/power.c
-SRC += gdi/rtc.c
-SRC += gdi/rx.c	 
-
-OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(patsubst %.s,%.o,$(SRC)))))
-DEPS = $(patsubst %.o,%.d,$(OBJ))
+DEPEND =	$(M23DIR)/bmi/gdi/gdi.a \
+		$(M23DIR)/bmi/Condat/MS/SRC/bmi/bmi-mmi.a
 
 TARGET = $(CURDIR)/bmi.a
 
+.PHONY: $(DEPEND) subdir
+
 all: $(TARGET)
 
-$(TARGET): $(OBJ)
-	$(AR) $(ARFLAGS) $@ $?
+$(TARGET): $(DEPEND)
+	$(AR) $(ARFLAGS) $@ *.o
+	$(RM) *.o
 
-clean:
-	$(RM) $(OBJ) 
-	$(RM) $(TARGET) 
-	$(RM) $(DEPS)
-	$(RM) $(patsubst %.o,%.pp,$(OBJ))
-	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+$(DEPEND): subdir
+	$(AR) -xv $@
+
+subdir:
+	$(MAKE) -C $(M23DIR)/bmi/gdi
+	$(MAKE) -C $(M23DIR)/bmi/Condat/MS/SRC/bmi
+
+clean: 
+	$(RM) $(TARGET)
+	$(RM) *.o
+	$(MAKE) -C $(M23DIR)/bmi/gdi
+	$(MAKE) -C $(M23DIR)/bmi/Condat/MS/SRC/bmi
 
 include $(BASEDIR)/Makefile.rules

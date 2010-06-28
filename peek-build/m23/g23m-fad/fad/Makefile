@@ -16,6 +16,7 @@ INCLUDE += $(M23DIR)/csw-system/drv_core
 INCLUDE += $(M23DIR)/g23m-fad/fad
 
 SRC  = fad_kerf.c  
+SRC += fad_version.c
 SRC += fad_kerp.c
 SRC += fad_kers.c
 SRC += fad_pei.c

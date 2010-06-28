@@ -18,6 +18,7 @@ INCLUDE += $(M23DIR)/g23m-fad/t30
 INCLUDE += $(M23DIR)/g23m-fad/bti
 
 SRC  = t30_bcsf.c
+SRC += t30_version.c
 SRC += t30_bcss.c
 SRC += t30_kerf.c
 SRC += t30_kerp.c

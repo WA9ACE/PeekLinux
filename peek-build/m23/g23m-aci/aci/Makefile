@@ -28,8 +28,10 @@ INCLUDE += $(M23DIR)/g23m-aci/bat
 INCLUDE += $(M23DIR)/g23m-aci/l2p
 INCLUDE += $(M23DIR)/g23m-fad/tcpip
 INCLUDE += $(M23DIR)/csw-system/drv_core/timer
+INCLUDE += $(M23DIR)/g23m/condat/ms/src/mfw
 
 SRC  = cmh_cphs.c
+SRC += aci_version.c
 SRC += aci_bat_cphs.c
 SRC += ati_cphs.c
 SRC += cphs.c

@@ -97,7 +97,7 @@ SRC += mmiprogressbar.c
 OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(patsubst %.s,%.o,$(SRC)))))
 DEPS = $(patsubst %.o,%.d,$(OBJ))
 
-TARGET = $(CURDIR)/l1_gtt_int.a
+TARGET = $(CURDIR)/bmi-mmi.a
 
 all: $(TARGET)
 

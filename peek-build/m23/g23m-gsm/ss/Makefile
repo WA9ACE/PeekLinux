@@ -12,6 +12,7 @@ INCLUDE += $(M23DIR)/chipsetsw/riviera
 INCLUDE += $(M23DIR)/csw-system/drv_core
 
 SRC += ss_csf.c 
+SRC += ss_version.c
 SRC += ss_for.c 
 SRC += ss_pei.c
 SRC += ss_ss.c

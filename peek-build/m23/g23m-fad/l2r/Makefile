@@ -18,6 +18,7 @@ INCLUDE += $(M23DIR)/g23m-fad/l2r
 
 
 SRC  = l2r_dnf.c
+SRC += l2r_version.c
 SRC += l2r_dnp.c
 SRC += l2r_dns.c
 SRC += l2r_mgtf.c

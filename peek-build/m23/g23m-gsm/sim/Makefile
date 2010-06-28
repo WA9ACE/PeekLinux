@@ -9,6 +9,7 @@ INCLUDE += $(M23DIR)/g23m-gsm/sim
 INCLUDE += $(M23DIR)/cdginc
 
 SRC  = sim_app.c
+SRC += sim_version.c
 SRC += uicc_fkt.c
 SRC += sim_pei.c
 SRC += sim_stk.c

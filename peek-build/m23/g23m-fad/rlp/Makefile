@@ -17,6 +17,7 @@ INCLUDE += $(M23DIR)/g23m-fad/rlp
 
 
 SRC  = rlp_kerf.c
+SRC += rlp_version.c
 SRC += rlp_kerp.c
 SRC += rlp_kers.c
 SRC += rlp_pei.c

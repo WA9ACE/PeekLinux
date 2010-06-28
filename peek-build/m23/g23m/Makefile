@@ -34,6 +34,7 @@ DEPEND =	$(M23DIR)/g23m-gsm/rr/rr.a \
 					$(M23DIR)/g23m-aci/aci_dti_mng/aci_dti_mng.a \
 					$(M23DIR)/g23m-aci/dti/dti.a \
 					$(M23DIR)/g23m-aci/uart/uart_b_lib.a \
+					$(M23DIR)/g23m-aci/ksd/ksd.a \
 					$(M23DIR)/g23m-aci/bat/bat.a \
 					$(M23DIR)/g23m-aci/gdd_dio/gdd_dio.a \
 					$(M23DIR)/g23m-aci/l2p/l2p.a \
@@ -91,6 +92,7 @@ subdir:
 	$(MAKE) -C $(M23DIR)/g23m-aci/aci_dti_mng
 	$(MAKE) -C $(M23DIR)/g23m-aci/dti
 	$(MAKE) -C $(M23DIR)/g23m-aci/uart
+	$(MAKE) -C $(M23DIR)/g23m-aci/ksd
 	$(MAKE) -C $(M23DIR)/g23m-aci/bat
 	$(MAKE) -C $(M23DIR)/g23m-aci/gdd_dio
 	$(MAKE) -C $(M23DIR)/g23m-aci/l2p
@@ -137,6 +139,7 @@ clean:
 	$(MAKE) -C $(M23DIR)/g23m-aci/aci_dti_mng clean
 	$(MAKE) -C $(M23DIR)/g23m-aci/dti clean
 	$(MAKE) -C $(M23DIR)/g23m-aci/uart clean
+	$(MAKE) -C $(M23DIR)/g23m-aci/ksd clean
 	$(MAKE) -C $(M23DIR)/g23m-aci/bat clean
 	$(MAKE) -C $(M23DIR)/g23m-aci/gdd_dio clean
 	$(MAKE) -C $(M23DIR)/g23m-aci/l2p clean
