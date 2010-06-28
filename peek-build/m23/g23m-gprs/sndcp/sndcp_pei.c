@@ -568,7 +568,7 @@ LOCAL void sndcp_dti_dti_connect_req (T_DTI2_CONNECT_REQ   *dti2_connect_req)
   TRACE_FUNCTION ("sndcp_dti_dti_connect_req");
 
   dti_dti_connect_req (sndcp_data->hDTI, dti2_connect_req);
-  if ( sndcp_data->nsapi_neighbor_ra[sndcp_data->nsapi] EQ TCPIP_NAME)
+  if ( sndcp_data->nsapi_neighbor_ra[sndcp_data->nsapi] EQ (U8 *)TCPIP_NAME)
   {
      mg_dti_open(sndcp_data->nsapi);
   }

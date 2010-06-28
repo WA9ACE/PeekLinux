@@ -2,7 +2,6 @@ DEFINE +=
 UNDEFINE +=
 
 DEPEND =	$(M23DIR)/g23m-aci/aci/aci.a \
-					$(M23DIR)/g23m-gprs/grlc/grlc.a \
 					$(M23DIR)/g23m-gsm/rr/rr.a \
 					$(M23DIR)/g23m-gsm/cc/cc.a \
 					$(M23DIR)/g23m-gsm/dl/dl.a \
@@ -11,10 +10,17 @@ DEPEND =	$(M23DIR)/g23m-aci/aci/aci.a \
 					$(M23DIR)/g23m-gsm/l1/l1_pei.a \
 					$(M23DIR)/g23m-gsm/mm/mm.a \
 					$(M23DIR)/g23m-gsm/sms/sms.a \
-					$(M23DIR)/g23m-gsm/sim/sim.a
+					$(M23DIR)/g23m-gsm/sim/sim.a \
+					$(M23DIR)/g23m-gprs/cci/cci.a \
+					$(M23DIR)/g23m-gprs/cl/cl.a \
+					$(M23DIR)/g23m-gprs/sm/sm.a \
+					$(M23DIR)/g23m-gprs/grlc/grlc.a \
+					$(M23DIR)/g23m-gprs/llc/llc.a \
+					$(M23DIR)/g23m-gprs/gmm/gmm.a \
+					$(M23DIR)/g23m-gprs/grr/grr.a \
+					$(M23DIR)/g23m-gprs/sndcp/sndcp.a 
 
 SUBDIR =	$(M23DIR)/g23m-aci/aci \
-					$(M23DIR)/g23m-gprs/grlc \
 					$(M23DIR)/g23m-gsm/sim \
 					$(M23DIR)/g23m-gsm/cc \
 					$(M23DIR)/g23m-gsm/dl \
@@ -23,7 +29,15 @@ SUBDIR =	$(M23DIR)/g23m-aci/aci \
 					$(M23DIR)/g23m-gsm/l1 \
 					$(M23DIR)/g23m-gsm/mm \
 					$(M23DIR)/g23m-gsm/sms \
-					$(M23DIR)/g23m-gsm/rr
+					$(M23DIR)/g23m-gsm/rr \
+					$(M23DIR)/g23m-gprs/cci \
+					$(M23DIR)/g23m-gprs/cl \
+					$(M23DIR)/g23m-gprs/sm \
+					$(M23DIR)/g23m-gprs/grlc \
+					$(M23DIR)/g23m-gprs/llc \
+					$(M23DIR)/g23m-gprs/gmm \
+					$(M23DIR)/g23m-gprs/grr \
+					$(M23DIR)/g23m-gprs/sndcp 
 
 TARGET = $(CURDIR)/g23m.a
 
