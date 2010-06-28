@@ -1,0 +1,72 @@
+DEFINE += RNET_CFG_REAL_TRANSPORT
+DEFINE += RVM_RNET_RT_SWE
+
+UNDEFINE += RELEASE99
+
+VARIANT_INCLUDE=$(M23_VARIANT_INCLUDE)
+INCLUDE += $(M23DIR)/config
+INCLUDE += $(M23DIR)/gpf/inc
+INCLUDE += $(M23DIR)/g23m/condat/com/inc
+INCLUDE += $(M23DIR)/g23m/condat/com/include
+INCLUDE += $(M23DIR)/g23m-gprs/sm
+INCLUDE += $(M23DIR)/cdginc
+INCLUDE += $(M23DIR)/csw-system/drv_app
+INCLUDE += $(M23DIR)/chipsetsw/riviera
+INCLUDE += $(M23DIR)/csw-system/drv_core
+INCLUDE += $(M23DIR)/g23m-fad/tcpip
+INCLUDE += $(M23DIR)/g23m-fad/tcpip/rnet
+INCLUDE += $(M23DIR)/g23m-fad/tcpip/include
+INCLUDE += $(M23DIR)/g23m-fad/tcpip/rnet/rnet_rt
+INCLUDE += $(M23DIR)/g23m-fad/tcpip/rnet/rnet_br
+INCLUDE += $(M23DIR)/g23m-fad/tcpip/rnet/rnet_ws
+INCLUDE += $(M23DIR)/g23m-aci/aci
+INCLUDE += $(M23DIR)/g23m/nexgen/coreip
+
+SRC  = tcpip_pei.c
+SRC += tcpip_dti.c
+SRC += rnet/rnet_rt/rnet_rt_dti.c
+SRC += rnet.c
+SRC += rnet/rnet_rt/rnet_rt_env.c
+SRC += tcpip_api_layer.c
+SRC += tcpip_sim_utils.c
+SRC += rnet/rnet_api.c
+SRC += rnet/rnet_env.c
+SRC += rnet/rnet_trace.c
+SRC += rnet/rnet_rt/rnet_rt_api_bind.c
+SRC += rnet/rnet_rt/rnet_rt_api_close.c
+SRC += rnet/rnet_rt/rnet_rt_api_connect.c
+SRC += rnet/rnet_rt/rnet_rt_api_getbufsize.c
+SRC += rnet/rnet_rt/rnet_rt_api_gethostinfo.c
+SRC += rnet/rnet_rt/rnet_rt_api_getlocaladdr.c
+SRC += rnet/rnet_rt/rnet_rt_api_getmaxpacketsize.c
+SRC += rnet/rnet_rt/rnet_rt_api_getproto.c
+SRC += rnet/rnet_rt/rnet_rt_api_getuserdata.c
+SRC += rnet/rnet_rt/rnet_rt_api_listen.c
+SRC += rnet/rnet_rt/rnet_rt_api_new.c
+SRC += rnet/rnet_rt/rnet_rt_api_recv.c
+SRC += rnet/rnet_rt/rnet_rt_api_recvfrom.c
+SRC += rnet/rnet_rt/rnet_rt_api_send.c
+SRC += rnet/rnet_rt/rnet_rt_api_setuserdata.c
+SRC += rnet/rnet_rt/rnet_rt_api_shutdown.c
+SRC += rnet/rnet_rt/rnet_rt_atp.c
+SRC += rnet/rnet_rt/rnet_rt_handle_message.c
+SRC += rnet/rnet_rt/rnet_rt_handle_timer.c
+
+OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+TARGET = $(CURDIR)/tcpip.a
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $(OBJ)
+
+clean:
+	$(RM) $(OBJ)
+	$(RM) $(TARGET)
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules

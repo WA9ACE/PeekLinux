@@ -18,26 +18,69 @@ DEPEND =	$(M23DIR)/g23m-aci/aci/aci.a \
 					$(M23DIR)/g23m-gprs/llc/llc.a \
 					$(M23DIR)/g23m-gprs/gmm/gmm.a \
 					$(M23DIR)/g23m-gprs/grr/grr.a \
-					$(M23DIR)/g23m-gprs/sndcp/sndcp.a 
+					$(M23DIR)/g23m-gprs/sndcp/sndcp.a \
+					$(M23DIR)/g23m-fad/fad/fad.a \
+					$(M23DIR)/g23m-fad/ra/ra.a \
+					$(M23DIR)/g23m-fad/rlp/rlp.a \
+					$(M23DIR)/g23m-fad/t30/t30.a \
+					$(M23DIR)/g23m-fad/l2r/l2r.a \
+					$(M23DIR)/g23m-fad/app/app.a \
+					$(M23DIR)/g23m-fad/tcpip/tcpip.a \
+					$(M23DIR)/g23m-fad/tcpip/socket_lib.a \
+					$(M23DIR)/g23m-fad/ip/ip.a \
+					$(M23DIR)/g23m-fad/udp/udp.a \
+					$(M23DIR)/g23m-fad/ppp/ppp.a 
 
-SUBDIR =	$(M23DIR)/g23m-aci/aci \
-					$(M23DIR)/g23m-gsm/sim \
-					$(M23DIR)/g23m-gsm/cc \
-					$(M23DIR)/g23m-gsm/dl \
-					$(M23DIR)/g23m-gsm/ss \
-					$(M23DIR)/g23m-gsm/alr \
-					$(M23DIR)/g23m-gsm/l1 \
-					$(M23DIR)/g23m-gsm/mm \
-					$(M23DIR)/g23m-gsm/sms \
-					$(M23DIR)/g23m-gsm/rr \
-					$(M23DIR)/g23m-gprs/cci \
-					$(M23DIR)/g23m-gprs/cl \
-					$(M23DIR)/g23m-gprs/sm \
-					$(M23DIR)/g23m-gprs/grlc \
-					$(M23DIR)/g23m-gprs/llc \
-					$(M23DIR)/g23m-gprs/gmm \
-					$(M23DIR)/g23m-gprs/grr \
-					$(M23DIR)/g23m-gprs/sndcp 
+TARGET = $(CURDIR)/g23m.a
+
+.PHONY: $(DEPEND) subdir
+
+all: $(TARGET)
+
+$(TARGET): $(DEPEND)
+	$(AR) $(ARFLAGS) $@ *.o
+	$(RM) *.o
+
+$(DEPEND): subdir
+	$(AR) -xv $@
+
+subdir:
+	$(MAKE) -C $(M23DIR)/g23m-aci/aci 
+	$(MAKE) -C $(M23DIR)/g23m-gsm/sim 
+	$(MAKE) -C $(M23DIR)/g23m-gsm/cc 
+	$(MAKE) -C $(M23DIR)/g23m-gsm/dl 
+	$(MAKE) -C $(M23DIR)/g23m-gsm/ss 
+	$(MAKE) -C $(M23DIR)/g23m-gsm/alr 
+	$(MAKE) -C $(M23DIR)/g23m-gsm/l1 
+	$(MAKE) -C $(M23DIR)/g23m-gsm/mm 
+	$(MAKE) -C $(M23DIR)/g23m-gsm/sms 
+	$(MAKE) -C $(M23DIR)/g23m-gsm/rr 
+	$(MAKE) -C $(M23DIR)/g23m-gprs/cci
+	$(MAKE) -C $(M23DIR)/g23m-gprs/cl 
+	$(MAKE) -C $(M23DIR)/g23m-gprs/sm 
+	$(MAKE) -C $(M23DIR)/g23m-gprs/grlc 
+	$(MAKE) -C $(M23DIR)/g23m-gprs/llc 
+	$(MAKE) -C $(M23DIR)/g23m-gprs/gmm 
+	$(MAKE) -C $(M23DIR)/g23m-gprs/grr 
+	$(MAKE) -C $(M23DIR)/g23m-gprs/sndcp 
+	$(MAKE) -C $(M23DIR)/g23m-fad/fad 
+	$(MAKE) -C $(M23DIR)/g23m-fad/ra 
+	$(MAKE) -C $(M23DIR)/g23m-fad/rlp
+	$(MAKE) -C $(M23DIR)/g23m-fad/t30
+	$(MAKE) -C $(M23DIR)/g23m-fad/l2r
+	$(MAKE) -C $(M23DIR)/g23m-fad/app
+	$(MAKE) -C $(M23DIR)/g23m-fad/tcpip -f Makefile_tcpip
+	$(MAKE) -C $(M23DIR)/g23m-fad/tcpip -f Makefile_socket_lib
+	$(MAKE) -C $(M23DIR)/g23m-fad/ip 
+	$(MAKE) -C $(M23DIR)/g23m-fad/udp 
+	$(MAKE) -C $(M23DIR)/g23m-fad/ppp 
+
+clean: 
+	$(RM) $(TARGET)
+	$(RM) *.o
+	$(MAKE) -C ../g23m-aci/aci clean
+
+include $(BASEDIR)/Makefile.rules
 
 TARGET = $(CURDIR)/g23m.a
 
