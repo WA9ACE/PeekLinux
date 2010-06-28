@@ -219,7 +219,7 @@ bool ReadNetworkConfig(char *&apn, char *&user, char *&pass)
 
 void EMSInitFunc(void) 
 {
-	bal_printf("ANDREY::EMSInitFun(): Initializing network...");
+	bal_printf("EMSInitFun(): Initializing network...");
 
 	// initialize the network connection
 	char *apn = NULL, *user = NULL, *pass = NULL;
@@ -258,7 +258,7 @@ void EMSMailFunc(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 
 		case EM_S_SOCKET:
 		{
-			bal_printf("ANDREY::Got socket request...");
+			//bal_printf("ANDREY::Got socket request...");
 
 			int fd = bal_socket(0 /*AF_INET*/, 0 /*SOCK_STREAM*/, 0 /*IPPROTO_TCP*/);
 
@@ -267,14 +267,14 @@ void EMSMailFunc(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 			memset(sockReply, 0, sizeof(emsMsg));
 			sockReply->fd = fd;
 
-			bal_printf("ANDREY::Dispatching socket reply...");
+			//bal_printf("ANDREY::Dispatching socket reply...");
 			BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_1_ID, EM_S_SOCKET, (void *)sockReply, sizeof(emsMsg));
 		}
 		break;
 
 		case EM_S_CONNECT:
 		{
-			bal_printf("ANDREY::Got connect request...");
+			//bal_printf("ANDREY::Got connect request...");
 
 			struct in_addr addr;
 			struct sockaddr_in connect_in;
@@ -288,7 +288,7 @@ void EMSMailFunc(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 
 			connectReq->msgA = bal_connect(connectReq->fd, &connect_in, sizeof(connect_in));
 
-			bal_printf("ANDREY::Dispatching connect reply...status: %d", connectReq->msgA);
+			//bal_printf("ANDREY::Dispatching connect reply...status: %d", connectReq->msgA);
 			BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_1_ID, EM_S_CONNECT, (void *)connectReq, sizeof(emsMsg));
 		}
 		break;
@@ -298,17 +298,17 @@ void EMSMailFunc(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 			emsMsg *recvReq = (emsMsg *)MsgDataP;
 
 			int readSize = recvReq->readSize;
-			bal_printf("ANDREY::Got recv(%d, %x, %d)", recvReq->fd, recvReq->readBuffer, recvReq->readSize);
+			//bal_printf("ANDREY::Got recv(%d, %x, %d)", recvReq->fd, recvReq->readBuffer, recvReq->readSize);
 			recvReq->readSize = bal_recv(recvReq->fd, recvReq->readBuffer, recvReq->readSize, 0);
 
-			bal_printf("ANDREY::Dispatching recv(%d, %x, %d) = %d", recvReq->fd, recvReq->readBuffer, readSize, recvReq->readSize);
+			//bal_printf("ANDREY::Dispatching recv(%d, %x, %d) = %d", recvReq->fd, recvReq->readBuffer, readSize, recvReq->readSize);
 			BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_1_ID, EM_S_RECV, (void *)recvReq, sizeof(emsMsg));
 		}
 		break;
 
 		case EM_S_PEEK:
 		{
-			bal_printf("ANDREY::Got peek request...");
+			//bal_printf("ANDREY::Got peek request...");
 
 			emsMsg *peekReq = (emsMsg *)MsgDataP;
 
@@ -318,7 +318,7 @@ void EMSMailFunc(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 			int hasData = *(int *)(((char *)0x007aa878) + 0x28);
 #define GET_LDR_OP *(unsigned int *)(((unsigned int)bal_bind)+4)
 #define DISASM_LDR_OFFSET(a) (unsigned int)((((a >> 24) & 0x7f) << 2)+4)
-			bal_printf("bal_bind+4 0x%08x proc_context addr 0x%08x actual address: 0x%08x", (unsigned int)bal_bind + 4, (unsigned int *)((unsigned int)bal_bind) + DISASM_LDR_OFFSET(GET_LDR_OP), 0x007aa878);
+			//bal_printf("bal_bind+4 0x%08x proc_context addr 0x%08x actual address: 0x%08x", (unsigned int)bal_bind + 4, (unsigned int *)((unsigned int)bal_bind) + DISASM_LDR_OFFSET(GET_LDR_OP), 0x007aa878);
 #endif
 
 			if (hasData > 0)
@@ -326,31 +326,31 @@ void EMSMailFunc(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 			else
 				peekReq->msgA = -1;
 
-			bal_printf("ANDREY::Dispatching recv reply...");
+			//bal_printf("ANDREY::Dispatching recv reply...");
 			BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_1_ID, EM_S_PEEK, (void *)peekReq, sizeof(emsMsg));
 		}
 		break;
 
 		case EM_S_SEND:
 		{
-			bal_printf("ANDREY::Got send request...");
+			//bal_printf("ANDREY::Got send request...");
 
 			emsMsg *sendReq = (emsMsg *)MsgDataP;
 			sendReq->writeSize = bal_send(sendReq->fd, sendReq->writeBuffer, sendReq->writeSize, 0);
 
-			bal_printf("ANDREY::Dispatching send reply...");
+			//bal_printf("ANDREY::Dispatching send reply...");
 			BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_1_ID, EM_S_SEND, (void *)sendReq, sizeof(emsMsg));
 		}
 		break;
 
 		case EM_S_CLOSE:
 		{
-			bal_printf("ANDREY::Got close request...");
+			//bal_printf("ANDREY::Got close request...");
 
 			emsMsg *closeReq = (emsMsg *)MsgDataP;
 			closeReq->msgA = bal_closesocket(closeReq->fd);
 
-			bal_printf("ANDREY::Dispatching close reply...");
+			//bal_printf("ANDREY::Dispatching close reply...");
 			BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_1_ID, EM_S_CLOSE, (void *)closeReq, sizeof(emsMsg));
 		}
 		break;
@@ -414,7 +414,7 @@ IMPORTANT NOTES:
 =====================================================================================*/
 void EMSSignalFunc(void)
 {
-	bal_printf("ANDREY::Received a signal!");
+	//bal_printf("ANDREY::Received a signal!");
 
 	//   TODO: Add BOS_SIGNAL_1 handle process here
 }
