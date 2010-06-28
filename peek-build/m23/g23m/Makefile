@@ -36,8 +36,13 @@ DEPEND =	$(M23DIR)/g23m-gsm/rr/rr.a \
 					$(M23DIR)/g23m-aci/uart/uart_b_lib.a \
 					$(M23DIR)/g23m-aci/bat/bat.a \
 					$(M23DIR)/g23m-aci/gdd_dio/gdd_dio.a \
-					$(M23DIR)/g23m-aci/l2p/l2p.a 
-
+					$(M23DIR)/g23m-aci/l2p/l2p.a \
+					$(M23DIR)/g23m/condat/ms/src/ati_ext/atiext.a \
+					$(M23DIR)/g23m/condat/com/src/comlib/comlib.a \
+					$(M23DIR)/g23m/condat/ms/src/psi/psi.a \
+					$(M23DIR)/g23m/condat/com/src/driver/driver.a \
+					$(M23DIR)/g23m/condat/ms/src/upm/upm.a \
+					$(M23DIR)/g23m/nexgen/coreip/nexgen.a 
 
 TARGET = $(CURDIR)/g23m.a
 
@@ -89,6 +94,12 @@ subdir:
 	$(MAKE) -C $(M23DIR)/g23m-aci/bat
 	$(MAKE) -C $(M23DIR)/g23m-aci/gdd_dio
 	$(MAKE) -C $(M23DIR)/g23m-aci/l2p
+	$(MAKE) -C $(M23DIR)/g23m/condat/ms/src/ati_ext
+	$(MAKE) -C $(M23DIR)/g23m/condat/com/src/comlib
+	$(MAKE) -C $(M23DIR)/g23m/condat/ms/src/psi
+	$(MAKE) -C $(M23DIR)/g23m/condat/com/src/driver
+	$(MAKE) -C $(M23DIR)/g23m/condat/ms/src/upm
+	$(MAKE) -C $(M23DIR)/g23m/nexgen/coreip
 
 clean: 
 	$(RM) $(TARGET)

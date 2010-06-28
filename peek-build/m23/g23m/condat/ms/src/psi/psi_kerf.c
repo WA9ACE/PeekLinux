@@ -33,7 +33,7 @@
 #include "psi_drxs.h"   /* to get signal definitions */
 #include "psi_dtxs.h"   /* to get signal definitions */
 #include "psi_kerp.h"
-#include "P_psi.val"
+#include "p_psi.val"
 #include <string.h>
 
 /*==== CONST ================================================================*/
