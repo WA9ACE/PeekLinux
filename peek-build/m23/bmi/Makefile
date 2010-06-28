@@ -24,7 +24,7 @@ subdir:
 clean: 
 	$(RM) $(TARGET)
 	$(RM) *.o
-	$(MAKE) -C $(M23DIR)/bmi/gdi
-	$(MAKE) -C $(M23DIR)/bmi/Condat/MS/SRC/bmi
+	$(MAKE) -C $(M23DIR)/bmi/gdi clean
+	$(MAKE) -C $(M23DIR)/bmi/Condat/MS/SRC/bmi clean
 
 include $(BASEDIR)/Makefile.rules
