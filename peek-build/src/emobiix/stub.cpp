@@ -19,7 +19,20 @@ extern "C" void BalTurnOnLight(void) {
 	return;
 }
 
+extern "C" void ata_MCA_update_timezone(void) {
 
+
+}
+extern "C" void ata_get_aci_cid(void) {
+}
+extern "C" void ata_send_at(void) {
+}
+extern "C" void ata_sim_iccid(void) {
+}
+extern "C" void ata_sim_imsi(void) {
+}
+extern "C" void ata_sim_status(void) {
+}
 int ResourceDatabase;
 
 void UIBitPutByte(unsigned char *blah, unsigned short foo, unsigned char moo, unsigned char poo) {
