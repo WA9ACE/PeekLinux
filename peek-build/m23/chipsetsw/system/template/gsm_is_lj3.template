@@ -256,7 +256,7 @@ SECTIONS
 	emz_sPrePostMult_Jpeg_enc_var_sec: {} > 0x08076780
 	emz_sZigzagPreMult_var_sec: {} > 0x08076700
 	emz_zigzagScan_EzdJpgEnc_var_sec: {} > 0x08076278
-      .r2dbuffer : {} > 0x007DA800 /*D_MEM0*/   /* This Has to remain in external Memory */
+      .r2dbuffer : {} > D_MEM0   /* This Has to remain in external Memory */
   .bgetdata : {} >  S_MEM /* Added by fanxujun for improve BGet performance */
 }
 
