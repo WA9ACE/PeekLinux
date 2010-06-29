@@ -9,6 +9,18 @@
 #include "rvm/rvm_gen.h"		/* Generic RVM types and functions. */
 #include "rvm/rvm_use_id_list.h"
 
+//#define LCD_TRACE_ENABLE
+#if defined(LCD_TRACE_ENABLE)
+#define LCD_TRACE(string)\
+	rvf_send_trace ("LCD: "string,(sizeof("LCD: "string)-1),NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
+#define LCD_TRACE_PARAM(string, param)\
+	rvf_send_trace ("LCD: "string,(sizeof("LCD: "string)-1),(UINT32)param,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
+#else
+#define LCD_TRACE(string)
+#define LCD_TRACE_PARAM(string, param)
+#endif
+	
+#define QWERT_TASK_SYNCH_LCD_200806
 
 /*============================================================================*/
 /*      	T_LCD_SELECT               selects a specific LCD				  */
@@ -131,10 +143,23 @@ typedef struct
 }lcd_tuningtable;
 
 
-#define LCD_HEIGHT 220
-#define LCD_WIDTH 175
+#define LCD_WIDTH  319//175//127   //modified for 128x128 by gaofeng
+#define LCD_HEIGHT 240//220//128   //modified for 128x128 by gaofeng
+
 #define LCD_PIXEL_FORMAT RGB565
-#define LCD_REFRESH_PERIOD 40
+#define LCD_REFRESH_PERIOD 20
+
+#define LCD_COL (LCD_WIDTH+1)
+#define LCD_ROW (LCD_HEIGHT)
+
+
+
+#define LCD_APPL_EVT_DISPLAY					RVF_APPL_EVT_0
+#define LCD_APPL_EVT_DISPLAYON				RVF_APPL_EVT_1
+#define LCD_APPL_EVT_DISPLAYOFF				RVF_APPL_EVT_2
+
+extern UINT32 lcd_initializated;
+
 
 
 /******************************************************************************
@@ -195,6 +220,57 @@ typedef struct
  *    
  */
      T_RV_RET lcd_control(T_LCD_SELECT sel, T_LCD_COMMAND command, void *p_cmd_param);
+
+
+
+
+
+typedef enum{
+	LCD_LED_OFF,
+	LCD_LED_ON
+} LCD_LED_ONOFF_t;
+
+
+#define LCD_LED(state) (state==LCD_LED_ON?(GPIO_SET_OUTPUT(LCD_LED_GPIO)):(GPIO_CLEAR_OUTPUT(LCD_LED_GPIO)))
+
+
+
+
+ /*============================================================================*/
+/*!
+ * @function lcd_led_onoff
+ *
+ * @discussion
+ * <b> Description </b><br>
+ *   This function controls the led on / off
+ *   
+ * <b> Context </b><br>
+ *   
+ *
+ *  @result <br>
+ *    
+ */
+     T_RV_RET lcd_led_onoff(LCD_LED_ONOFF_t onoff);
+
+T_RV_RET lcd_led_getstatus(LCD_LED_ONOFF_t *onoff);
+
+
+ /*============================================================================*/
+/*!
+ * @function lcd_set_sleep_time
+ *
+ * @discussion
+ * <b> Description </b><br>
+ *   This function set lcd sleep time in ms
+ *   
+ * <b> Context </b><br>
+ *   
+ *
+ *  @result <br>
+ *    
+ */
+T_RV_RET lcd_set_sleep_time(UINT32 ms);
+
 #endif	
 
 
