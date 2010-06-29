@@ -41,7 +41,6 @@ m23:
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/lls $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/bmi $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/g23m $(MAKECMDGOALS)
-	#$(MAKE) -C $(M23DIR)/bmi/Condat/MS/SRC/bmi $(MAKECMDGOALS)
 
 clean: all
 
