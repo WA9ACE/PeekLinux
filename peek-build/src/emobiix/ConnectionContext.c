@@ -887,8 +887,7 @@ static void connectionContext_recordSyncList(ConnectionContext *ctx,
 			++idx;
 			continue;
 		}
-		fprintf(stderr, "RecordSync for index %d - object index %d\n",
-				idx, sreq->objectIndex);
+		emo_printf("RecordSync for index %d - object index %d\n", idx, sreq->objectIndex);
 		sobj = dataobject_getTree((DataObject *)listIterator_item(&iter),
 				sreq->objectIndex);
 		rsync = connectionContext_recordSync(ctx, sreq, sobj);
