@@ -116,7 +116,7 @@
 //x0pleela 11 june, 2006  DR: OMAPS00079692
 //Including this header to get the ACI's VC Status and update MFW VC staus variable
 #ifdef FF_CPHS
-#include "Cphs.h"
+#include "cphs.h"
 #endif
 
 EXTERN MfwHdr * current_mfw_elem;

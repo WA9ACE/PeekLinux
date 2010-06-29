@@ -174,7 +174,8 @@ EXTERN MfwHdr * current_mfw_elem;
 #define MmeFlagRtcAlarm         1       /* rtc alarm                */
 #define MmeFlagHdsDetect        2       /* headset detection        */
 #define MmeFlagIrdaMsg          4       /* IRDA event               */
-U16 mfwMmeDrvFlag = 0;                  /* hold driver CB flags     */
+extern USHORT mfwMmeDrvFlag;           /* hold driver CB flags     */
+
 
 static U8 battLevel = 0;                /* battery level            */
 static U8 battState = 0;                /* state of power supply    */

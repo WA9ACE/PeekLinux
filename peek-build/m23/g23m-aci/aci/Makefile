@@ -252,7 +252,7 @@ SRC += psa_tcpipp.c
 SRC += psa_tcpips.c
 SRC += psa_upmp.c
 SRC += psa_upms.c
-#SRC += phb.c
+SRC += phb.c
 #SRC += ../ksd/ksd.c
 #SRC += ../ksd/ksd_utl.c
 

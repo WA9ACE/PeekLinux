@@ -352,8 +352,8 @@
 #if defined (NEW_FRAME)
 
 #include "typedefs.h"
-#include "Vsi.h"
-#include "PEI.H"
+#include "vsi.h"
+#include "pei.h"
 #include "custom.h"
 #include "gsm.h"
 
@@ -362,7 +362,7 @@
 #include "STDDEFS.H"
 #include "custom.h"
 #include "gsm.h"
-#include "Vsi.h"
+#include "vsi.h"
 
 #endif
 #include"rfs/rfs_api.h"

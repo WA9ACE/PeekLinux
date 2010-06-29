@@ -6413,6 +6413,8 @@ LOCAL void pb_free_used_record(UBYTE type, SHORT index, UBYTE rec_num)
   
   phb_ctb[type].rcd_bitmap[n] ^= 0x01 << m;
 }
-
-
 #endif /* #ifndef TI_PS_FFS_PHB */
+/* Added as compiler doesnt like if empty file */
+void phb_comp_stub(void) {
+
+}
