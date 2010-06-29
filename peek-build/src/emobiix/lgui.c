@@ -447,7 +447,7 @@ void lgui_alpha_blitRGBA(int destx, int desty, int imgx, int imgy,
 
 /* Wu Citcle implementation */
 static int I=255;           /* Intensity. */
-static int A=2;             /*Accuracy determained by argument of the root function D.*/
+static int A=1;             /*Accuracy determained by argument of the root function D.*/
 
 /*  
  * R < 10^A
@@ -460,7 +460,7 @@ static int A=2;             /*Accuracy determained by argument of the root funct
 /*
  *  Auxiliary:
  */
-static int D[10000];             /* Precalcuated reversed fractions of roots.*/
+static int D[100];             /* Precalcuated reversed fractions of roots.*/
 static int POWERES_OF_TEN[] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000 };
 
  static void initD(){
