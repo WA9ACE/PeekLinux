@@ -133,10 +133,10 @@ GW 31/01/03 -	Added support for 16 bit LCD buffer -
 #endif
  
 
-
+extern void emo_printf(const char *fmt, ...);
 
 #ifdef FF_MMI_NEW_LCD_API_MIG 
-#include "lcd_manager.h"
+#include "Lcd_manager.h"
 #endif
 #ifndef _SIMULATION_
     #ifdef R2D_ENABLED
@@ -3048,8 +3048,10 @@ lcd_fb_coordinates p_lcd_coord = { 0,0,LCD_COL,LCD_ROW};
 #if defined (WIN32_SIM)
     return;
 #endif
-    if (!scrEnabled)
+    if (!scrEnabled) {
+	emo_printf("scrLCDUpdate(): scrEnabled = 0\n");
         return;
+    }
 //Sept 15, 2005 REF: LOCOSTO-ENH-34257 - xpradipg
 //call the new lcd AP in place of the old for refresh
 #ifdef FF_MMI_NEW_LCD_API_MIG
@@ -3155,6 +3157,8 @@ void scrInit (void)
 	OMX_SSL_PLANE_CONFIGTYPE planeConfig1, planeConfig2;
 	OMX_U32 nActiveDispID;
 #endif //FF_SSL_ADAPTATION 
+
+       emo_printf("scrInit() got called\n");
 
 //	Sept 15, 2005 REF: LOCOSTO-ENH-34257 - xpradipg
 //New LCD API for initialization
