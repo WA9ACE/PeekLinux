@@ -60,7 +60,7 @@
 #include "mfw_sys.h"
 #include "drv_tmr.h"
 #include "mfw_tim.h"
-#include "Mfw_td.h"
+#include "mfw_td.h"
 #include "mfw_win.h"
 #include "mfw_acie.h"
 #include "dspl.h"
@@ -71,7 +71,7 @@
 //			If it is not formatted, format it and create /mmi folder in FFS.
 
 // Included this header file to call FFS related functions
-#include "Mfw_ffs.h" 
+#include "mfw_ffs.h" 
 
 #define TD_STRING_LEN 15
 

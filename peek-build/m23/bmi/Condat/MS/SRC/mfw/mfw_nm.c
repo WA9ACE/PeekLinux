@@ -1268,7 +1268,7 @@ T_MFW_NM_RETURN nm_pplmn_mem_req(void)
   PURPOSE : Start registration
 
 */
-
+/*
 T_MFW nm_registration (U8 mode, U8 freq_bands, U8 limited)
 {
     U8 sim_stat;
@@ -1301,15 +1301,15 @@ T_MFW nm_registration (U8 mode, U8 freq_bands, U8 limited)
 
     if (mode == NM_MANUAL)
     {
- /*  
- Apr 13, 2004	REF: CRR 16303	JuanVi Jativa-Villoldo      
-  sim_spn_req();     Moved to the function  rAT_PlusCFUNP           
-*/
-        /* May 15, 2006,  a0393213 (R.Prabakar),  OMAPS00075777  
-           Description :  It is supposed that the sample register itself automatically (in Manual Mode) 
-                          to the last manual selected HPLMN cell before the power cycle, and this does not happen; 
-                          instead this, the sample shows up the available networks list
-           Fix         :  call to nm_avail_plmn_list() is changed to call to sAT_PercentNRG() */        
+   
+ //Apr 13, 2004	REF: CRR 16303	JuanVi Jativa-Villoldo      
+ // sim_spn_req();     Moved to the function  rAT_PlusCFUNP           
+
+        // May 15, 2006,  a0393213 (R.Prabakar),  OMAPS00075777  
+        //   Description :  It is supposed that the sample register itself automatically (in Manual Mode) 
+        //                  to the last manual selected HPLMN cell before the power cycle, and this does not happen; 
+         //                 instead this, the sample shows up the available networks list
+         //  Fix         :  call to nm_avail_plmn_list() is changed to call to sAT_PercentNRG() 
      	if (sAT_PercentNRG(CMD_SRC_LCL,
                            NRG_RGMD_Manual,
                            NRG_SVMD_Full,
@@ -1329,13 +1329,13 @@ T_MFW nm_registration (U8 mode, U8 freq_bands, U8 limited)
         {
             TRACE_ERROR("sAT_PercentNRG error");
         }
- /*  
- Apr 13, 2004	REF: CRR 16303	JuanVi Jativa-Villoldo      
-  sim_spn_req();     Moved to the function  rAT_PlusCFUNP           
-*/   }
+   
+ //Apr 13, 2004	REF: CRR 16303	JuanVi Jativa-Villoldo      
+ // sim_spn_req();     Moved to the function  rAT_PlusCFUNP           
+ //   }
     return SIM_ACTIVE;
 }
-
+*/
 
 /*
 +--------------------------------------------------------------------+
@@ -1986,7 +1986,7 @@ void nm_sat_file_update(USHORT dataId)
   PURPOSE : Delete registration
 
 */
-
+/*
 void nm_deregistration (void)
 {
     TRACE_FUNCTION ("nm_deregistration()");
@@ -1997,7 +1997,7 @@ void nm_deregistration (void)
         TRACE_ERROR("sAT_PlusCFUN error");
     }
 }
-
+*/
 
 /*
 +-----------------------------------------------------------------------+
@@ -2087,14 +2087,14 @@ void nm_error_cops ( T_ACI_CME_ERR err)
   PURPOSE : Check the registration status
 
 */
-
+/*
 T_MFW nm_reg_status (void)
 {
     TRACE_FUNCTION("nm_reg_status()");
 
     return reg_stat;
 }
-
+*/
 
 /*
 +--------------------------------------------------------------------+

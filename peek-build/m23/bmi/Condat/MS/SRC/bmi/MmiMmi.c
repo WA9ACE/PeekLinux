@@ -336,6 +336,7 @@ GLOBAL BOOL bootup_response_cb (ULONG opc, void * data)
 
 *******************************************************************************/
 
+extern void emo_printf(const char *fmt, ...);
 
 void mmiInit( void )
 {
@@ -348,6 +349,7 @@ void mmiInit( void )
 
   /* Initialise the MFW and windowing system
   */
+  emo_printf("mfwInit() got called\n");
   mfwInit( mfwMem,   sizeof( mfwMem ) );
   winInit( &mmiScrX, &mmiScrY );
 
