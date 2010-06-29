@@ -388,8 +388,10 @@ void widget_focusNext(Widget *tree, Style *s)
 
 	/*emo_printf("Redraw list: %d\n", list_size(redrawlist));*/
 
-	list_begin(redrawlist, &iter);
-	while (!listIterator_finished(&iter)) {
+	do {
+		list_begin(redrawlist, &iter);
+		if (listIterator_finished(&iter))
+			break;
 		w1 = (Widget *)listIterator_item(&iter);
 		/*emo_printf("redrawlist: %p\n", w1);*/
 		widget_markDirty(w1);
@@ -402,8 +404,8 @@ void widget_focusNext(Widget *tree, Style *s)
 #ifdef CLIP_DEBUG
 		lgui_box(rect.x, rect.y, rect.width, rect.height, 1, 0, 0, 0);
 #endif
-		listIterator_next(&iter);
-	}
+		listIterator_remove(&iter);
+	} while(1);
 	/*listIterator_delete(iter);*/
 	list_delete(redrawlist);
 }

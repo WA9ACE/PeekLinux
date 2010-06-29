@@ -13,6 +13,21 @@
 
 #include <string.h>
 
+void dataobjectfield_free(DataObjectField *f)
+{
+	switch (f->type) {
+		case DOF_STRING:
+			p_free(f->field.string);
+			break;
+		case DOF_DATA:
+			p_free(f->field.data.bytes);
+			break;
+		default:
+			break;
+	}
+	p_free(f);
+}
+
 DataObject *dataobject_new(void)
 {
 	DataObject *output;
@@ -44,20 +59,27 @@ DataObject *dataobject_new(void)
 void dataobject_delete(DataObject *dobj)
 {
 	MapIterator iter;
-	void *item;
+	ListIterator liter;
+	DataObjectField *item;
 	char *key;
 	
 	do {
 		map_begin(dobj->data, &iter);
-		if (mapIterator_finished(&iter)) {
-			/*mapIterator_delete(&iter);*/
+		if (mapIterator_finished(&iter))
 			break;
-		}
-		item = mapIterator_item(&iter, (void **)&key);
-		p_free(item);
+		item = (DataObjectField *)mapIterator_item(&iter, (void **)&key);
+		dataobjectfield_free(item);
 		mapIterator_remove(&iter);
 		/*mapIterator_delete(iter);*/
 	} while (1);
+
+	/*
+	do {
+		list_begin(dobj->children, &liter);
+		if (listIterator_finished(&liter))
+			break;
+		listIterator_remove(&liter);
+	} while (1);*/
 
 	list_delete(dobj->children);
 	map_delete(dobj->data);
@@ -76,6 +98,12 @@ DataObject *dataobject_newMap(DataObject *src, DataObjectMap *dmap)
 
 void dataobject_setValue(DataObject *dobj, const char *key, DataObjectField *v)
 {
+	DataObjectField *old;
+	old = (DataObjectField *)map_find(dobj->data, key);
+	if (old != NULL) {
+		map_remove(dobj->data, key);
+		dataobjectfield_free(old);;
+	}
 	map_append(dobj->data, key, v);
 }
 

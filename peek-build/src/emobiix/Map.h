@@ -25,6 +25,7 @@ void map_begin(Map *ht, MapIterator *iter);
 int mapIterator_finished(MapIterator *iter);
 void *mapIterator_item(MapIterator *iter, void **key);
 void mapIterator_remove(MapIterator *iter);
+void mapIterator_removeInt(MapIterator *iter);
 void mapIterator_next(MapIterator *iter);
 /*void mapIterator_delete(MapIterator *iter);*/
 

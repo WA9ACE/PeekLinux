@@ -144,43 +144,6 @@ skip_record_draw:
 		sfStartY = 0;
 	sfStartY *= focusidx+1;
 	lgui_vline(box->x+margin->x+box->width-8, box->y+margin->y+1+sfStartY, sfHeight, 4, 0xCC, 0xCC, 0xFF);
-
-#if 0
-	Rectangle *box, *margin;
-	DataObject *text;
-	DataObjectField *field;
-	Font *f;
-	Color c, background, line;
-	const char *dtype;
-	const char *ltype;
-	const char *str;
-
-	box = widget_getBox(w);
-	margin = widget_getMargin(w);
-	dtype = (const char *)dataobject_getValue(dobj, "type")->field.string;
-	ltype = widget_getID(w);
-	f = (Font *)style_getProperty(s, NULL, ltype, dtype, "font");
-	c.value = (unsigned int)style_getProperty(s, NULL, ltype, dtype, "color");
-	background.value = (unsigned int)style_getProperty(s, NULL, ltype, dtype, "background");
-	if (widget_hasFocus(w))
-		line.value = (unsigned int)style_getProperty(s, NULL, ltype, dtype, "focusline");
-	else
-		line.value = (unsigned int)style_getProperty(s, NULL, ltype, dtype, "line");
-	text = widget_getDataObject(w);
-	field = dataobject_getValue(text, "data");
-	if (field != NULL) {
-		str = field->field.string;
-	} else {
-		str = "";
-	}
-
-	lgui_roundedbox_fill(box->x+margin->x, box->y+margin->y, box->width-1, box->height-1, 7,
-			background.rgba.red, background.rgba.green, background.rgba.blue);
-	lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width-1, box->height-1, 7,
-			line.rgba.red, line.rgba.green, line.rgba.blue);
-
-	lgui_draw_font(box->x+4+margin->x, box->y+margin->y, str, f, c);
-#endif
 }
 
 static void array_margin(WidgetRenderer *wr, Style *s, Widget *w,

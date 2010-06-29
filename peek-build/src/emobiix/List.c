@@ -62,7 +62,7 @@ void list_prepend(List *l, void *item)
 
 void list_delete(List *l)
 {
-    ListNode *node, *next;;
+    ListNode *node, *next;
 
     node = l->head;
     while (node != NULL) {
@@ -158,6 +158,10 @@ void listIterator_remove(ListIterator *iter)
     ListNode *node;
 
     node = iter->node;
+
+	/*if (node == NULL)
+		return;*/
+
     if (node->prev != NULL)
         node->prev->next = node->next;
     else

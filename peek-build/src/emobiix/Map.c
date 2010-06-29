@@ -112,6 +112,8 @@ void map_remove(Map *ht, const void *key)
             case STRING:
 				if (strcmp(output->key.kstring, (const char *)key) == 0) {
 					listIterator_remove(&iter);
+					p_free(output->key.kstring);
+					p_free(output);
 					/*listIterator_delete(iter);*/
                     return;
 				}
@@ -120,6 +122,7 @@ void map_remove(Map *ht, const void *key)
             default:
 				if (output->key.number == (int)key) {
 					listIterator_remove(&iter);
+					p_free(output);
 					/*listIterator_delete(iter);*/
                     return;
 				}
@@ -133,6 +136,24 @@ void map_remove(Map *ht, const void *key)
 
 void map_delete(Map *ht)
 {
+	ListIterator iter;
+	MapNode *node;
+
+	do {
+		list_begin(ht->list, &iter);
+		if (listIterator_finished(&iter))
+			break;
+        node = (MapNode *)listIterator_item(&iter);
+		switch (ht->type) {
+			case STRING:
+				p_free(node->key.kstring);
+				break;
+			default:
+				break;
+		}
+		listIterator_remove(&iter);
+		p_free(node);
+	} while (1);
     list_delete(ht->list);
     p_free(ht);
 }
@@ -159,6 +180,15 @@ void *mapIterator_item(MapIterator *iter, void **key)
 }
 
 void mapIterator_remove(MapIterator *iter)
+{
+	MapNode *item;
+	item = (MapNode *)listIterator_item((ListIterator *)iter);
+	listIterator_remove((ListIterator *)iter);
+	p_free(item->key.kstring);
+	p_free(item);
+}
+
+void mapIterator_removeInt(MapIterator *iter)
 {
 	MapNode *item;
 	item = (MapNode *)listIterator_item((ListIterator *)iter);
