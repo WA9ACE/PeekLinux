@@ -8597,6 +8597,7 @@ extern T_MP3_MCU_DSP *mp3_ndb;//Mp3-FR
 			bt_audio.audio_configure_callback(&bt_audio.pcmconfig);
             	  }	
 		 #endif
+#if(L1_BT_AUDIO ==1)
 	if(bt_audio.connected_status==FALSE)
      	  {
               // Download the stereopath description.
@@ -8614,18 +8615,17 @@ extern T_MP3_MCU_DSP *mp3_ndb;//Mp3-FR
 
               // Start the L1S stereopath task
               l1a_l1s_com.stereopath_drv_task.command.start = TRUE;
-#if(L1_BT_AUDIO ==1)
               midi_task_running=TRUE;
-#endif
 
               *state = WAIT_START_CON;
             }
 	   else
 	  {
+	  #endif
  		  l1a_audio_send_confirmation(MMI_EXT_AUDIO_MGT_START_CON);
 
               *state = WAIT_STOP;
-	   }
+	  // }
             // End process
             return;
           }
@@ -8651,6 +8651,8 @@ extern T_MP3_MCU_DSP *mp3_ndb;//Mp3-FR
           {
             if (SignalCode == MMI_EXT_AUDIO_MGT_STOP_REQ)
             {
+		
+#if(L1_BT_AUDIO ==1)
 		if(bt_audio.connected_status==TRUE)
      	  	{
 
@@ -8661,12 +8663,13 @@ extern T_MP3_MCU_DSP *mp3_ndb;//Mp3-FR
 		}
 		else
 		{
+#endif
               // Stop the L1S stereopath task
               l1a_l1s_com.stereopath_drv_task.command.stop = TRUE;
 
               // End process
               return;
-            }
+            //}
             }
 
             if (SignalCode == L1_STEREOPATH_DRV_STOP_CON)

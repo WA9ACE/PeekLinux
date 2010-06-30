@@ -9,7 +9,7 @@
 #ifndef _L1AAC_SIGNA_H_
 #define _L1AAC_SIGNA_H_
 
-#if (L1_AAC == 1)
+//#if (L1_AAC == 1)
 
 #define P_AAC 0x42
 
@@ -38,6 +38,6 @@
 #define API_AAC_RESUME_CON               ( ( P_AAC << 8 ) | 0x12 )
 #define API_AAC_RESTART_CON              ( ( P_AAC << 8 ) | 0x13 )
 
-#endif  // L1_AAC
+//#endif  // L1_AAC
 
 #endif

@@ -6002,11 +6002,13 @@ void mmi_fm_imgDraw(void)
 void mmi_fm_set_mmi_plane_to_front(void)
 {
 	TRACE_FUNCTION ("mmi_fm_set_mmi_plane_to_front()");
+	#ifdef FF_SSL_ADAPTATION 
 	//TRACE_EVENT_P1("cur_dir->dirinfo.aud.state3 %d",cur_dir->dirinfo.aud.state);
 	dspl_set_mmi_to_idle_mode();
 //	TRACE_EVENT_P1("cur_dir->dirinfo.aud.state4 %d",cur_dir->dirinfo.aud.state);
 	dspl_set_mmi_to_execute_mode();
 	//TRACE_EVENT_P1("cur_dir->dirinfo.aud.state5 %d",cur_dir->dirinfo.aud.state);
+	#endif
 
 }
 

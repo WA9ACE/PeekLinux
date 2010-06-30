@@ -64,6 +64,7 @@
 typedef struct
 {
    T_RVF_MB_ID    prim_id;
+   T_RVF_MB_ID    secd_id;
    T_RVF_ADDR_ID  addr_id;
    BOOL           swe_is_initialized;
    T_RVM_RETURN   (*error_ft)(T_RVM_NAME        swe_name, 

@@ -72,12 +72,12 @@ void UITaskMsgCB(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 	}
 
 }
-
+extern BOOL powered_on;
 static int UIInit(void)
 {	
 	static int initd = 0;
 
-	GprsRegisterRssi();
+	//GprsRegisterRssi();
 
 	/* Wait for BAL Task to complete */
 	while(!BalStatusGet()) {
@@ -87,28 +87,32 @@ static int UIInit(void)
 	/* Update Bui status so baseband initializes in mmi_main() */
 	BuiStatusSet();
 
-	extern void KeyPad_Init();
-	KeyPad_Init();
+	//extern void KeyPad_Init();
+	//KeyPad_Init();
 
-	LcdWakeUp();
 	//#ifndef EMO_SIM
-	BalLightInit();
-
-	BalLcdScreenOn();
 
 	// 	extern void main_test();
 	//	main_test();
+        LcdWakeUp();
+        BalLightInit();
+        BalLcdScreenOn();
 
+	extern void mmiInit( void);
+	powered_on=1;
+	mmiInit();
+	//startExec(100,0);  
+	/*
 	if (!initd) {
 		screenBuf = (unsigned char *)BalMalloc(320*240*2);
 		lgui_attach(screenBuf);
-		/*tweetInit();*/
         manager_init();
 		initd = 1;
 	}
+	*/
 	/*tweetDrawScreen();*/
-    manager_drawScreen();
-	updateScreen();
+    //manager_drawScreen();
+	//updateScreen();
 	//#endif
 
 	/*
@@ -120,6 +124,10 @@ static int UIInit(void)
 	system_battery_init();
 	//gprs_dataobject_init();
 	//extern void gps_init();
+ 
+	//extern void network_start_full_service(void);
+	//network_start_full_service();
+
 
 
 	return 1;
@@ -147,7 +155,7 @@ static int UIWaitForActivity(void)
 	void          *MsgBufferP;
 	uint8         MailBoxId;
 	BOSEventWaitT MailBoxIndex;
-
+	/*
 	if (!gprsAttached)
 		hasConnected = 0;
 
@@ -197,8 +205,8 @@ static int UIWaitForActivity(void)
 		Sleep(100);
 #endif
 	}
-
-	updateScreen();
+	*/
+	//updateScreen();
 
 	EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOSCalMsec(100));
 	if(EvtStatus & BOS_MESSAGE_TYPE)

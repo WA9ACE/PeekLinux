@@ -65,7 +65,15 @@ typedef struct{
 #define KPD_DEFAULT_TIME_OUT_TIME     0xEA5F  /* 60 Sec */
 
 /* Used Prescalor factor */
+#ifdef BTC_VIN
+#define BTC_MODIFICATION_KEYPAD_FOR_WHEEL
+#endif
+
+#ifdef BTC_MODIFICATION_KEYPAD_FOR_WHEEL
+#define KPD_CLOCK_DIVIDER     KPD_CLK_DIV2
+#else
 #define KPD_CLOCK_DIVIDER     KPD_CLK_DIV32
+#endif
 
 /* Keyboard clock frequency */
 #define KPD_CLOCK_FREQ        32  /* 32 KHz -> value in KHz!*/
@@ -86,8 +94,17 @@ typedef struct { T_SUBSCRIBER_ID subscriber_id;
 
 
 /* Macro definition for sending trace */
-#define KPD_SEND_TRACE(text,level) rvf_send_trace(text, sizeof(text)-1, NULL_PARAM, level, KPD_USE_ID )
-#define KPD_SEND_TRACE_PARAM(text,param,level) rvf_send_trace(text, sizeof(text)-1, param, level, KPD_USE_ID )
+//#define KPD_USE_TRACE
+
+#ifdef KPD_USE_TRACE
+#define KPD_SEND_TRACE(text,level) rvf_send_trace("[KPD] "text, sizeof("[KPD] "text)-1, NULL_PARAM, level, KPD_USE_ID )
+#define KPD_SEND_TRACE_PARAM(text,param,level) rvf_send_trace("[KPD] "text, sizeof("[KPD] "text)-1, param, level, KPD_USE_ID )
+#else
+#define KPD_SEND_TRACE(text,level)
+#define KPD_SEND_TRACE_PARAM(text,param,level)
+#endif
+
+
 
 /**
  * @name Internal functions

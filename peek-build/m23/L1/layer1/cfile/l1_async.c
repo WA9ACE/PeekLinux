@@ -104,8 +104,8 @@
   #endif
   #if (L1_MP3 == 1)
     #include "l1mp3_defty.h"
-    #include "l1mp3_signa.h"
   #endif
+    #include "l1mp3_signa.h"
   #if (L1_MIDI == 1)
     #include "l1midi_proto.h"
     #include "l1midi_defty.h"
@@ -113,8 +113,8 @@
 //ADDED FOR AAC
   #if (L1_AAC == 1)
     #include "l1aac_defty.h"
-    #include "l1aac_signa.h"
   #endif
+    #include "l1aac_signa.h"
   #if (L1_DYN_DSP_DWNLD == 1)
     #include "l1_dyn_dwl_signa.h"
   #endif

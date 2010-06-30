@@ -21,7 +21,7 @@
 /*
 ** Limiting Macros
 */
-#define MAX_CBUF_QUEUES 3
+#define MAX_CBUF_QUEUES 6
 
 /*
 ** Return Value Macros

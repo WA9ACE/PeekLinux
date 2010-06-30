@@ -1329,7 +1329,7 @@ void idleEvent (int reason)
 	    break;
     	case IdleUpdate:
     		if (idle_data.win)
-	    		SEND_EVENT(idle_data.win,IDLE_UPDATE,0,0);
+	    		//SEND_EVENT(idle_data.win,IDLE_UPDATE,0,0);
     	break;
 	    case IdleNewSmsMessage:
 		    if (idle_data.win)

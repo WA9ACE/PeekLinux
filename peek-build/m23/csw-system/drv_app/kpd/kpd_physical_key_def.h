@@ -30,9 +30,7 @@
 
 /** Definition of the physical key ID.
  */
-
 #define KPD_PKEY_NULL   (-1)
-
 #define KPD_PKEY_0           (0)
 #define KPD_PKEY_1           (1)
 #define KPD_PKEY_2           (2)
@@ -63,7 +61,7 @@
 
 #endif
 
-#if ((BOARD==70) || (BOARD==71))
+#if 0// ((BOARD==70) || (BOARD==71))
 #define KPD_PKEY_VOL_UP      (18)
 #define KPD_PKEY_VOL_DOWN    (19)
 #define KPD_PKEY_LEFT        (20)
@@ -72,6 +70,54 @@
 #define KPD_PKEY_HOME        (23)
 #define KPD_PKEY_BACK        (24)
 #endif
+
+#if ((BOARD==70) || (BOARD==71))
+#define KPD_PKEY_A          (10)
+#define KPD_PKEY_B          (11)
+#define KPD_PKEY_C          (12)
+#define KPD_PKEY_D          (13)
+#define KPD_PKEY_E          (14)
+#define KPD_PKEY_F          (15)
+#define KPD_PKEY_G          (16)
+#define KPD_PKEY_H          (17)
+#define KPD_PKEY_I          (18)
+#define KPD_PKEY_J          (19)
+#define KPD_PKEY_K          (20)
+#define KPD_PKEY_L          (21)
+#define KPD_PKEY_M          (22)
+#define KPD_PKEY_N          (23)
+#define KPD_PKEY_O          (24)
+#define KPD_PKEY_P          (25)
+#define KPD_PKEY_Q          (26)
+#define KPD_PKEY_R          (27)
+#define KPD_PKEY_S          (28)
+#define KPD_PKEY_T          (29)
+#define KPD_PKEY_U          (30)
+#define KPD_PKEY_V          (31)
+#define KPD_PKEY_W          (32)
+#define KPD_PKEY_X          (33)
+#define KPD_PKEY_Y          (34)
+#define KPD_PKEY_Z          (35)
+#define KPD_PKEY_AT         (36)
+#define KPD_PKEY_SPACE      (37)
+#define KPD_PKEY_SHIFT_L      (38)
+#define KPD_PKEY_SHIFT_R      (39)
+#define KPD_PKEY_ENTER      (40)
+#define KPD_PKEY_LOCK       (41)
+#define KPD_PKEY_REDUCE     (42)        //-
+#define KPD_PKEY_DOT        (43)            //.
+#define KPD_PKEY_COMMA      (44)        //,
+#define KPD_PKEY_QUOTE      (45)        //'
+#define KPD_PKEY_NAV_CENTER (46)    //ok
+#define KPD_PKEY_CANCLE (47)
+#define KPD_PKEY_BACKSPACE  (48)        //<--
+#define KPD_PKEY_POWR        (49)
+#define KPD_PKEY_UP          (50)
+#define KPD_PKEY_DOWN        (51)//zhangfanghui
+
+#endif
+
+
 
 /* The PWR key is mapped on Analog Base Band, it's the SPI which inform
    the keypad that the PWR key is pressed, so the process for this key

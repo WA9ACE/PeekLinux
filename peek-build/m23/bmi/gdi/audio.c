@@ -868,8 +868,8 @@ T_AUDIO_MODE_LOAD handheld= {"handheld"};
 		AUDIO_TRC_FUNC("Error - registering the callback for carkit");
 	}
 #endif
-	return_path.callback_func = audio_mode_load_cb;
-	status = audio_mode_load(&handheld, return_path);
+	//return_path.callback_func = audio_mode_load_cb;
+	//status = audio_mode_load(&handheld, return_path);
 	if (status != AUDIO_OK)
 	{
 		AUDIO_TRC_FUNC("Error - loading the handheld profile");

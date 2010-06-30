@@ -417,6 +417,8 @@ MMI_TIME_ERROR = -100
 } T_MMI_TZ;
 
 
+extern void emo_printf(const char *fmt, ...);
+
 int  mmi_timezone_value(int mmi_rtc_timezone);
 
 /*
@@ -682,7 +684,7 @@ T_MFW_HND network_create (T_MFW_HND parent_window)
   T_network * data = &network_data;
   T_MFW_WIN * win;
 
-  TRACE_FUNCTION ("network_create()");
+  emo_printf ("network_create()");
 
   data->network_win = win_create (parent_window, 0, 0, (T_MFW_CB)network_win_cb);
 
@@ -744,7 +746,7 @@ void network_destroy (T_MFW_HND own_window)
   T_MFW_WIN * win;
   T_network * data;
 
-  TRACE_FUNCTION ("network_destroy()");
+  emo_printf ("network_destroy()");
 
   if (own_window)
   {
@@ -795,13 +797,13 @@ void network (T_MFW_HND win, USHORT event, SHORT value, void * parameter)
   #endif
 
   	
-  TRACE_FUNCTION(">>> network()");
+  emo_printf(">>> network()");
 
 //x0pleela 09 Mar, 2007  DR: OMAPS00129014
 #ifdef FF_PHONE_LOCK
 	if( mfw_phlock_get_lock_status(MFW_PH_LOCK) == MFW_PH_LOCK_ENABLE ) 
 	{
-		TRACE_EVENT("idle_draw: MFW_PH_LOCK_ENABLE");
+		emo_printf("idle_draw: MFW_PH_LOCK_ENABLE");
 
 		//x0pleela 23 May, 2007   DR: OMAPS00132483
 		//Set the phone lock status to TRUE
@@ -834,7 +836,7 @@ void network (T_MFW_HND win, USHORT event, SHORT value, void * parameter)
   {
     case NETWORK_NO_SERVICE:
     case NETWORK_LIMITED_SERVICE:
-      TRACE_EVENT ("NETWORK NO/LIMITED SERVICE");
+      emo_printf ("NETWORK NO/LIMITED SERVICE");
       /*
        * Set Status
        */
@@ -862,7 +864,7 @@ void network (T_MFW_HND win, USHORT event, SHORT value, void * parameter)
           switch (data->network_list_status)
           {
             case NETWORK_LIST_REGISTRATION:
-		TRACE_EVENT ("NETWORK_LIST_REGISTRATION");
+		emo_printf ("NETWORK_LIST_REGISTRATION");
               /*
                * Present list of available PLMNs again
                *
@@ -887,7 +889,7 @@ void network (T_MFW_HND win, USHORT event, SHORT value, void * parameter)
               break;
 
             case NETWORK_LIST_SELECTED:
-		TRACE_EVENT ("NETWORK_LIST_SELECTED");
+		emo_printf ("NETWORK_LIST_SELECTED");
               /*
                * After registration start, MFW returns the current status
                */
@@ -909,12 +911,12 @@ void network (T_MFW_HND win, USHORT event, SHORT value, void * parameter)
       break;
 
     case NETWORK_SEARCH_NETWORK:
-      TRACE_EVENT ("NETWORK SEARCH NETWORK");
+      emo_printf ("NETWORK SEARCH NETWORK");
       SEND_EVENT (idle_get_window(), NETWORK_SEARCH_NETWORK, 0, 0);
       break;
 
     case NETWORK_FULL_SERVICE:
-      TRACE_EVENT("NETWORK_FULL_SERVICE");
+      emo_printf("NETWORK_FULL_SERVICE");
       /*
        * Set Status
        */
@@ -1008,7 +1010,7 @@ if(!(strlen((char*)data->plmn_name)))
           case NETWORK_LIST_REGISTRATION:
             if(data->keep_plmn_list EQ FALSE)
             {
-	          TRACE_EVENT("NETWORK_LIST_REGISTRATION No 1");
+	          emo_printf("NETWORK_LIST_REGISTRATION No 1");
 				
 #ifdef FF_2TO1_PS
 #ifndef NEPTUNE_BOARD
@@ -1043,7 +1045,7 @@ if(!(strlen((char*)data->plmn_name)))
             /*
              * After registration start, MFW returns the current status
              */
-            TRACE_EVENT("NETWORK_LIST_SELECTED");
+            emo_printf("NETWORK_LIST_SELECTED");
             data->network_list_status= NETWORK_LIST_REGISTRATION;
 			/* Commented out and moved
        		network_selected(); */
@@ -1063,7 +1065,7 @@ if(!(strlen((char*)data->plmn_name)))
       break;
 
     case NETWORK_NO_NETWORK:
-      TRACE_EVENT ("NETWORK NO NETWORK");
+      emo_printf ("NETWORK NO NETWORK");
       /*
        * No PLMN found after search for available PLMNs
        */
@@ -1091,8 +1093,8 @@ if(!(strlen((char*)data->plmn_name)))
 //sep 18 2006 OMPAS00090268 x0061088(Prachi)
     case NETWORK_FORBIDDEN_NETWORK:
     case NETWORK_PLMN_LIST:
-      TRACE_EVENT ("NETWORK PLMN LIST");
-       TRACE_EVENT (">>NETWORK PLMN LIST");
+      emo_printf ("NETWORK PLMN LIST");
+       emo_printf (">>NETWORK PLMN LIST");
       /*
        * PLMN list found
        */
@@ -1221,8 +1223,8 @@ if(!(strlen((char*)data->plmn_name)))
 
     case NETWORK_LIST_SELECT_PLMN:
 
-      TRACE_EVENT ("NETWORK LIST_SELECT");
-       TRACE_EVENT (">> NETWORK LIST_SELECT");
+      emo_printf ("NETWORK LIST_SELECT");
+       emo_printf (">> NETWORK LIST_SELECT");
       /*
        * A network has been selected from the PLMN available list
        * Start manual registration and start Search animation.
@@ -1280,7 +1282,7 @@ if(!(strlen((char*)data->plmn_name)))
       T_MFW_PPLMN_MEM *pplmn_mem;
 	  UBYTE i;
 
-      TRACE_EVENT (">> NETWORK PPLMN MEM LIST");
+      emo_printf (">> NETWORK PPLMN MEM LIST");
       /*  Save the number of PLMN records:
        *  maxRcd  = maximum preferred PLMN records on the SIM card
        *  usedRcd = used preferred PLMN records on the SIM card
@@ -1312,7 +1314,7 @@ if(!(strlen((char*)data->plmn_name)))
 	 		// doesnt make sense to request the MFW to fill up the list
 	 		// when the "pplmn_mem->usedRcd" is  0
 
-	 		 TRACE_EVENT(">> NETWORK PPLMN MEM LIST - ELSE Loop");
+	 		 emo_printf(">> NETWORK PPLMN MEM LIST - ELSE Loop");
 			 for (i=0; i < (network_data.pplmn_mem.maxRcd); i++)
 			 {
 #ifdef NO_ASCIIZ
@@ -1338,7 +1340,7 @@ if(!(strlen((char*)data->plmn_name)))
 	    /* UBYTE i; */ /* Warning Correction */
 
 	  
-      TRACE_EVENT (">>NETWORK PREFERRED LIST");
+      emo_printf (">>NETWORK PREFERRED LIST");
       /*
        *  Create and present the preferred list of PLMNs
        * 
@@ -1364,7 +1366,7 @@ if(!(strlen((char*)data->plmn_name)))
   	T_MFW_CELL_STRUCT *cell_data;
 #endif
   	
-  	TRACE_EVENT(">>NETWORK CELL SELECT");
+  	emo_printf(">>NETWORK CELL SELECT");
 
   	
        /* x0045876, 14-Aug-2006 (WR -"cell_data" was set but never used) */
@@ -1386,12 +1388,12 @@ if(!(strlen((char*)data->plmn_name)))
     /* Destory the list when select softkey is pressed / back softkey is pressed */
    /* OMAPS00061049 - 08-03-2006 - BEGIN*/	
    case  NETWORK_LIST_DESTORY:
-              TRACE_EVENT ("Inside NETWORK_LIST_DESTORY Event");
+              emo_printf ("Inside NETWORK_LIST_DESTORY Event");
 			  
 		/* Destory the list window */	  
 	       listsDestroy(data->network_list->win);
 
-		TRACE_EVENT ("Destoryed list window successfully");
+		emo_printf ("Destoryed list window successfully");
 		
 		/*
 		 * If network list is available, destroy
@@ -1411,7 +1413,7 @@ if(!(strlen((char*)data->plmn_name)))
 		  data->network_list = NULL;
 		}
 
-		TRACE_EVENT ("List window memory freed");
+		emo_printf ("List window memory freed");
 	  break;
 	/* OMAPS00061049 - 08-03-2006 - END */ 	
 #endif	
@@ -1434,23 +1436,23 @@ if(!(strlen((char*)data->plmn_name)))
   int actual_TD = 0;
   int absolute_value;
     
-  TRACE_EVENT ("Inside NETWORK_TIME_UPDATE Event");
+  emo_printf ("Inside NETWORK_TIME_UPDATE Event");
 
 if(FFS_flashData.nitz_option!=NitzOff)
 {
 
-TRACE_FUNCTION("NITZ- not OFF");
+emo_printf("NITZ- not OFF");
 
   // Copy time and date info received from network into 'time'
   network_time = (T_MFW_TIME_IND *)parameter;
   actual_TD = network_time->timezone;
   absolute_value = (10*(actual_TD & 0x7))+((actual_TD >> 4) & 0xf);
 
-TRACE_EVENT_P1("actual_TD: %d", actual_TD);
-TRACE_EVENT_P1("Absolute value: %d", absolute_value);
-TRACE_FUNCTION("IN HEX");
-TRACE_EVENT_P1("actual_TD: %x", actual_TD);
-TRACE_EVENT_P1("Absolute value: %x", absolute_value);
+emo_printf("actual_TD: %d", actual_TD);
+emo_printf("Absolute value: %d", absolute_value);
+emo_printf("IN HEX");
+emo_printf("actual_TD: %x", actual_TD);
+emo_printf("Absolute value: %x", absolute_value);
   if((actual_TD & 0x08))
   {
     absolute_value = ~absolute_value+1;
@@ -1513,7 +1515,7 @@ else if(actual_TD<0)
 if(modify_date_negative)
  {
 
-			TRACE_EVENT("modify date negative");
+			emo_printf("modify date negative");
 	           	network_time->hour  = 24 - abs(network_time->hour - abs(actual_TD/4 ));
 
 	              network_time->day = network_time->day -1;
@@ -1568,7 +1570,7 @@ if(modify_date_negative)
 
 else if(modify_date_positive)
 {
-                    	TRACE_EVENT("modify date positive");
+                    	emo_printf("modify date positive");
                          network_time->hour =  network_time->hour -24;
        
                          network_time->day = network_time->day + 1;
@@ -1635,14 +1637,14 @@ else if(modify_date_positive)
   // This ensures that the format set remains the same even after RTC updation.
   newTime = *time_format;
     
-  TRACE_EVENT("------------------------------------");
-  TRACE_EVENT_P1("Current format set in MS : %d", time_format->format);
+  emo_printf("------------------------------------");
+  emo_printf("Current format set in MS : %d", time_format->format);
 
   // The time info received from network is in 24Hrs format. Depeneding on the format
   // curently set in the MS, we need to do conversion and then update the RTC.
   if (time_format->format == RTC_TIME_FORMAT_12HOUR)
   {
-      TRACE_EVENT("12 Hrs format");
+      emo_printf("12 Hrs format");
         
       if (network_time->hour == 0) // If hour info from network is 0, set hour as 12 
       {                    // and the AM/PM flag off to indicate AM. 
@@ -1676,7 +1678,7 @@ else if(modify_date_positive)
   }
   else
   {
-      TRACE_EVENT("24 Hrs format");        
+      emo_printf("24 Hrs format");        
       newTime.hour = network_time->hour; // In 24 Hrs format, set the received hour info as it is.
   
      newTime.minute = network_time->minute; // Set minute info
@@ -1755,7 +1757,7 @@ static int network_win_cb (T_MFW_EVENT event, T_MFW_WIN * win)
 *******************************************************************************/
 static int network_nm_cb (T_MFW_EVENT event, T_MFW_HND para)
 {
-  TRACE_FUNCTION("network_nm_cb");
+  emo_printf("network_nm_cb");
 
   switch(event)
   {
@@ -1800,25 +1802,25 @@ static int network_nm_cb (T_MFW_EVENT event, T_MFW_HND para)
       break;
 
 	case E_NM_DEREGISTRATION:
-		TRACE_EVENT("MmiNetwork:E_NM_DEREGISTRATION");
+		emo_printf("MmiNetwork:E_NM_DEREGISTRATION");
 		mainShutdown();
 		break;
 	case E_NM_PREF_PLMN_LIST:
-		TRACE_EVENT("MmiNetwork:E_NM_PREF_PLMN_LIST");
+		emo_printf("MmiNetwork:E_NM_PREF_PLMN_LIST");
         SEND_EVENT (network_data.network_win, NETWORK_PREFERRED_LIST, 0, para);
 		break;
 	case E_NM_PPLMN_MEM:
-		TRACE_EVENT("MmiNetwork:E_NM_PPLMN_MEM");
+		emo_printf("MmiNetwork:E_NM_PPLMN_MEM");
         SEND_EVENT (network_data.network_win, NETWORK_PPLMN_MEM_LIST, 0, para);
 		break;
 	/* SH 29-04-02 - Cell reselection */
 	case E_NM_CELL_SELECT:
-		TRACE_EVENT("MmiNetwork:E_NM_CELL_SELECT");
+		emo_printf("MmiNetwork:E_NM_CELL_SELECT");
 		SEND_EVENT (network_data.network_win, NETWORK_CELL_SELECT, 0, para);
 		break;
 	/* SPR919 - SH - Band selection */
 	case E_NM_BAND:
-		TRACE_EVENT("MmiNetwork:E_NM_BAND");
+		emo_printf("MmiNetwork:E_NM_BAND");
 		nm_registration (nm_get_mode (),0, 0);
 		//Sep 23, 2004        REF: CRR 24562  xvilliva
 		//After retrieving the list we see if an error occured 
@@ -1832,12 +1834,12 @@ static int network_nm_cb (T_MFW_EVENT event, T_MFW_HND para)
 
 	//x0pleela 30 May, 2007 DR: OMAPS00133201
 	case E_NM_ABORT_NETWORK:
-		TRACE_EVENT("MmiNetwork:E_NM_ABORT_NETWORK");
+		emo_printf("MmiNetwork:E_NM_ABORT_NETWORK");
 		nm_abort_network();
 		break;
 /*Aug 07, 2007 DR:OMAPS00137726 x0066814(Geetha)*/
 	case E_NM_PLMN_LIST_BOOTUP:
-		TRACE_EVENT("MmiNetwork:E_NM_PLMN_LIST_BOOTUP");
+		emo_printf("MmiNetwork:E_NM_PLMN_LIST_BOOTUP");
 		 	/*Start the available plmn search*/
   	nm_avail_plmn_list();
 		/*After retrieving the list we see if an error occured 
@@ -1859,7 +1861,7 @@ static int network_nm_cb (T_MFW_EVENT event, T_MFW_HND para)
     //Dec 13,2006       DR:OMAPS00098351  x0066814 - Added the FF_TIMEZONE flag
 #ifdef FF_TIMEZONE
     case E_MFW_TIME_IND:
-        TRACE_EVENT("E_MFW_TIME_IND");
+        emo_printf("E_MFW_TIME_IND");
 		SEND_EVENT (network_data.network_win, NETWORK_TIME_UPDATE, 0, para);
         break;        
 #endif
@@ -1927,7 +1929,7 @@ USHORT nm_flag_log_on (T_MFW_MNU * m, T_MFW_MNU_ATTR * ma, T_MFW_MNU_ITEM * mi)
 *******************************************************************************/
 int network_set_mode_auto(T_MFW_MNU *m, T_MFW_MNU_ITEM *i)
 {
-  TRACE_FUNCTION ("network_set_mode_auto()");
+  emo_printf ("network_set_mode_auto()");
   
   /*
    * Save the automatic mode in PCM for next power on
@@ -1967,7 +1969,7 @@ int network_set_mode_auto(T_MFW_MNU *m, T_MFW_MNU_ITEM *i)
 *******************************************************************************/
 int network_set_mode_man(T_MFW_MNU *m, T_MFW_MNU_ITEM *i)
 {
-  TRACE_FUNCTION ("network_set_mode_man()");
+  emo_printf ("network_set_mode_man()");
 
   /*
    * Save the automatic mode in PCM for next power on
@@ -2015,7 +2017,7 @@ int network_set_mode_man(T_MFW_MNU *m, T_MFW_MNU_ITEM *i)
 */
 int network_pref_list(T_MFW_MNU *m, T_MFW_MNU_ITEM *mi)
 {
-//TRACE_FUNCTION ("network_pref_list()");
+//emo_printf ("network_pref_list()");
 
   /*
    * Request the maximum number of preferred PLMN records 
@@ -2068,7 +2070,7 @@ static void network_remove_network_log (void)
 *******************************************************************************/
 int network_log_off(T_MFW_MNU *m, T_MFW_MNU_ITEM *i)
 {
-  TRACE_FUNCTION ("network_log_off()");
+  emo_printf ("network_log_off()");
 
   /*
    * Same behaviour as automatic registration
@@ -2096,7 +2098,7 @@ int network_log_on(T_MFW_MNU *m, T_MFW_MNU_ITEM *i)
 {
  
 
-  TRACE_FUNCTION ("network_log_on()");
+  emo_printf ("network_log_on()");
 
 
   if (FFS_flashData.net_log_status EQ NM_LOG_AVAIL_NOT_USED OR
@@ -2154,7 +2156,7 @@ int network_log_on(T_MFW_MNU *m, T_MFW_MNU_ITEM *i)
 void network_start_full_service(void)
 {
  
-  TRACE_FUNCTION ("network_start_full_service()");
+  emo_printf("network_start_full_service()");
 
   network_data.status = NETWORK_SEARCH_NETWORK;
 
@@ -2221,7 +2223,7 @@ void network_get_name(T_CURRENT_NETWORK * nm)
 #else
     U8 service_provider_name[LONG_NAME];
 #endif
-  TRACE_FUNCTION ("network_get_name()");
+  emo_printf ("network_get_name()");
 
 //x0pleela 15 Feb, 2006   ER: OMAPS00065203
 //Included flag NEPTUNE_BOARD to retain old code for operator get name and 
@@ -2250,7 +2252,7 @@ void network_get_name(T_CURRENT_NETWORK * nm)
       if (operator_name->longName.data[0] != NULL)//if name not blank
       {	
         memcpy(nm->plmn_name, operator_name->longName.data, SIZE_PLMN_NAME);
-        TRACE_EVENT("Reading PLMN from SIM");    	
+        emo_printf("Reading PLMN from SIM");    	
       }
       else
         memcpy (nm->plmn_name, network_data.plmn_name, SIZE_PLMN_NAME);
@@ -2316,7 +2318,7 @@ void network_get_name(T_CURRENT_NETWORK * nm)
 static UBYTE network_log_enabled (void)
 {
 
-  TRACE_FUNCTION ("network_log_enabled()");
+  emo_printf ("network_log_enabled()");
 
   if (FFS_flashData.net_log_status EQ NM_LOG_AVAIL_USED)
     return TRUE;
@@ -2470,7 +2472,7 @@ static ListMenuData * network_create_pref_list (T_network * data)
     return NULL;
    }
 
-  TRACE_EVENT ("network_create_pref_list ()");
+  emo_printf ("network_create_pref_list ()");
 
 
 
@@ -2499,7 +2501,7 @@ static ListMenuData * network_create_pref_list (T_network * data)
     else
     {
       list_menu_data->List[i].str = GET_TEXT(TxtEmpty);
-      TRACE_EVENT ("network_long == 0");
+      emo_printf ("network_long == 0");
     }
 
       list_menu_data->List[i].flagFunc = item_flag_none;
@@ -2546,7 +2548,7 @@ static ListMenuData * network_create_mobile_list (T_network_OPT * data)
 
   if (list_menu_data EQ 0)
   {
-  	TRACE_EVENT ("failed to create the list");
+  	emo_printf ("failed to create the list");
     return NULL;
   }
 
@@ -2558,11 +2560,11 @@ static ListMenuData * network_create_mobile_list (T_network_OPT * data)
 
   if (list_menu_data->List EQ 0)
   {
-	TRACE_EVENT ("failed to create the list");
+	emo_printf ("failed to create the list");
     return NULL;
   }
 
-  TRACE_EVENT ("network_create_mobile_list ()");  
+  emo_printf ("network_create_mobile_list ()");  
 
 
 
@@ -2701,7 +2703,7 @@ static ListMenuData * network_submenu (T_network * data, T_MFW_NETWORK_STRUCT * 
 *******************************************************************************/
 static void network_list_cb(T_MFW_HND win, ListMenuData * ListData)
 {
-  TRACE_FUNCTION ("network_list_cb()");
+  emo_printf ("network_list_cb()");
 
 #ifndef NEPTUNE_BOARD
   if (ListData->Reason != LISTS_REASON_BACK)
@@ -2740,7 +2742,7 @@ static void network_list_cb(T_MFW_HND win, ListMenuData * ListData)
 *******************************************************************************/
 static void network_pref_list_cb(T_MFW_HND win, ListMenuData * ListData)
 {
-  TRACE_FUNCTION ("network_pref_list_cb()");
+  emo_printf ("network_pref_list_cb()");
 
   if (ListData->Reason EQ LISTS_REASON_SELECT)
   {
@@ -2800,7 +2802,7 @@ static void network_mobile_list_cb(T_MFW_HND win, ListMenuData * ListData)
     T_network_OPT    * data     = (T_network_OPT *)win_data->user;
     T_DISPLAY_DATA display_info;
     
-	TRACE_EVENT ("network_mobile_list_cb()");
+	emo_printf ("network_mobile_list_cb()");
 
 
     switch (ListData->Reason)
@@ -2820,7 +2822,7 @@ static void network_mobile_list_cb(T_MFW_HND win, ListMenuData * ListData)
 	    break;
 		case LISTS_REASON_BACK: /* back to previous menu */
 
-			TRACE_EVENT ("pressed Back-key");
+			emo_printf ("pressed Back-key");
 
 			//API - SPR 2025 - 22/05/03 - De Allocate memory to avoid memory leak and also Crash
 			if ( network_data.pplmn != NULL )
@@ -2880,7 +2882,7 @@ static void network_start_animation(void)
 {
   T_DISPLAY_DATA display_info;
 
-  TRACE_FUNCTION ("network_start_animation()");
+  emo_printf ("network_start_animation()");
 
 	if (network_data.network_search_win != NULL)
 	{
@@ -2919,7 +2921,7 @@ static void network_start_animation_plmn_selection(int plmn_value)
   T_DISPLAY_DATA display_info;
 /*  T_MFW_PLMN_LIST * plmn_list; */  /* Warning Correction */
 
-  TRACE_FUNCTION ("network_start_animation()");
+  emo_printf ("network_start_animation()");
 
 	dlg_initDisplayData_TextStr( &display_info, TxtNull, TxtNull, "Requesting....", NULL, COLOUR_STATUS_NETWORKS);
 	dlg_initDisplayData_events( &display_info, (T_VOID_FUNC)network_animation_cb, FOREVER, KEY_CLEAR| KEY_RIGHT );
@@ -2947,7 +2949,7 @@ static void network_forbidden_plmn(void)
 {
   T_DISPLAY_DATA display_info;
 
-  TRACE_FUNCTION ("network_forbidden_plmn()");
+  emo_printf ("network_forbidden_plmn()");
 
 	if (network_data.network_search_win != NULL)
 	{
@@ -2979,7 +2981,7 @@ static void network_selected(void)
 {
   T_DISPLAY_DATA display_info;
 
-  TRACE_FUNCTION ("network_start_animation()");
+  emo_printf ("network_start_animation()");
 
 	dlg_initDisplayData_TextId( &display_info, TxtNull, TxtNull, TxtNetwork, TxtSelected, COLOUR_STATUS_NETWORKS);
 	// Jul 21, 2004        REF: CRR 13348  xvilliva
@@ -3008,7 +3010,7 @@ static void network_no_plmns(void)
 {
   T_DISPLAY_DATA display_info;
 
-  TRACE_FUNCTION ("network_no_plmns()");
+  emo_printf ("network_no_plmns()");
 
 	dlg_initDisplayData_TextStr( &display_info, TxtNull, TxtNull, "No networks", "available", COLOUR_STATUS_NETWORKS);
 	dlg_initDisplayData_events( &display_info, (T_VOID_FUNC)network_animation_cb, THREE_SECS, KEY_CLEAR| KEY_RIGHT );
@@ -3031,7 +3033,7 @@ static void network_no_plmns(void)
 *******************************************************************************/
 static void network_stop_animation(void)
 {
-  TRACE_FUNCTION ("network_stop_animation()");
+  emo_printf ("network_stop_animation()");
 
   if (network_data.network_search_win)
   {
@@ -3052,7 +3054,7 @@ static void network_stop_animation(void)
 *******************************************************************************/
 void network_animation_cb(T_MFW_HND win, UBYTE identifier, UBYTE reason)
 {
-  TRACE_FUNCTION ("network_animation_cb()");
+  emo_printf ("network_animation_cb()");
 
   network_data.network_search_win = 0;
   network_data.aborted = TRUE;
@@ -3071,7 +3073,7 @@ void network_animation_cb(T_MFW_HND win, UBYTE identifier, UBYTE reason)
 *******************************************************************************/
 void network_select_animation_cb(T_MFW_HND win, UBYTE identifier, UBYTE reason)
 {
-	TRACE_FUNCTION ("network_select_animation_cb()");
+	emo_printf ("network_select_animation_cb()");
 
 	network_data.network_search_win = 0;
 	network_data.aborted = TRUE;
@@ -3101,7 +3103,7 @@ T_MFW_HND network_MNU_start(T_MFW_HND parent_window, MfwMnuAttr *menuAttr)
 {
     T_MFW_HND win;
 
-    TRACE_FUNCTION ("network_MNU_start()");
+    emo_printf ("network_MNU_start()");
 
     win = network_MNU_create (parent_window);
     if (win NEQ NULL)
@@ -3128,7 +3130,7 @@ static T_MFW_HND network_MNU_create(MfwHnd parent_window)
     T_network_OPT   * data = (T_network_OPT *)ALLOC_MEMORY (sizeof (T_network_OPT));
     T_MFW_WIN       * win;
 
-    TRACE_FUNCTION ("network_MNU_create()");
+    emo_printf ("network_MNU_create()");
 
     /*
      * Create window handler
@@ -3176,7 +3178,7 @@ static void network_MNU_destroy(MfwHnd own_window)
     T_network_OPT   * data;
     /*   T_MFW_PPLMN_MEM *pplmn_mem;  */ /* Warning Correction */
 
-    TRACE_FUNCTION ("network_MNU_destroy()");
+    emo_printf ("network_MNU_destroy()");
 
     if (own_window)
 	{
@@ -3192,11 +3194,11 @@ static void network_MNU_destroy(MfwHnd own_window)
 		     * Delete WIN handler
 		     */ 
 		       win_delete (data->win); 
-			TRACE_EVENT("END of WIN DELETE");
+			emo_printf("END of WIN DELETE");
 			
 			if(data->network_list != NULL)
 			{    
-				TRACE_EVENT("START FREE MEMORY"); 
+				emo_printf("START FREE MEMORY"); 
 				
 				/* Free the allocated memory for PLMN list window - OMAPS00061049 - 08-03-2006 */ 
 #ifndef NEPTUNE_BOARD
@@ -3210,7 +3212,7 @@ static void network_MNU_destroy(MfwHnd own_window)
 				/*SPR 2635, free list of pointers to longname atrings*/
 				FREE_MEMORY ((UBYTE *)data->pplmn_longnames,MAX_SHOW_OF_PLMN* sizeof (char*));
 				
-				TRACE_EVENT("END of FREE MEMORY");
+				emo_printf("END of FREE MEMORY");
 			}
 	
 		    /*     
@@ -3221,7 +3223,7 @@ static void network_MNU_destroy(MfwHnd own_window)
 		}
 	    else
 		{
-		    TRACE_EVENT ("network_MNU_destroy() called twice");
+		    emo_printf ("network_MNU_destroy() called twice");
 		}
 	}
 }
@@ -3250,7 +3252,7 @@ void network_MNU_exec_cb (T_MFW_HND win, USHORT event, SHORT value, void * param
   /*  T_MFW_HDR        * parent      =  data->parent;  */ /* Warning Correction */
  /*	T_MFW_EVENT         MfwEvents; */  /* Warning Correction */
 	
-    TRACE_FUNCTION ("network_MNU_exec_cb()");
+    emo_printf ("network_MNU_exec_cb()");
 
 
     switch (event)
@@ -3291,7 +3293,7 @@ static int network_MNU_mnu_cb (MfwEvt e, MfwMnu *m)
   /*  T_MFW_HND      * l_parent;  */ /* Warning Correction */
   /*  SHORT            l_id;  */  /* Warning Correction */
 
-    TRACE_FUNCTION ("network_MNU_mnu_cb()");
+    emo_printf ("network_MNU_mnu_cb()");
 
     switch (e)
         {
@@ -3323,7 +3325,7 @@ static int network_MNU_mnu_cb (MfwEvt e, MfwMnu *m)
 
 static int network_MNU_win_cb (MfwEvt e, MfwWin *w)
 {
-    TRACE_FUNCTION ("network_MNU_win_cb()");
+    emo_printf ("network_MNU_win_cb()");
 
     switch (e)
 	{
@@ -3356,7 +3358,7 @@ static int network_MNU_kbd_cb (MfwEvt e, MfwKbd *k)
     T_MFW_WIN          * win_data = ((T_MFW_HDR *)win)->data;
     T_network_OPT    * data       = (T_network_OPT *)win_data->user;
 
-    TRACE_FUNCTION ("network_MNU_kbd_cb()");
+    emo_printf ("network_MNU_kbd_cb()");
 
     if (e & KEY_LONG)
 	{
@@ -3414,7 +3416,7 @@ static int network_request_plnm_list(MfwMnu* m, MfwMnuItem* i)
 /*    T_network_OPT    * data     = (T_network_OPT *)win_data->user; */  /* Warning Correction */
 	T_DISPLAY_DATA display_info;
 	
-	TRACE_FUNCTION("network_request_plnm_list");
+	emo_printf("network_request_plnm_list");
 
 	/* SPR#2354 - SH - Display "Choose Replacement" dialogue,
 	 * so the function of the second list is more evident */
@@ -3455,7 +3457,7 @@ static void network_request_plmn_list_cb(T_MFW_HND win, USHORT identifier, UBYTE
 	/*SPR 2635 end*/
 	else
 	{
-		TRACE_EVENT("create the list failed");
+		emo_printf("create the list failed");
 		return;
 	}
 
@@ -3485,7 +3487,7 @@ static int network_delete(MfwMnu* m, MfwMnuItem* i)
 
     T_MFW_HND win      = mfwParent(mfw_header());
 
-	TRACE_FUNCTION ("network_delete()");
+	emo_printf ("network_delete()");
 
 #ifdef NO_ASCIIZ
 	if (network_data.pplmn[network_data.Listposition].network_short.len NEQ 0 )
@@ -3538,7 +3540,7 @@ static int network_delete(MfwMnu* m, MfwMnuItem* i)
   /*  T_MFW_WIN       * win_data = ((T_MFW_HDR *)win)->data;         */  /* Warning Correction */
   /*  T_network_OPT    * data     = (T_network_OPT *)win_data->user; */ /* Warning Correction */
 
-	TRACE_FUNCTION ("network_delete_pref_plnm()");
+	emo_printf ("network_delete_pref_plnm()");
 
   
 	mode =   DELETE_PREF_PLMN;      /* Delete an entry from the list  */
@@ -3585,7 +3587,7 @@ void network_info_screen (T_MFW_HND win, USHORT MessageId, T_VOID_FUNC funt_ptr 
 {
     T_DISPLAY_DATA display_info;
 
-    TRACE_FUNCTION ("network_info_screen()");
+    emo_printf ("network_info_screen()");
 
 	dlg_initDisplayData_TextId( &display_info, TxtNull, TxtNull, MessageId, TxtNull, COLOUR_STATUS_NETWORKS);
 	dlg_initDisplayData_events( &display_info, (T_VOID_FUNC)funt_ptr, THREE_SECS, 0 );
@@ -3610,7 +3612,7 @@ T_MFW_HND network_EDT_start (MfwMnu* m, MfwMnuItem* i)
 	T_MFW_HND   win;
 	T_MFW_HND   parent_window   = mfwParent(mfw_header());
 
-    TRACE_FUNCTION ("network_OPT_EDT_start()");
+    emo_printf ("network_OPT_EDT_start()");
 
     win = network_EDT_create (parent_window);
 
@@ -3637,7 +3639,7 @@ static T_MFW_HND network_EDT_create(MfwHnd parent_window)
     T_network_OPT  * data = (T_network_OPT *)ALLOC_MEMORY (sizeof (T_network_OPT));
     T_MFW_WIN     * win;
 
-    TRACE_FUNCTION ("network_EDT_create()");
+    emo_printf ("network_EDT_create()");
 
     /*
      * Create window handler
@@ -3686,7 +3688,7 @@ static void network_EDT_destroy(MfwHnd own_window)
     T_network_OPT     * data;
 
 
-    TRACE_FUNCTION ("networkT_EDT_destroy()");
+    emo_printf ("networkT_EDT_destroy()");
 
     if (own_window)
 	{
@@ -3707,7 +3709,7 @@ static void network_EDT_destroy(MfwHnd own_window)
 		}
 	    else
 		{
-		    TRACE_EVENT ("network_EDT_destroy() called twice");
+		    emo_printf ("network_EDT_destroy() called twice");
 		}
 	}
 }
@@ -3732,7 +3734,7 @@ void network_EDT_exec_cb (T_MFW_HND win, USHORT event, SHORT value, void * param
   /*  SHORT             l_id; */ /* Warning Correction */
   /*  int                index; */  /* Warning Correction */
 
-    TRACE_FUNCTION ("network_EDT_exec_cb()");
+    emo_printf ("network_EDT_exec_cb()");
 
     switch (event)
 	{
@@ -3823,7 +3825,7 @@ static void network_EDT_editor_cb (T_MFW_HND win, USHORT Identifier, USHORT even
     T_MFW_HND    * l_parent;
 	T_MFW_PPLMN_MODE mode;
 
-    TRACE_FUNCTION ("network_EDT_editor_cb()");
+    emo_printf ("network_EDT_editor_cb()");
 
 
      l_parent = data->parent;
@@ -3880,7 +3882,7 @@ static void network_EDT_editor_cb (T_MFW_HND win, USHORT Identifier, USHORT even
 *******************************************************************************/
 void nm_abort_network( void )
 {
-  TRACE_FUNCTION ("nm_abort_network()");
+  emo_printf ("nm_abort_network()");
   //destroy the searching window dialog
   dialog_info_destroy (network_data.network_search_win);
   network_data.network_search_win = 0;
@@ -3928,16 +3930,16 @@ static int nw_time_update_callback(T_MFW_HND win, USHORT identifier, UBYTE reaso
 {
     int     res = MFW_EVENT_CONSUMED;   // Result code to be returned by this function
 
-    TRACE_FUNCTION("nw_time_update_callback()");
+    emo_printf("nw_time_update_callback()");
 
     switch(reason)
     {
         case INFO_KCD_RIGHT:    // Reject offer of network time updation
-            TRACE_EVENT("INFO_KCD_RIGHT");
+            emo_printf("INFO_KCD_RIGHT");
             break;
 
         case INFO_KCD_LEFT: // Accept offer of network time/date updation
-            TRACE_EVENT("INFO_KCD_LEFT");
+            emo_printf("INFO_KCD_LEFT");
 
             // Update RTC with new time info
             mfw_td_set_time(&newTime);
@@ -3950,12 +3952,12 @@ static int nw_time_update_callback(T_MFW_HND win, USHORT identifier, UBYTE reaso
             break;
 
         case INFO_KCD_HUP:  // Ignore offer of network time updation
-            TRACE_EVENT("INFO_KCD_HUP");
+            emo_printf("INFO_KCD_HUP");
             // No further action required
             break;
 
         default:
-            TRACE_EVENT_P1("Unexpected reason: %d", reason);
+            emo_printf("Unexpected reason: %d", reason);
             res = MFW_EVENT_REJECTED;
             break;
     }
@@ -3986,19 +3988,19 @@ int settingsNITZ (T_MFW_MNU *menu, T_MFW_MNU_ITEM *i)
   switch(menu->lCursor[menu->level])
     {
         case 0:
-            TRACE_EVENT("Menu option 0: Automatic");
+            emo_printf("Menu option 0: Automatic");
 		FFS_flashData.nitz_option=NitzAutomatic;
 		txtId = TxtAutomatic;
             break;
 
         case 1:
-            TRACE_EVENT("Menu option 1: NITZOn");
+            emo_printf("Menu option 1: NITZOn");
             FFS_flashData.nitz_option=NitzOn;
 		txtId = TxtOn;
             break;
 
         case 2:
-            TRACE_EVENT("Menu option 2: NITZOff");
+            emo_printf("Menu option 2: NITZOff");
 		FFS_flashData.nitz_option=NitzOff;
 		txtId = TxtOff;
 		break;

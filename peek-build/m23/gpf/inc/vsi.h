@@ -696,6 +696,7 @@ void            vsi_pcheck_register(ULONG (*func)(ULONG, void*), ULONG ret_ok);
   #define TRACE_FUNCTION_P8(f,a1,a2,a3,a4,a5,a6,a7,a8)          vsi_o_func_ttrace(f,a1,a2,a3,a4,a5,a6,a7,a8)
   #define TRACE_FUNCTION_P9(f,a1,a2,a3,a4,a5,a6,a7,a8,a9)       vsi_o_func_ttrace(f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
 #else
+  #ifndef EMO_DBG
   #define TRACE_FUNCTION(a)                                     ((void)(0))                               
   #define TRACE_FUNCTION_P1(f,a1)                               ((void)(0))
   #define TRACE_FUNCTION_P2(f,a1,a2)                            ((void)(0))                      
@@ -705,7 +706,8 @@ void            vsi_pcheck_register(ULONG (*func)(ULONG, void*), ULONG ret_ok);
   #define TRACE_FUNCTION_P6(f,a1,a2,a3,a4,a5,a6)                ((void)(0))           
   #define TRACE_FUNCTION_P7(f,a1,a2,a3,a4,a5,a6,a7)             ((void)(0))        
   #define TRACE_FUNCTION_P8(f,a1,a2,a3,a4,a5,a6,a7,a8)          ((void)(0))     
-  #define TRACE_FUNCTION_P9(f,a1,a2,a3,a4,a5,a6,a7,a8,a9)       ((void)(0))  
+  #define TRACE_FUNCTION_P9(f,a1,a2,a3,a4,a5,a6,a7,a8,a9)       ((void)(0))   
+  #endif
 #endif
 
 #ifdef TRACE_EVE
@@ -730,6 +732,7 @@ void            vsi_pcheck_register(ULONG (*func)(ULONG, void*), ULONG ret_ok);
   #define TRACE_USER_CLASS_P8(c,f,a1,a2,a3,a4,a5,a6,a7,a8)      vsi_o_class_ttrace(c,f,a1,a2,a3,a4,a5,a6,a7,a8)
   #define TRACE_USER_CLASS_P9(c,f,a1,a2,a3,a4,a5,a6,a7,a8,a9)   vsi_o_class_ttrace(c,f,a1,a2,a3,a4,a5,a6,a7,a8,a9)
 #else
+  #ifndef EMO_DBG
   #define TRACE_EVENT(a)                                        ((void)(0))                              
   #define TRACE_EVENT_P1(f,a1)                                  ((void)(0))
   #define TRACE_EVENT_P2(f,a1,a2)                               ((void)(0))                     
@@ -750,6 +753,7 @@ void            vsi_pcheck_register(ULONG (*func)(ULONG, void*), ULONG ret_ok);
   #define TRACE_USER_CLASS_P7(c,f,a1,a2,a3,a4,a5,a6,a7)         ((void)(0))
   #define TRACE_USER_CLASS_P8(c,f,a1,a2,a3,a4,a5,a6,a7,a8)      ((void)(0))
   #define TRACE_USER_CLASS_P9(c,f,a1,a2,a3,a4,a5,a6,a7,a8,a9)   ((void)(0))
+  #endif
 #endif
 
 #ifdef TRACE_BIN
@@ -775,7 +779,9 @@ void            vsi_pcheck_register(ULONG (*func)(ULONG, void*), ULONG ret_ok);
 #ifdef TRACE_ERR
   #define TRACE_ERROR(a)                                        vsi_o_error_ttrace(a)   
 #else
+  #ifndef EMO_DBG
   #define TRACE_ERROR(a)                                        ((void)(0))
+  #endif
 #endif
 
 #ifdef TRACE_IS                                                 /* entity internal signals */

@@ -236,6 +236,7 @@ GLOBAL BOOL bootup_response_cb (ULONG opc, void * data);
  $Arguments:  None.
 
 *******************************************************************************/
+extern void emo_printf(const char *fmt, ...);
 
 void mmi_main( void )
 {
@@ -254,6 +255,7 @@ void mmi_main( void )
 #if FF_MMI_SERVICES_MIGRATION
 	   drvKeyUpDown(0,0);
 #else
+	 emo_printf("mmi_main() keypower init called\n");
 	 key_power_init();
 #endif
 
@@ -272,6 +274,7 @@ void mmi_main( void )
 
 
 #else  /* Other Builds */
+     emo_printf("mmi_main() keypower init called\n");
      key_power_init();
 #endif
 
@@ -335,8 +338,6 @@ GLOBAL BOOL bootup_response_cb (ULONG opc, void * data)
  $Arguments:  None.
 
 *******************************************************************************/
-
-extern void emo_printf(const char *fmt, ...);
 
 void mmiInit( void )
 {

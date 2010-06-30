@@ -11,11 +11,12 @@ INCLUDE += $(M23DIR)/chipsetsw/Services/omx_core/inc
 SRC  = audio.c
 SRC += display.c
 SRC += font_bitmaps.c
-SRC += keypad.c
-SRC += light.c
 SRC += power.c
 SRC += rtc.c
 SRC += rx.c
+
+OBJO = keypad.o
+OBJO += light.o
 
 OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(patsubst %.s,%.o,$(SRC)))))
 DEPS = $(patsubst %.o,%.d,$(OBJ))
@@ -24,7 +25,7 @@ TARGET = $(CURDIR)/gdi.a
 
 all: $(TARGET)
 
-$(TARGET): $(OBJ)
+$(TARGET): $(OBJ) $(OBJO)
 	$(AR) $(ARFLAGS) $@ $?
 
 clean:

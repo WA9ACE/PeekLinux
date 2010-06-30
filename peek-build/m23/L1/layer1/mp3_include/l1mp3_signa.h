@@ -9,7 +9,7 @@
 #ifndef _L1MP3_SIGNA_H_
 #define _L1MP3_SIGNA_H_
 
-#if (L1_MP3 == 1)
+//#if (L1_MP3 == 1)
 
 #define P_MP3 0x40
 
@@ -38,6 +38,6 @@
 #define API_MP3_RESUME_CON               ( ( P_MP3 << 8 ) | 0x12 )
 #define API_MP3_RESTART_CON              ( ( P_MP3 << 8 ) | 0x13 )
 
-#endif  // L1_MP3
+//#endif  // L1_MP3
 
 #endif

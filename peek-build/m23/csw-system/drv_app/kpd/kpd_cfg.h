@@ -33,10 +33,10 @@
 #if (BOARD == 7) || (BOARD == 8) || (BOARD == 9)
    #define KPD_NB_PHYSICAL_KEYS (18)
 
-#elif (BOARD == 40) || (BOARD == 41) || (BOARD == 42) || (BOARD == 43) || (BOARD == 34) || (BOARD == 35) || (BOARD == 46) || (defined _WINDOWS) 
+#elif (BOARD == 40) || (BOARD == 41) || (BOARD == 42) || (BOARD == 43) || (BOARD == 34) || (BOARD == 35) || (BOARD == 46) || (defined _WINDOWS)
    #define KPD_NB_PHYSICAL_KEYS (24)
 #elif ((BOARD==70) || (BOARD==71))
-   #define KPD_NB_PHYSICAL_KEYS (25)
+   #define KPD_NB_PHYSICAL_KEYS (52)
 #endif
 
 
@@ -57,7 +57,7 @@
 
 /**  T_KPD_PTV : Divisor factor
  */
-typedef enum 
+typedef enum
   {
     KPD_CLK_DIV2   = 0,
     KPD_CLK_DIV4   = 1,
@@ -73,7 +73,7 @@ typedef enum
 
 /**  T_KPD_EnableDetection : Keyboard Detection Enable Type
  */
-typedef enum 
+typedef enum
   {
     KPD_DETECTION_ENABLED  = 1,
     KPD_DETECTION_DISABLED = 0
@@ -85,7 +85,7 @@ typedef enum
 
 /**  T_KPD_Status : Keyboard State Machine Status Type
  */
-typedef enum 
+typedef enum
   {
     KPD_IDLE                  = 0x0,
     KPD_SCANNING              = 0x1,
@@ -104,7 +104,7 @@ typedef enum
     KPD_OTHER                 = 0xF
   } T_KPD_Status;
 
-/**  
+/**
  * Keyboard Enable Software Mode Type
  */
 
@@ -134,9 +134,15 @@ typedef enum
 /**
  * Define the debouncing time that should be used by the hardware
  */
+#ifdef BTC_VIN
+#define BTC_MODIFICATION_KEYPAD_FOR_WHEEL
+#endif
+#ifndef BTC_MODIFICATION_KEYPAD_FOR_WHEEL
 #define KPD_DEBOUNCING_TIME   (0x3F)
-
-/** 
+#else
+#define KPD_DEBOUNCING_TIME   (0x15)
+#endif
+/**
  * Define the number max of client that can subscribe to the keypad driver.
  * This value must be lower or equal than 32.
  */
@@ -179,8 +185,8 @@ typedef enum   {  KPD_DEFAULT_MODE = 1,
  */
 /* KPD_KEY_NULL must always be defined */
 /* KPD_KEY_NULL is not a key that can be notified to a subscriber */
-#define KPD_KEY_NULL (0)
 
+#define KPD_KEY_NULL (0)
 #define KPD_KEY_0          (1)
 #define KPD_KEY_1          (2)
 #define KPD_KEY_2          (3)
@@ -191,8 +197,8 @@ typedef enum   {  KPD_DEFAULT_MODE = 1,
 #define KPD_KEY_7          (8)
 #define KPD_KEY_8          (9)
 #define KPD_KEY_9          (10)
-#define KPD_KEY_UP         (11)
-#define KPD_KEY_DOWN       (12)
+//#define KPD_KEY_UP         (11)
+//#define KPD_KEY_DOWN       (12)
 #define KPD_KEY_SOFT_LEFT  (13)
 #define KPD_KEY_SOFT_RIGHT (14)
 #define KPD_KEY_CONNECT    (15)
@@ -204,7 +210,7 @@ typedef enum   {  KPD_DEFAULT_MODE = 1,
 #define KPD_KEY_VOL_DOWN   (20)
 #define KPD_KEY_LEFT       (21)
 #define KPD_KEY_RIGHT      (22)
-#define KPD_KEY_ENTER      (23)
+//#define KPD_KEY_ENTER      (23)
 #define KPD_KEY_RECORD     (24)
 
 
@@ -226,6 +232,64 @@ typedef enum   {  KPD_DEFAULT_MODE = 1,
 #define KPD_KEY_WX         (38)
 #define KPD_KEY_YZ         (39)
 
+#if ((BOARD==70) || (BOARD==71))
+#define KPD_KEY_NULL (0)
+#define KPD_KEY_0          (1)
+#define KPD_KEY_1          (2)
+#define KPD_KEY_2          (3)
+#define KPD_KEY_3          (4)
+#define KPD_KEY_4          (5)
+#define KPD_KEY_5          (6)
+#define KPD_KEY_6          (7)
+#define KPD_KEY_7          (8)
+#define KPD_KEY_8          (9)
+#define KPD_KEY_9          (10)
+#define KPD_KEY_A           (11)
+#define KPD_KEY_B          (12)
+#define KPD_KEY_C          (13)
+#define KPD_KEY_D          (14)
+#define KPD_KEY_E          (15)
+#define KPD_KEY_F          (16)
+#define KPD_KEY_G          (17)
+#define KPD_KEY_H          (18)
+#define KPD_KEY_I          (19)
+#define KPD_KEY_J          (20)
+#define KPD_KEY_K          (21)
+#define KPD_KEY_L          (22)
+#define KPD_KEY_M          (23)
+#define KPD_KEY_N          (24)
+#define KPD_KEY_O          (25)
+#define KPD_KEY_P          (26)
+#define KPD_KEY_Q          (27)
+#define KPD_KEY_R          (28)
+#define KPD_KEY_S          (29)
+#define KPD_KEY_T          (30)
+#define KPD_KEY_U          (31)
+#define KPD_KEY_V          (32)
+#define KPD_KEY_W          (33)
+#define KPD_KEY_X          (34)
+#define KPD_KEY_Y          (35)
+#define KPD_KEY_Z          (36)
+#define KPD_KEY_AT         (37)
+#define KPD_KEY_SPACE      (38)
+#define KPD_KEY_SHIFT_L      (39)
+#define KPD_KEY_SHIFT_R      (40)
+#define KPD_KEY_ENTER      (41)
+#define KPD_KEY_LOCK       (42)
+#define KPD_KEY_REDUCE     (43)
+#define KPD_KEY_DOT        (44)
+#define KPD_KEY_COMMA      (45)
+#define KPD_KEY_QUOTE      (46)
+#define KPD_KEY_NAV_CENTER (47)
+#define KPD_KEY_CANCLE (48)
+#define KPD_KEY_BACKSPACE  (49)
+#define KPD_KEY_POWR       (50)
+#define KPD_KEY_UP         (51)
+#define KPD_KEY_DOWN       (52)//zhangfanghui modify
+#define KPD_KEY_SHIFT      (39)
+#endif
+
+
 #if (BOARD == 7)
    #define KP_ROWS      5
    #define KP_COLS      4
@@ -233,8 +297,8 @@ typedef enum   {  KPD_DEFAULT_MODE = 1,
    #define KP_ROWS      5
    #define KP_COLS      4
 #elif ((BOARD == 40) || (BOARD == 41) || (BOARD == 42) || (BOARD == 43)|| (BOARD==70) || (BOARD==71))
-   #define KP_ROWS      5
-   #define KP_COLS      5
+   #define KP_ROWS      7
+   #define KP_COLS      8
 #endif
 
 

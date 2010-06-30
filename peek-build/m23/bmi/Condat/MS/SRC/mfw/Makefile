@@ -1,4 +1,19 @@
-DEFINE += 
+
+DEFINE +=
+DEFINE += EMO_DBG
+DEFINE += TRACE_FUNCTION=emo_printf
+DEFINE += TRACE_ERROR=emo_printf
+DEFINE += TRACE_EVENT=emo_printf
+DEFINE += TRACE_EVENT_P1=emo_printf
+DEFINE += TRACE_EVENT_P2=emo_printf
+DEFINE += TRACE_EVENT_P3=emo_printf
+DEFINE += TRACE_EVENT_P4=emo_printf
+DEFINE += TRACE_EVENT_P5=emo_printf
+DEFINE += TRACE_EVENT_P7=emo_printf
+DEFINE += TRACE_FUNCTION_P1=emo_printf
+DEFINE += TRACE_FUNCTION_P2=emo_printf
+
+
 UNDEFINE += RSSI
 UNDEFINE += PCM_2_FFS
 
@@ -52,7 +67,7 @@ SRC  += Mfw_em.c
 #SRC  += mfw_BtipsBmg.c
 #SRC  += mfw_BtipsOppc.c
 SRC  += mfw_acie.c
-SRC  += mfw_camapp.c
+#SRC  += mfw_camapp.c
 SRC  += mfw_cnvt.c
 SRC  += mfw_ffs.c
 SRC  += mfw_icn.c

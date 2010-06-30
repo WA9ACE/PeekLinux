@@ -379,6 +379,8 @@ extern const T_OPER_NTRY operList[];
 #endif
 EXTERN MfwHdr * current_mfw_elem;
 
+extern void emo_printf(const char *fmt, ...);
+
 U8 mfw_IMSI [LONG_NAME];            /* expanded IMSI (ASCIIZ)              */
 
 static U8 last_selected_mode = NOT_PRESENT_8BIT;

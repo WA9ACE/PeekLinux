@@ -352,6 +352,7 @@ typedef struct
 /** Message can be used with the following Message ID. */
 #define KPD_LONG_KEY_INTERRUPT_MSG      (KPD_MESSAGES_OFFSET | 0x012)
 #define KPD_KEY_EVENT_INTERRUPT_MSG     (KPD_MESSAGES_OFFSET | 0x013)
+
 /** Message structure. */
 typedef struct
 {
@@ -362,11 +363,23 @@ typedef struct
    UINT16           full_code_47_32;
    UINT16           full_code_63_48;
 } T_KPD_KEY_EVENT_INTERRUPT_MSG;
-
+typedef struct
+{
+   /** Message header. */
+   T_RV_HDR         hdr;
+   UINT8           isr_lsb;
+   UINT8           kpc_data_byte0;
+   UINT8           kpc_data_byte1;
+   UINT8           kpc_data_byte2;
+} T_KPD_FULL_KEY_EVENT_INTERRUPT_MSG;
 
 #define KPD_PROCESS_POWER_KEY_MSG      (KPD_MESSAGES_OFFSET | 0x014)
-
+#define KPD_KEY_FULL_EVENT_INTERRUPT_MSG     (KPD_MESSAGES_OFFSET | 0x015)
+#define KPD_PROCESS_POWER_KEY_PRESS_MSG      (KPD_MESSAGES_OFFSET | 0x016)
+#define KPD_PROCESS_POWER_KEY_RELEASE_MSG      (KPD_MESSAGES_OFFSET | 0x017)
 /*@}*/
+
+#define KPD_ROT_MSG	(KPD_MESSAGES_OFFSET | 0x18)
 
 #endif /* (CHIPSET == 12) */
 

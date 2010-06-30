@@ -313,7 +313,8 @@ T_MFW_HND td_handle;
  
 *******************************************************************************/
 void time_date_init()
-{	mfw_td_init();
+{
+	mfw_td_init();
 
 	td_handle = mfw_td_create(NULL, MFW_TD_ALARM, time_date_cb);
 }

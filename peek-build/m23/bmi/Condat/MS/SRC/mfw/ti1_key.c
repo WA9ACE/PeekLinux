@@ -507,7 +507,7 @@ void keypad_cb (void* parameter)
 
 
 
-
+	emo_printf("keypad_cb(): got called\n");
 	check = (T_RV_CHECK*)parameter;
 
 	if (check->msg_id EQ KPD_STATUS_MSG)
@@ -601,6 +601,9 @@ UBYTE keypad_initialize (void)
   U16 repeat_time = 50;     // 5.0s <not used>
 
   T_KPD_NOTIF_LEVEL     notif_level;
+
+  emo_printf("keypad_initialize(): got called\n");
+
   mode = KPD_DEFAULT_MODE;
 
   return_path.callback_func = keypad_cb;

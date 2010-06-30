@@ -7,7 +7,10 @@
 
 #include "Font.h"
 
-#include "assets/DroidSans.c"
+//#include "assets/DroidSans.c"
+unsigned char DroidSans[] = {
+        0x00, 0x01, 0x00, 0x00, 0x00};
+const int DroidSansSize = 5;
 
 #include <stdio.h>
 

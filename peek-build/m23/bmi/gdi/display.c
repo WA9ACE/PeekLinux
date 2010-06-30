@@ -3312,7 +3312,7 @@ int scrUpdate (int onOff)
 {
     int ena = scrEnabled;
 	
-
+    emo_printf("scrUpdate() got called\n");
     scrEnabled = onOff;
     if (scrEnabled)
     {

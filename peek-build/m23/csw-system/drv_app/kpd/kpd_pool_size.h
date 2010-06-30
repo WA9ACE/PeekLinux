@@ -45,7 +45,7 @@
 #elif ((BOARD == 34) || (BOARD == 40) || (BOARD == 41) || (BOARD == 42) || (BOARD == 43))
   #define KPD_MB1_SIZE (788)
 #elif ( (BOARD==70) || (BOARD==71))
-  #define KPD_MB1_SIZE (800)
+  #define KPD_MB1_SIZE (1124)  //800->1124
 #elif defined _WINDOWS
   #define KPD_MB1_SIZE (788)
 #endif /* BOARD */
