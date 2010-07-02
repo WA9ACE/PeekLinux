@@ -3,14 +3,14 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include "os_const.h"
+#include "gsm_mm_pool_size.h"
 #include "typedefs.h"
 #include "vsi.h"
 #include "ccdapi.h"
 #include "pei.h"
-#include "tok.h"
-#include "os_const.h"
 #include "frm_types.h"
-#include "gsm_mm_pool_size.h"
+#include "tok.h"
 #if (CHIPSET==15) && (REMU==1) && (LOCOSTO_LITE==0)
 #if (MMPOOL_INT_0_PARTITIONS>0)
 #if (!defined DATA_EXT_RAM && defined MM_0_INT_RAM) || (!defined DATA_INT_RAM && !defined MM_0_INT_RAM)

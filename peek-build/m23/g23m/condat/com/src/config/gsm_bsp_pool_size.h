@@ -53,7 +53,7 @@
  * AUDIO SWE
  */
 #ifdef RVM_AUDIO_MAIN_SWE
-  #include "audio/audio_pool_size.h"
+  #include "Audio/audio_pool_size.h"
 
 /* sizes of audio partitions */
   #define AUDIO_PARTITION_0_SIZE 35
