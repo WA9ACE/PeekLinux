@@ -30,10 +30,10 @@
 #include "tools.h"      /* to get common tools */
 #include "mon_ssl.h"    /* to get mon-definitions */
 #include "OMX_Types.h"
-#include "OMX_core.h"
-#include "omx_sslcomponent.h" /* Defines for the Client-Core interface */
+#include "OMX_Core.h"
+#include "OMX_SSLComponent.h" /* Defines for the Client-Core interface */
 #include "OMX_SSL_Private.h"
-#include "OMX_TIImage.h"
+#include "omx_tiimage.h"
 #include "ssl.h"        /* to get the global entity definitions */
 #include "alpha_overlay.h" /*Alpha Blending*/
 #include "exp_colorconv_rotate_scaling.h" /* Rotation Testing  Header*/

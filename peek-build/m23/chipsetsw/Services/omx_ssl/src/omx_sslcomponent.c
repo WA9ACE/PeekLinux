@@ -37,7 +37,7 @@
 #include "OMX_Core.h"
 #include "OMX_SSLComponent.h"
 #include "OMX_SSL_Private.h"
-#include "OMX_TIImage.h"
+#include "omx_tiimage.h"
 
 
 /*This Flag enables Get/Set Param*/

@@ -40,7 +40,7 @@
 /*-------program files ----------------------------------------*/
 #include "OMX_Core.h"
 #include "OMX_ComponentTable.h"
-#include "OMX_TIImage.h"
+#include "omx_tiimage.h"
 
 extern  T_HANDLE mm_ext_data_pool_handle;
 extern  T_HANDLE mm_int_data_pool_handle;

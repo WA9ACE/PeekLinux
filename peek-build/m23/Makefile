@@ -21,7 +21,7 @@ m23:
 	$(MAKE) -C $(M23DIR)/csw-system/drv_app/rtc $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/csw-system/drv_app/power $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/csw-system/drv_app/secure_rom $(MAKECMDGOALS)
-	#$(MAKE) -C $(M23DIR)/csw-system/drv_app/uicc $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/csw-system/drv_app/uicc $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/csw-system/drv_app/usb $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/csw-system/drv_app/usbfax $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/L1/layer1/cfile -f Makefile_l1_ext $(MAKECMDGOALS)
@@ -39,6 +39,11 @@ m23:
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/etm $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/img $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/lls $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/chipsetsw/Services/omx_core $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/chipsetsw/Services/omx_img $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/chipsetsw/Services/omx_ssl $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/chipsetsw/Services/ssl $(MAKECMDGOALS)
+
 	$(MAKE) -C $(M23DIR)/bmi $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/g23m $(MAKECMDGOALS)
 

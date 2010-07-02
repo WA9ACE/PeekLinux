@@ -10,7 +10,7 @@
 #include "sys_types.h"
 #include "sys_conf.h"    
 #include "rvm/rvm_gen.h"		/* Generic RVM types and functions. */
-#include "lcd_manager.h"
+#include "Lcd_manager.h"
 #include "rv/rv_defined_swe.h"
 
 #ifdef RVM_DATALIGHT_SWE

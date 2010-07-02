@@ -35,7 +35,7 @@
 
 /*-------program files ----------------------------------------*/
 #include "OMX_Core.h"
-#include "OMX_TIImage.h"
+#include "omx_tiimage.h"
 #include "OMX_IMGComponent.h"
 #include "OMX_IMG_Private.h"
 extern T_HANDLE mm_ext_data_pool_handle;
