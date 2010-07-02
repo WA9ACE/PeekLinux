@@ -46,6 +46,8 @@ m23:
 
 	$(MAKE) -C $(M23DIR)/bmi $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/g23m $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/csw-system/rtslib/v2_70 -f Makefile_rts16le_flash $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/csw-system/rtslib/v2_70 -f Makefile_rts16le_int_ram $(MAKECMDGOALS)
 
 clean: all
 

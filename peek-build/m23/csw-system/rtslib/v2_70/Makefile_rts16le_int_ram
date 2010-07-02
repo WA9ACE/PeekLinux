@@ -1,0 +1,51 @@
+DEFINE += 
+UNDEFINE += L1
+
+VARIANT_INCLUDE = 
+INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(M23DIR)/csw-system/rtslib/v2_70
+
+SRC  = vsprintf.c
+SRC += memccpy.c
+SRC += _printfi.c
+SRC += strcat.c
+SRC += strncat.c
+SRC += strlen.c
+SRC += sprintf.c
+SRC += strcpy.c
+SRC += strncpy.c
+SRC += memchr.c
+SRC += memcmp.c
+SRC += memmov.c
+SRC += memory.c     
+SRC += setjmp16.asm
+SRC += setjmp32.asm
+SRC += icall16.asm
+SRC += icall32.asm
+SRC += memset16.asm
+SRC += memset32.asm
+SRC += u_div16.asm
+SRC += u_div32.asm
+SRC += i_div16.asm
+SRC += i_div32.asm
+SRC += memcpy16.asm
+SRC += memcpy32.asm
+
+OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(patsubst %.asm,%.o,$(SRC)))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+TARGET = $(CURDIR)/rts16le_int_ram.a
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $?
+
+clean:
+	$(RM) $(OBJ) 
+	$(RM) $(TARGET) 
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules

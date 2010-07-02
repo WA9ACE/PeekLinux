@@ -54,6 +54,10 @@ STR2IND_C   = $(BUILDDIR)/trace/str2ind.c
 	@echo "  Assembling: $< => $@"
 	@$(CC) $(ASFLAGS) -eoo -fr $(@D) $<
 
+%.o: %.asm
+	@echo "  Assembling: $< => $@"
+	@$(CC) $(ASFLAGS) -eoo -fr $(@D) $<
+
 %.d: %.cpp
 	@#echo "  Dependencies for $<"
 	@$(CC) -ppi $(CFLAGS) $<
