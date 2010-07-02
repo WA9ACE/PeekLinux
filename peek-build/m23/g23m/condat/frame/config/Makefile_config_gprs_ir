@@ -1,0 +1,37 @@
+DEFINE += DATA_INT_RAM
+
+UNDEFINE += 
+
+VARIANT_INCLUDE = 
+INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(M23DIR)/csw-system/os/nucleus/1_15/plus
+INCLUDE += $(M23DIR)/gpf/inc 
+INCLUDE += $(M23DIR)/gpf/inc/nuc 
+INCLUDE += $(M23DIR)/gpf/inc/nuc/arm7 
+INCLUDE += $(M23DIR)/g23m/condat/com/inc
+INCLUDE += $(M23DIR)/condat/com/src/config 
+INCLUDE += $(M23DIR)/chipsetsw/system 
+INCLUDE += $(M23DIR)/L1/layer1/include 
+INCLUDE += $(M23DIR)/chipsetsw/Services 
+INCLUDE += $(M23DIR)/g23m/condat/com/include
+
+SRC  = gprscomp.c
+
+OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(patsubst %.s,%.o,$(SRC)))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+TARGET = $(CURDIR)/config_gprs_ir.a
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $?
+
+clean:
+	$(RM) $(OBJ) 
+	$(RM) $(TARGET) 
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules
