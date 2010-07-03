@@ -165,7 +165,6 @@ int flash_formatted(void); /* SPR#2487 - DS - Function to check if FFS is format
 
 //TISH, patch for call control CLIR
 //start
-/*
 UBYTE getCLIRState(void)
 {
 	if (FFS_flashData.CLIR)
@@ -174,7 +173,6 @@ UBYTE getCLIRState(void)
 		TRACE_EVENT("FFS_flashData.CLIR EQ false");
 	return FFS_flashData.CLIR;
 }
-*/
 //end
 /*
 +--------------------------------------------------------------------+

@@ -40,8 +40,8 @@
   						(32*10+44+8)) 	/* allocation per queue. 10 is the queue size in pei_create */
   #define BT_TASK_MEM   (BT_BTS_TASK_MEM + BT_BTAV_TASK_MEM + BT_BTU_TASK_MEM)
 #else
- 
 
+#define BT_TASK_MEM 0
 #define BTS_TASK_MEM 0
 #define BTT_TASK_MEM 0
 #define BTAV_TASK_MEM 0

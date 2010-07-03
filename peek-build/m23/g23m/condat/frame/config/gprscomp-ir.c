@@ -120,6 +120,7 @@ extern SHORT aaa_pei_create   (T_PEI_INFO const **Info);
 #endif /* FF_TCP_IP */
 #endif /* _TARGET_ */
 
+extern SHORT emo_pei_create    (T_PEI_INFO const **Info);
 
 extern SHORT upm_pei_create (T_PEI_INFO const **Info);
 

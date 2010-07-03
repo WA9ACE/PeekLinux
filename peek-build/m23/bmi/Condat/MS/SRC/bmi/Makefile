@@ -39,11 +39,14 @@ INCLUDE += $(M23DIR)/g23m/condat/com/inc
 INCLUDE += $(M23DIR)/g23m/condat/ms/src/aci
 INCLUDE += $(M23DIR)/g23m/condat/ms/src/ksd
 INCLUDE += $(M23DIR)/g23m/condat/ms/src/aci_dti_mng
+INCLUDE += $(M23DIR)/csw-system/drv_app/lcd
+INCLUDE += $(M23DIR)/chipsetsw/Services/lls
 INCLUDE += $(M23DIR)/g23m-aci/aci
 INCLUDE += $(M23DIR)/cdginc
 
 
 SRC  = AUICalcEditor.c
+SRC += emo_pei.c
 SRC += bmi_version.c
 SRC += AUIEditor.c
 SRC += AUIPinEditor.c

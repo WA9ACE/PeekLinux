@@ -97,6 +97,7 @@ subdir:
 	$(MAKE) -C $(M23DIR)/g23m-aci/gdd_dio
 	$(MAKE) -C $(M23DIR)/g23m-aci/l2p
 	$(MAKE) -C $(M23DIR)/g23m/condat/ms/src/ati_ext
+	$(MAKE) -C $(M23DIR)/g23m/condat/com/src/config
 	$(MAKE) -C $(M23DIR)/g23m/condat/com/src/comlib
 	$(MAKE) -C $(M23DIR)/g23m/condat/ms/src/psi
 	$(MAKE) -C $(M23DIR)/g23m/condat/com/src/driver
@@ -144,6 +145,7 @@ clean:
 	$(MAKE) -C $(M23DIR)/g23m-aci/gdd_dio clean
 	$(MAKE) -C $(M23DIR)/g23m-aci/l2p clean
 	$(MAKE) -C $(M23DIR)/g23m/condat/ms/src/ati_ext clean
+	$(MAKE) -C $(M23DIR)/g23m/condat/com/src/config clean
 	$(MAKE) -C $(M23DIR)/g23m/condat/com/src/comlib clean
 	$(MAKE) -C $(M23DIR)/g23m/condat/ms/src/psi clean
 	$(MAKE) -C $(M23DIR)/g23m/condat/com/src/driver clean

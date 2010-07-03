@@ -1,6 +1,5 @@
 DEFINE += DATA_EXT_RAM
-
-UNDEFINE += 
+UNDEFINE += DATA_INT_RAM
 
 VARIANT_INCLUDE = 
 INCLUDE += $(M23_VARIANT_INCLUDE)
@@ -14,6 +13,7 @@ INCLUDE += $(M23DIR)/chipsetsw/system
 INCLUDE += $(M23DIR)/L1/layer1/include 
 INCLUDE += $(M23DIR)/chipsetsw/Services 
 INCLUDE += $(M23DIR)/g23m/condat/com/include
+INCLUDE += $(M23DIR)
 
 SRC  = gprscomp.c
 SRC += custcomp.c 

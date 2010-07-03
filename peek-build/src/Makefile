@@ -9,21 +9,22 @@ DEFINE += BAL_IP_PUSH
 VIN_DEPEND = $(SRCDIR)/bal/bget.a \
 	     $(SRCDIR)/bal/bal.a
 
-SUBDIR_DEPEND = $(SRCDIR)/freetype2/freetype2.a \
-								$(SRCDIR)/libpng/libpng.a \
-								$(SRCDIR)/zlib/libz.a \
-                $(SRCDIR)/bam/bam.a \
-                $(SRCDIR)/baf/baf.a \
-		$(SRCDIR)/lua/lua.a \
-		$(SRCDIR)/nmealib/nmealib.a \
-                $(SRCDIR)/emobiix/emobiix.a \
-                $(SRCDIR)/emobiix/protocol/protocol.a \
-                $(SRCDIR)/bui/bui.a
+SUBDIR_DEPEND = $(SRCDIR)/zlib/libz.a
+#$(SRCDIR)/freetype2/freetype2.a \
+		$(SRCDIR)/libpng/libpng.a \
+#$(SRCDIR)/zlib/libz.a \
+#                $(SRCDIR)/bam/bam.a \
+#                $(SRCDIR)/baf/baf.a \
+#		$(SRCDIR)/lua/lua.a \
+#		$(SRCDIR)/nmealib/nmealib.a \
+#                $(SRCDIR)/emobiix/emobiix.a \
+#                $(SRCDIR)/emobiix/protocol/protocol.a \
+#                $(SRCDIR)/bui/bui.a
 
 ifeq (,$(findstring EMO_SIM,$(VARIANT_DEFINE)))
 	VIN_DEPEND += $(SRCDIR)/bal/socket.a
 else
-	SUBDIR_DEPEND += $(SRCDIR)/emobiix/socket_sim.a
+SUBDIR_DEPEND += $(SRCDIR)/emobiix/socket_sim.a
 endif
 
 TARGET = $(SRCDIR)/vin.a

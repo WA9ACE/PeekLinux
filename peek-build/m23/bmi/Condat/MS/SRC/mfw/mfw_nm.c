@@ -1270,7 +1270,6 @@ T_MFW_NM_RETURN nm_pplmn_mem_req(void)
   PURPOSE : Start registration
 
 */
-/*
 T_MFW nm_registration (U8 mode, U8 freq_bands, U8 limited)
 {
     U8 sim_stat;
@@ -1334,11 +1333,9 @@ T_MFW nm_registration (U8 mode, U8 freq_bands, U8 limited)
    
  //Apr 13, 2004	REF: CRR 16303	JuanVi Jativa-Villoldo      
  // sim_spn_req();     Moved to the function  rAT_PlusCFUNP           
- //   }
+    }
     return SIM_ACTIVE;
 }
-*/
-
 /*
 +--------------------------------------------------------------------+
 | PROJECT : MMI-Framework (8417)        MODULE  : MFW_NM             |
@@ -1988,7 +1985,6 @@ void nm_sat_file_update(USHORT dataId)
   PURPOSE : Delete registration
 
 */
-/*
 void nm_deregistration (void)
 {
     TRACE_FUNCTION ("nm_deregistration()");
@@ -1999,8 +1995,6 @@ void nm_deregistration (void)
         TRACE_ERROR("sAT_PlusCFUN error");
     }
 }
-*/
-
 /*
 +-----------------------------------------------------------------------+
 | PROJECT : MMI-Framework (8417)        MODULE  : MFW_NM                |
@@ -2089,15 +2083,12 @@ void nm_error_cops ( T_ACI_CME_ERR err)
   PURPOSE : Check the registration status
 
 */
-/*
 T_MFW nm_reg_status (void)
 {
     TRACE_FUNCTION("nm_reg_status()");
 
     return reg_stat;
 }
-*/
-
 /*
 +--------------------------------------------------------------------+
 | PROJECT : MMI-Framework (8417)        MODULE  : MFW_NM             |
