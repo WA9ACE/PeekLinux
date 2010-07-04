@@ -16,9 +16,9 @@
  * (C) Copyright 2005 by Texas Instruments Incorporated, All Rights Reserved
  */
 
-#include "lcd_transport.h"
+#include "Lcd_Transport.h"
 #include "lcd_pwr.h"
-#include "r2d/lcds/i_sample/lcd.h"
+#include "r2d/LCDs/I_Sample/lcd.h"
 #include "drv_power.h"
 
 int lcd_g_state = LCD_ACTIVE;

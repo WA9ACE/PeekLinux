@@ -1,5 +1,5 @@
 
-#include "Lcd_interface.h"
+#include "lcd_interface.h"
 //#define TIME_MEASUREMENT 1
 
 /*============================================================================*/

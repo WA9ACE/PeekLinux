@@ -56,10 +56,10 @@
 #include "rvm/rvm_ext_priorities.h"
 #include "rvm/rvm_use_id_list.h"
 
-#include "lcd_manager.h"
+#include "Lcd_manager.h"
 #include "lcd_env.h"
 #include "lcd_pwr.h"
-#include "lcd_transport.h"
+#include "Lcd_Transport.h"
 
 /* global pointer to the error function */
 T_RVM_RETURN (*lcd_error_ft)(T_RVM_NAME swe_name, T_RVM_RETURN error_cause, \

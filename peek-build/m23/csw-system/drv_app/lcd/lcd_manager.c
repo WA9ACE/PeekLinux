@@ -1,4 +1,4 @@
-#include "lcd_manager.h"
+#include "Lcd_manager.h"
 #include "lcd_interface.h"
 extern T_RVF_ADDR_ID lcd_addr_id;
 UINT16 *ImageDataPtrTemp; //Global Framebuffer pointer used

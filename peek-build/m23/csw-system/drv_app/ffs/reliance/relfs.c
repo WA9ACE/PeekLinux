@@ -3761,35 +3761,35 @@ struct ffsdrv_s ffsdrv = {
 
 uint32 int_disable(void)
 {
-    asm("        .state16");
-    asm("        mov       A1, #0xC0");
-    asm("        ldr       A2, tct_disable");
-    asm("        bx        A2      ");
+    __asm("        .state16");
+    __asm("        mov       A1, #0xC0");
+    __asm("        ldr       A2, tct_disable");
+    __asm("        bx        A2      ");
 
-    asm("        .align");  // word align
-    asm("tct_disable    .field     _TCT_Control_Interrupts+0,32");
-    asm("               .global    _TCT_Control_Interrupts");
+    // XXX Fails to compile XXX __asm("        .align");  // word align
+    __asm("tct_disable    .field     _TCT_Control_Interrupts+0,32");
+    __asm("               .global    _TCT_Control_Interrupts");
 }
 
 void int_enable(uint32 cpsr)
 {
-    asm("        .state16");
-    asm("        ldr       A2, tct_enable");
-    asm("        bx        A2      ");
+    __asm("        .state16");
+    __asm("        ldr       A2, tct_enable");
+    __asm("        bx        A2      ");
 
-    asm("tct_enable     .field     _TCT_Control_Interrupts+0,32");
-    asm("               .global    _TCT_Control_Interrupts");
+    __asm("tct_enable     .field     _TCT_Control_Interrupts+0,32");
+    __asm("               .global    _TCT_Control_Interrupts");
 }
 
 uint32 get_cpsr(void)
 {
-   	asm("        .state16");
-    	asm("        add       A2, PC, #0x4"); //
-    	asm("        bx       A2");
-     	asm("	  .state32");
-    	asm("get_cpsr32:	");
-//       asm("MRS		R0,CPSR");// get current CPSR");
-  	asm(" 	  mrs      A1, cpsr");
+   	__asm("        .state16");
+    	__asm("        add       A2, PC, #0x4"); //
+    	__asm("        bx       A2");
+     	__asm("	  .state32");
+    	__asm("get_cpsr32:	");
+//       __asm("MRS		R0,CPSR");// get current CPSR");
+  	__asm(" 	  mrs      A1, cpsr");
 }
 
 

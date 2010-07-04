@@ -1,0 +1,42 @@
+DEFINE += TMFFS2
+DEFINE += FAX_AND_DATA=FAX_AND_DATA
+
+UNDEFINE += 
+
+VARIANT_INCLUDE = 
+INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(M23DIR)/L1/layer1/gtt_include
+INCLUDE += $(M23DIR)/L1/layer1/gtt_include/ctm
+INCLUDE += $(M23DIR)/L1/layer1/dyn_dwl_include
+INCLUDE += $(M23DIR)/L1/layer1/aac_include
+INCLUDE += $(M23DIR)/L1/layer1/mp3_include
+INCLUDE += $(M23DIR)/CS_ThirdParty/Datalight/Reliance/include
+INCLUDE += $(M23DIR)/csw-system/drv_app/ffs/board
+INCLUDE += $(M23DIR)/CS_ThirdParty/Datalight/FlashFX/os/rtos/include
+INCLUDE += $(M23DIR)/CS_ThirdParty/Datalight/FlashFX/include
+
+SRC  = board/pcmcode.c
+SRC += board/tmffs.c
+SRC += board/tmlfs.c
+SRC += reliance/relfs_pei.c
+
+$(CURDIR)/reliance/relfs_pei.o: UNDEFINE += TMFFS2 WITH_TFFS=0 NWARN NCONFIG
+
+OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(patsubst %.s,%.o,$(SRC)))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+TARGET = $(CURDIR)/ffs_drv.a
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $?
+
+clean:
+	$(RM) $(OBJ) 
+	$(RM) $(TARGET) 
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules

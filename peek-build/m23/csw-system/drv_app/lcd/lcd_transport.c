@@ -1,5 +1,5 @@
-#include "lcd_transport.h"
-#include "lcd_manager.h"
+#include "Lcd_Transport.h"
+#include "Lcd_manager.h"
 #include "dma/dma_api.h"
 #include "dma/dma_message.h"
 #include "sys_types.h"
@@ -10,7 +10,7 @@
 #include "lcd_pwr.h"
 #include "rvf/rvf_api.h"
 // commands are part of this header file
-#include "r2d/lcds/i_sample/lcd.h"
+#include "r2d/LCDs/I_Sample/lcd.h"
 #if (LOCOSTO_LITE == 0)
 #define R2D_USE_LCD_DMA 1	//Flag for Plus variant using DMA
 #endif
@@ -84,7 +84,7 @@ void r2d_lcd_power_off(void);
 void r2d_nop_delay(UWORD32 ms)
 {
 		unsigned short a;
-		while (ms-- > 0) for (a=0;a<2000;a++) asm(" nop"); // Increased from 1000 to 2000 (JP, TI-DK)
+		while (ms-- > 0) for (a=0;a<2000;a++) __asm(" nop"); // Increased from 1000 to 2000 (JP, TI-DK)
 }
 
 

@@ -50,7 +50,11 @@ m23:
 	$(MAKE) -C $(M23DIR)/g23m/condat/com/src/config $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/g23m/condat/frame/config -f Makefile_config_gprs_fl $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/g23m/condat/frame/config -f Makefile_config_gprs_ir $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/csw-system/drv_app/ffs -f Makefile_ffs $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/csw-system/drv_app/ffs -f Makefile_ffs_drv $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/csw-system/drv_app/ffs -f Makefile_ffs_pcm $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/csw-system/drv_app/lcd $(MAKECMDGOALS)
 
-clean: all
+clean: m23
 
 include $(BASEDIR)/Makefile.rules
