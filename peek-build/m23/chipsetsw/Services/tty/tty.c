@@ -32,8 +32,8 @@
   #include "l1_types.h"
   #include "l1gtt_signa.h"
   #include "l1gtt_msgty.h"
-  #include "audio/audio_structs_i.h"
-  #include "audio/audio_const_i.h"
+  #include "Audio/audio_structs_i.h"
+  #include "Audio/audio_const_i.h"
 
   /* extern variables & prototypes */
 

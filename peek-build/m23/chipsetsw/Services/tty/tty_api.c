@@ -24,8 +24,8 @@
 #include "tty/tty_i.h"
 
 #include "tty/tty_api.h"
-#include "audio/audio_structs_i.h"
-#include "audio/audio_const_i.h"
+#include "Audio/audio_structs_i.h"
+#include "Audio/audio_const_i.h"
 
 /* External declaration */
 extern T_AUDIO_ENV_CTRL_BLK* p_audio_gbl_var;
