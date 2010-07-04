@@ -17,8 +17,7 @@ EXTRACT  = $(BASEDIR)/tools/extractBin.sh
 LCFSRC     = $(BASEDIR)/tools/lcfgen.c
 CMD_OPT_PP = $(BUILDDIR)/lcfgen.pp
 
-UNDEFINE += OP_L1_STANDALONE
-UNDEFINE += WCP_PROF
+UNDEFINE += 
 
 CMD_MAP  = $(M23DIR)/chipsetsw/system/template/gsm_is_lj3.template 
 CMD_MAP += $(LIBSDIR)/layer1/l1_intram.o 
@@ -99,7 +98,8 @@ LINK_OBJ += $(M23DIR)/csw-system/drv_app/lcc/lcc.a
 # m18 TODO (code) LINK_OBJ += $(M23DIR)/csw-system/drv_app/lcd/lcd_drv_flash.a
 LINK_OBJ += $(LIBSDIR)/csw-system/drv_app/lcd_drv_flash.a
 LINK_OBJ += $(M23DIR)/csw-system/drv_app/mpk/mpk.a
-# LINKING ERROR LINK_OBJ += $(M23DIR)/csw-system/drv_app/power/power.a
+# TODO linking error in conjunction with init.a
+#LINK_OBJ += $(M23DIR)/csw-system/drv_app/power/power.a
 LINK_OBJ += $(LIBSDIR)/csw-system/drv_app/power.a
 LINK_OBJ += $(M23DIR)/csw-system/drv_app/rfs/rfs.a
 LINK_OBJ += $(M23DIR)/csw-system/drv_app/rfsfat/rfsfat.a
@@ -111,7 +111,11 @@ LINK_OBJ += $(M23DIR)/csw-system/drv_app/uicc/uicc.a
 LINK_OBJ += $(M23DIR)/csw-system/drv_app/usb/usb.a
 LINK_OBJ += $(M23DIR)/csw-system/drv_app/usbfax/usbfax.a
 LINK_OBJ += $(M23DIR)/csw-system/drv_core/clkm/drivers_int_ram.a
+# TODO linking error in conjunction with init.a
+#LINK_OBJ += $(M23DIR)/csw-system/drv_core/drivers_flash.a
 LINK_OBJ += $(LIBSDIR)/csw-system/drv_core/drivers_flash.a
+# TODO linking error for asm functions 
+# LINK_OBJ += $(M23DIR)/csw-system/init_common/init.a
 LINK_OBJ += $(LIBSDIR)/csw-system/init.a
 LINK_OBJ += $(M23DIR)/csw-system/os/nucleus/1_15/plus/src/nucleus_flash.a
 LINK_OBJ += $(M23DIR)/csw-system/os/nucleus/1_15/plus/src/nucleus_int_ram.a

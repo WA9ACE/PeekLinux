@@ -50,7 +50,7 @@
 #endif
 
 #include "timer/timer.h"
-#include "armio/armio.h"
+#include "armio/Armio.h"
 
 static SYS_UWORD32 ratio_wait_loop = 0;
 

@@ -15,7 +15,7 @@ CFLAGS_BASE += $(CCOPTIMIZE2)
 CFLAGS_BASE += $(CCDEBUGOPTIMIZE)
 CFLAGS_BASE += $(CCSTRICT)
 
-ASFLAGS_BASE = -me -mt --symdebug:coff
+ASFLAGS_BASE = -me $(CCTHUMB) --symdebug:coff
 
 CFLAGS := $(addprefix -D,$(VARIANT_DEFINE)) \
 					$(addprefix -U,$(VARIANT_UNDEFINE)) \
@@ -53,7 +53,7 @@ STR2IND_C   = $(BUILDDIR)/trace/str2ind.c
 
 %.o: %.s
 	@echo "  Assembling: $< => $@"
-	@$(CC) $(ASFLAGS) -eoo -fr $(@D) $<
+	$(CC) $(ASFLAGS) -eoo -fr $(@D) $<
 
 %.o: %.asm
 	@echo "  Assembling: $< => $@"

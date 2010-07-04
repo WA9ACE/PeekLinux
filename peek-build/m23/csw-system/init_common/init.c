@@ -57,7 +57,7 @@
 #include "l1_confg.h"
 #include "l1_const.h"
 #include "pin_config.h" // added for Init tuned to Power Management
-#include "armio.h"
+#include "Armio.h"
 
 
 #if TESTMODE
@@ -119,7 +119,7 @@
 #endif   /* ((OP_L1_STANDALONE == 1) && (CODE_VERSION != SIMULATION) && (PSP_STANDALONE==0)) */
 
 
-#include "armio/armio.h"
+#include "armio/Armio.h"
 #include "timer/timer.h"
 
 #include "types.h"

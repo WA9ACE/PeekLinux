@@ -14,7 +14,7 @@
 #include "sys_dma.h"
 
 #include "bspI2cDelay.h"
-#include "Nucleus.h"
+#include "nucleus.h"
 
 #include "typedefs.h"
 #include "general.h"

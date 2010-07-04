@@ -89,7 +89,7 @@
  
 #include "bspUtil_Assert.h"
 #include "bspTwl3029.h"
-#include "bspTwl3029_IntC.h"
+#include "bspTwl3029_Intc.h"
 #include "bspTwl3029_I2c.h"
 #include "bspTwl3029_Int_Llif.h"
 #include "bspTwl3029_Pwr_Llif.h"

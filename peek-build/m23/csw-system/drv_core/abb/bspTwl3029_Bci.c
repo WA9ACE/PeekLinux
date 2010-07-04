@@ -91,7 +91,7 @@
 #include "bspTwl3029_Pwr_Llif.h"
 #include "bspTwl3029_I2c.h"
 #include "bspI2c.h"
-#include "bspTwl3029_IntC.h"
+#include "bspTwl3029_Intc.h"
 #include "bspTwl3029_Madc.h"
 #include "bspTwl3029_Bci.h"
 

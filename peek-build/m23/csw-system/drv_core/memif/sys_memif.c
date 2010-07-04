@@ -497,29 +497,29 @@ void enable_flash_burst_fg ()
 
 
 	
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
 
 	MEM16 (0xfffffb02) = 0x00;
 	MEM16 (0xfffffb02) = 0x10;
 
 
-    asm(" NOP");
-    asm(" NOP");
-    asm(" NOP");
-    asm(" NOP");
+    __asm(" NOP");
+    __asm(" NOP");
+    __asm(" NOP");
+    __asm(" NOP");
 	MEM16 (0xfffffb02) = 0x13;
 
-    asm(" NOP");
-    asm(" NOP");
-    asm(" NOP");
-    asm(" NOP");
+    __asm(" NOP");
+    __asm(" NOP");
+    __asm(" NOP");
+    __asm(" NOP");
 }
 
 
@@ -574,26 +574,26 @@ void enable_flash_burst_mirror ()
 
 
 
-	    asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
+	    __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
 	
 	MEM16 (0xfffffb02) = 0x00;
 	MEM16 (0xfffffb02) = 0x13;
 
-	 asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
-         asm(" NOP");
+	 __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
+         __asm(" NOP");
 	
 }
 

@@ -33,7 +33,7 @@
 #include "bspTwl3029_Aux_Map.h"
 #include "bspTwl3029_Aux_Llif.h"
 #include "bspTwl3029_I2c.h"
-#include "bspTwl3029_IntC.h"
+#include "bspTwl3029_Intc.h"
 #include "bspTwl3029_Audio.h"
 #if(OP_L1_STANDALONE==0)
 #include "rv/rv_defined_swe.h"

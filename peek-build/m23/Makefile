@@ -3,7 +3,6 @@ DEFINE +=
 all: m23
 
 m23: 
-	$(MAKE) -C $(M23DIR)/csw-system/drv_core/clkm $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/csw-system/drv_app/buzzer $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/csw-system/drv_app/datalight $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/csw-system/drv_app/die $(MAKECMDGOALS)
@@ -58,6 +57,9 @@ m23:
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/mks $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/msl $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/csw-system/drv_app/uart $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/csw-system/drv_core/clkm $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/csw-system/drv_core $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/csw-system/init_common $(MAKECMDGOALS)
 
 clean: m23
 

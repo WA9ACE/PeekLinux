@@ -12,12 +12,12 @@
 #include "bspTwl3029_Int_Map.h"
 #include "nucleus.h" 
 #include "bspTwl3029_Intc.h"
-#include "Sys_types.h"
+#include "sys_types.h"
 #include "bspTwl3029_Audio.h"
 
 #if(OP_L1_STANDALONE==0)
-#include "../rv/Rv_general.h"
-#include"../audio/audio_api.h"
+#include "../rv/rv_general.h"
+#include"../Audio/audio_api.h"
 #include "../../riviera/rvf/rvf_original_api.h"
 #include "../../riviera/rvm/rvm_use_id_list.h"
 #endif
@@ -26,7 +26,7 @@
 /*For trace */
 
 #if(OP_L1_STANDALONE==0)
-#include "../audio/audio_macro_i.h"
+#include "../Audio/audio_macro_i.h"
 #include"../rv/rv_trace.h"
 #include "rv/rv_defined_swe.h"
 #include "rvm/rvm_use_id_list.h"

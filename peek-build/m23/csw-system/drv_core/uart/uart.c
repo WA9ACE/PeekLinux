@@ -17,7 +17,7 @@
 #include "sys_types.h"
 
 #include "uart/traceswitch.h"
-#include "uart/uart.h"
+#include "uart/Uart.h"
 
 #include <string.h>
 

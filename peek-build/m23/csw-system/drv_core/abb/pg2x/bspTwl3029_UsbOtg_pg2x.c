@@ -89,7 +89,7 @@
 #include "bspTwl3029_Pwr_Map.h"
 #include "bspTwl3029_Pwr_Llif.h"
 #include "bspTwl3029_I2c.h"
-#include "bspTwl3029_IntC.h"
+#include "bspTwl3029_Intc.h"
 #include "bspI2c.h"
 #include "bspTwl3029_UsbOtg.h"
 #include "bspTwl3029_Power.h"

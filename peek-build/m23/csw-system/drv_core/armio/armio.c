@@ -51,7 +51,7 @@
 #include "memif/mem.h"
 
 #include "inth/iq.h"
-#include "armio/armio.h"
+#include "armio/Armio.h"
 
 
 #if (REMU==1)
