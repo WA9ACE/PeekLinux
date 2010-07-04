@@ -37,7 +37,8 @@ LDFLAGS     = -x --trampolines -w -wr --no_sym_merge --issue_remarks --verbose_d
 ARFLAGS	    = -rvu
 HEXFLAGS    = -m -memwidth 16 -romwidth 16
 
-CCBASE		= -mv4 --abi=tiabi --strict_ansi
+CCSTRICT = --strict_ansi
+CCBASE		= -mv4 --abi=tiabi
 CCTHUMB         = -mt 
 CCDEBUG         = --symdebug:dwarf
 CCDEBUGOPTIMIZE = -mn

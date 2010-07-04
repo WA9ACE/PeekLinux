@@ -55,6 +55,7 @@ m23:
 	$(MAKE) -C $(M23DIR)/csw-system/drv_app/ffs -f Makefile_ffs_pcm $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/csw-system/drv_app/lcd $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/mks $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/chipsetsw/Services/msl $(MAKECMDGOALS)
 
 clean: m23
 

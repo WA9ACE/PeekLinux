@@ -36,13 +36,13 @@ extern "C" {
  * INCLUDE FILES
  ****************************************************************/
 /* ----- system and platform files ----------------------------*/
-#include "omx_types.h"
-#include "omx_core.h"
-#include "omx_image.h"
+#include "OMX_Types.h"
+#include "OMX_Core.h"
+#include "OMX_Image.h"
 #include "OMX_camdcomponent.h"
-#include "omx_imgcomponent.h"
-#include "omx_camdcomponent.h"
-#include "omx_sslcomponent.h"
+#include "OMX_IMGComponent.h"
+#include "OMX_camdcomponent.h"
+#include "OMX_SSLComponent.h"
 #include "omx_tiimage.h"
 
 #ifndef WIN32
