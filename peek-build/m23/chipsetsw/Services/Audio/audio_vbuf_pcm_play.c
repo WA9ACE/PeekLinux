@@ -31,22 +31,22 @@
   #if(L1_PCM_EXTRACTION)	
   #include "rv/rv_general.h"
   #include "rvm/rvm_gen.h"
-  #include "audio/audio_features_i.h"
+  #include "Audio/audio_features_i.h"
 
-  #include "audio/audio_api.h"
-  #include "audio/audio_structs_i.h"
-  #include "audio/audio_macro_i.h"
-  #include "audio/audio_var_i.h"
-  #include "audio/audio_messages_i.h"
+  #include "Audio/audio_api.h"
+  #include "Audio/audio_structs_i.h"
+  #include "Audio/audio_macro_i.h"
+  #include "Audio/audio_var_i.h"
+  #include "Audio/audio_messages_i.h"
   #include "rvf/rvf_target.h"
-  #include "audio/audio_const_i.h"
-  #include "audio/audio_error_hdlr_i.h"
+  #include "Audio/audio_const_i.h"
+  #include "Audio/audio_error_hdlr_i.h"
 
   #if (AS_RFS_API == 1)
   #include "rfs/rfs_api.h"
   #include "rfs/fscore_types.h"
 #else
-  #include "audio/audio_ffs_i.h"
+  #include "Audio/audio_ffs_i.h"
 #endif
 
   /* include the usefull L1 header */

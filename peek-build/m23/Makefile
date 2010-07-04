@@ -34,6 +34,7 @@ m23:
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/dar -f Makefile_dar $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/dar -f Makefile_dar_gbl_var $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/Audio -f Makefile_audio_int_ram $(MAKECMDGOALS)
+	#$(MAKE) -C $(M23DIR)/chipsetsw/Services/Audio -f Makefile_audio $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/as $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/cst $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/etm $(MAKECMDGOALS)
@@ -56,6 +57,7 @@ m23:
 	$(MAKE) -C $(M23DIR)/csw-system/drv_app/lcd $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/mks $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/msl $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/csw-system/drv_app/uart $(MAKECMDGOALS)
 
 clean: m23
 

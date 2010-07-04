@@ -24,9 +24,9 @@
 #include "rv/rv_defined_swe.h"
 #ifdef RVM_AUDIO_MAIN_SWE
   #include "l1audio_cust.h"
-  #include "audio/audio_structs_i.h"
+  #include "Audio/audio_structs_i.h"
 
-  #include "audio/audio_pool_size.h"	/* Stack & Memory Bank sizes definitions */
+  #include "Audio/audio_pool_size.h"	/* Stack & Memory Bank sizes definitions */
 
   #ifndef __AUDIO_ENV_H_
     #define __AUDIO_ENV_H_

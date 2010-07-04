@@ -31,19 +31,19 @@
 #if (L1_VOICE_MEMO_AMR)
   #include "rv/rv_general.h"
   #include "rvm/rvm_gen.h"
-  #include "audio/audio_features_i.h"
+  #include "Audio/audio_features_i.h"
 #if (AS_RFS_API == 1)
   #include "rfs/rfs_api.h"
 #else
-  #include "audio/audio_ffs_i.h"
+  #include "Audio/audio_ffs_i.h"
 #endif
-  #include "audio/audio_api.h"
-  #include "audio/audio_structs_i.h"
-  #include "audio/audio_var_i.h"
-  #include "audio/audio_messages_i.h"
+  #include "Audio/audio_api.h"
+  #include "Audio/audio_structs_i.h"
+  #include "Audio/audio_var_i.h"
+  #include "Audio/audio_messages_i.h"
   #include "rvf/rvf_target.h"
-  #include "audio/audio_const_i.h"
-  #include "audio/audio_error_hdlr_i.h"
+  #include "Audio/audio_const_i.h"
+  #include "Audio/audio_error_hdlr_i.h"
 
   /* include the usefull L1 header */
   #define BOOL_FLAG
@@ -54,7 +54,7 @@
   #include "l1audio_msgty.h"
   #include "l1audio_signa.h"
 
-  #include "audio/audio_macro_i.h"
+  #include "Audio/audio_macro_i.h"
 
   T_AUDIO_RET audio_convert_to_mms(UINT8 *p_buffer, UINT16 *buffer_size, UINT8 *previous_type, UINT8 *size_left);
   INT16 ram_write(T_AUDIO_VOICE_MEMO_AMR_RECORD_TO_MEM_VAR *vm_amr_record, UINT8 *src_buffer, UINT16 size);

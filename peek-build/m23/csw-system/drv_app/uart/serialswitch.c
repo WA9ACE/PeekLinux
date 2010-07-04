@@ -24,7 +24,7 @@
 #include "uart/faxdata.h"
 #include "uart/serialswitch.h"
 
-#include "uart/uart.h" 
+#include "uart/Uart.h" 
 #include "uart/uartfax.h"
 
 #include "memif/mem.h"

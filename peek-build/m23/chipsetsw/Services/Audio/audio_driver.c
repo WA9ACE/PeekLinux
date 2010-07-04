@@ -30,23 +30,23 @@
   #include "rvf/rvf_api.h"
   #include "rv/rv_general.h"
   #include "rvm/rvm_gen.h"
-  #include "audio/audio_features_i.h"
-  #include "audio/audio_api.h"
-  #include "audio/audio_env_i.h"
-  #include "audio/audio_ffs_i.h"
-  #include "audio/audio_structs_i.h"
-  #include "audio/audio_macro_i.h"
+  #include "Audio/audio_features_i.h"
+  #include "Audio/audio_api.h"
+  #include "Audio/audio_env_i.h"
+  #include "Audio/audio_ffs_i.h"
+  #include "Audio/audio_structs_i.h"
+  #include "Audio/audio_macro_i.h"
   #include "rvf/rvf_target.h"
-  #include "audio/audio_const_i.h"
-  #include "audio/audio_var_i.h"
-  #include "audio/audio_error_hdlr_i.h"
-  #include "audio/audio_messages_i.h"
+  #include "Audio/audio_const_i.h"
+  #include "Audio/audio_var_i.h"
+  #include "Audio/audio_error_hdlr_i.h"
+  #include "Audio/audio_messages_i.h"
   #if (L1_MP3 == 1)
-    #include "audio/audio_mp3_i.h"
+    #include "Audio/audio_mp3_i.h"
     #include "l1mp3_signa.h"
   #endif
   #if (L1_AAC == 1)
-    #include "audio/audio_aac_i.h"
+    #include "Audio/audio_aac_i.h"
   #endif
 
   #ifndef _WINDOWS
@@ -79,7 +79,7 @@
     #include "l1_msgty.h"
     #include "l1_signa.h"
     #include "l1_varex.h"
-    #include "audio/tests/audio_test.h"
+    #include "Audio/tests/audio_test.h"
   #endif
   #if (L1_AAC == 1)
     #include "l1aac_signa.h"
@@ -90,6 +90,7 @@
   #endif
 
 #if (L1_AUDIO_DRIVER)
+#error WTF
   #if (L1_VOICE_MEMO_AMR)
     extern T_AUDIO_RET audio_driver_vm_amr_play_manager (T_RV_HDR *p_message, T_AUDIO_DRIVER_SESSION *p_session);
     extern T_AUDIO_RET audio_driver_vm_amr_record_manager (T_RV_HDR *p_message, T_AUDIO_DRIVER_SESSION *p_session);

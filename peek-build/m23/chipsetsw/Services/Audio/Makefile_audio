@@ -1,0 +1,61 @@
+DEFINE += 
+UNDEFINE += OP_RIV_AUDIO
+
+VARIANT_INCLUDE = 
+INCLUDE += $(M23_VARIANT_INCLUDE)
+
+SRC  = audio_pei.c
+SRC += audio_api.c
+SRC += audio_error_hdlr.c
+SRC += audio_task.c
+SRC += audio_keybeep.c
+SRC += audio_tones.c
+SRC += audio_melody_E1.c
+SRC += audio_melody_E2.c
+SRC += audio_ffs.c
+SRC += audio_vm.c
+SRC += audio_vm_play.c
+SRC += audio_vm_record.c
+SRC += audio_compatibilities.c
+SRC += audio_sr_enroll.c
+SRC += audio_sr_update.c
+SRC += audio_sr_reco.c
+SRC += audio_sr.c
+SRC += audio_mode.c
+SRC += audio_mode_full_write.c
+SRC += audio_mode_load.c
+SRC += audio_mode_save.c
+SRC += audio_mode_drivers.c
+SRC += audio_mode_volume.c
+SRC += audio_vm_amr.c
+SRC += audio_vm_amr_play.c
+SRC += audio_vm_amr_record.c
+SRC += audio_driver.c
+SRC += audio_aac.c
+SRC += audio_cust.c
+SRC += audio_vm_pcm.c
+SRC += audio_vm_pcm_play.c
+SRC += audio_vm_pcm_record.c
+SRC += audio_vbuf_pcm.c
+SRC += audio_vbuf_pcm_play.c
+SRC += audio_vbuf_pcm_record.c
+SRC += audio_bt.c
+SRC += audio_midi.c
+
+OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(patsubst %.s,%.o,$(SRC)))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+TARGET = $(CURDIR)/audio.a
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+
+clean:
+	$(RM) $(OBJ) 
+	$(RM) $(TARGET) 
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules

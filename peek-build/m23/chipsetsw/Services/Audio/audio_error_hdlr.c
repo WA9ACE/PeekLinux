@@ -28,10 +28,10 @@
   #include "l1_confg.h"
   #include "rv/rv_general.h"
   #include "rvf/rvf_api.h"
-  #include "audio/audio_features_i.h"
-  #include "audio/audio_api.h"
-  #include "audio/audio_error_hdlr_i.h"
-  #include "audio/audio_macro_i.h"
+  #include "Audio/audio_features_i.h"
+  #include "Audio/audio_api.h"
+  #include "Audio/audio_error_hdlr_i.h"
+  #include "Audio/audio_macro_i.h"
 
   /********************************************************************************/
   /*                                                                              */

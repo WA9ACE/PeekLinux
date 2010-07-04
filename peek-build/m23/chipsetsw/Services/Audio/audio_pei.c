@@ -61,14 +61,14 @@
   #include "rvm/rvm_gen.h"
   #include "rvm/rvm_priorities.h"
 
-  #include "audio/audio_ffs_i.h"
-  #include "audio/audio_api.h"
-  #include "audio/audio_structs_i.h"
-  #include "audio/audio_env_i.h"
+  #include "Audio/audio_ffs_i.h"
+  #include "Audio/audio_api.h"
+  #include "Audio/audio_structs_i.h"
+  #include "Audio/audio_env_i.h"
   #include "rvf/rvf_target.h"
-  #include "audio/audio_const_i.h"
-  #include "audio/audio_macro_i.h"
-  #include "audio/audio_var_i.h"
+  #include "Audio/audio_const_i.h"
+  #include "Audio/audio_macro_i.h"
+  #include "Audio/audio_var_i.h"
   #include <string.h>
 
   #include "../TEMPLATE/PEI/mon_xxx.h"
