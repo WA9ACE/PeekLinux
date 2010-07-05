@@ -682,17 +682,17 @@ void mainInit (UBYTE InitCause)
 //On Isample boards the backlight is set off, since the bright LEDS are very disturbing.
     
 	for (i=0;i<BL_LAST_OPTION;i++)
-#if (BOARD == 71)
-	mme_setBacklightEvent(i,BL_NO_LIGHT);
-#else
+//#if (BOARD == 71)
+//	mme_setBacklightEvent(i,BL_NO_LIGHT);
+//#else
 	mme_setBacklightEvent(i,BL_MAX_LIGHT);
-#endif
+//#endif
 
-#if (BOARD == 71)
-	mme_setBacklightEvent(BL_IDLE_TIMER,BL_NO_LIGHT);
-#else
+//#if (BOARD == 71)
+//	mme_setBacklightEvent(BL_IDLE_TIMER,BL_NO_LIGHT);
+//#else
 	mme_setBacklightEvent(BL_IDLE_TIMER,BL_SET_IDLE);
-#endif
+//#endif
 
 	mme_setBacklightEvent(BL_KEY_PRESS,BL_MAX_LIGHT);
 	mme_setBacklightEvent(BL_INCOMING_CALL,BL_MAX_LIGHT);
