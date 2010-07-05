@@ -3,6 +3,7 @@ INCLUDE += $(INCDIR)/g23m-aci/aci
 INCLUDE += $(INCDIR)/g23m/condat/ms/src/aci
 INCLUDE += $(INCDIR)/g23m/condat/ms/src/aci_dti_mng
 INCLUDE += $(INCDIR)/csw-system/drv_core
+INCLUDE += $(M23DIR)/bmi/gdi
 INCLUDE += $(INCDIR)/g23m/condat/com/include
 INCLUDE += $(INCDIR)/csw-system/drv_core
 INCLUDE += $(SRCDIR)/include

@@ -142,7 +142,7 @@ LINK_OBJ += $(M23DIR)/chipsetsw/Services/tty/tty.a
 LINK_OBJ += $(M23DIR)/CS_ThirdParty/Datalight/libs/flashfx.lib
 LINK_OBJ += $(M23DIR)/CS_ThirdParty/Beatnik/bae.a
 LINK_OBJ += $(M23DIR)/CS_ThirdParty/Beatnik/bae_sram.a
-#LINK_OBJ += $(SRCDIR)/vin.a
+LINK_OBJ += $(SRCDIR)/vin.a
 LINK_OBJ += $(LIBSDIR)/csw-system/drv_app/wheel.a
 
 include $(BASEDIR)/Makefile.rules

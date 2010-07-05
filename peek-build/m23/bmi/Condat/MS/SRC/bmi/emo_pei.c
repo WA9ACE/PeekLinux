@@ -181,6 +181,7 @@ extern void mmiInit( void);
 extern void lcd_init_cmdsequence();
 extern int lcd_g_state;
 extern UINT8 lcd_pwr_interface(UINT8);
+extern void UiTask(void);
 
 LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
 {  
@@ -188,7 +189,8 @@ LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
   RVM_TRACE_DEBUG_HIGH("EMO: pei_run");
 
   powered_on=1;
-  mmiInit();
+ // mmiInit();
+	UiTask();
   
   return RV_OK;  
 

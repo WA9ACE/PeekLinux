@@ -16,6 +16,29 @@
 #include "Application.h"
 #include "ApplicationManager.h"
 
+#include "gdi.h"
+#include "dspl.h"
+
+void display_init()
+{
+	emo_printf("Initializing display driver");
+	UBYTE ret = dspl_Init();
+	if (ret != DRV_OK)
+	{
+		emo_printf("Display driver initialization failed: %d", ret);
+		return;
+	}
+
+	dspl_DevCaps displayData;
+	memset((void *)&displayData, 0, sizeof(dspl_DevCaps));
+	displayData.DisplayType = DSPL_TYPE_GRAPHIC;
+
+	dspl_SetDeviceCaps(&displayData);
+	dspl_GetDeviceCaps(&displayData);
+
+	emo_printf("Display parameters are %dx%d", displayData.Width, displayData.Height);
+}
+
 extern "C" {
 #include "bal_socket_api_ti.h"
 #include "system_battery.h"
@@ -89,6 +112,8 @@ static int UIInit(void)
 
 	//extern void KeyPad_Init();
 	//KeyPad_Init();
+
+	display_init();
 
 	if (!initd) {
 		screenBuf = (unsigned char *)BalMalloc(320*240*2);

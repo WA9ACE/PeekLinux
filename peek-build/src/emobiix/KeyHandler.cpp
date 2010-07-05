@@ -25,6 +25,9 @@
 #include <windows.h>
 #endif
 
+#include "typedefs.h"
+#include "dspl.h"
+
 #define BWIDTH 320
 #define BHEIGHT 240
 
@@ -32,8 +35,10 @@ extern "C" {
 extern unsigned char *screenBuf;
 extern unsigned char pwr_PowerOffMobile   (void);
 
+
 void updateScreen(void) {
 #ifndef SIMULATOR
+#if 0
 		static DCC dc;
         static BalDispBitmapT Bmp;
         Bmp.Width = BWIDTH;
@@ -44,7 +49,7 @@ void updateScreen(void) {
                 emo_printf("RYAN screenbuf is NULL here" NL);
                 return;
         }
-
+#endif
         /*tweetDrawScreen();*/
         manager_drawScreen();
 
@@ -55,17 +60,23 @@ void updateScreen(void) {
         upper = lgui_index_count();
         if (upper == 0) {
             emo_printf("Flipping entire screen" NL);
+						dspl_BitBlt2(0, 0, BWIDTH, BHEIGHT, screenBuf, 0, BMP_FORMAT_16BIT_LCD_COLOUR);
+#if 0
             dc.BitBlt(0,0,BWIDTH,BHEIGHT,Bmp,0,0);
             dc.UpdateDisplay();
+#endif
         } else {
             Rectangle *rect;
             for (index = 0; index < upper; ++index) {
                 rect = lgui_get_region(index);
 		    emo_printf("Flipping partial screen: %d" NL, index);
 
+						dspl_BitBlt2(rect->x, rect->y, rect->width, rect->height, screenBuf, 0, BMP_FORMAT_16BIT_LCD_COLOUR);
+#if 0
                 dc.BitBlt(rect->x, rect->y, rect->width, rect->height, Bmp,
                         rect->x, rect->y);
                 dc.UpdateDisplay();
+#endif
             }
         }
 	lgui_blit_done();
