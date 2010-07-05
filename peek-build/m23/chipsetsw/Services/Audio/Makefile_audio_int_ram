@@ -9,11 +9,12 @@ SRC  = audio_int_ram.c
 OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(patsubst %.s,%.o,$(SRC)))))
 DEPS = $(patsubst %.o,%.d,$(OBJ))
 
-TARGET = $(CURDIR)/audio_int_ram.o
+TARGET = $(CURDIR)/audio_int_ram.a
 
 all: $(TARGET)
 
 $(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $?
 
 clean:
 	$(RM) $(OBJ) 

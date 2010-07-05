@@ -50,6 +50,7 @@ TARGET = $(CURDIR)/audio.a
 all: $(TARGET)
 
 $(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $?
 
 clean:
 	$(RM) $(OBJ) 
