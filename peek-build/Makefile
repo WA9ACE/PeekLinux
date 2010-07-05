@@ -124,7 +124,7 @@ LINK_OBJ += $(M23DIR)/g23m/condat/com/src/config/remu_int_ram.a
 LINK_OBJ += $(M23DIR)/g23m/condat/frame/config/config_gprs_fl.a
 LINK_OBJ += $(M23DIR)/g23m/condat/frame/config/config_gprs_ir.a
 #LINK_OBJ += $(LIBSDIR)/g23m/g23m.a
-LINK_OBJ += $(M23DIR)/g23m/g23m.a
+LINK_OBJ += $(M23DIR)/g23m/g23m-new.a
 LINK_OBJ += $(LIBSDIR)/gpf/ccddata.a
 LINK_OBJ += $(M23DIR)/CS_ThirdParty/Datalight/libs/reliance.lib
 LINK_OBJ += $(M23DIR)/gpf/LIB/ccd_na7_db_ts3.lib
@@ -165,7 +165,7 @@ $(TARGETOUT): $(LINKOUT)
 $(LINKOUT) $(LINKMAP): $(SUBDIRS) $(LINKCMD)
 	$(LD) $(LDFLAGS) -o $@ -m $(LINKMAP) $(LINKCMD) $(LINK_OBJ)
 
-$(LINKCMD): $(CMD_MAP) $(CMD_OPT_PP)
+$(LINKCMD): $(CMD_OPT_PP) $(SUBDIRS)
 	$(PERL) $(CMD_TOOL) $(CMD_OPT_PP) $@ 3 $(CMD_MAP)
 
 $(CMD_OPT_PP): $(LCFSRC)
