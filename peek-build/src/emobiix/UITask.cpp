@@ -90,30 +90,14 @@ static int UIInit(void)
 	//extern void KeyPad_Init();
 	//KeyPad_Init();
 
-	//#ifndef EMO_SIM
-
-	// 	extern void main_test();
-	//	main_test();
-        LcdWakeUp();
-        BalLightInit();
-        BalLcdScreenOn();
-
-	extern void mmiInit( void);
-	powered_on=1;
-	mmiInit();
-	//startExec(100,0);  
-	/*
 	if (!initd) {
 		screenBuf = (unsigned char *)BalMalloc(320*240*2);
 		lgui_attach(screenBuf);
-        manager_init();
+        	manager_init();
 		initd = 1;
 	}
-	*/
-	/*tweetDrawScreen();*/
-    //manager_drawScreen();
-	//updateScreen();
-	//#endif
+    	manager_drawScreen();
+	updateScreen();
 
 	/*
 		 systemAppObject = dataobject_locateStr("system://local/bootapplication");
@@ -122,14 +106,9 @@ static int UIInit(void)
 	 */
         dataobject_platformInit();
 	system_battery_init();
-	//gprs_dataobject_init();
-	//extern void gps_init();
+	gprs_dataobject_init();
+	extern void gps_init();
  
-	//extern void network_start_full_service(void);
-	//network_start_full_service();
-
-
-
 	return 1;
 }
 
@@ -155,7 +134,7 @@ static int UIWaitForActivity(void)
 	void          *MsgBufferP;
 	uint8         MailBoxId;
 	BOSEventWaitT MailBoxIndex;
-	/*
+
 	if (!gprsAttached)
 		hasConnected = 0;
 
@@ -205,8 +184,7 @@ static int UIWaitForActivity(void)
 		Sleep(100);
 #endif
 	}
-	*/
-	//updateScreen();
+	updateScreen();
 
 	EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOSCalMsec(100));
 	if(EvtStatus & BOS_MESSAGE_TYPE)
