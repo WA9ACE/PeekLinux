@@ -42,6 +42,8 @@ SRC += dma/sys_dma_it.c
 SRC += inth/sys_inth.c
 SRC += memif/sys_memif.c
 
+CCTHUMB=
+
 OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(patsubst %.s,%.o,$(SRC)))))
 DEPS = $(patsubst %.o,%.d,$(OBJ))
 
