@@ -186,21 +186,7 @@ LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
 {  
   int i;
   RVM_TRACE_DEBUG_HIGH("EMO: pei_run");
-  TCC_Task_Sleep(2000);
-  //configLightOpId = BalLightOn(BAL_LIGHT_LCD, 0, 0, 0);
-  for (i=0;i<5;i++)
-  {
-  		lcd_pwr_interface(2);
-  		lcd_init_cmdsequence();
-  		lcd_g_state = 1;
-		lls_switch_on(2);
-        	TCC_Task_Sleep(30);//light on LCD failed , try the next time!
-  }
 
-  if(lcd_control(0,1,0) > 0)
-	RVM_TRACE_DEBUG_HIGH("-------- LCD_CONTROL FAILED\n");
-
-  //lcd_led_onoff(1); // turn on led light
   powered_on=1;
   mmiInit();
   
