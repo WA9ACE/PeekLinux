@@ -64,7 +64,7 @@
 
 BOOL powered_on=FALSE;
 
-#define POWER_KEY 25
+#define POWER_KEY 254
 
 extern void mmiInit(void);
 
