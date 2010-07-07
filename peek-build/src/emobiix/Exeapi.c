@@ -1,6 +1,7 @@
 #include "nucleus.h"
 #include "exeapi.h"
 #include "exedefs.h"
+#include "vintypes.h"
 #include "bal_def.h"
 #include "monapi.h"
 #include "bal_os.h"
@@ -77,7 +78,10 @@ bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP,
 
 uint32 ExeMsgCheck(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId)
 {
+	ExeTaskCbT *task;
 
+	task = ExeTaskCb[TaskId];
+	return task->NumMsgsInQueue[MailboxId];
 }
 
 void MonFault(MonFaultUnitT UnitNum, uint32 FaultCode1, uint32 FaultCode2, MonFaultTypeT FaultType)
@@ -216,7 +220,7 @@ void ExeTimerDelete(ExeTimerT *TimerCbP)
                 }
         }
 
-	ExeInterruptDisable((SysIntT)0x80);
+	ExeInterruptDisable(SYS_IRQ_INT);
 	TMSE_Delete_Timer((NU_TIMER *)TimerCbP);
 	ExeInterruptEnable();
 }
