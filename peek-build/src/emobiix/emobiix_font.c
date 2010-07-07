@@ -1,9 +1,5 @@
 #include "emobiix_font.h"
 #include "Debug.h"
-#ifndef SIMULATOR
-#include "balapi.h"
-#include "bal_def.h"
-#endif
 #include "p_malloc.h"
 
 static void *freetype_do_alloc(FT_Memory memory, long size) 

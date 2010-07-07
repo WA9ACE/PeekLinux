@@ -7,6 +7,7 @@
 #include <errno.h>
 #include "ostype.h"
 
+
 /*
  * Version of the ASN.1 infrastructure shipped with compiler.
  */
@@ -70,10 +71,5 @@ _print2fp(const void *buffer, size_t size, void *app_key) {
  */
 void ASN_DEBUG_f(const char *fmt, ...);
 void ASN_DEBUG_f(const char *fmt, ...) {
-	va_list ap;
-	va_start(ap, fmt);
-	bal_vprintf(fmt, ap);
-	bal_printf("\n");
-	va_end(ap);
-	NU_Sleep(1);
+	/* Fix me */
 }

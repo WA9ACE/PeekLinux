@@ -177,18 +177,20 @@ static void UiHandleKeyEvents(RegIdT RegId, uint32 MsgId, void *MsgBufferP)
 		updateScreen();
         }
 #ifndef EMO_SIM
-        BalGetLightStatus(BAL_LIGHT_LCD,&lcdstatus,0);
-        BalGetLightStatus(BAL_LIGHT_KEYPAD,&kpdstatus,0);
+        //BalGetLightStatus(BAL_LIGHT_LCD,&lcdstatus,0);
+        //BalGetLightStatus(BAL_LIGHT_KEYPAD,&kpdstatus,0);
 #endif
 }
 extern "C" {
 void KeyPad_Init(void) {
 
+     /*
      if(BalKeypadRegister(UiHandleKeyEvents) == -1) {
 	emo_printf("BalKeypadRegister() Failed to register handler" NL);
 	return;
      }
      emo_printf("BalKeypadRegister() registered" NL);
+     */
 }
 #endif
 }

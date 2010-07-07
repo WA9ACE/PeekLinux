@@ -149,7 +149,7 @@ static int networkRequest_recv(int fd, char *buffer, int size)
 
 	socketMsg->fd = fd;
 	socketMsg->readSize = size;
-	socketMsg->readBuffer = BOSMalloc(socketMsg->readSize);    
+	socketMsg->readBuffer = malloc(socketMsg->readSize);    
 
 	emo_printf("ANDREY::recv(%d, %x, %d)", fd, buffer, size);
 	
@@ -178,7 +178,7 @@ static int networkRequest_recv(int fd, char *buffer, int size)
 
 		readRet = socketMsg->readSize;
 
-		BOSFree(socketMsg->readBuffer);
+		free(socketMsg->readBuffer);
 		BOSMsgBufferFree(MsgBufferP);
 
 		return readRet;

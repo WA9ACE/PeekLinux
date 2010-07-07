@@ -103,12 +103,12 @@ static int UIInit(void)
 	//GprsRegisterRssi();
 
 	/* Wait for BAL Task to complete */
-	while(!BalStatusGet()) {
-		ExeEventWait(EXE_UI_ID,EXE_SIGNAL_FALSE,EXE_MESSAGE_FALSE,0x16);
-	}
+	//while(!BalStatusGet()) {
+	//	ExeEventWait(EXE_UI_ID,EXE_SIGNAL_FALSE,EXE_MESSAGE_FALSE,0x16);
+	//}
 
 	/* Update Bui status so baseband initializes in mmi_main() */
-	BuiStatusSet();
+	//BuiStatusSet();
 
 	//extern void KeyPad_Init();
 	//KeyPad_Init();
@@ -116,7 +116,7 @@ static int UIInit(void)
 	display_init();
 
 	if (!initd) {
-		screenBuf = (unsigned char *)BalMalloc(320*240*2);
+		screenBuf = (unsigned char *)malloc(320*240*2);
 		lgui_attach(screenBuf);
         	manager_init();
 		initd = 1;
@@ -130,9 +130,9 @@ static int UIInit(void)
 		 application_setActive(systemApplication);
 	 */
         dataobject_platformInit();
-	system_battery_init();
-	gprs_dataobject_init();
-	extern void gps_init();
+	//system_battery_init();
+	//gprs_dataobject_init();
+	//extern void gps_init();
  
 	return 1;
 }
@@ -178,6 +178,8 @@ static int UIWaitForActivity(void)
 
 		ep = transport->socket();
 		if (ep == NULL) {
+			emo_printf("Failed Transport::Socket()\n");
+			/* removed due to bal_get_socket.. Why are we calling socket functions in UI task?
 			emo_printf("Failed Transport::Socket(), error code: %d",
 #ifdef SIMULATOR
 					0
@@ -186,6 +188,7 @@ static int UIWaitForActivity(void)
 #endif
 					);
 			NU_Sleep(100);
+			*/
 			return 1;
 		}
 

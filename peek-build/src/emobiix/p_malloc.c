@@ -3,15 +3,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#ifdef SIMULATOR
-#define BalMalloc malloc
-#define BalFree free
-#define bgetr realloc
-#else
-#include "balapi.h"
-#include "bget.h"
-#endif
-
 char *p_strdup(const char *s)
 {
 	int len;
@@ -25,12 +16,12 @@ char *p_strdup(const char *s)
 
 void *p_malloc(int size)
 {
-	return BalMalloc(size);
+	return malloc(size);
 }
 
 void *p_calloc(int elem, int size)
 {
-	void *p = BalMalloc(size * elem);
+	void *p = malloc(size * elem);
 	if(!p) return NULL;
 	memset(p, 0, size * elem);
 	return p;
@@ -38,10 +29,10 @@ void *p_calloc(int elem, int size)
 
 void p_free(void *p)
 {
-	BalFree(p);
+	free(p);
 }
 
 void *p_realloc(void *p, int s)
 {
-	return bgetr(p, s);
+	return realloc(p, s);
 }

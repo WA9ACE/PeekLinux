@@ -17,7 +17,9 @@ SRC = $(filter-out $(FILTER),$(wildcard *.c))
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 INCLUDE   = .
-INCLUDE  += $(SRCDIR)/include
+INCLUDE += $(SRCDIR)/include
+INCLUDE += $(M23DIR)/chipsetsw/riviera/rvf
+INCLUDE += $(M23DIR)/chipsetsw/riviera/rvm
 
 .PHONY: prepare
 

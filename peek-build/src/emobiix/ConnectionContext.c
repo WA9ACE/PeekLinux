@@ -824,8 +824,8 @@ static void connectionContext_authUserPass(ConnectionContext *ctx)
 #ifndef SIMULATOR
 	static char deviceImei[IMEI_LEN + 1] = { 0 };
 
-	if (!deviceImei[0])
-		BalGetImei(deviceImei);
+	//if (!deviceImei[0])
+	//	BalGetImei(deviceImei);
 #endif
 
 	packet.packetTypeP.present = packetTypeP_PR_authUserPassP;
@@ -835,7 +835,8 @@ static void connectionContext_authUserPass(ConnectionContext *ctx)
 
 	/* add our extras */
 #ifndef SIMULATOR
-	protocol_autUserPassExtra(p, "IMEI", deviceImei);
+	//protocol_autUserPassExtra(p, "IMEI", deviceImei);
+	protocol_autUserPassExtra(p, "IMEI", "312000012345678");
 #else
 	protocol_autUserPassExtra(p, "IMEI", "312000012345678");
 #endif
