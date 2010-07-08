@@ -70,11 +70,6 @@ int BOSMsgSendToFront(BOSTaskIdT TaskId, BOSMailboxIdT MailboxId, uint32 MsgId,
 {
 	return ExeMsgSendToFront(TaskId, MailboxId, MsgId, MsgBufferP, MsgSize);
 }
-bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, 
-                       void **MsgBufferP, uint32 *MsgSizeP) 
-{
-	return 0;
-}
 
 uint32 ExeMsgCheck(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId)
 {
@@ -299,9 +294,46 @@ void ExeBufferFree(void *BufferP) {
 
 	PMCE_Deallocate_Partition(BufferP);
 }
+
 void ExeDecMsgBuffStats(void * MsgBuffPtr)
 {
 
+
+}
+
+bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, 
+					void **MsgBufferP, uint32 *MsgSizeP)
+{
+	return 0;
+
+}
+
+int ExeMsgSend(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 MsgId, 
+					void *MsgBufferP, uint32 MsgSize)
+{
+	return 0;
+
+}
+
+int ExeMsgSendToFront(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, 
+			uint32 MsgId, void *MsgBufferP, uint32 MsgSize)
+{
+
+	return 0;
+}
+
+void * ExeMsgBufferGet(uint32 MsgBufferSize)
+{
+        NU_HISR  *cHISR = TCC_Current_HISR_Pointer();
+        NU_TASK  *cTCTP;
+
+        if(!cHISR) {
+                if(!(cTCTP = TCC_Current_Task_Pointer())) {
+                        MonFault(MON_EXE_FAULT_UNIT, 3, get_NU_Task_HISR_Pointer(), MON_HALT);
+                }
+        }
+
+	return (void *)0;	
 
 }
 void ExeMsgBufferFree(void *MsgBufferP) 
