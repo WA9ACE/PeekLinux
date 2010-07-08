@@ -315,6 +315,17 @@ bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP,
 
 static ExeFaultType3T ExeFaultType3;
 
+void ExeFault(ExeFaultTypeT ExeFaultType, ExeErrsT ExeError,
+	                void *ExeFaultData, uint16 FaultSize)
+{
+
+	// They don't do anything here
+}
+
+void MonTrace(uint16 TraceId, uint32 NumArgs, ...) {
+
+	// They don't do anything here
+}
 int ExeMsgSend(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 MsgId, void *MsgBufferP, uint32 MsgSize)
 {
 	uint32 msgId = MsgId;
@@ -345,7 +356,7 @@ int ExeMsgSend(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 MsgId, void *M
 		}
 	}
 
-	ExeIncMsgBuffSendStats(MsgBufferP, MsgId, TaskId);
+	//ExeIncMsgBuffSendStats(MsgBufferP, MsgId, TaskId);
 
 	errCode = QUCE_Send_To_Queue(&task->MailQueueCb[MailboxId], &msgId, 3, 0);
 	if (!errCode)
@@ -376,7 +387,7 @@ int ExeMsgSend(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 MsgId, void *M
 				if (!PMCE_Deallocate_Partition(MsgBufferP))
 					CallExeFault();
 
-				ExeDecMsgBuffStats(MsgBufferP);
+				//ExeDecMsgBuffStats(MsgBufferP);
 			}
 			else
 			{
@@ -438,7 +449,7 @@ void ExeMsgBufferFree(void *MsgBufferP)
 	if(PMCE_Deallocate_Partition(MsgBufferP))
 		MonFault(MON_EXE_FAULT_UNIT, 3, 0, MON_HALT);
 
-	ExeDecMsgBuffStats(MsgBufferP);
+	//ExeDecMsgBuffStats(MsgBufferP);
 }
 
 void ExeSemaphoreCreate(ExeSemaphoreT *SemaphoreCbP, uint32 InitialCount) {
