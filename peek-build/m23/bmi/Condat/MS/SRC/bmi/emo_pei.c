@@ -178,8 +178,8 @@ LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
 
   VibratorTimeOut(0x5DC); 
   powered_on=1;
-  //mmiInit();
-  UiTask();
+  mmiInit();
+  //UiTask();
   
   return RV_OK;  
 
@@ -242,7 +242,7 @@ LOCAL SHORT pei_init (T_HANDLE handle)
     void **rPtr;
     ExeTaskCbT *task;
     RVM_TRACE_DEBUG_HIGH("EMO: pei_run");
-
+#if 0
     EMO_handle = handle;
     ExeIntStackP = &ExeIntStack[0];
 
@@ -263,7 +263,7 @@ LOCAL SHORT pei_init (T_HANDLE handle)
     }
     
     //ExeInit();
-
+#endif
     return (PEI_OK);
 } /* End pei_init(..) */
 

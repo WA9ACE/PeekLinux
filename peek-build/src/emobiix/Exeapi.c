@@ -3,6 +3,7 @@
 #include "exedefs.h"
 #include "bal_def.h"
 #include "monapi.h"
+#include "monids.h"
 #include "bal_os.h"
 
 
@@ -13,6 +14,9 @@ ExeTaskCbT *ExeTaskCb[EXE_NUM_TASKS];
 typedef struct {
         uint32 masks[EXE_NUM_MAILBOX];
 }sMailQueueSig;
+
+
+sMailQueueSig MailQueueSig = { EXE_MAILBOX_1, EXE_MAILBOX_2, EXE_MAILBOX_3, EXE_MAILBOX_4, EXE_MAILBOX_5 };
 
 //NU_MEMORY_POOL *ExeSystemMemory;
 //uint32		*ExeIntStackP; // this is some structure we need to work out
@@ -308,11 +312,95 @@ bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP,
 
 }
 
-int ExeMsgSend(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 MsgId, 
-					void *MsgBufferP, uint32 MsgSize)
-{
-	return 0;
 
+static ExeFaultType3T ExeFaultType3;
+
+int ExeMsgSend(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 MsgId, void *MsgBufferP, uint32 MsgSize)
+{
+	uint32 msgId = MsgId;
+	void *msgBufferP = MsgBufferP;
+	uint32 msgSize = MsgSize;
+	ExeTaskCbT *task = ExeTaskCb[TaskId];
+	int errCode = 0;
+	int retVal = 0;
+
+	if (!TCC_Current_HISR_Pointer())
+	{
+		if (!TCC_Current_Task_Pointer())
+		{
+			MonFault(MON_EXE_FAULT_UNIT, 3, get_NU_Task_HISR_Pointer(), MON_HALT);
+		}
+	}
+
+	if (MsgBufferP)
+	{
+		if (((char *)MsgBufferP)[MsgSize] != 0xED)
+		{
+			ExeFaultType3.MsgId = MsgId;
+			ExeFaultType3.MsgSize = MsgSize;
+			ExeFaultType3.DestTaskId = TaskId;
+			ExeFaultType3.MboxId = MailboxId;
+
+			ExeFault(EXE_FAULT_TYPE_3, EXE_MSG_BUFF_OVERWRITE_ERR, &ExeFaultType3, sizeof(ExeFaultType3T));
+		}
+	}
+
+	ExeIncMsgBuffSendStats(MsgBufferP, MsgId, TaskId);
+
+	errCode = QUCE_Send_To_Queue(&task->MailQueueCb[MailboxId], &msgId, 3, 0);
+	if (!errCode)
+	{
+		ExeInterruptDisable(SYS_IRQ_INT);
+
+		task->NumMsgs++;
+		task->NumMsgsInQueue[MailboxId]++;
+
+		TCD_Interrupt_Level = ((TCD_Interrupt_Level << 0x19) >> 0x19) & 0xFF;
+
+		if (EVCE_Set_Events(&task->EventGroupCb, MailQueueSig.masks[MailboxId] | EXE_MESSAGE_TYPE, 0))
+			CallExeFault();
+
+		ExeInterruptEnable();
+
+		retVal = 0;
+	}
+	else // if (!= 0)
+	{
+		if (TaskId != EXE_UI_ID || MailboxId != EXE_MAILBOX_4_ID)
+			emo_printf("INFO:ExeMsgSend faild, TaskID:%d, Status:%d\n", TaskId, errCode);
+
+		if (TaskId == EXE_IOP_ID && MailboxId == EXE_MAILBOX_1_ID)
+		{
+			if (MsgBufferP)
+			{
+				if (!PMCE_Deallocate_Partition(MsgBufferP))
+					CallExeFault();
+
+				ExeDecMsgBuffStats(MsgBufferP);
+			}
+			else
+			{
+				if (EVCE_Set_Events(&task->EventGroupCb, EXE_SIGNAL_12 | EXE_SIGNAL_TYPE, 0))
+					CallExeFault();
+			}
+		}
+		else
+		{
+			ExeFaultType3.DestTaskId = TaskId;
+			ExeFaultType3.MboxId = MailboxId;
+			ExeFaultType3.MsgId = MsgId;
+			ExeFaultType3.MsgSize = MsgSize;
+
+			ExeFault(EXE_FAULT_TYPE_3, EXE_MAIL_QUEUE_FULL_ERR, &ExeFaultType3, sizeof(ExeFaultType3T));
+		}
+
+		retVal = -1;
+	}
+
+	if (TaskId != EXE_IOP_ID && TaskId != EXE_HWD_ID)
+		MonTrace(MON_CP_MSG_BUFF_STATS_SPY_ID, 3, MsgId, get_NU_Task_HISR_Pointer(), TaskId);
+
+	return retVal;
 }
 
 int ExeMsgSendToFront(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, 
@@ -443,7 +531,6 @@ ExeEventWaitT ExeEventWait(ExeTaskIdT TaskId, bool Signal, ExeMessageT Message, 
 	int ret;
 	ExeTaskCbT *task;
 	int i;
-	sMailQueueSig MailQueueSig = { EXE_MAILBOX_1, EXE_MAILBOX_2, EXE_MAILBOX_3, EXE_MAILBOX_4, EXE_MAILBOX_5 };
 	timeout = Timeout;
 	signal_mask = 0;
 
