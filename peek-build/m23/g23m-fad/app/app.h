@@ -74,10 +74,10 @@ typedef enum {
 #define APP_DATA_DUMP_LENGTH   256
 #define APP_DEF_DNSQUERY_ADDR  "chuck.berlin.tide.ti.com"
 #else  /* _SIMULATION_ */
-#define APP_DEF_SERVER         "217.160.109.110"
+#define APP_DEF_SERVER         "72.20.1.6"
 #define APP_DEF_CLOSE_SLEEP    2000
 #define APP_DATA_DUMP_LENGTH   16
-#define APP_DEF_DNSQUERY_ADDR  "gsmtest.com"
+#define APP_DEF_DNSQUERY_ADDR  "4.2.2.1"
 #endif /* _SIMULATION_ */
 
 #define APP_DEF_TCPSRV_PORT    3425

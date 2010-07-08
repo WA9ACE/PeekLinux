@@ -585,9 +585,9 @@ static void proc_init(int prov, int size, int reps, APP_PROCTYPE_T ptype,
     switch(prov)
     {
       case APP_PROV_T_MOBILE:
-        strcpy(bearer_info.apn, "internet.t-d1.de");
-        strcpy(bearer_info.user_id, "t-d1");
-        strcpy(bearer_info.password, "gprs");
+        strcpy(bearer_info.apn, "wap.cingular");
+        strcpy(bearer_info.user_id, "WAP@CINGULARGPRS.COM");
+        strcpy(bearer_info.password, "CINGULAR1");
         break;
 
       case APP_PROV_HUTCH:

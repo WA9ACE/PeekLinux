@@ -4,6 +4,7 @@ DEFINE += BAL_IP_PUSH
 INCLUDE += $(INCDIR)/g23m-aci/aci
 INCLUDE += $(INCDIR)/g23m/condat/ms/src/aci
 INCLUDE += $(INCDIR)/g23m/condat/ms/src/aci_dti_mng
+INCLUDE += $(INCDIR)/g23m/condat/com/inc
 INCLUDE += $(INCDIR)/csw-system/drv_core
 INCLUDE += $(INCDIR)/g23m/condat/com/include
 INCLUDE += $(SRCDIR)/include

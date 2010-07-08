@@ -7,6 +7,17 @@ void BalKeypadGetNotify(void)
 {
 
 }
+
+void bal_trace(const char* fmt, ...) {
+        char buf[200];
+        va_list ap;
+        va_start(ap, fmt);
+        vsprintf(buf, fmt, ap);
+        rvf_send_trace (buf,strlen(buf),NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
+
+        va_end(ap);
+}
+
 void bal_printf( const char* fmt, ...) {
         char buf[200];
         va_list ap;
@@ -28,5 +39,4 @@ void emo_printf( const char* fmt, ...) {
   	rvf_send_trace (buf,strlen(buf),NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
 
         va_end(ap);
-        //TCC_Task_Sleep(2);
 }

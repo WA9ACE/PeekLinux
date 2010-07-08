@@ -65,6 +65,7 @@ SRC += ProtocolUtils.c
 #SRC += Debug.c
 SRC += Mime.c
 SRC += system_battery.c
+SRC += system_misc.c
 SRC += ApplicationManager.cpp
 SRC += BootApplication.c
 SRC += RootApplication.c

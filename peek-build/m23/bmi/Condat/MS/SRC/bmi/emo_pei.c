@@ -18,6 +18,13 @@
 #include "Lcd_manager.h"
 #include "lls_api.h"
 
+#include "exeapi.h"
+#include "exedefs.h"
+
+#define         NU_VARIABLE_SIZE                13
+#define         NU_QUEUE_SIZE                   18
+
+
 /*=========================== MACROS =========================================*/
 
 #define VSI_CALLER EMO_handle, 
@@ -27,24 +34,9 @@
 
 /*===========================Global Variables==================================*/
 
-typedef struct
-{
-    T_RVF_MB_ID     prim_id;
-    T_RVF_ADDR_ID   addr_id;
-    void*           msg_alarm_event;      
-} T_EMO_ENV_CTRL_BLK;
-
-T_EMO_ENV_CTRL_BLK *emo_env_ctrl_blk = NULL;
-
 T_HANDLE EMO_handle;
-T_HANDLE emo_hCommEMO = -1;
 
 LOCAL BOOL first_access = TRUE;
-
-static T_RVM_RETURN (*emo_error_ft) (T_RVM_NAME       swe_name,
-                                     T_RVM_RETURN     error_cause,
-                                     T_RVM_ERROR_TYPE error_type,
-                                     T_RVM_STRING     error_msg);
 
 /*===========================Function Definition================================*/
 /*
@@ -178,19 +170,16 @@ LOCAL SHORT pei_primitive (void * primptr)
 */
 extern BOOL powered_on;
 extern void mmiInit( void);
-extern void lcd_init_cmdsequence();
-extern int lcd_g_state;
-extern UINT8 lcd_pwr_interface(UINT8);
 extern void UiTask(void);
 
 LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
 {  
-  int i;
   RVM_TRACE_DEBUG_HIGH("EMO: pei_run");
 
+  VibratorTimeOut(0x5DC); 
   powered_on=1;
- // mmiInit();
-	UiTask();
+  //mmiInit();
+  UiTask();
   
   return RV_OK;  
 
@@ -215,13 +204,6 @@ LOCAL SHORT pei_exit (void)
 {
    RVM_TRACE_DEBUG_HIGH ("EMO: pei_exit");
  
-   /*
-    * Close communication channels
-    */
- 
-   vsi_c_close (VSI_CALLER emo_hCommEMO);
-   emo_hCommEMO = VSI_ERROR;
-
    return PEI_OK;
 }/* End pei_exit(..) */
 
@@ -240,60 +222,50 @@ LOCAL SHORT pei_exit (void)
 |
 +------------------------------------------------------------------------------
 */
+
+NU_MEMORY_POOL ExeSystemMemory;
+uint32 ExeIntStack[20];
+uint32 *ExeIntStackP;
+
+extern ExeTaskCbT     *ExeTaskCb[];
+
+static char SystemMemory[0xABB4];
+static char SysMem[] = "SysMem";
+static char queName[] = "BalEvGrp";
+static char BalQue[] = "BalQue";
+
 LOCAL SHORT pei_init (T_HANDLE handle)
 {
     T_RV_RET ret = RV_OK;
-    
-    RVM_TRACE_DEBUG_HIGH ("EMO: pei_init");
+    unsigned int BalMailQueueTable[NU_QUEUE_SIZE];
+    int i;
+    void **rPtr;
+    ExeTaskCbT *task;
+    RVM_TRACE_DEBUG_HIGH("EMO: pei_run");
 
-    /*
-     * Initialize task handle
-     */
     EMO_handle = handle;
-    emo_hCommEMO = -1;
+    ExeIntStackP = &ExeIntStack[0];
 
-    if(EMO_handle != gsp_get_taskid())
-    {
-         RVM_TRACE_DEBUG_HIGH("EMO_handle NE gsp_get_taskid");
-    }
+    DMCE_Create_Memory_Pool(&ExeSystemMemory, SysMem, SystemMemory, 0xABB4, 0x32, NU_SEMAPHORE_SUSPEND);
 
-    if( gsp_init_remu_task( EMO_handle, "EMO" ) != RVF_OK)
-    {
-         RVM_TRACE_DEBUG_HIGH("gsp_init_remu_task Not returning RVF_OK");
-    }
+    task = ExeTaskCb[0];
 
-    /*
-     * Open communication channels
-     */
-    if (emo_hCommEMO < VSI_OK)
-    {
-      if ((emo_hCommEMO = vsi_c_open (VSI_CALLER "EMO" )) < VSI_OK)
-        return PEI_ERROR;
-    }
-   
-    RVM_TRACE_DEBUG_HIGH("EMO Open communication channels done"); 
-  
-     /* Create instance gathering all the variable used by EMO instance */
-     
-	if (rvf_get_buf(EXT_MEM_POOL, sizeof(T_EMO_ENV_CTRL_BLK), (T_RVF_BUFFER**)&emo_env_ctrl_blk) != RVF_GREEN)
-	{
-            /* The environemnt will cancel the EXPL instance creation. */
-            RVM_TRACE_DEBUG_HIGH ("EMO: Error to get memory ");
+    if(!EVCE_Create_Event_Group(&task->EventGroupCb, queName)) {
+	for(i=0;i < 4;i++) {
+		if(!DMCE_Allocate_Memory(&ExeSystemMemory, rPtr, (BalMailQueueTable[i] << 2), NU_READY)) {
+			//QUCE_Create_Queue(,rPtr, BalQue, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
+			//  QUCE_Create_Queue(NU_QUEUE *queue_ptr, CHAR *name, 
+			// VOID *start_address, UNSIGNED queue_size, OPTION message_type,
+			//UNSIGNED message_size,OPTION suspend_type);
 
-            return RVM_MEMORY_ERR;	
+		}
 	}
-
-    /* Store the address ID. */
-    emo_env_ctrl_blk->addr_id = EMO_handle;
-
-    /* Store the pointer to the error function. */
-    emo_error_ft = rvm_error;
-
-    emo_env_ctrl_blk->prim_id = EXT_MEM_POOL;
+    }
     
+    //ExeInit();
+
     return (PEI_OK);
 } /* End pei_init(..) */
-
 
 /*
 +------------------------------------------------------------------------------

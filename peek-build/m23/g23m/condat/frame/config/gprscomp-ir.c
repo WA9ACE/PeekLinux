@@ -58,6 +58,7 @@ extern SHORT cst_pei_create   (T_PEI_INFO const **Info);
 #ifdef FF_ESIM
 extern SHORT esim_pei_create  (T_PEI_INFO const **Info); /* esim module */
 #endif
+extern SHORT emo_pei_create   (T_PEI_INFO const **Info);
 extern SHORT sim_pei_create   (T_PEI_INFO const **Info);
 extern SHORT sms_pei_create   (T_PEI_INFO const **Info);
 extern SHORT cc_pei_create    (T_PEI_INFO const **Info);
@@ -120,7 +121,6 @@ extern SHORT aaa_pei_create   (T_PEI_INFO const **Info);
 #endif /* FF_TCP_IP */
 #endif /* _TARGET_ */
 
-extern SHORT emo_pei_create    (T_PEI_INFO const **Info);
 
 extern SHORT upm_pei_create (T_PEI_INFO const **Info);
 
