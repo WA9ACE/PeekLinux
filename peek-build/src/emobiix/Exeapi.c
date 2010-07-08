@@ -9,7 +9,7 @@
 
 extern int TCD_Interrupt_Level;
 ExeTaskCbT *ExeTaskCb[EXE_NUM_TASKS];
-
+extern uint32 *ExeIntStackP[];
 
 typedef struct {
         uint32 masks[EXE_NUM_MAILBOX];
@@ -80,6 +80,8 @@ uint32 ExeMsgCheck(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId)
 	ExeTaskCbT *task;
 
 	task = ExeTaskCb[TaskId];
+	if(task->NumMsgsInQueue[MailboxId] < 0) 
+		return 0;
 	return task->NumMsgsInQueue[MailboxId];
 }
 
@@ -98,11 +100,11 @@ void CallExeFault(void) {
 ExeEventWaitT ExeEventRetireve( ExeTaskIdT TaskId, uint32 RequestEvent, uint32 Timeout )
 {
 	ExeTaskCbT *task;
-	ExeEventWaitT retFlags;
+	ExeEventWaitT retFlags = RequestEvent;
 
         task = ExeTaskCb[TaskId];
 
-	EVCE_Retrieve_Events(&task->EventGroupCb, RequestEvent, NU_OR_CONSUME, (UNSIGNED *)&retFlags, Timeout);
+	EVCE_Retrieve_Events(&task->EventGroupCb, retFlags, NU_OR_CONSUME, (UNSIGNED *)&retFlags, Timeout);
 
 	return retFlags;
 }
@@ -238,14 +240,17 @@ void ExeTimerGetRemainTime(ExeTimerT *TimerCbP, uint32 *RemainTime)
 }
 
 void ExeInterruptDisable(SysIntT IntMask)
-{
-	TCD_Interrupt_Level = TCT_Control_Interrupts(TCD_Interrupt_Level | IntMask);
+{	
+	IntMask = TCT_Control_Interrupts(TCD_Interrupt_Level | IntMask);
+	*ExeIntStackP[0] = IntMask;
+	ExeIntStackP[0]++;
 
 }
+
 void ExeInterruptEnable(void)
 {
-	// Needs work
-	//TCT_Control_Interrupts();
+	ExeIntStackP[0]--;
+	TCT_Control_Interrupts(*ExeIntStackP[0]);
 }
 
 void ExePreemptionChange(ExePreemptionT Preemption)
@@ -366,7 +371,7 @@ int ExeMsgSend(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 MsgId, void *M
 		task->NumMsgs++;
 		task->NumMsgsInQueue[MailboxId]++;
 
-		TCD_Interrupt_Level = ((TCD_Interrupt_Level << 0x19) >> 0x19) & 0xFF;
+		TCD_Interrupt_Level = ((TCD_Interrupt_Level << 0x19) >> 0x19);
 
 		if (EVCE_Set_Events(&task->EventGroupCb, MailQueueSig.masks[MailboxId] | EXE_MESSAGE_TYPE, 0))
 			CallExeFault();
@@ -453,9 +458,7 @@ void ExeMsgBufferFree(void *MsgBufferP)
 }
 
 void ExeSemaphoreCreate(ExeSemaphoreT *SemaphoreCbP, uint32 InitialCount) {
-	char cSema[] = "Semaphor";
-
-	SMCE_Create_Semaphore((NU_SEMAPHORE *)SemaphoreCbP, cSema, InitialCount, 0x6);
+	SMCE_Create_Semaphore((NU_SEMAPHORE *)SemaphoreCbP, "Semaphor", InitialCount, 0x6);
 }
 
 void ExeSemaphoreDelete(ExeSemaphoreT *SemaphoreCbP) {
@@ -492,9 +495,9 @@ uint32 ExeThreadIDGet(void) {
 }
 
 void *ExeMalloc(NU_MEMORY_POOL *pool, uint32 size, uint32 suspend) {
-	void **rPtr = NULL;
+	void *rPtr = NULL;
 
-	DMCE_Allocate_Memory(pool,rPtr,size,suspend);
+	DMCE_Allocate_Memory(pool, &rPtr, size, suspend);
 	return rPtr;
 }
 
