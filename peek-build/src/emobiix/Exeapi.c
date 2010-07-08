@@ -1,10 +1,10 @@
 #include "nucleus.h"
 #include "exeapi.h"
 #include "exedefs.h"
-#include "vintypes.h"
 #include "bal_def.h"
 #include "monapi.h"
 #include "bal_os.h"
+
 
 extern int TCD_Interrupt_Level;
 ExeTaskCbT *ExeTaskCb[EXE_NUM_TASKS];
@@ -73,7 +73,7 @@ int BOSMsgSendToFront(BOSTaskIdT TaskId, BOSMailboxIdT MailboxId, uint32 MsgId,
 bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, 
                        void **MsgBufferP, uint32 *MsgSizeP) 
 {
-	
+	return 0;
 }
 
 uint32 ExeMsgCheck(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId)
@@ -96,18 +96,16 @@ void CallExeFault(void) {
 	MonFault(MON_EXE_FAULT_UNIT, 3, 0, MON_HALT);
 }
 
-// needs work
 ExeEventWaitT ExeEventRetireve( ExeTaskIdT TaskId, uint32 RequestEvent, uint32 Timeout )
 {
-	int ret;
 	ExeTaskCbT *task;
-	//EVCE_Retrieve_Events(,,1/* operation */, RequestEvent);
+	ExeEventWaitT retFlags;
 
         task = ExeTaskCb[TaskId];
 
-	ret_flags = EVCE_Retrieve_Events(&task->EventGroupCb, signal_mask, NU_OR_CONSUME, &signal_mask, suspend);
+	EVCE_Retrieve_Events(&task->EventGroupCb, RequestEvent, NU_OR_CONSUME, (UNSIGNED *)&retFlags, Timeout);
 
-
+	return retFlags;
 }
 	
 void ExeTaskWait(uint32 Ticks) {
