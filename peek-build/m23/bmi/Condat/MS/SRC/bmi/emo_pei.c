@@ -253,7 +253,7 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 
     DMCE_Create_Memory_Pool(&ExeSystemMemory, "SysMem", SystemMemory, 0xABB4, 0x32, NU_SEMAPHORE_SUSPEND);
 
-    task = ExeTaskCb[48]; // Bal task id?
+    task = ExeTaskCb[EXE_BAL_ID]; // Bal task id?
 
     if(!EVCE_Create_Event_Group(&task->EventGroupCb, "BalEvGrp")) {
 	for(i=0;i < 2;i++) {
