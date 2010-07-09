@@ -15,12 +15,9 @@ typedef struct {
         uint32 masks[EXE_NUM_MAILBOX];
 }sMailQueueSig;
 
-ExeMsgBuffInfoT ExeMsgBuffInfo[4];
+ExeMsgBuffInfoT ExeMsgBuffInfo[EXE_NUM_DIFF_MSG_BUFFS];
 
 sMailQueueSig MailQueueSig = { EXE_MAILBOX_1, EXE_MAILBOX_2, EXE_MAILBOX_3, EXE_MAILBOX_4, EXE_MAILBOX_5 };
-
-//NU_MEMORY_POOL *ExeSystemMemory;
-//uint32		*ExeIntStackP; // this is some structure we need to work out
 
 unsigned long get_NU_Task_HISR_Pointer()
 {
@@ -304,16 +301,10 @@ void ExeBufferFree(void *BufferP) {
 	PMCE_Deallocate_Partition(BufferP);
 }
 
-void ExeDecMsgBuffStats(void * MsgBuffPtr)
-{
-
-
-}
-
 bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, 
 					void **MsgBufferP, uint32 *MsgSizeP)
 {
-	return 0;
+
 
 }
 
@@ -667,6 +658,23 @@ ExeEventWaitT ExeEventWait(ExeTaskIdT TaskId, bool Signal, ExeMessageT Message, 
 	return suspend;
 }
 
+static ExeBufferT BufferCb1;
+static ExeBufferT BufferCb2;
+static ExeBufferT BufferCb3;
+static ExeBufferT BufferCb4;
+
 void ExeInit(void) {
-	
+	ExeMsgBuffInfo[EXE_MSG_BUFF_TYPE_1].BuffSize = EXE_SIZE_MSG_BUFF_1;
+	ExeMsgBuffInfo[EXE_MSG_BUFF_TYPE_1].BuffCbP  = &BufferCb1;
+	ExeMsgBuffInfo[EXE_MSG_BUFF_TYPE_2].BuffSize = EXE_SIZE_MSG_BUFF_2;
+	ExeMsgBuffInfo[EXE_MSG_BUFF_TYPE_2].BuffCbP  = &BufferCb2;
+	ExeMsgBuffInfo[EXE_MSG_BUFF_TYPE_3].BuffSize = EXE_SIZE_MSG_BUFF_3;
+	ExeMsgBuffInfo[EXE_MSG_BUFF_TYPE_3].BuffCbP  = &BufferCb3;
+	ExeMsgBuffInfo[EXE_MSG_BUFF_TYPE_4].BuffSize = EXE_SIZE_MSG_BUFF_4;
+	ExeMsgBuffInfo[EXE_MSG_BUFF_TYPE_4].BuffCbP  = &BufferCb4;
+
+	ExeBufferCreate(&BufferCb1, EXE_NUM_MSG_BUFF_1, 0x24);
+	ExeBufferCreate(&BufferCb2, EXE_NUM_MSG_BUFF_2, 0xc4);
+	ExeBufferCreate(&BufferCb3, EXE_NUM_MSG_BUFF_3, 0x1c4);
+	ExeBufferCreate(&BufferCb4, EXE_NUM_MSG_BUFF_4, 0x234);
 }
