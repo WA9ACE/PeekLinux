@@ -4,15 +4,11 @@
 #include "Widget.h"
 #include "WidgetRenderer.h"
 #include "ArrayWidget.h"
-
+#include "Debug.h"
 #include "Font.h"
 
-//#include "assets/DroidSans.c"
-unsigned char DroidSans[] = {
-        0x00, 0x01, 0x00, 0x00, 0x00};
-const int DroidSansSize = 5;
-
 #include <stdio.h>
+#include <stdlib.h>
 
 Style *RootStyle(void)
 {
@@ -30,13 +26,21 @@ Style *RootStyle(void)
 
 	fontObject1 = dataobject_new();
 	dataobject_setValue(fontObject1, "type", dataobjectfield_string("font"));
-	dataobject_setValue(fontObject1, "data", dataobjectfield_data((void *)DroidSans, DroidSansSize));
+	dataobject_setValue(fontObject1, "data", dataobjectfield_string("DroidSans.ttf"));
+	/*dataobject_setValue(fontObject1, "data", dataobjectfield_data((void *)DroidSans, DroidSansSize));*/
 
 	defaultFont = font_load(fontObject1);
 	if (defaultFont != NULL)
 		font_setHeight(defaultFont, 12);
 
 	hugeFont = font_load(fontObject1);
+	if (hugeFont == NULL) {
+		emo_printf("Failed to load font" NL);
+#ifdef SIMULATOR
+		abort();
+#endif
+		return defaultStyle;
+	}
 	font_setHeight(hugeFont, 20);
 
 	consoleFont = font_load(fontObject1);

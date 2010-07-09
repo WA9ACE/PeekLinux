@@ -14,6 +14,7 @@ struct Bitmap_t {
 	int xadvance, yadvance;
 	int baselinedy;
 	PixelFormat pf;
+	int isBold;
 };
 typedef struct Bitmap_t Bitmap;
 
@@ -37,7 +38,7 @@ BitmapCache *bitmapcache_new(void)
 	return output;
 }
 
-void *bitmapcache_add(BitmapCache *c, unsigned long value,
+void *bitmapcache_add(BitmapCache *c, unsigned long value, int isBold,
 		void *data, PixelFormat pf, int width, int height,
 		int xadvance, int yadvance, int pitch, int baselinedy)
 {
@@ -55,6 +56,7 @@ void *bitmapcache_add(BitmapCache *c, unsigned long value,
 	b->width = width;
 	b->height = height;
 	b->baselinedy = baselinedy;
+	b->isBold = isBold;
 
 	dataSize = ((width+1)>>1) * height;
 
@@ -100,18 +102,18 @@ void *bitmapcache_add(BitmapCache *c, unsigned long value,
 
 	//emo_printf("" NL);
 #if 1
-	map_append(c->cache, (void *)value, (void *)b);
+	map_append(c->cache, (void *)(value | (isBold ? 0x80000000 : 0)), (void *)b);
 #endif
 	return c->data+b->data;
 }
 
-int bitmapcache_get(BitmapCache *c, unsigned long value,
+int bitmapcache_get(BitmapCache *c, unsigned long value, int isBold, 
 		void **data, PixelFormat *pf, int *width, int *height,
 		int *xadvance, int *yadvance, int *baselinedy)
 {
 	Bitmap *b;
 
-	b = map_find(c->cache, (void *)value);
+	b = map_find(c->cache, (void *)(value | (isBold ? 0x80000000 : 0)));
 	
 	if (b == NULL)
 		return 0;

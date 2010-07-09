@@ -4,6 +4,7 @@
 #include "List.h"
 #include "WidgetRenderer.h"
 #include "Debug.h"
+#include "SetWidget.h"
 
 #include "p_malloc.h"
 
@@ -41,7 +42,7 @@ void style_renderWidgetTree(Style *s, Widget *w)
 	ListIterator iter;
 	const char *id, *className;
 	DataObjectField *type = NULL;
-	DataObject *dobj = NULL;
+	DataObject *dobj = NULL, *singleChild = NULL;
 	WidgetRenderer *wr;
 
 	type = dataobject_getValue(w, "type");
@@ -64,6 +65,14 @@ void style_renderWidgetTree(Style *s, Widget *w)
 	if (type != NULL && type->type == DOF_STRING &&
 			strcmp(type->field.string, "array") == 0)
 		return;
+
+	if (type != NULL && type->type == DOF_STRING &&
+			strcmp(type->field.string, "set") == 0) {
+		singleChild = setwidget_activeItem(w);
+		if (singleChild != NULL)
+			style_renderWidgetTree(s, singleChild);
+		return;
+	}
 
 	widget_getChildren(w, &iter);
 	while (!listIterator_finished(&iter)) {

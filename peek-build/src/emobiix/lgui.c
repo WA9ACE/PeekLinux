@@ -55,6 +55,7 @@ void lgui_clear(unsigned char pixel)
 	memset(lgui_buffer, pixel, 320*240*2);
 }
 
+/* potential optimization, err*100 => err, remove res /= 100 */
 #define GRADIENT_STEP(res, sr, er, val, idx) res = sr*100 * (((val-1)-idx)*100)/((val-1)*100); \
 		res += er*100 * (idx*100)/((val-1)*100); \
 		res /= 100;
@@ -225,7 +226,7 @@ void lgui_luminence_alpha_blitC(int destx, int desty, int imgx, int imgy, int im
 
 void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 		int imgdx, int imgdy, int imgwidth, int imgheight, unsigned char *img,
-		Color c)
+		Color c, int mode)
 {
 	unsigned short *buf;
 	unsigned char *imgbuf;
@@ -263,17 +264,37 @@ void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 		for (col = (ccol+1) >> 1; col < (cwidth+1) >> 1; ++col) {
 			scaleorig = (*imgbuf);
 			scale = scaleorig & 0xF0;
-			if (scale > 0) {
-				srcpixel = *buf;
-				pixel = RGB_TO_565(c.rgba.red, c.rgba.green, c.rgba.blue);
-				*buf = (unsigned short)(PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale));
+			if (mode == LGUI_MODE_ALPHA) {	
+				if (scale > 0) {
+					srcpixel = *buf;
+					pixel = RGB_TO_565(c.rgba.red, c.rgba.green, c.rgba.blue);
+					*buf = (unsigned short)(PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale));
+				}
+			} else if (mode == LGUI_MODE_STENCIL) {
+				if (scale > 0) {
+					pixel = SCALE_PIXEL(scale, c.rgba.red, c.rgba.green, c.rgba.blue);
+					*buf = pixel;
+				}
+			} else { /* REPLACE */
+				pixel = SCALE_PIXEL(scale, c.rgba.red, c.rgba.green, c.rgba.blue);
+				*buf = pixel;					
 			}
 			++buf;
 			scale = (scaleorig << 4) & 0xF0;
-			if (scale > 0) {
-				srcpixel = *buf;
-				pixel = RGB_TO_565(c.rgba.red, c.rgba.green, c.rgba.blue);
-				*buf = (unsigned short)(PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale));
+			if (mode == LGUI_MODE_ALPHA) {
+				if (scale > 0) {
+					srcpixel = *buf;
+					pixel = RGB_TO_565(c.rgba.red, c.rgba.green, c.rgba.blue);
+					*buf = (unsigned short)(PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale));
+				}
+			} else if (mode == LGUI_MODE_STENCIL) {
+				if (scale > 0) {
+					pixel = SCALE_PIXEL(scale, c.rgba.red, c.rgba.green, c.rgba.blue);
+					*buf = pixel;
+				}
+			} else { /* REPLACE */
+				pixel = SCALE_PIXEL(scale, c.rgba.red, c.rgba.green, c.rgba.blue);
+				*buf = pixel;
 			}
 			
 			++buf;
@@ -285,7 +306,7 @@ void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 }
 
 void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
-        int imgwidth, int imgheight, unsigned char *img)
+        int imgwidth, int imgheight, unsigned char *img, int isStencil)
 {
     unsigned short *buf;
     unsigned char *imgbuf;
@@ -321,8 +342,12 @@ void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
 		imgbuf += ccol << 1;
         for (col = ccol; col < cwidth; ++col) {
                 pixel = *((unsigned short *)(imgbuf));
-                /*if (pixel > 0)*/
-                    *buf = pixel;
+				if (isStencil) {
+					if (pixel > 0)
+						*buf = pixel;
+				} else {
+					*buf = pixel;
+				}
             ++buf;
             imgbuf +=2;
         }
@@ -335,8 +360,8 @@ void lgui_blitRGB565A8(int destx, int desty, int imgx, int imgy,
         int imgwidth, int imgheight, unsigned char *img)
 {
     unsigned short *buf;
-    unsigned char *imgbuf;
-    unsigned short pixel;
+    unsigned char *imgbuf, scale;
+    unsigned short pixel, srcpixel;
     int line, col, ypos, imgypos;
 	int cline, cwidth, ccol, cheight;
 	Rectangle rect;
@@ -362,14 +387,16 @@ void lgui_blitRGB565A8(int destx, int desty, int imgx, int imgy,
             continue;
         }
         buf = lgui_buffer + destx + ypos*LGUI_WIDTH;
-        imgbuf = img + imgx + imgypos*imgwidth*3;
+        imgbuf = img + (imgx + imgypos*imgwidth)*3;
 
 		buf += ccol;
 		imgbuf += ccol *3;
         for (col = ccol; col < cwidth; ++col) {
-                pixel = *((unsigned short *)(imgbuf));
-                /*if (pixel > 0)*/
-                    *buf = pixel;
+            pixel = *((unsigned short *)(imgbuf));
+			scale = *((unsigned char *)(imgbuf+2));
+			srcpixel = *buf;
+			*buf = (unsigned short)(PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale));
+            /* *buf = pixel;*/
             ++buf;
             imgbuf +=3;
         }
@@ -711,7 +738,7 @@ void lgui_circlefill(int xc, int yc, int r,
     }
 }
 
-void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f, Color c)
+void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f, Color c, int isBold)
 {
 	const char *p;
 	unsigned int val;
@@ -727,7 +754,7 @@ void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f,
 	p = utf8;
 	while (*p != 0) {
 		val = UTF8toUTF32(p, &adv);
-		data = (unsigned char *)font_getGlyph(f, val, A4, &width, &height,
+		data = (unsigned char *)font_getGlyph(f, val, isBold, A4, &width, &height,
 				&xadvance, &yadvance, &baselinedy);
 		if (!(x + xadvance < CLIP.x ||
 				x > CLIP.x + CLIP.width ||
@@ -737,7 +764,7 @@ void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f,
 				emo_printf(" Glyph missing");
 			else
 				lgui_luminence_A4_blitC(x, y+fontHeight-baselinedy, 0, 0, width, height,
-						width, height, data, c);
+						width, height, data, c, LGUI_MODE_ALPHA);
 		}
 		x += xadvance;
 		y += yadvance;
@@ -764,7 +791,8 @@ void lgui_measure_font(const char *utf8, Font *f, IPoint *output)
 	p = utf8;
 	while (*p != 0) {
 		val = UTF8toUTF32(p, &adv);
-		data = (unsigned char *)font_getGlyph(f, val, A4, &width, &height,
+		/* fixme, setting isbold to false always */
+		data = (unsigned char *)font_getGlyph(f, val, 0, A4, &width, &height,
 				&xadvance, &yadvance, &baselinedy);
 		if (data == NULL) {
 			emo_printf(" Glyph missing");

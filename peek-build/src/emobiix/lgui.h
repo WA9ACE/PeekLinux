@@ -12,6 +12,10 @@ extern "C" {
 
 #define RGB_TO_565(r,g,b) (((((unsigned short)r) << 8) & 0xF800) | ((((unsigned short)g) << 3) & 0x7E0) | ((((unsigned short)b) >> 3) & 0x1F))
 
+#define LGUI_MODE_REPLACE		0
+#define LGUI_MODE_STENCIL		1
+#define LGUI_MODE_ALPHA			2
+
 void lgui_attach(void *buf);
 void lgui_clear(unsigned char pixel);
 
@@ -45,11 +49,12 @@ void lgui_aacircle(int x, int y, int rad, int arcs,
 void lgui_luminence_alpha_blitC(int destx, int desy, int imgx, int imgy,
 		int imgdx, int imgdy, int imgwidth, int imgheight, unsigned char *img,
 		unsigned char r, unsigned char g, unsigned char b);
+
 void lgui_luminence_A4_blitC(int destx, int desy, int imgx, int imgy,
 		int imgdx, int imgdy, int imgwidth, int imgheight, unsigned char *img,
-		Color c);
+		Color c, int mode);
 void lgui_blitRGB565(int destx, int desy, int imgx, int imgy,
-	 	int imgwidth, int imgheight, unsigned char *img);
+	 	int imgwidth, int imgheight, unsigned char *img, int isStencil);
 void lgui_blitRGB565A8(int destx, int desy, int imgx, int imgy,
 	 	int imgwidth, int imgheight, unsigned char *img);
 void lgui_black_alpha_blitRGB(int destx, int desy, int imgx, int imgy,
@@ -57,7 +62,7 @@ void lgui_black_alpha_blitRGB(int destx, int desy, int imgx, int imgy,
 void lgui_alpha_blitRGBA(int destx, int desty, int imgx, int imgy,
 	 	int imgwidth, int imgheight, unsigned char *img);
 
-void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f, Color c); 
+void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f, Color c, int isBold); 
 void lgui_measure_font(const char *utf8, Font *f, IPoint *output);
 
 void lgui_clip_set(Rectangle *rect);

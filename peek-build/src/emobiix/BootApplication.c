@@ -6,6 +6,15 @@
 
 #include <stdio.h>
 
+#include "p_malloc.h"
+
+#ifdef SIMULATOR
+#include "Mime.h"
+char *mimedata;
+int mimedata_size;
+FILE *mimefile;
+#endif
+
 DataObject *BootApplication(void)
 {
     static DataObject *output = NULL;
@@ -14,8 +23,9 @@ DataObject *BootApplication(void)
 	URL *durl;
 #endif
 
-	DataObject *recordobj, *rec;
-	DataObject *sbox, *label;
+	/*DataObject *recordobj;
+	DataObject *rec;
+	DataObject *sbox, *label;*/
 
     if (output != NULL)
         return output;
@@ -161,12 +171,30 @@ DataObject *BootApplication(void)
 	/*widget_setPacking(dobj1, WP_VERTICAL);*/
 #endif
 
+#ifdef SIMULATOR
+	/* png test */
+	mimefile = fopen("letter.png", "rb");
+	fseek(mimefile, 0, SEEK_END);
+	mimedata_size = (int)ftell(mimefile);
+	fseek(mimefile, 0, SEEK_SET);
+	mimedata = (char *)p_malloc(mimedata_size);
+	fread(mimedata, 1, mimedata_size, mimefile);
+	fclose(mimefile);
+	dobj1 = widget_newTypeIdName("image", "image", NULL, root);
+	dataobject_setValue(dobj1, "mime-type", dataobjectfield_string("png"));
+	dataobject_setValue(dobj1, "src", dataobjectfield_data(mimedata, mimedata_size));
+	dataobject_setValue(dobj1, "transparency", dataobjectfield_string("full"));
+	dataobject_setValue(dobj1, "color", dataobjectfield_string("FF00FF00"));
+	mime_load(dobj1);
+#endif
+
+	/* array test */
+#if 0
 	dobj2 = widget_newTypeIdName("string", "label", NULL, root);
     dataobject_setValue(dobj2, "data", dataobjectfield_string("Running Applications"));
 	dataobject_setValue(dobj2, "margintop", dataobjectfield_int(10));
     widget_setAlignment(dobj2, WA_LEFT);
 
-#if 1
 	recordobj = dataobject_new();
 	dataobject_setRecordType(recordobj, 1);
 	

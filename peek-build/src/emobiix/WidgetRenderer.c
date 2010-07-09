@@ -23,87 +23,13 @@ static void full_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	output->y = box->height;
 }
 
-static void zero_margin(WidgetRenderer *wr, Style *s, Widget *w,
+void widgetrenderer_zeroMargin(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj, Rectangle *output)
 {
 	output->x = 0;
 	output->y = 0;
 	output->width = 0;
 	output->height = 0;
-}
-
-/* image renderer */
-static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
-		DataObject *dobj) {
-	Rectangle *box, *margin;
-	int width, height;
-	PixelFormat pf;
-	void *data;
-	Color c;
-
-	box = widget_getBox(w);
-	margin = widget_getMargin(w);
-	width = (int)dataobject_getValue(dobj, "width")->field.integer;
-	height = (int)dataobject_getValue(dobj, "height")->field.integer;
-	pf = (PixelFormat)dataobject_getValue(dobj, "pixelformat")->field.integer;
-	data = dataobject_getValue(dobj, "data")->field.data.bytes;
-
-	switch (pf) {
-		case RGB565:
-			lgui_blitRGB565(box->x+margin->x, box->y+margin->y,
-					0, 0, width, height, data);
-			break;
-		case RGB565A8:
-			lgui_blitRGB565A8(box->x+margin->x, box->y+margin->y,
-					0, 0, width, height, data);
-			break;
-		case A4:
-			c.value = (unsigned int)style_getProperty(s, NULL, "image", NULL, "color");
-			lgui_luminence_A4_blitC(box->x+margin->x, box->y+margin->y, 0, 0,
-					width, height, width, height, data, c);
-			break;
-		default:
-			emo_printf("Unsupported image format" NL);
-	}
-}
-
-static void image_measure(WidgetRenderer *wr, Style *s, Widget *w,
-		DataObject *dobj, IPoint *output)
-{
-	DataObjectField *field;
-
-	field = dataobject_getValue(dobj, "width");
-	if (field == NULL || field->type != DOF_INT) {
-		emo_printf("width field not an int" NL);
-		output->x = 0;
-		output->y = 0;
-		return;
-	}
-	output->x = field->field.integer;
-
-	field = dataobject_getValue(dobj, "height");
-	if (field == NULL || field->type != DOF_INT) {
-		emo_printf("height field not an int" NL);
-		output->x = 0;
-		output->y = 0;
-		return;
-	}
-	output->y = field->field.integer;
-}
-
-WidgetRenderer *widgetrenderer_image(void)
-{
-	static WidgetRenderer *output = NULL;
-
-	if (output != NULL)
-		return output;
-
-	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
-	output->render = image_renderer;
-	output->measure = image_measure;
-	output->margin = zero_margin;
-
-	return output;
 }
 
 /* gradbox renderer */
@@ -130,7 +56,7 @@ WidgetRenderer *widgetrenderer_gradbox(void)
 	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
 	output->render = gradbox_renderer;
 	output->measure = NULL;
-	output->margin = zero_margin;
+	output->margin = widgetrenderer_zeroMargin;
 
 	return output;
 }
@@ -177,7 +103,7 @@ WidgetRenderer *widgetrenderer_gradboxr(void)
 	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
 	output->render = gradboxr_renderer;
 	output->measure = NULL;
-	output->margin = zero_margin;
+	output->margin = widgetrenderer_zeroMargin;
 
 	return output;
 }
@@ -214,7 +140,7 @@ WidgetRenderer *widgetrenderer_solid(void)
 	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
 	output->render = solid_renderer;
 	output->measure = NULL;
-	output->margin = zero_margin;
+	output->margin = widgetrenderer_zeroMargin;
 
 	return output;
 }
@@ -254,7 +180,7 @@ static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	str = (const char *)field->field.string;
 	/*emo_printf("Rendering %s" NL, str);*/
 
-	lgui_draw_font(box->x+margin->x, box->y+margin->y, box->width, box->height, str, f, c);
+	lgui_draw_font(box->x+margin->x, box->y+margin->y, box->width, box->height, str, f, c, 1);
 }
 
 static void string_measure(WidgetRenderer *wr, Style *s, Widget *w,
@@ -354,7 +280,7 @@ static void entry_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width-1, box->height-1, 7,
 			line.rgba.red, line.rgba.green, line.rgba.blue);
 
-	lgui_draw_font(box->x+4+margin->x, box->y+margin->y, box->width, box->height, str, f, c);
+	lgui_draw_font(box->x+4+margin->x, box->y+margin->y, box->width, box->height, str, f, c, 1);
 }
 
 static void entry_measure(WidgetRenderer *wr, Style *s, Widget *w,
@@ -384,7 +310,7 @@ WidgetRenderer *widgetrenderer_entry(void)
 	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
 	output->render = entry_renderer;
 	output->measure = entry_measure;
-	output->margin = zero_margin;
+	output->margin = widgetrenderer_zeroMargin;
 
 	return output;
 }
@@ -400,7 +326,7 @@ WidgetRenderer *widgetrenderer_zero(void)
 	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
 	output->render = zero_renderer;
 	output->measure = NULL;
-	output->margin = zero_margin;
+	output->margin = widgetrenderer_zeroMargin;
 
 	return output;
 }
@@ -416,7 +342,7 @@ WidgetRenderer *widgetrenderer_full(void)
 	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
 	output->render = zero_renderer;
 	output->measure = full_measure;
-	output->margin = zero_margin;
+	output->margin = widgetrenderer_zeroMargin;
 
 	return output;
 }

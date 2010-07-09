@@ -195,8 +195,10 @@ int arraywidget_focusNext(Widget *w, int *alreadyUnset, int *alreadySet)
 		dataobject_setValue(w, "endindex", endindex);
 	}
 
-	if (*alreadyUnset == 0 && focusindex->field.integer < 0)
+	if (*alreadyUnset == 0 && focusindex->field.integer < 0) {
+		emo_printf("ArrayWidget return at 1" NL);
 		return 0;
+	}
 
 	record = widget_getDataObject(w);
 
@@ -204,6 +206,7 @@ int arraywidget_focusNext(Widget *w, int *alreadyUnset, int *alreadySet)
 	if (focusindex->field.integer >= dataobject_getChildCount(record)) {
 		focusindex->field.integer = -1;
 		widget_setFocus(w, 0);
+		emo_printf("ArrayWidget return at 2" NL);
 		return 1;
 	}
 
@@ -217,6 +220,7 @@ int arraywidget_focusNext(Widget *w, int *alreadyUnset, int *alreadySet)
 
 	emo_printf("Focusing on %d now" NL, focusindex->field.integer);
 
+	emo_printf("ArrayWidget return at 3" NL);
 	return 2;
 }
 
@@ -245,6 +249,8 @@ int arraywidget_focusPrev(Widget *w)
 		dataobject_setValue(w, "endindex", endindex);
 	}
 	
+	emo_printf("Focus was %d" NL, focusindex->field.integer);
+
 	record = widget_getDataObject(w);
 
 	--focusindex->field.integer;
@@ -259,6 +265,7 @@ int arraywidget_focusPrev(Widget *w)
 		startindex->field.integer = focusindex->field.integer;
 
 	emo_printf("Focus now %d" NL, focusindex->field.integer);
+	widget_setFocus(w, 1);
 
 	return 1;
 }

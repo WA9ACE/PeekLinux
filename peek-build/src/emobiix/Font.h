@@ -14,7 +14,7 @@ typedef struct Font_t Font;
 Font *font_load(DataObject *dobj);
 void font_setHeight(Font *f, int height);
 int font_getHeight(Font *f);
-void *font_getGlyph(Font *f, unsigned int utf32,
+void *font_getGlyph(Font *f, unsigned int utf32, int isBold,
 		PixelFormat pf, int *width, int *height,
 		int *xadvance, int *yadvance, int *baselinedy);
 

@@ -73,6 +73,8 @@ SRC += BootApplication.c
 SRC += RootApplication.c
 SRC += RootStyle.c
 SRC += ArrayWidget.c
+SRC += SetWidget.o
+SRC += ImageWidget.o
 
 TARGET = $(CURDIR)/emobiix.a
 SOCKET_SIM = $(CURDIR)/socket_sim.a

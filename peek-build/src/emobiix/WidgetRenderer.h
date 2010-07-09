@@ -20,6 +20,9 @@ struct WidgetRenderer_t {
 			DataObject *dobj, Rectangle *output);
 };
 
+void widgetrenderer_zeroMargin(WidgetRenderer *wr, Style *s, Widget *w,
+		DataObject *dobj, Rectangle *output);
+
 WidgetRenderer *widgetrenderer_image(void);
 WidgetRenderer *widgetrenderer_gradbox(void);
 WidgetRenderer *widgetrenderer_gradboxr(void);

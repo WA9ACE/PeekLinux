@@ -9,6 +9,7 @@ DataObject *RootApplication(void)
 {
     static DataObject *output = NULL;
 	DataObject *dobj1, *root, *dobj2;
+	DataObject *setw, *setiw, *setc, *testvalue;
 
     if (output != NULL)
         return output;
@@ -30,7 +31,28 @@ DataObject *RootApplication(void)
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("320"));
 	dataobject_setValue(dobj1, "height", dataobjectfield_string("20"));
 
-	dobj1 = widget_newTypeIdName("box", "solid", NULL, root);
+	testvalue = dataobject_new();
+	dataobject_setValue(testvalue, "data", dataobjectfield_string("1"));
+
+	setw = widget_newTypeIdName("set", NULL, NULL, dobj1);
+	dataobject_setValue(setw, "fieldname", dataobjectfield_string("data"));
+	widget_setDataObject(setw, testvalue);
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("1"));
+	setc = widget_newTypeIdName("label", "label", NULL, setiw);
+	dataobject_setValue(setc, "data", dataobjectfield_string("On"));
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("2"));
+	setc = widget_newTypeIdName("label", "label", NULL, setiw);
+	dataobject_setValue(setc, "data", dataobjectfield_string("Off"));
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	setc = widget_newTypeIdName("label", "label", NULL, setiw);
+	dataobject_setValue(setc, "data", dataobjectfield_string("Default"));
+
+	dobj1 = widget_newTypeIdName("box", NULL, NULL, root);
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("320"));
 	dataobject_setValue(dobj1, "height", dataobjectfield_string("220"));
 	widget_setPacking(dobj1, WP_VERTICAL);

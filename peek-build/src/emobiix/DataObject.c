@@ -59,7 +59,6 @@ DataObject *dataobject_new(void)
 void dataobject_delete(DataObject *dobj)
 {
 	MapIterator iter;
-	ListIterator liter;
 	DataObjectField *item;
 	char *key;
 	

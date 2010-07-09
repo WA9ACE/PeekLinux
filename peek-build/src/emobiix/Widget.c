@@ -7,6 +7,7 @@
 #include "Style.h"
 #include "WidgetRenderer.h"
 #include "ArrayWidget.h"
+#include "SetWidget.h"
 #include "lgui.h"
 #include "Debug.h"
 
@@ -350,6 +351,8 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 		if (type != NULL && type->type == DOF_STRING
 				&& strcmp(type->field.string, "array") == 0)
 			result = arraywidget_focusNext(w, alreadyUnset, alreadySet);
+		if (result != 0)
+			list_append(l, w);
 		return result;
 	}
 
@@ -493,6 +496,7 @@ static Widget *widget_focusLast(Widget *w)
 	Widget *child;
 	ListIterator iter;
 	DataObjectField *field;
+	int one, two;
 
 	if (!widget_typeNoChildRender(dataobject_getValue(w, "type"))) {
 		list_rbegin(w->children, &iter);
@@ -507,11 +511,15 @@ static Widget *widget_focusLast(Widget *w)
 	}
 	
 	if (widget_canFocus(w)) {
-		field = dataobject_getValue(w, "type");
 		widget_setFocus(w, 1);
 		return w;
-	} else {
-		field = dataobject_getValue(w, "type");
+	}
+
+	field = dataobject_getValue(w, "type");
+	if ((field->type == DOF_STRING && strcmp(field->field.string, "array") == 0)) {
+		one = 1;
+		arraywidget_focusNext(w, &one, &two);
+		return w;
 	}
 
 	return NULL;
@@ -525,8 +533,11 @@ void widget_focusPrev(Widget *tree, Style *s)
 	DataObjectField *type;
 
 	oldW = widget_focusWhichOne(tree);
-	if (oldW == NULL)
-		return;
+	if (oldW == NULL) {
+		emo_printf("Focus didnt find any widget" NL);
+		/*return;*/
+		goto focus_last;
+	}
 
 	type = dataobject_getValue(oldW, "type");
 	if (type != NULL && type->type == DOF_STRING
@@ -549,17 +560,20 @@ void widget_focusPrev(Widget *tree, Style *s)
 
 	newW = widget_focusPrevR(oldW);
 	if (newW == NULL)
+focus_last:
 		newW = widget_focusLast(tree);
 	/*if (newW == NULL)
 		return;*/
 
-	widget_markDirty(oldW);
-	lgui_clip_identity();
-	widget_getClipRectangle(oldW, &rect);
-	lgui_clip_set(&rect);
+	if (oldW != NULL) {
+		widget_markDirty(oldW);
+		lgui_clip_identity();
+		widget_getClipRectangle(oldW, &rect);
+		lgui_clip_set(&rect);
 
-	lgui_push_region();
-	style_renderWidgetTree(s, tree);
+		lgui_push_region();
+		style_renderWidgetTree(s, tree);
+	}
 
 	widget_markDirty(newW);
 	lgui_clip_identity();
@@ -920,6 +934,7 @@ void widget_resolvePosition(Widget *w)
 	Widget *cw;
 	int positionStatic = 0;
 	DataObjectField *field;
+	DataObject *singleChild = NULL;
 
 	xpos = w->box.x+w->margin.x;
 	ypos = w->box.y+w->margin.y;
@@ -936,10 +951,19 @@ void widget_resolvePosition(Widget *w)
 			strcmp(field->field.string, "stack") == 0)
 		positionStatic = 1;
 
+	if (field != NULL && field->type == DOF_STRING &&
+			strcmp(field->field.string, "set") == 0) {
+		singleChild = setwidget_activeItem(w);
+		if (singleChild == NULL)
+			return;
+	}
+
 	list_begin(w->children, &iter);
 
 	while (!listIterator_finished(&iter)) {
 		cw = (Widget *)listIterator_item(&iter);
+		if (singleChild != NULL)
+			cw = singleChild;
 		alignment = widget_getAlignment(cw);
 		
 		switch (alignment) {
@@ -984,6 +1008,10 @@ void widget_resolvePosition(Widget *w)
 				}
 				break;
 		}
+
+		if (singleChild != NULL)
+			return;
+
 		widget_resolvePosition(cw);
 #if 0
 		if (!positionStatic) {
@@ -1038,14 +1066,9 @@ void widget_resolveLayoutRoot(Widget *w, Style *s, int resizeRoot)
 	/*listIterator_delete(iter);*/
 
 	/* position widgets based on packing and alignment */
-#if 0
-	iter = list_begin(w->children);
-	while (!listIterator_finished(iter)) {
-		listIterator_next(iter);
-	}
-	listIterator_delete(iter);
-#endif
 	widget_resolvePosition(w);
+
+	dataobject_debugPrint(w);
 }
 
 void widget_setAlignment(Widget *w, WidgetAlignment a)
