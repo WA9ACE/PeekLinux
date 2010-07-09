@@ -5,7 +5,7 @@
 
 #include "balkeypad.h"
 
-#include "buicontrol.h"
+//#include "buicontrol.h"
 
 #define KEYMAP_MAX_KEYCOUNT       30                                           //!< Max key count
 #define KEYMAP_NONE               SYS_KEY_ID_END                               //!< First virtual key value
@@ -264,6 +264,7 @@ typedef struct
   uint32 VirtualKey;     //!< Virtual key id
 }KeyMapT;
 
+/*
 //! Control key map struct
 typedef struct
 {
@@ -279,9 +280,6 @@ void ResetKeyMap(void);
 
 bool IsDigitsKey(uint32 KeyCode);
 uint8 Digits2Ascii(uint8 KeyCode);
-
-
-
-
+*/
 
 #endif

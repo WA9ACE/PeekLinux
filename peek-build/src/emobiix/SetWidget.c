@@ -49,3 +49,4 @@ DataObject *setwidget_activeItem(DataObject *w)
 
 	return NULL;
 }
+

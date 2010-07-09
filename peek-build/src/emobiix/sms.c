@@ -1,7 +1,6 @@
-#include "ata_api.h"
+#include "typedefs.h"
 #include "ata_aci_send.h"
-extern "C" {
-#include "Debug.h"
+#include "ata_api.h"
 #include "aci_cmd.h"
 #include "aci_lst.h"
 #include "aci_prs.h"
@@ -10,6 +9,8 @@ extern "C" {
 #define MAX_CMD_LEN 512
 #include "ati_int.h"
 #include "line_edit.h"
+#include "Debug.h"
+
 
 T_ATI_RSLT atPlusCMGL (char *cl, UBYTE srcId);
 T_ATI_RSLT atPlusCMGS (char *cl, UBYTE srcId);
@@ -20,7 +21,6 @@ EXTERN BOOL _g_ati_trc_enabled;
 EXTERN AciCmdVars at;
 extern void updateScreen(void);
 extern BYTE ccd_init(void);
-}
 
 extern void tweetRecvSMS(char *number, char *text);
 
@@ -190,6 +190,10 @@ void handleSmsSend(const char *pszNumber, const char *pszMsg)
 {
 	static int x = 0;
 	static UBYTE aci_id = 0;
+	BYTE ccret;
+        T_ATI_RSLT ret;
+        char szNumber[256] = "";
+	char szMsg[256] = "";
 
 //ANDREYTRACE;
 
@@ -197,18 +201,16 @@ void handleSmsSend(const char *pszNumber, const char *pszMsg)
 	{
 		++x;
 		aci_id = ati_init(ATI_SRC_TYPE_LC, (T_ATI_RESULT_CB *)ATI_RESPONSE, 0);
-		BYTE ret = ccd_init();
+		ccret = ccd_init();
 
 #ifdef EMO_DEBUG
-		emo_printf("ANDREY: ccd_init() = %d", ret);
+		emo_printf("ANDREY: ccd_init() = %d", ccret);
 #endif
 	}
 
 //ANDREYTRACE;
-	char szNumber[256] = "";
 	sprintf(szNumber, "\"%s\",129", pszNumber);
 
-	char szMsg[256] = "";
 	sprintf(szMsg, "%s\n\nSent from my Peek\x1a", pszMsg);
 
 	//char smsMsg[] = "\"5165473093\",129;How easy was that?\x1a";
@@ -216,7 +218,6 @@ void handleSmsSend(const char *pszNumber, const char *pszMsg)
 	emo_printf("ANDREY: sending sms: (%s, %s)", szNumber, szMsg);
 #endif
 
-	T_ATI_RSLT ret;
 	ret = atPlusCMGS(szNumber, aci_id);
 #ifdef EMO_DEBUG
 	emo_printf("ANDREY: sent sms: atPlusCMGS(%s, %d) = %d", szNumber, aci_id, ret);

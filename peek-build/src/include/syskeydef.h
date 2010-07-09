@@ -1,13 +1,5 @@
-
-
-
 #ifndef  _SYS_KEY_DEF_H_
 #define  _SYS_KEY_DEF_H_
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 
 /* define all hardware keys */
 typedef enum
@@ -245,12 +237,5 @@ typedef enum
    ETS_KEY_D
 } EtsKeyIdT;
 
-#ifdef __cplusplus
-}
 #endif
-
-#endif
-
-
-
 

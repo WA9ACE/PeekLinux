@@ -1,14 +1,4 @@
-
-#ifndef SIMULATOR
-#include "bal_def.h"
-#endif
-
-#include "buikeymap.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+#include "typedefs.h"
 #include "ApplicationManager.h"
 
 #include "Application.h"
@@ -25,6 +15,7 @@ extern "C" {
 #include "Script.h"
 
 #include "p_malloc.h"
+#include "buikeymap.h"
 
 #include <string.h>
 

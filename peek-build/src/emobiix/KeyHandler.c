@@ -1,7 +1,7 @@
 #ifndef SIMULATOR
+#include "typedefs.h"
 #include "KeyMap.h"
 #include "Debug.h"
-#include "buidcc.h"
 #include "balkeypad.h"
 #include "ballightapi.h"
 #include "Sounds.h"
@@ -25,15 +25,11 @@
 #include <windows.h>
 #endif
 
-#ifndef SIMULATOR
-#include "typedefs.h"
 #include "dspl.h"
-#endif
 
 #define BWIDTH 320
 #define BHEIGHT 240
 
-extern "C" {
 extern unsigned char *screenBuf;
 extern unsigned char pwr_PowerOffMobile   (void);
 
@@ -53,12 +49,12 @@ void updateScreen(void) {
         }
 #endif
         /*tweetDrawScreen();*/
+        int index, upper;
         manager_drawScreen();
 
         if (!lgui_is_dirty())
             return;
 
-        int index, upper;
         upper = lgui_index_count();
         if (upper == 0) {
             emo_printf("Flipping entire screen" NL);
@@ -86,9 +82,7 @@ void updateScreen(void) {
 }
 
 #ifdef SIMULATOR
-extern "C" {
 ConnectionContext *connectionContext;
-}
 
 void main_test(void)
 {
@@ -154,7 +148,6 @@ void main_test(void)
 
 #ifndef SIMULATOR
 
-}
 static void UiHandleKeyEvents(RegIdT RegId, uint32 MsgId, void *MsgBufferP)
 {
         BalLightLevelT lcdstatus;
@@ -183,7 +176,6 @@ static void UiHandleKeyEvents(RegIdT RegId, uint32 MsgId, void *MsgBufferP)
         //BalGetLightStatus(BAL_LIGHT_KEYPAD,&kpdstatus,0);
 #endif
 }
-extern "C" {
 void KeyPad_Init(void) {
 
      /*
@@ -195,5 +187,3 @@ void KeyPad_Init(void) {
      */
 }
 #endif
-}
-

@@ -269,3 +269,4 @@ int arraywidget_focusPrev(Widget *w)
 
 	return 1;
 }
+

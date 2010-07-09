@@ -1,17 +1,9 @@
-
-
-
 #ifndef _BAL_KEYPAD_H_
 #define _BAL_KEYPAD_H_
 
 #include "syskeydef.h"
-#include "balapi.h"
+//#include "balapi.h"
 
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
 
 /* define status in BAL */
 typedef enum
@@ -112,11 +104,6 @@ BalKeyStatusT BalKeypadGetFlipKeyStatus (void);                 /* BAL get flip 
 void bal_Left_shiftkeyflag();
 void bal_Right_shiftkeyflag();
 int bal_Get_shiftkey();
-#ifdef __cplusplus
-}
-#endif
 
 #endif
-
-
 

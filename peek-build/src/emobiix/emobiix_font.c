@@ -4,18 +4,24 @@
 
 static void *freetype_do_alloc(FT_Memory memory, long size) 
 { 
-	return p_malloc(size); 
+	return malloc(size); 
 }
 
 static void freetype_do_free(FT_Memory memory, void *block) 
 { 
-	p_free(block); 
+	free(block); 
 }
 
 static void *freetype_do_realloc(FT_Memory memory, long cur_size, 
 		long new_size, void *block) 
 {
-	return p_realloc(block, new_size);
+	void *pNew = freetype_do_alloc(memory, new_size);
+	memset(pNew, 0, new_size);
+	if (block != NULL) {
+		memcpy(pNew, block, cur_size);
+		freetype_do_free(memory, block);
+	}
+	return pNew;
 }
 
 FT_Library* init_freetype()
@@ -30,9 +36,9 @@ FT_Library* init_freetype()
 	static FT_Library ft;
 	int	error = FT_New_Library(&memory, &ft);
 	if (error != 0)
-		emo_printf("Font: New_Library() = %d", error);
+		emo_printf("EMOBIIX: FT_New_Library() = %d", error);
 
-    FT_Add_Default_Modules(ft);
+  FT_Add_Default_Modules(ft);
 	return &ft;
 }
 

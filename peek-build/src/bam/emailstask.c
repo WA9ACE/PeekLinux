@@ -71,7 +71,7 @@ static const EMSignalFuncsT EMSignalFuncsTable[] = {
  *******************************************************************************/
 //this use to init mailbox queue size,
 //EM_S_TASK_MAIL_QUEUE_1 mean the 1st mailbox can handle 10 msg at one time,this can be modified.
-extern "C" const MailQueueT EMSMailQueueTable[] = {EM_S_TASK_MAIL_QUEUE_1, BOS_MAILBOX_1_ID};
+const MailQueueT EMSMailQueueTable[] = {EM_S_TASK_MAIL_QUEUE_1, BOS_MAILBOX_1_ID};
 
 
 
@@ -102,7 +102,7 @@ IMPORTANT NOTES:
 this the entry EMail Server task, 
 =====================================================================================*/
 
-extern "C" void EMSTask(uint32 /*argc*/, void * /*argv*/) 
+void EMSTask(uint32 argc, void *argv) 
 {
 	BOSEventWaitT EvtStatus;
 	bool          MsgStatus;

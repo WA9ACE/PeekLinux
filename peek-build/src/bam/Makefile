@@ -20,11 +20,8 @@ INCLUDE += $(SRCDIR)/bam
 INCLUDE += $(SRCDIR)/emobiix
 INCLUDE += $(SRCDIR)/nmealib/include
 
-SRC  = amdb.cpp
-SRC += amdb_task.cpp
-SRC += emailstask.cpp
-SRC += ems.cpp
-SRC += markup.cpp
+SRC = emailstask.c
+SRC += ems.c
 
 TARGET = $(CURDIR)/bam.a
 

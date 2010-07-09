@@ -1,3 +1,4 @@
+#include "typedefs.h"
 #include "Task.h"
 #include "UITask.h"
 #include "LcdControl.h"
@@ -21,15 +22,15 @@
 
 void display_init()
 {
-	emo_printf("Initializing display driver");
+        dspl_DevCaps displayData;
 	UBYTE ret = dspl_Init();
+        emo_printf("Initializing display driver");
 	if (ret != DRV_OK)
 	{
 		emo_printf("Display driver initialization failed: %d", ret);
 		return;
 	}
 
-	dspl_DevCaps displayData;
 	memset((void *)&displayData, 0, sizeof(dspl_DevCaps));
 	displayData.DisplayType = DSPL_TYPE_GRAPHIC;
 
@@ -39,9 +40,15 @@ void display_init()
 	emo_printf("Display parameters are %dx%d", displayData.Width, displayData.Height);
 }
 
-extern "C" {
 #include "bal_socket_api_ti.h"
 #include "system_battery.h"
+
+void UiTask(void)
+{
+        task_threadFunction(&UITask);
+
+        return;
+}
 
 unsigned char *screenBuf; //[320*240*2];
 void updateScreen(void);
@@ -245,7 +252,5 @@ static int UIWaitForActivity(void)
 
 static void UICleanup(void)
 {
-
-}
 
 }

@@ -23,6 +23,7 @@ This task receive signal and Msg and handle it.
 /*=====================================================================================
 	Include File Section
 =====================================================================================*/
+#include "typedefs.h"
 #include "sysdefs.h"
 #include "bal_os.h"
 #include "bal_def.h"
@@ -38,7 +39,7 @@ This task receive signal and Msg and handle it.
 #include "cmh.h"
 #include "cmh_sm.h"
 
-#include "markup.h"
+//#include "markup.h"
 #include "Debug.h"
 #include "p_malloc.h"
 
@@ -69,14 +70,16 @@ IMPORTANT NOTES:
 
 =====================================================================================*/
 #ifdef EMO_SIM
-extern "C" uint32 SimReadReg(void);
+uint32 SimReadReg(void);
 #endif
-extern "C" void bal_set_network_cb(BAL_NETWORK_CB);
+void bal_set_network_cb(BAL_NETWORK_CB);
 extern ExeSemaphoreT *bal_socket_recv_seamphore;
-extern "C" void flash_led();
+void flash_led();
 
 static void TCPSocketCallback(BAL_SOCKET_IND socketInd, void* data)
 {
+	U8 *octets;
+
 	emo_printf("ANDREY::Received socket notification: 0x%04x\n", socketInd);
 	switch (socketInd & 0xff)
 	{
@@ -85,7 +88,7 @@ static void TCPSocketCallback(BAL_SOCKET_IND socketInd, void* data)
 			T_NAS_ip ip;
 			cmhSM_get_pdp_addr_for_CGPADDR(1, &ip);
 
-			U8 *octets = ip.ip_address.ipv4_addr.a4;
+			octets = ip.ip_address.ipv4_addr.a4;
 			emo_printf("Received IP address: %d.%d.%d.%d", octets[0], octets[1], octets[2], octets[3]);
 			flash_led();
 		}
@@ -134,11 +137,11 @@ static void TCPSocketCallback(BAL_SOCKET_IND socketInd, void* data)
 
 #define NETWORK_CONFIG "/Peek/peek.cfg"
 
-bool ReadNetworkConfig(char *&apn, char *&user, char *&pass)
+bool ReadNetworkConfig(char *apn, char *user, char *pass)
 {
 	BalFsiHandleT handle = NULL;
 	BalFsiResultT ret = FSI_ERR_UNKNOWN;
-
+	/*
 	ret = BalFsiFileOpen(&handle, NETWORK_CONFIG, FSI_FILE_OPEN_READ_EXIST);
 	if (ret != FSI_SUCCESS)
 	{
@@ -211,18 +214,20 @@ bool ReadNetworkConfig(char *&apn, char *&user, char *&pass)
 	{
 		emo_printf("Malformed config file: %s", NETWORK_CONFIG);
 	}
-
+	
 	p_free(contents);
 	BalFsiFileClose(handle);
-	return true;
+	*/
+	return 1;
 }
 
 void EMSInitFunc(void) 
 {
-	bal_printf("EMSInitFun(): Initializing network...");
-
 	// initialize the network connection
 	char *apn = NULL, *user = NULL, *pass = NULL;
+
+        bal_printf("EMSInitFun(): Initializing network...");
+
 	if (!ReadNetworkConfig(apn, user, pass))
 		return;
 
@@ -424,8 +429,7 @@ void EMSSignalFunc(void)
 *	!!!!this below is send msg example
 *
 ******************************************************/
-extern "C"
-{
+/*
 void EMStestsendSignal()
 {
 	//send to Email server task signal 1
@@ -450,7 +454,5 @@ void EMStestsendMsg()
 	//send to Email server task,the 1st mailbox, msg Id = M_S_SCHEDULER_INIT_APPT
 	BOSMsgSend( BOS_EM_S_ID, BOS_MAILBOX_1_ID, EM_S_SCHEDULER_INIT_APPT, (void *)testMsg, sizeof(emsMsg)  );	
 }
-
-}
-
+*/
 

@@ -121,6 +121,7 @@ typedef enum
    simultaneously.*/
    FSI_ERR_MAX_OPEN    = 12, 
    FSI_ERR_READDIR_END = 13,
+   FSI_ERR_BAD_FD      = 14,
    FSI_ERR_UNKNOWN     = 255 /*Other unknowned error occar*/
 } BalFsiResultT;
 
