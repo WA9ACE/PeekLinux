@@ -25,8 +25,10 @@
 #include <windows.h>
 #endif
 
+#ifndef SIMULATOR
 #include "typedefs.h"
 #include "dspl.h"
+#endif
 
 #define BWIDTH 320
 #define BHEIGHT 240

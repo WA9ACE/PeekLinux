@@ -75,6 +75,7 @@ SRC += RootStyle.c
 SRC += ArrayWidget.c
 SRC += SetWidget.o
 SRC += ImageWidget.o
+SRC += LabelWidget.o
 
 TARGET = $(CURDIR)/emobiix.a
 SOCKET_SIM = $(CURDIR)/socket_sim.a

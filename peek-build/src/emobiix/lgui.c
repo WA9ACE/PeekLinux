@@ -774,7 +774,7 @@ void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f,
 	}
 }
 
-void lgui_measure_font(const char *utf8, Font *f, IPoint *output)
+void lgui_measure_font(const char *utf8, Font *f, int isBold, IPoint *output)
 {
 	const char *p;
 	unsigned int val;
@@ -792,8 +792,8 @@ void lgui_measure_font(const char *utf8, Font *f, IPoint *output)
 	while (*p != 0) {
 		val = UTF8toUTF32(p, &adv);
 		/* fixme, setting isbold to false always */
-		data = (unsigned char *)font_getGlyph(f, val, 0, A4, &width, &height,
-				&xadvance, &yadvance, &baselinedy);
+		data = (unsigned char *)font_getGlyph(f, val, isBold, A4, &width,
+                &height, &xadvance, &yadvance, &baselinedy);
 		if (data == NULL) {
 			emo_printf(" Glyph missing");
 			return;

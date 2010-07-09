@@ -63,7 +63,7 @@ void lgui_alpha_blitRGBA(int destx, int desty, int imgx, int imgy,
 	 	int imgwidth, int imgheight, unsigned char *img);
 
 void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f, Color c, int isBold); 
-void lgui_measure_font(const char *utf8, Font *f, IPoint *output);
+void lgui_measure_font(const char *utf8, Font *f, int isBold, IPoint *output);
 
 void lgui_clip_set(Rectangle *rect);
 void lgui_clip_union(Rectangle *rect);

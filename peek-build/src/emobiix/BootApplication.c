@@ -69,6 +69,7 @@ DataObject *BootApplication(void)
 
     dobj1 = widget_newTypeIdName("string", "biglabel", NULL, root);
     dataobject_setValue(dobj1, "data", dataobjectfield_string("emobiix"));
+	dataobject_setValue(dobj1, "weight", dataobjectfield_string("bold"));
     widget_setAlignment(dobj1, WA_CENTER);
 
 	dobj1 = widget_newTypeIdName("string", "label", NULL, root);
