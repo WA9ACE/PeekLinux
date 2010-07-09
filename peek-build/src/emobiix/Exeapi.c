@@ -303,6 +303,7 @@ void ExeBufferFree(void *BufferP) {
 
 bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, void **MsgBufferP, uint32 *MsgSizeP)
 {
+	uint32 actual_size = 0;
 	ExeTaskCbT *task = ExeTaskCb[TaskId];
 
 	int errCode = QUCE_Receive_From_Queue(&task->MailQueueCb[MailboxId], MsgIdP, 3, &actual_size, 0);
