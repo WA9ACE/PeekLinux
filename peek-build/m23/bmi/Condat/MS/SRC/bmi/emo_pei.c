@@ -225,45 +225,52 @@ LOCAL SHORT pei_exit (void)
 
 NU_MEMORY_POOL ExeSystemMemory;
 uint32 ExeIntStack[20];
-uint32 *ExeIntStackP;
+uint32 *ExeIntStackP[];
 
 extern ExeTaskCbT     *ExeTaskCb[];
 
 static char SystemMemory[0xABB4];
-static char SysMem[] = "SysMem";
-static char queName[] = "BalEvGrp";
-static char BalQue[] = "BalQue";
+
+struct mailQueueT {
+	UNSIGNED size;
+	UNSIGNED mailbox;
+};
+
+struct mailQueueT MailQueueTable[2] = { {0x5a, 0x0},
+					       {0x5a, 0x1}
+					     };
 
 LOCAL SHORT pei_init (T_HANDLE handle)
 {
     T_RV_RET ret = RV_OK;
-    unsigned int BalMailQueueTable[NU_QUEUE_SIZE];
     int i;
-    void **rPtr;
+    void *rPtr;
+    int qCstatus;
     ExeTaskCbT *task;
     RVM_TRACE_DEBUG_HIGH("EMO: pei_run");
-#if 0
     EMO_handle = handle;
-    ExeIntStackP = &ExeIntStack[0];
+    *ExeIntStackP = &ExeIntStack[0];
 
-    DMCE_Create_Memory_Pool(&ExeSystemMemory, SysMem, SystemMemory, 0xABB4, 0x32, NU_SEMAPHORE_SUSPEND);
+    DMCE_Create_Memory_Pool(&ExeSystemMemory, "SysMem", SystemMemory, 0xABB4, 0x32, NU_SEMAPHORE_SUSPEND);
 
-    task = ExeTaskCb[0];
+    task = ExeTaskCb[48]; // Bal task id?
 
-    if(!EVCE_Create_Event_Group(&task->EventGroupCb, queName)) {
-	for(i=0;i < 4;i++) {
-		if(!DMCE_Allocate_Memory(&ExeSystemMemory, rPtr, (BalMailQueueTable[i] << 2), NU_READY)) {
-			//QUCE_Create_Queue(,rPtr, BalQue, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
-			//  QUCE_Create_Queue(NU_QUEUE *queue_ptr, CHAR *name, 
-			// VOID *start_address, UNSIGNED queue_size, OPTION message_type,
-			//UNSIGNED message_size,OPTION suspend_type);
-
+    if(!EVCE_Create_Event_Group(&task->EventGroupCb, "BalEvGrp")) {
+	for(i=0;i < 2;i++) {
+		if(!DMCE_Allocate_Memory(&ExeSystemMemory, &rPtr, (MailQueueTable[i].size << 2), NU_READY)) {
+			qCstatus = QUCE_Create_Queue(&task->MailQueueCb[i], rPtr, "BalQue", MailQueueTable[i].size, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
 		}
+	}
+	if(!qCstatus) {
+		task->NumMsgs = 0;
+                for (i = 0; i < EXE_NUM_MAILBOX; i++)
+                {
+			task->NumMsgsInQueue[i] = 0;
+                }
 	}
     }
     
-    //ExeInit();
-#endif
+    ExeInit();
     return (PEI_OK);
 } /* End pei_init(..) */
 
