@@ -15,6 +15,7 @@ typedef struct {
         uint32 masks[EXE_NUM_MAILBOX];
 }sMailQueueSig;
 
+ExeMsgBuffInfoT ExeMsgBuffInfo[4];
 
 sMailQueueSig MailQueueSig = { EXE_MAILBOX_1, EXE_MAILBOX_2, EXE_MAILBOX_3, EXE_MAILBOX_4, EXE_MAILBOX_5 };
 
@@ -258,17 +259,16 @@ void ExePreemptionChange(ExePreemptionT Preemption)
 	TCSE_Change_Preemption(((Preemption << 24) >> 24));
 }
 
-// Needs work
 void ExeBufferCreate(ExeBufferT *BufferCbP, uint32 NumRec, uint32 RecSize)
 {
-	void **rPtr = NULL;
-	char bMem[] = "FixMem";
+	void *rPtr = NULL;
+	uint32 size = NumRec * (RecSize + 0xA);
 
-	//if(DMCE_Allocate_Memory((NU_MEMORY_POOL *)ExeSystemMemory, rPtr, (NumRec * RecSize)+0xA, 0))
+	if(DMCE_Allocate_Memory(&ExeSystemMemory, &rPtr, size, 0))
 		return;
-	//if(!PMCE_Create_Partition_Pool((NU_MEMORY_POOL *)BufferCbP, bMem, *rPtr, (NumRec * RecSize)+0xA))
-	//	return;
-	//DMCE_Deallocate_Memory(*rPtr);
+	if(!PMCE_Create_Partition_Pool((NU_PARTITION_POOL *)BufferCbP, "FixMem", rPtr, size, RecSize, NU_SEMAPHORE_SUSPEND))
+		return;
+	DMCE_Deallocate_Memory(rPtr);
 }
 
 void * ExeBufferGet(ExeBufferT *BufferCbP)
@@ -586,4 +586,8 @@ ExeEventWaitT ExeEventWait(ExeTaskIdT TaskId, bool Signal, ExeMessageT Message, 
 	}
 
 	return suspend;
+}
+
+void ExeInit(void) {
+	
 }
