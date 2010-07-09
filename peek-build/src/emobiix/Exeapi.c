@@ -301,11 +301,27 @@ void ExeBufferFree(void *BufferP) {
 	PMCE_Deallocate_Partition(BufferP);
 }
 
-bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, 
-					void **MsgBufferP, uint32 *MsgSizeP)
+bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, void **MsgBufferP, uint32 *MsgSizeP)
 {
+	ExeTaskCbT *task = ExeTaskCb[TaskId];
 
+	int errCode = QUCE_Receive_From_Queue(&task->MailQueueCb[MailboxId], MsgIdP, 3, &actual_size, 0);
+	if (errCode != 0)
+	{
+		if (errCode == NU_QUEUE_EMPTY)
+			return 0;
 
+		CallExeFault();
+	}
+
+	ExeInterruptDisable(SYS_IRQ_INT);
+
+	task->NumMsgs--;
+	task->NumMsgsInQueue[MailboxId]--;
+
+	ExeInterruptEnable();
+
+	return 1;
 }
 
 static ExeFaultType2T ExeFaultType2;
