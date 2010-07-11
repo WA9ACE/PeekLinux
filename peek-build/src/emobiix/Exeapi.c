@@ -303,14 +303,14 @@ void ExeBufferFree(void *BufferP) {
 
 bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, void **MsgBufferP, uint32 *MsgSizeP)
 {
-        ExeTaskCbT *task = ExeTaskCb[TaskId];
-	uint32 actual_size = 0;
-	void *msg;
-	int errCode;
-	void **msgB = MsgBufferP;
-	msgB = &msg;
+	uint32 actual_size;
+	uint32 suspend = 0;
+	register ExeTaskCbT *task = ExeTaskCb[TaskId];
+	void **tmpMsgBufferP;
+	uint32 *tmpMsgSizeP;
+	uint32 *tmpMsgIdP;
 
-	errCode = QUCE_Receive_From_Queue(&task->MailQueueCb[MailboxId], msg, 3, &actual_size, 0);
+	int errCode = QUCE_Receive_From_Queue(&task->MailQueueCb[MailboxId], tmpMsgIdP, 3, &actual_size, suspend);
 	if (errCode != 0)
 	{
 		if (errCode == NU_QUEUE_EMPTY)
@@ -319,16 +319,16 @@ bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, void
 		CallExeFault();
 	}
 
-	//ExeInterruptDisable(SYS_IRQ_INT);
+	ExeInterruptDisable(SYS_IRQ_INT);
 
 	task->NumMsgs--;
 	task->NumMsgsInQueue[MailboxId]--;
+
 	ExeInterruptEnable();
 
-	MsgIdP = (uint32 *)msg;
-        MsgBufferP = &msg;
-        MsgSizeP = &actual_size;
-
+	MsgIdP = tmpMsgIdP;
+	MsgBufferP = tmpMsgBufferP;
+	MsgSizeP = tmpMsgSizeP;
 
 	return 1;
 }
@@ -338,7 +338,7 @@ static ExeFaultType2T ExeFaultType2;
 static ExeFaultType3T ExeFaultType3;
 
 void ExeFault(ExeFaultTypeT ExeFaultType, ExeErrsT ExeError,
-	                void *ExeFaultData, uint16 FaultSize)
+		void *ExeFaultData, uint16 FaultSize)
 {
 
 	// They don't do anything here
