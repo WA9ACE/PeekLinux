@@ -306,11 +306,11 @@ bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, void
 	uint32 actual_size;
 	uint32 suspend = 0;
 	register ExeTaskCbT *task = ExeTaskCb[TaskId];
-	void **tmpMsgBufferP;
-	uint32 *tmpMsgSizeP;
-	uint32 *tmpMsgIdP;
+	void *tmpMsgBufferP;
+	uint32 tmpMsgSizeP;
+	uint32 tmpMsgIdP;
 
-	int errCode = QUCE_Receive_From_Queue(&task->MailQueueCb[MailboxId], tmpMsgIdP, 3, &actual_size, suspend);
+	int errCode = QUCE_Receive_From_Queue(&task->MailQueueCb[MailboxId], &tmpMsgIdP, 3, &actual_size, suspend);
 	if (errCode != 0)
 	{
 		if (errCode == NU_QUEUE_EMPTY)
@@ -326,9 +326,9 @@ bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, void
 
 	ExeInterruptEnable();
 
-	MsgIdP = tmpMsgIdP;
-	MsgBufferP = tmpMsgBufferP;
-	MsgSizeP = tmpMsgSizeP;
+	*MsgIdP = tmpMsgIdP;
+	*MsgBufferP = tmpMsgBufferP;
+	*MsgSizeP = tmpMsgSizeP;
 
 	return 1;
 }
