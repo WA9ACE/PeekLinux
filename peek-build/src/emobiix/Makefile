@@ -76,9 +76,16 @@ SRC += ArrayWidget.c
 SRC += SetWidget.o
 SRC += ImageWidget.o
 SRC += LabelWidget.o
+SRC += trans_pei.c
+SRC += ems_pei.c
 
 TARGET = $(CURDIR)/emobiix.a
 SOCKET_SIM = $(CURDIR)/socket_sim.a
+
+CCOPTIMIZE0     = -O0
+CCOPTIMIZE1     = -O0
+CCOPTIMIZE2     = -O0
+CCOPTIMIZE3     = -O0
 
 .PHONY: protocol
 

@@ -73,6 +73,7 @@ int BOSMsgSendToFront(BOSTaskIdT TaskId, BOSMailboxIdT MailboxId, uint32 MsgId,
 	return ExeMsgSendToFront(TaskId, MailboxId, MsgId, MsgBufferP, MsgSize);
 }
 
+#if 0
 uint32 ExeMsgCheck(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId)
 {
 	ExeTaskCbT *task;
@@ -82,6 +83,7 @@ uint32 ExeMsgCheck(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId)
 		return 0;
 	return task->NumMsgsInQueue[MailboxId];
 }
+#endif
 
 void MonFault(MonFaultUnitT UnitNum, uint32 FaultCode1, uint32 FaultCode2, MonFaultTypeT FaultType)
 {
@@ -95,6 +97,7 @@ void CallExeFault(void) {
 	MonFault(MON_EXE_FAULT_UNIT, 3, 0, MON_HALT);
 }
 
+#if 0
 ExeEventWaitT ExeEventRetireve( ExeTaskIdT TaskId, uint32 RequestEvent, uint32 Timeout )
 {
 	ExeTaskCbT *task;
@@ -139,6 +142,7 @@ void ExeSignalSet(ExeTaskIdT TaskId, ExeSignalT SignalFlg)
 
 	return;
 }
+#endif
 
 void ExeTimerCreate(ExeTimerT *TimerCbP, void (*Routine)(uint32), uint32 TimerId,
 					 uint32 InitialTime, uint32 RescheduledTime)
@@ -237,6 +241,7 @@ void ExeTimerGetRemainTime(ExeTimerT *TimerCbP, uint32 *RemainTime)
 
 }
 
+#if 0
 void ExeInterruptDisable(SysIntT IntMask)
 {	
 	IntMask = TCT_Control_Interrupts(TCD_Interrupt_Level | IntMask);
@@ -250,6 +255,7 @@ void ExeInterruptEnable(void)
 	ExeIntStackP[0]--;
 	TCT_Control_Interrupts(*ExeIntStackP[0]);
 }
+#endif
 
 void ExePreemptionChange(ExePreemptionT Preemption)
 {
@@ -301,6 +307,7 @@ void ExeBufferFree(void *BufferP) {
 	PMCE_Deallocate_Partition(BufferP);
 }
 
+#if 0
 bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, void **MsgBufferP, uint32 *MsgSizeP)
 {
 	uint32 actual_size;
@@ -332,6 +339,7 @@ bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, void
 
 	return 1;
 }
+#endif
 
 static ExeFaultType2T ExeFaultType2;
 
@@ -348,6 +356,8 @@ void MonTrace(uint16 TraceId, uint32 NumArgs, ...) {
 
 	// They don't do anything here
 }
+
+#if 0
 int ExeMsgSend(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 MsgId, void *MsgBufferP, uint32 MsgSize)
 {
 	uint32 msgId = MsgId;
@@ -573,6 +583,7 @@ void ExeMsgBufferFree(void *MsgBufferP)
 
 	//ExeDecMsgBuffStats(MsgBufferP);
 }
+#endif
 
 void ExeSemaphoreCreate(ExeSemaphoreT *SemaphoreCbP, uint32 InitialCount) {
 	SMCE_Create_Semaphore((NU_SEMAPHORE *)SemaphoreCbP, "Semaphor", InitialCount, 0x6);
@@ -654,6 +665,7 @@ void ExeMemoryPoolDelete(NU_MEMORY_POOL *pool) {
 	DMCE_Delete_Memory_Pool(pool);
 }
 
+#if 0
 ExeEventWaitT ExeEventWait(ExeTaskIdT TaskId, bool Signal, ExeMessageT Message, uint32 Timeout)
 {
 	uint32 suspend;
@@ -704,6 +716,12 @@ ExeEventWaitT ExeEventWait(ExeTaskIdT TaskId, bool Signal, ExeMessageT Message, 
 
 	return suspend;
 }
+#endif
+
+void ExeIncMsgBuffStats(void * MsgBuffPtr, uint32 MsgBuffType, uint32 MsgBuffSize, uint32 TaskId) { }
+void ExeIncMsgBuffSendStats(void * MsgBuffPtr, uint32 MsgId, uint32 TaskId) { }
+void ExeDecMsgBuffStats(void * MsgBuffPtr) { }
+
 
 static ExeBufferT BufferCb1;
 static ExeBufferT BufferCb2;

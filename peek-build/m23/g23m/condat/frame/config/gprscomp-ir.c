@@ -59,6 +59,8 @@ extern SHORT cst_pei_create   (T_PEI_INFO const **Info);
 extern SHORT esim_pei_create  (T_PEI_INFO const **Info); /* esim module */
 #endif
 extern SHORT emo_pei_create   (T_PEI_INFO const **Info);
+extern SHORT trans_pei_create   (T_PEI_INFO const **Info);
+extern SHORT ems_pei_create   (T_PEI_INFO const **Info);
 extern SHORT sim_pei_create   (T_PEI_INFO const **Info);
 extern SHORT sms_pei_create   (T_PEI_INFO const **Info);
 extern SHORT cc_pei_create    (T_PEI_INFO const **Info);
@@ -433,6 +435,18 @@ const T_COMPONENT_ADDRESS l1_list[] =
 const T_COMPONENT_ADDRESS emo_list[] =
 {
   { emo_pei_create,       NULL,   ASSIGNED_BY_TI },
+  { NULL,                NULL,   0 }
+};
+
+const T_COMPONENT_ADDRESS trans_list[] =
+{
+  { trans_pei_create,       NULL,   ASSIGNED_BY_TI },
+  { NULL,                NULL,   0 }
+};
+
+const T_COMPONENT_ADDRESS ems_list[] =
+{
+  { ems_pei_create,       NULL,   ASSIGNED_BY_TI },
   { NULL,                NULL,   0 }
 };
 
@@ -1066,6 +1080,8 @@ upm_list,
   l1_list,
 #endif  
   emo_list,
+  trans_list,
+  ems_list,
   NULL
 };
 
