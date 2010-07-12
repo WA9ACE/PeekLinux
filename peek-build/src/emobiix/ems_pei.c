@@ -18,6 +18,7 @@
 #include "rvm/rvm_use_id_list.h"
 
 #include "exedefs.h"
+#include "emopei.h"
 
 /*=========================== MACROS =========================================*/
 
@@ -185,7 +186,7 @@ LOCAL SHORT pei_run(T_HANDLE task_handle, T_HANDLE com_handle)
 	RVM_TRACE_DEBUG_HIGH("ems_pei_run");
 
 	while (!BuiStatusGet())
-		TCCE_Task_Sleep(0x64);
+		TCCE_Task_Sleep(100);
 
 	EMSTask(1, 0);
 
@@ -276,7 +277,6 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 	 |
 	 +------------------------------------------------------------------------------
  */
-#define RVM_EMO_TASK_PRIORITY 215
 GLOBAL SHORT pei_create (T_PEI_INFO **info)
 {
 
@@ -293,10 +293,10 @@ GLOBAL SHORT pei_create (T_PEI_INFO **info)
 			NULL,/*pei_config,*/           /* NO pei_config */
 			NULL/*pei_monitor*/            /* NO pei_monitor */
 		},
-		0x2000,            /* stack size */
-		2,                        /* queue entries */
-		(255-RVM_EMO_TASK_PRIORITY),     /* priority (1->low, 255->high) */
-		0,                         /* number of timers */
+		0x1000,            /* stack size */
+		1,                        /* queue entries */
+		BAL_UIS_PRIORITY,     /* priority (1->low, 255->high) */
+		1,                         /* number of timers */
 		COPY_BY_REF	/* Flags Settings */
 	};
 

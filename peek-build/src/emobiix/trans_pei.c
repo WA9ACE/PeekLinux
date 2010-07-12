@@ -10,6 +10,7 @@
 #include "pei.h"
 #include "tok.h"
 #include "gsm.h"
+#include "emopei.h"
 
 #include "rv/rv_general.h"
 #include "rvf/rvf_api.h"
@@ -165,41 +166,6 @@ LOCAL SHORT pei_primitive (void * primptr)
 	return PEI_OK;
 }/* End pei_primitive(..) */
 
-
-/*
-	 +------------------------------------------------------------------------------
-	 | Function    : pei_run
-	 +------------------------------------------------------------------------------
-	 | Description : This function is called by the frame when entering the main
-	 |               loop. This function is only required in the active variant.
-	 |
-	 |               This function is not used.
-	 |
-	 |  Parameters   :  taskhandle  - handle of current process
-	 |                  comhandle   - queue handle of current process
-	 |
-	 | Return      : PEI_OK            - sucessful
-	 |               PEI_ERROR         - not successful
-	 |
-	 +------------------------------------------------------------------------------
- */
-extern BOOL powered_on;
-extern void mmiInit( void);
-extern void UiTask(void);
-
-LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
-{  
-	RVM_TRACE_DEBUG_HIGH("trans_pei_run");
-
-	powered_on=1;
-	//mmiInit();
-	//UiTask();
-
-	return RV_OK;  
-
-}/* End pei_run(..) */
-
-
 /*
 	 +------------------------------------------------------------------------------
 	 | Function    : pei_exit
@@ -250,7 +216,7 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 		if ((TranshComm = vsi_c_open (VSI_CALLER "TRANS")) < VSI_OK)
 			return PEI_ERROR;
 
-	TCCE_Task_Sleep(0x32);
+	TCCE_Task_Sleep(50);
 
 	if (!bal_sock_api_initialize(handle, "TRANS"))
 		return PEI_ERROR;
@@ -273,7 +239,7 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 	 |
 	 +------------------------------------------------------------------------------
  */
-#define RVM_EMO_TASK_PRIORITY 215
+
 GLOBAL SHORT pei_create (T_PEI_INFO **info)
 {
 
@@ -284,17 +250,17 @@ GLOBAL SHORT pei_create (T_PEI_INFO **info)
 			pei_init,
 			pei_exit,
 			pei_primitive,           /* NO pei_primitive */
-			pei_timeout,           /* NO pei_timeout */
+			NULL,           /* NO pei_timeout */
 			pei_signal,           /* NO pei_signal */   
-			pei_run,        /*-- ACTIVE Entity--*/
-			pei_config,           /* NO pei_config */
-			pei_monitor            /* NO pei_monitor */
+			NULL,        /*-- ACTIVE Entity--*/
+			NULL,           /* NO pei_config */
+			NULL            /* NO pei_monitor */
 		},
-		0x2000,            /* stack size */
-		2,                        /* queue entries */
-		(255-RVM_EMO_TASK_PRIORITY),     /* priority (1->low, 255->high) */
-		0,                         /* number of timers */
-		COPY_BY_REF	/* Flags Settings */
+		0xc000,            /* stack size */
+		0xA,                        /* queue entries */
+		BAL_TRANS_PRIORITY,     /* priority (1->low, 255->high) */
+		1,                         /* number of timers */
+		COPY_BY_REF|PASSIVE_BODY   /* Flags Settings */
 	};
 
 	RVM_TRACE_DEBUG_HIGH("trans_pei_create");
