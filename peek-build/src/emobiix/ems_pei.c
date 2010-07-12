@@ -18,6 +18,7 @@
 #include "rvm/rvm_use_id_list.h"
 
 #include "exedefs.h"
+#include "exepowr.h"
 #include "emopei.h"
 
 /*=========================== MACROS =========================================*/
@@ -38,14 +39,7 @@ static BOOL exit_flag = FALSE;
 extern ExeTaskCbT     *ExeTaskCb[];
 extern NU_MEMORY_POOL  ExeSystemMemory;
 
-struct mailQueueT {
-	UNSIGNED size;
-	UNSIGNED mailbox;
-};
-
-struct mailQueueT MailQueueTable[1] = { 
-	{0x5a, 0x0}, 
-};
+extern MailQueueT EMSMailQueueTable[1];
 
 /*===========================Function Definition================================*/
 /*
@@ -185,7 +179,7 @@ LOCAL SHORT pei_run(T_HANDLE task_handle, T_HANDLE com_handle)
 {  
 	RVM_TRACE_DEBUG_HIGH("ems_pei_run");
 
-	while (!BuiStatusGet())
+// XXX taken out for linking	while (!BuiStatusGet())
 		TCCE_Task_Sleep(100);
 
 	EMSTask(1, 0);
@@ -246,9 +240,9 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 	{
 		for (i = 0; i < 1; i++) 
 		{
-			if(!DMCE_Allocate_Memory(&ExeSystemMemory, &rPtr, (MailQueueTable[i].size << 2), NU_READY)) 
+			if(!DMCE_Allocate_Memory(&ExeSystemMemory, &rPtr, (EMSMailQueueTable[i].Size << 2), NU_READY)) 
 			{
-				QUCE_Create_Queue(&task->MailQueueCb[i], rPtr, "EMSQue", MailQueueTable[i].size, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
+				QUCE_Create_Queue(&task->MailQueueCb[i], rPtr, "EMSQue", EMSMailQueueTable[i].Size, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
 			}
 		}
 
