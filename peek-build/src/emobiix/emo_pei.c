@@ -15,8 +15,6 @@
 
 #include "rvm/rvm_priorities.h"
 #include "rvm/rvm_use_id_list.h"
-#include "Lcd_manager.h"
-#include "lls_api.h"
 
 #include "exeapi.h"
 #include "emopei.h"
