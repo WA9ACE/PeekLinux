@@ -254,11 +254,11 @@ void EMSMailFunc(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 		case EM_S_SCHEDULER_INIT_APPT:
 		{	
 			emsMsg * pM = (emsMsg *)MsgDataP;
-			MonPrintf("receive EM_S_SCHEDULER_INIT_APPT Msg:%d,%d,%d\r\n", pM->msgA, pM->msgB,MsgSize);
+			emo_printf("receive EM_S_SCHEDULER_INIT_APPT Msg:%d,%d,%d\r\n", pM->msgA, pM->msgB,MsgSize);
 		}
 			break;
 		case EM_S_SCHEDULER_PREPARE_APPT:
-			MonPrintf("receiver EM_S_SCHEDULER_PREPARE_APPT Msg");
+			emo_printf("receiver EM_S_SCHEDULER_PREPARE_APPT Msg");
 			break;
 
 		case EM_S_SOCKET:
@@ -446,7 +446,7 @@ void EMStestsendMsg()
 	  //	2008-5-8 ZhangXi
 	
 	if(!testMsg){
-		MonPrintf("Alert!!! There has no MSG buffer!\r\n");
+		emo_printf("Alert!!! There has no MSG buffer!\r\n");
 		return;
 	}
 	testMsg->msgA=1;
