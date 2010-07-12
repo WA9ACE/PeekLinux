@@ -19,6 +19,7 @@
 #include "lls_api.h"
 
 #include "exeapi.h"
+#include "emopei.h"
 #include "exedefs.h"
 
 #define         NU_VARIABLE_SIZE                13
@@ -289,7 +290,6 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 |
 +------------------------------------------------------------------------------
 */
-#define RVM_EMO_TASK_PRIORITY 215
 GLOBAL SHORT pei_create (T_PEI_INFO **info)
 {
 
@@ -308,7 +308,7 @@ static const T_PEI_INFO pei_info =
                },
                0x2000,            /* stack size */
                2,                        /* queue entries */
-		(255-RVM_EMO_TASK_PRIORITY),     /* priority (1->low, 255->high) */
+		BAL_UI_PRIORITY,     /* priority (1->low, 255->high) */
                0,                         /* number of timers */
                COPY_BY_REF	/* Flags Settings */
               };

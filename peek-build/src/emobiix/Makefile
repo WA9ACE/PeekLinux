@@ -50,6 +50,7 @@ SRC += sms.c
 SRC += Sounds.c
 SRC += StaticList.c
 #SRC += stub.c
+SRC += emo_pei.c
 SRC += Style.c
 SRC += Subscription.c
 SRC += Task.c

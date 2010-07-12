@@ -47,7 +47,6 @@ INCLUDE += $(M23DIR)/cdginc
 
 
 SRC  = AUICalcEditor.c
-SRC += emo_pei.c
 SRC += bmi_version.c
 SRC += AUIEditor.c
 SRC += AUIPinEditor.c
