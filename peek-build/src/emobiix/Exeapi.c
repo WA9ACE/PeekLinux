@@ -584,7 +584,19 @@ void ExeMsgBufferFree(void *MsgBufferP)
 	//ExeDecMsgBuffStats(MsgBufferP);
 }
 #endif
+uint32 ExeGetSemaphoreCount(ExeSemaphoreT *SemaphoreCbP) 
+{
+        NU_HISR  *cHISR = TCC_Current_HISR_Pointer();
+        NU_TASK  *cTCTP;
 
+        if(!cHISR) {
+                if(!(cTCTP = TCC_Current_Task_Pointer())) {
+                        MonFault(MON_EXE_FAULT_UNIT, 3, get_NU_Task_HISR_Pointer(), MON_HALT);
+                }
+        }
+
+
+}
 void ExeSemaphoreCreate(ExeSemaphoreT *SemaphoreCbP, uint32 InitialCount) {
 	SMCE_Create_Semaphore((NU_SEMAPHORE *)SemaphoreCbP, "Semaphor", InitialCount, 0x6);
 }
