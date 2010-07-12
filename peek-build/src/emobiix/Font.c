@@ -142,7 +142,7 @@ void *font_getGlyph(Font *f, unsigned int utf32, int isBold,
 		return NULL;
 	}
 	if (isBold) {
-		error = FT_Outline_Embolden(&f->face->glyph->outline, 30);
+		error = FT_Outline_Embolden(&f->face->glyph->outline, 60);
 		if (error)
 			emo_printf("Embolden didnt work: %s" NL, FtError(error));
 	}

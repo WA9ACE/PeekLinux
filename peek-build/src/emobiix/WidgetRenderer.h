@@ -29,6 +29,7 @@ WidgetRenderer *widgetrenderer_gradboxr(void);
 WidgetRenderer *widgetrenderer_solid(void);
 WidgetRenderer *widgetrenderer_string(void);
 WidgetRenderer *widgetrenderer_entry(void);
+WidgetRenderer *widgetrenderer_text(void);
 WidgetRenderer *widgetrenderer_button(void);
 WidgetRenderer *widgetrenderer_zero(void);
 WidgetRenderer *widgetrenderer_full(void);

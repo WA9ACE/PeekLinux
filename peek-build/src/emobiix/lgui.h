@@ -52,7 +52,7 @@ void lgui_luminence_alpha_blitC(int destx, int desy, int imgx, int imgy,
 
 void lgui_luminence_A4_blitC(int destx, int desy, int imgx, int imgy,
 		int imgdx, int imgdy, int imgwidth, int imgheight, unsigned char *img,
-		Color c, int mode);
+		Color c, int mode, int isItalic);
 void lgui_blitRGB565(int destx, int desy, int imgx, int imgy,
 	 	int imgwidth, int imgheight, unsigned char *img, int isStencil);
 void lgui_blitRGB565A8(int destx, int desy, int imgx, int imgy,
@@ -64,6 +64,10 @@ void lgui_alpha_blitRGBA(int destx, int desty, int imgx, int imgy,
 
 void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f, Color c, int isBold); 
 void lgui_measure_font(const char *utf8, Font *f, int isBold, IPoint *output);
+
+void lgui_complex_draw_font(int x, int y, int maxw, int mahx, const char *utf8,
+		Font *f, Color c, int cursorindex, int startindex, int *windowPercent, int *windowOffset, int useEscapeSeqs);
+void lgui_measure_font_complex(const char *utf8, Font *f, IPoint *output);
 
 void lgui_clip_set(Rectangle *rect);
 void lgui_clip_union(Rectangle *rect);

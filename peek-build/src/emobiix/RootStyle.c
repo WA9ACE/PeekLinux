@@ -238,6 +238,14 @@ Style *RootStyle(void)
 			"focusline", (void *)color.value);
 	color.value = 0xFFFF00FF;
 	
+	style_setProperty(defaultStyle, NULL, NULL, "text",
+			"renderer", (void *)widgetrenderer_text());
+	style_setProperty(defaultStyle, NULL, NULL, "text",
+			"font", (void *)defaultFont);
+	color.value = 0x000000FF;
+	style_setProperty(defaultStyle, NULL, NULL, "text",
+			"color", (void *)color.value);
+
 	style_setProperty(defaultStyle, NULL, "gradboxr", "array",
 			"renderer", (void *)widgetrenderer_array());
 	style_setProperty(defaultStyle, NULL, "gradboxr", "array",

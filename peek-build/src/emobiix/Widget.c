@@ -19,6 +19,8 @@
 #include "DataObject_internal.h"
 #include "DataObject_private.h"
 
+static void widget_layoutMeasureFinal(Widget *w, Style *s);
+
 /*#define CLIP_DEBUG*/
 
 Widget *widget_new(void)
@@ -720,6 +722,37 @@ Widget *widget_findStringField(Widget *w, const char *key, const char *value)
 
 	return NULL;
 }
+static void widget_layoutMeasureFinal(Widget *w, Style *s)
+{
+	DataObjectField *type;
+	WidgetRenderer *wr;
+	DataObject *dobj;
+	const char *className, *id;
+	ListIterator iter;
+	IPoint p;
+
+	/* get style default */
+	dobj = widget_getDataObject(w);
+	className = widget_getClass(w);
+	id = widget_getID(w);
+	type = dataobject_getValue(w, "type");
+	wr = (WidgetRenderer *)style_getProperty(s, className,
+			id, type == NULL ? NULL : type->field.string, "renderer");
+	if (wr != NULL && wr->measure != NULL && strcmp(type->field.string, "text") == 0) {
+		p.x = w->box.width;
+		wr->measure(wr, s, w, dobj, &p);
+		/*w->box.width = p.x;*/
+		w->box.height = p.y;
+		/*dataobject_setLayoutClean(w, LAYOUT_DIRTY_WIDTH);*/
+		dataobject_setLayoutClean(w, LAYOUT_DIRTY_HEIGHT);
+	}
+
+	list_begin(w->children, &iter);
+	while (!listIterator_finished(&iter)) {
+		widget_layoutMeasureFinal(listIterator_item(&iter), s);
+		listIterator_next(&iter);
+	}
+}
 
 static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 {
@@ -738,7 +771,7 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 	type = dataobject_getValue(w, "type");
 	wr = (WidgetRenderer *)style_getProperty(s, className,
 			id, type == NULL ? NULL : type->field.string, "renderer");
-	if (wr != NULL && wr->measure != NULL) {
+	if (wr != NULL && wr->measure != NULL && strcmp(type->field.string, "text") != 0) {
 		wr->measure(wr, s, w, dobj, &p);
 		w->box.width = p.x;
 		w->box.height = p.y;
@@ -1064,6 +1097,13 @@ void widget_resolveLayoutRoot(Widget *w, Style *s, int resizeRoot)
 		listIterator_next(&iter);
 	}
 	/*listIterator_delete(iter);*/
+
+	/* measure anoying widgets that need to have some sizes resolved before the oters */
+	list_begin(w->children, &iter);
+	while (!listIterator_finished(&iter)) {
+		widget_layoutMeasureFinal((DataObject *)listIterator_item(&iter), s);
+		listIterator_next(&iter);
+	}
 
 	/* position widgets based on packing and alignment */
 	widget_resolvePosition(w);

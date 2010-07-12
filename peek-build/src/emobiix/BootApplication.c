@@ -187,6 +187,25 @@ DataObject *BootApplication(void)
 	dataobject_setValue(dobj1, "transparency", dataobjectfield_string("full"));
 	dataobject_setValue(dobj1, "color", dataobjectfield_string("FF00FF00"));
 	mime_load(dobj1);
+
+	dobj1 = widget_newTypeIdName("entry", NULL, NULL, root);
+	dataobject_setValue(dobj1, "width", dataobjectfield_string("90%"));
+	dataobject_setValue(dobj1, "height", dataobjectfield_string("52"));
+	dataobject_setValue(dobj1, "multiline", dataobjectfield_string("true"));
+	widget_setAlignment(dobj1, WA_CENTER);
+	dataobject_setValue(dobj1, "data", dataobjectfield_string("This is some bold red italic text. "
+			"So we put some more text in here because we are trying to test how well a long segment of text "
+			"will work since we are trying to implement word line breaks, scrollbar information, basic markup, yknow, all the "
+			"stuff you would normally have in a reasonable text engine only for a mobile platform. "
+			"Must remember to look into that xadvance issue on the platform itself, probably something with the freetype2 config."));
+
+	dobj1 = widget_newTypeIdName("text", NULL, NULL, root);
+	dataobject_setValue(dobj1, "width", dataobjectfield_string("90%"));
+	/*dataobject_setValue(dobj1, "height", dataobjectfield_string("65"));*/
+	widget_setAlignment(dobj1, WA_CENTER);
+	dataobject_setValue(dobj1, "data", dataobjectfield_string("This <gAAAAFF00>is</g> <u>some</u> <b>bold</b> <cFF000000>red</c> <i>italic</i> text.\n"
+			"So we put some more text in here because we are trying to test how well a long segment of text "
+			"will work since we are trying to implement word line breaks."));
 #endif
 
 	/* array test */

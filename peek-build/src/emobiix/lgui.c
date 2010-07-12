@@ -226,7 +226,7 @@ void lgui_luminence_alpha_blitC(int destx, int desty, int imgx, int imgy, int im
 
 void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 		int imgdx, int imgdy, int imgwidth, int imgheight, unsigned char *img,
-		Color c, int mode)
+		Color c, int mode, int isItalic)
 {
 	unsigned short *buf;
 	unsigned char *imgbuf;
@@ -260,6 +260,8 @@ void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 		imgbuf = img + imgx + imgypos*((imgwidth+1)>>1);
 
 		buf += ((ccol+1) >> 1) << 1;
+		if (isItalic)
+			buf += (cheight-line) >> 2;
 		imgbuf += (ccol+1) >> 1;
 		for (col = (ccol+1) >> 1; col < (cwidth+1) >> 1; ++col) {
 			scaleorig = (*imgbuf);
@@ -764,7 +766,7 @@ void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f,
 				emo_printf(" Glyph missing");
 			else
 				lgui_luminence_A4_blitC(x, y+fontHeight-baselinedy, 0, 0, width, height,
-						width, height, data, c, LGUI_MODE_ALPHA);
+						width, height, data, c, LGUI_MODE_ALPHA, 0);
 		}
 		x += xadvance;
 		y += yadvance;
@@ -772,6 +774,198 @@ void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f,
 			break;
 		p += adv;
 	}
+}
+
+struct EscapeSequenceState_t {
+	int isBold;
+	int isUnderline;
+	int isItalic;
+	Color basecolor;
+	Color currentColor;
+	int useBackground;
+	Color backgroundColor;
+};
+typedef struct EscapeSequenceState_t EscapeSequenceState;
+
+/* assumes p[0] is '<' */
+static int lgui_process_escape_seq(const char *p, EscapeSequenceState *state)
+{
+	if (p[1] == 'b' && p[2] == '>') {
+		state->isBold = 1;
+		return 3;
+	} else if (p[1] == '/' && p[2] == 'b' && p[3] == '>') {
+		state->isBold = 0;
+		return 4;
+	} else if (p[1] == 'u' && p[2] == '>') {
+		state->isUnderline = 1;
+		return 3;
+	} else if (p[1] == '/' && p[2] == 'u' && p[3] == '>') {
+		state->isUnderline = 0;
+		return 4;
+	} else if (p[1] == 'i' && p[2] == '>') {
+		state->isItalic = 1;
+		return 3;
+	} else if (p[1] == '/' && p[2] == 'i' && p[3] == '>') {
+		state->isItalic = 0;
+		return 4;
+	} else if (p[1] == 'c' && p[10] == '>') {
+		sscanf(p+2, "%x", &state->currentColor.value);
+		return 11;
+	} else if (p[1] == '/' && p[2] == 'c' && p[3] == '>') {
+		state->currentColor.value = state->basecolor.value;
+		return 4;
+	} else if (p[1] == 'g' && p[10] == '>') {
+		sscanf(p+2, "%x", &state->backgroundColor.value);
+		state->useBackground = 1;
+		return 11;
+	} else if (p[1] == '/' && p[2] == 'g' && p[3] == '>') {
+		state->useBackground = 0;
+		return 4;
+	}
+	return 0;
+}
+
+static int lgui_text_line_complex(const char *p, int x, Font *f, EscapeSequenceState *statein)
+{
+	int idx = 0, lastStart = 0, adv;
+	EscapeSequenceState state;
+	unsigned int val;
+	int width, height, xadvance, yadvance, baselinedy;
+	
+	if (statein)
+		state = *statein;
+	while (*p != 0) {
+another_escape:
+		if (statein && *p == '<') {
+			adv = lgui_process_escape_seq(p, &state);
+			if (adv > 0) {
+				p += adv;
+				idx += adv;
+				goto another_escape;
+			}
+		}
+		if (*p == 10 || *p == 13) {
+			return idx+1;
+		}
+		val = UTF8toUTF32(p, &adv);
+		p += adv;
+		idx += adv;
+		font_getGlyph(f, val, state.isBold, A4, &width, &height,
+				&xadvance, &yadvance, &baselinedy);
+		x += xadvance;
+		if (x+xadvance*4 > CLIP.x + CLIP.width) {
+			return lastStart;
+		}
+		if (p[-1] == ' ')
+			lastStart = idx;
+	}
+	return idx;
+}
+
+void lgui_complex_draw_font(int _x, int y, int maxw, int maxh, const char *utf8,
+		Font *f, Color c, int cursorindex, int startindex, int *windowPercent,
+		int *windowOffset, int useEscapeSeqs)
+{
+	const char *p, *startp;
+	unsigned int val;
+	int adv, i, pos, x, endcount, innercount;
+	int xadvance, yadvance, width, height, baselinedy;
+	unsigned char *data;
+	int fontHeight;
+	EscapeSequenceState state;
+
+	fontHeight = font_getHeight(f);
+	x = _x;
+	maxw += x;
+	maxh += y;
+	
+	state.isBold = 0;
+	state.isItalic = 0;
+	state.isUnderline = 0;
+	state.basecolor = c;
+	state.currentColor = c;
+	state.useBackground = 0;
+
+	innercount = 0;
+	p = utf8;
+	for (i = 0; i < startindex; ++i) {
+		if (*p == 0)
+			return;
+more_escape_skip:
+		if (useEscapeSeqs && *p == '<') {
+			adv = lgui_process_escape_seq(p, &state);
+			if (adv > 0) {
+				p += adv;
+				goto more_escape_skip;
+			}
+		}
+		UTF8toUTF32(p, &adv);
+		p += adv;
+	}
+next_line:
+	startp = p;
+	pos = lgui_text_line_complex(p, x, f, &state);
+	while (*p != 0 && p-startp < pos) {
+more_escape:
+		if (useEscapeSeqs && *p == '<') {
+			adv = lgui_process_escape_seq(p, &state);
+			if (adv > 0) {
+				p += adv;
+				goto more_escape;
+			}
+		}
+		val = UTF8toUTF32(p, &adv);
+		data = (unsigned char *)font_getGlyph(f, val, state.isBold, A4, &width, &height,
+				&xadvance, &yadvance, &baselinedy);
+		if (!(x + xadvance < CLIP.x ||
+				x > CLIP.x + CLIP.width ||
+				y + fontHeight < CLIP.y ||
+				y > CLIP.y + CLIP.height)) {
+			if (data == NULL) {
+				emo_printf(" Glyph missing");
+			} else {
+				++innercount;
+				if (state.useBackground)
+					lgui_hline(x, y+1, xadvance, fontHeight+2,
+							state.backgroundColor.rgba.red, state.backgroundColor.rgba.green,
+							state.backgroundColor.rgba.blue);
+				lgui_luminence_A4_blitC(x, y+fontHeight-baselinedy, 0, 0, width, height,
+						width, height, data, state.currentColor, LGUI_MODE_ALPHA, state.isItalic);
+				if (state.isUnderline)
+					lgui_hline(x, y+fontHeight+1, xadvance, 1,
+							state.currentColor.rgba.red, state.currentColor.rgba.green,
+							state.currentColor.rgba.blue);
+			}
+		}
+		x += xadvance;
+		y += yadvance;
+		if (x > maxw)
+			break;
+		p += adv;
+	}
+	if (*p != 0) {
+		x = _x;
+		y += fontHeight;
+		if (y+fontHeight+2 <= maxh)
+			goto next_line;
+	}
+	endcount = 0;
+	while (*p != 0) {
+		++endcount;
+more_escape_end:
+		if (useEscapeSeqs && *p == '<') {
+			adv = lgui_process_escape_seq(p, &state);
+			if (adv > 0) {
+				p += adv;
+				goto more_escape_end;
+			}
+		}
+		UTF8toUTF32(p, &adv);
+		p += adv;
+	}
+
+	*windowPercent = innercount*100 / (innercount + endcount + startindex);
+	*windowOffset = startindex*100 / (innercount + endcount + startindex);
 }
 
 void lgui_measure_font(const char *utf8, Font *f, int isBold, IPoint *output)
@@ -787,11 +981,9 @@ void lgui_measure_font(const char *utf8, Font *f, int isBold, IPoint *output)
 	output->x = 0;
 	output->y = fontHeight+1;
 
-
 	p = utf8;
 	while (*p != 0) {
 		val = UTF8toUTF32(p, &adv);
-		/* fixme, setting isbold to false always */
 		data = (unsigned char *)font_getGlyph(f, val, isBold, A4, &width,
                 &height, &xadvance, &yadvance, &baselinedy);
 		if (data == NULL) {
@@ -802,6 +994,32 @@ void lgui_measure_font(const char *utf8, Font *f, int isBold, IPoint *output)
 		}
 		p += adv;
 	}
+}
+
+void lgui_measure_font_complex(const char *utf8, Font *f, IPoint *output)
+{
+	const char *p;
+	int adv;
+	int fontHeight;
+	EscapeSequenceState state;
+	
+	fontHeight = font_getHeight(f);
+	output->y = 0;
+	
+	lgui_clip_push();
+	CLIP.x = 0;
+	CLIP.width = output->x;
+
+	p = utf8;
+	while (*p != 0) {
+		adv = lgui_text_line_complex(p, 0, f, &state);
+		p += adv;
+		if (adv == 0)
+			break;
+		output->y += fontHeight+1;
+	}
+
+	lgui_clip_pop();
 }
 
 void lgui_clip_set(Rectangle *rect)

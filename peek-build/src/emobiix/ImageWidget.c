@@ -78,7 +78,7 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 				c.value = (unsigned int)style_getProperty(s, NULL, "image", NULL, "color");
 			}
 			lgui_luminence_A4_blitC(box->x+margin->x, box->y+margin->y, 0, 0,
-					width, height, width, height, data, c, trans);
+					width, height, width, height, data, c, trans, 0);
 			break;
 		default:
 			emo_printf("Unsupported image format" NL);
