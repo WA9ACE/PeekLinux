@@ -595,8 +595,9 @@ uint32 ExeGetSemaphoreCount(ExeSemaphoreT *SemaphoreCbP)
                 }
         }
 
-
+	//SMF_Semaphore_Information((NU_SEMAPHORE *)SemaphoreCbP, "Semaphor", 0);
 }
+
 void ExeSemaphoreCreate(ExeSemaphoreT *SemaphoreCbP, uint32 InitialCount) {
 	SMCE_Create_Semaphore((NU_SEMAPHORE *)SemaphoreCbP, "Semaphor", InitialCount, 0x6);
 }
