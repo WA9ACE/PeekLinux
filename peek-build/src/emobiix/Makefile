@@ -84,11 +84,6 @@ SRC += LabelWidget.c
 TARGET = $(CURDIR)/emobiix.a
 SOCKET_SIM = $(CURDIR)/socket_sim.a
 
-CCOPTIMIZE0     =
-CCOPTIMIZE1     =
-CCOPTIMIZE2     =
-CCOPTIMIZE3     =
-
 .PHONY: protocol
 
 SIM_OBJ = SimDriver.o

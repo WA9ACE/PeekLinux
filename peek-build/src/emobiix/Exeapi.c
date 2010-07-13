@@ -6,6 +6,12 @@
 #include "monids.h"
 #include "bal_os.h"
 
+typedef struct 
+{
+	uint32	msgId;
+	uint32	msgSize;
+	void		*msgBuf;
+} sExeMsg;
 
 extern int TCD_Interrupt_Level;
 ExeTaskCbT *ExeTaskCb[EXE_NUM_TASKS];
@@ -73,7 +79,6 @@ int BOSMsgSendToFront(BOSTaskIdT TaskId, BOSMailboxIdT MailboxId, uint32 MsgId,
 	return ExeMsgSendToFront(TaskId, MailboxId, MsgId, MsgBufferP, MsgSize);
 }
 
-#if 0
 uint32 ExeMsgCheck(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId)
 {
 	ExeTaskCbT *task;
@@ -83,7 +88,6 @@ uint32 ExeMsgCheck(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId)
 		return 0;
 	return task->NumMsgsInQueue[MailboxId];
 }
-#endif
 
 void MonFault(MonFaultUnitT UnitNum, uint32 FaultCode1, uint32 FaultCode2, MonFaultTypeT FaultType)
 {
@@ -97,7 +101,6 @@ void CallExeFault(void) {
 	MonFault(MON_EXE_FAULT_UNIT, 3, 0, MON_HALT);
 }
 
-#if 0
 ExeEventWaitT ExeEventRetireve( ExeTaskIdT TaskId, uint32 RequestEvent, uint32 Timeout )
 {
 	ExeTaskCbT *task;
@@ -142,7 +145,6 @@ void ExeSignalSet(ExeTaskIdT TaskId, ExeSignalT SignalFlg)
 
 	return;
 }
-#endif
 
 void ExeTimerCreate(ExeTimerT *TimerCbP, void (*Routine)(uint32), uint32 TimerId,
 					 uint32 InitialTime, uint32 RescheduledTime)
@@ -241,7 +243,6 @@ void ExeTimerGetRemainTime(ExeTimerT *TimerCbP, uint32 *RemainTime)
 
 }
 
-#if 0
 void ExeInterruptDisable(SysIntT IntMask)
 {	
 	IntMask = TCT_Control_Interrupts(TCD_Interrupt_Level | IntMask);
@@ -255,7 +256,6 @@ void ExeInterruptEnable(void)
 	ExeIntStackP[0]--;
 	TCT_Control_Interrupts(*ExeIntStackP[0]);
 }
-#endif
 
 void ExePreemptionChange(ExePreemptionT Preemption)
 {
@@ -307,7 +307,6 @@ void ExeBufferFree(void *BufferP) {
 	PMCE_Deallocate_Partition(BufferP);
 }
 
-#if 0
 typedef struct bufMsgs { 
 	void *message;
 	uint32 *messageId;
@@ -317,15 +316,14 @@ typedef struct bufMsgs {
 
 bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, void **MsgBufferP, uint32 *MsgSizeP)
 {
-	uint32 suspend = 0;
+	register errCode;
 	register ExeTaskCbT *task = ExeTaskCb[TaskId];
-	int errCode;
-	bufMsg_s message;
-	message.message = *MsgBufferP;
-	message.messageId = MsgIdP;
-	
-	errCode = QUCE_Receive_From_Queue(&task->MailQueueCb[MailboxId], &message, 3, &message.actual_size, suspend);
 
+	uint32 suspend = 0;
+	uint32 actual_size = 0;
+	sExeMsg msg;
+
+	errCode = QUCE_Receive_From_Queue(&task->MailQueueCb[MailboxId], &msg, 3, &actual_size, suspend);
 	if (errCode != 0)
 	{
 		if (errCode == NU_QUEUE_EMPTY)
@@ -341,13 +339,12 @@ bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, void
 
 	ExeInterruptEnable();
 
-	*MsgIdP = *message.messageId;
-	*MsgBufferP = message.message;
-	*MsgSizeP = message.actual_size;
+	*MsgIdP = msg.msgId;
+	*MsgBufferP = msg.msgBuf;
+	*MsgSizeP = msg.msgSize;
 
 	return 1;
 }
-#endif
 
 static ExeFaultType2T ExeFaultType2;
 
@@ -365,15 +362,17 @@ void MonTrace(uint16 TraceId, uint32 NumArgs, ...) {
 	// They don't do anything here
 }
 
-#if 0
 int ExeMsgSend(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 MsgId, void *MsgBufferP, uint32 MsgSize)
 {
-	uint32 msgId = MsgId;
-	void *msgBufferP = MsgBufferP;
-	uint32 msgSize = MsgSize;
-	ExeTaskCbT *task = ExeTaskCb[TaskId];
-	int errCode = 0;
+	register int errCode = 0;
+	register ExeTaskCbT *task = ExeTaskCb[TaskId];
+
+	sExeMsg msg;
 	int retVal = 0;
+
+	msg.msgId = MsgId;
+	msg.msgBuf = MsgBufferP;
+	msg.msgSize = MsgSize;
 
 	if (!TCC_Current_HISR_Pointer())
 	{
@@ -398,7 +397,7 @@ int ExeMsgSend(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 MsgId, void *M
 
 	//ExeIncMsgBuffSendStats(MsgBufferP, MsgId, TaskId);
 
-	errCode = QUCE_Send_To_Queue(&task->MailQueueCb[MailboxId], &msgId, 3, 0);
+	errCode = QUCE_Send_To_Queue(&task->MailQueueCb[MailboxId], &msg, 3, 0);
 	if (!errCode)
 	{
 		ExeInterruptDisable(SYS_IRQ_INT);
@@ -449,7 +448,7 @@ int ExeMsgSend(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 MsgId, void *M
 	}
 
 	if (TaskId != EXE_IOP_ID && TaskId != EXE_HWD_ID)
-		MonTrace(MON_CP_MSG_BUFF_STATS_SPY_ID, 3, MsgId, get_NU_Task_HISR_Pointer(), TaskId);
+		MonTrace(MON_CP_MSG_BUFF_STATS_SPY_ID, 3, msg.msgId, get_NU_Task_HISR_Pointer(), TaskId);
 
 	return retVal;
 }
@@ -591,7 +590,7 @@ void ExeMsgBufferFree(void *MsgBufferP)
 
 	//ExeDecMsgBuffStats(MsgBufferP);
 }
-#endif
+
 uint32 ExeGetSemaphoreCount(ExeSemaphoreT *SemaphoreCbP) 
 {
         NU_HISR  *cHISR = TCC_Current_HISR_Pointer();
@@ -689,7 +688,6 @@ void ExeMemoryPoolDelete(NU_MEMORY_POOL *pool) {
 	DMCE_Delete_Memory_Pool(pool);
 }
 
-#if 0
 ExeEventWaitT ExeEventWait(ExeTaskIdT TaskId, bool Signal, ExeMessageT Message, uint32 Timeout)
 {
 	uint32 suspend;
@@ -740,7 +738,6 @@ ExeEventWaitT ExeEventWait(ExeTaskIdT TaskId, bool Signal, ExeMessageT Message, 
 
 	return suspend;
 }
-#endif
 
 void ExeIncMsgBuffStats(void * MsgBuffPtr, uint32 MsgBuffType, uint32 MsgBuffSize, uint32 TaskId) { }
 void ExeIncMsgBuffSendStats(void * MsgBuffPtr, uint32 MsgId, uint32 TaskId) { }

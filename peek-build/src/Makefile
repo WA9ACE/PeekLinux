@@ -7,8 +7,7 @@ SUBDIR_DEPEND = $(SRCDIR)/zlib/libz.a \
 		$(SRCDIR)/nmealib/nmealib.a \
 		$(SRCDIR)/emobiix/emobiix.a \
 		$(SRCDIR)/emobiix/protocol/protocol.a \
-		$(SRCDIR)/bal/socket.a \
-		$(SRCDIR)/bal/balexe/balexe.a
+		$(SRCDIR)/bal/socket.a 
 
 TARGET = $(SRCDIR)/vin.a
 
