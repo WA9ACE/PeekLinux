@@ -1,7 +1,6 @@
 #include "nucleus.h"
 #include "exeapi.h"
 #include "exedefs.h"
-#include "bal_def.h"
 #include "monapi.h"
 #include "monids.h"
 #include "bal_os.h"
@@ -16,6 +15,9 @@ typedef struct
 extern int TCD_Interrupt_Level;
 ExeTaskCbT *ExeTaskCb[EXE_NUM_TASKS];
 extern uint32 *ExeIntStackP[];
+
+extern NU_MEMORY_POOL  ExeSystemMemory;
+#define NU_Thread_Id get_NU_Task_HISR_Pointer()
 
 typedef struct {
         uint32 masks[EXE_NUM_MAILBOX];

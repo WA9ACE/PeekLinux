@@ -25,7 +25,8 @@
 	=====================================================================================*/
 #include "sysdefs.h"
 #include "bal_os.h"
-#include "bal_def.h"
+#include "exedefs.h"
+#include "exepowr.h"
 #include "ems.h"
 
 

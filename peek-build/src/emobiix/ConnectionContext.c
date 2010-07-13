@@ -15,10 +15,6 @@
 
 #include "p_malloc.h"
 
-#ifndef SIMULATOR
-#include "balimeiapi.h"
-#endif
-
 static const int CCTX_BUFLEN = 4096;
 
 struct SyncRequest_t {
@@ -817,6 +813,7 @@ static void connectionContext_processAuthRequest(ConnectionContext *ctx,
 	connectionContext_authUserPass(ctx);
 }
 
+#define IMEI_LEN  15
 static void connectionContext_authUserPass(ConnectionContext *ctx)
 {
 	FRIPacketP_t packet;

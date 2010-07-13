@@ -1,5 +1,3 @@
-#include "Lcd_manager.h"
-
 #define SET_UI_RINGTONE 1
 #define SET_UI_VOLUME   2
 #define SET_UI_VIBRATE  3
@@ -35,9 +33,6 @@ Off       --- VIBRATE_OFF_VALUE
 */
 
 static const int g_VibrateValue[] = {1, 2, 4, VIBRATE_OFF_VALUE};
-
-extern void TCCE_Task_Sleep(unsigned int ticks);
-
 
 void SetSettingValue(const int UIType, const int value);
 

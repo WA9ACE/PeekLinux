@@ -1,11 +1,9 @@
 #ifndef SIMULATOR
 #include "typedefs.h"
 #include "KeyMap.h"
-#include "Debug.h"
-#include "balkeypad.h"
+//#include "Debug.h"
 #include "ballightapi.h"
 #include "Sounds.h"
-#include "balapi.h"
 #include "tweet.h"
 #endif
 

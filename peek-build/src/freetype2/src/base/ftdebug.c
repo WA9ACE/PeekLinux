@@ -43,7 +43,7 @@
 
 #include <ft2build.h>
 #ifndef SIMULATOR
-#include "bal_def.h"
+#include "typedefs.h"
 #endif
 #include FT_FREETYPE_H
 #include FT_INTERNAL_DEBUG_H

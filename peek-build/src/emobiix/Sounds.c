@@ -3,6 +3,7 @@
  *
  */
 
+#include "Lcd_manager.h"
 #include "Sounds.h"
 
 void SetSettingValue(const int UIType, const int value)
