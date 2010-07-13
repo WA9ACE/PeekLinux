@@ -39,6 +39,7 @@ File *file_openWrite(const char *filename)
         emo_printf("Failed to open %s reason %d\n", filename, result);
         p_free(output);
     }
+    output->filename = (char *)p_strdup(filename);
     return output;
 }
 
@@ -55,6 +56,7 @@ File *file_openAppend(const char *filename)
         emo_printf("Failed to open %s reason %d\n", filename, result);
         p_free(output);
     }
+    output->filename = (char *)p_strdup(filename);
     file_seek(output, 0, FP_END);
     return output;
 }
