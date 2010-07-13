@@ -1,5 +1,4 @@
 #include "File.h"
-
 #include "ffsapi.h"
 
 struct File_t
@@ -23,7 +22,7 @@ File *file_openRead(const char *filename)
         emo_printf("Failed to open %s reason %d\n", filename, result);
         p_free(output);
     }
-    output->filename = p_strdup(filename);
+    output->filename = (char *)p_strdup(filename);
     return output;
 }
 
@@ -66,7 +65,7 @@ int file_read(File *f, int bytes, void *buffer)
     FsiResultT result;
 
     readbytes = bytes;
-    result = FsiFileRead(buffer, 1, &readbytes, &f->handle);
+    result = FsiFileRead(buffer, 1, &readbytes, f->handle);
     if (result == 0)
         return (int)readbytes;
     return -1;
@@ -78,7 +77,7 @@ int file_write(File *f, int bytes, void *buffer)
     FsiResultT result;
 
     writebytes = bytes;
-    result = FsiFileRead(buffer, 1, &writebytes, &f->handle);
+    result = FsiFileRead(buffer, 1, &writebytes, f->handle);
     if (result == 0)
         return (int)writebytes;
     return -1;
@@ -93,15 +92,15 @@ int file_seek(File *f, int offset, FilePosition pos)
         case FP_CURRENT:
         default: from = FSI_FILE_SEEK_CURRENT; break;
     }
-    return FsiSeek(&f->handle, , offset);
+    return FsiSeek(f->handle, from, offset);
 }
 
 int file_pos(File *f)
 {
     uint32 pos;
-    FsiTesultT result;
+    FsiResultT result;
     
-    result = FsiTell(&f->handle, &pos);
+    result = FsiTell(f->handle, &pos);
     if (result == 0)
         return (int)pos;
     return -1;
@@ -109,12 +108,12 @@ int file_pos(File *f)
 
 int file_eof(File *f)
 {
-
+    return -1;
 }
 
 int file_size(File *f)
 {
-    FsiResult result;
+    FsiResultT result;
     uint32 length;
 
     result = FsiGetFileLength(f->filename, &length);
@@ -125,13 +124,11 @@ int file_size(File *f)
 
 int file_close(File *f)
 {
-    FsiResult result;
+    FsiResultT result;
 
-    result = FsiFileClose(&f->handle)
+    result = FsiFileClose(f->handle);
     p_free(f->filename);
     p_free(f);
 
     return result;
 }
-
-#endif /* _FILE_H_ */

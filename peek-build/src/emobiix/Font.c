@@ -254,11 +254,11 @@ unsigned int UTF8toUTF32(const char *utf8, int *advance)
 static int fsi_new_FT_Stream(const char *filename, FT_Stream output)
 {
 	File *fs;
-#if 0
+
 	fs = file_openRead(filename);
 	if (fs == NULL)
 		return 0;
-	/*emo_printf("Opened file: %p" NL, fs);*/
+	emo_printf("Opened file: %p" NL, fs);
 
 	output->base = NULL;
 	output->size = file_size(fs);
@@ -267,20 +267,19 @@ static int fsi_new_FT_Stream(const char *filename, FT_Stream output)
 	output->pathname.pointer = NULL;
 	output->read = fsi_FT_Stream_IoFunc;
 	output->close = fsi_FT_Stream_CloseFunc;
-	/*emo_printf("Stream loaded: %p" NL, output);*/
-#endif
+	emo_printf("Stream loaded: %p" NL, output);
 	return 1;
 }
 
 static void fsi_FT_Stream_CloseFunc(FT_Stream  stream)
 {
 	FT_StreamRec *rec;
-#if 0
-	/*emo_printf("Close stream: %p" NL, stream);*/
+
+	emo_printf("Close stream: %p" NL, stream);
 	rec = (FT_StreamRec *)&stream;
-	/*emo_printf("Close file: %p" NL, rec->descriptor.pointer);*/
+
+	emo_printf("Close file: %p" NL, rec->descriptor.pointer);
 	file_close((File *)rec->descriptor.pointer);
-#endif
 }
 
 static unsigned long fsi_FT_Stream_IoFunc(FT_Stream rec,
@@ -288,8 +287,7 @@ static unsigned long fsi_FT_Stream_IoFunc(FT_Stream rec,
 		unsigned long count)
 {
 	File *f;
-#if 0
-	/*emo_printf("Stream IO %p: @%d size: %d" NL, rec, offset, count);*/
+	emo_printf("Stream IO %p: @%d size: %d" NL, rec, offset, count);
 	if (rec->descriptor.pointer == NULL) {
 		emo_printf("font io file pointer is NULL" NL);
 		return 0;
@@ -298,7 +296,7 @@ static unsigned long fsi_FT_Stream_IoFunc(FT_Stream rec,
 	file_seek(f, offset, FP_START);
 	if (count > 0)
 		return file_read(f, count, buffer);
-#endif
+
 	return 0;
 }
 
