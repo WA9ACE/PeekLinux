@@ -21,6 +21,8 @@ List *list_new(void)
     List *output;
 
     output = (List *)p_malloc(sizeof(List));
+    if (output == NULL)
+        return NULL;
     output->length = 0;
     output->head = NULL;
     output->tail = NULL;
