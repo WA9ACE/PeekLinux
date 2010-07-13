@@ -17,6 +17,8 @@
 #include "rvm/rvm_use_id_list.h"
 
 #include "exeapi.h"
+#include "exepowr.h"
+#include "bal_os.h"
 #include "emopei.h"
 #include "exedefs.h"
 //#include "Lcd_manager.h"
@@ -231,14 +233,8 @@ extern ExeTaskCbT     *ExeTaskCb[];
 
 static char SystemMemory[0xABB4];
 
-struct mailQueueT {
-	UNSIGNED size;
-	UNSIGNED mailbox;
-};
-
-struct mailQueueT MailQueueTable[2] = { {0x5a, 0x0},
-					       {0x5a, 0x1}
-					     };
+const MailQueueT MailQueueTable[] = {{BAL_TASK_MAIL_QUEUE_1, BOS_MAILBOX_1_ID},
+				     {BAL_TASK_MAIL_QUEUE_2, BOS_MAILBOX_2_ID}};
 
 LOCAL SHORT pei_init (T_HANDLE handle)
 {
@@ -257,8 +253,8 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 
     if(!EVCE_Create_Event_Group(&task->EventGroupCb, "BalEvGrp")) {
 	for(i=0;i < 2;i++) {
-		if(!DMCE_Allocate_Memory(&ExeSystemMemory, &rPtr, (MailQueueTable[i].size << 2), NU_READY)) {
-			qCstatus = QUCE_Create_Queue(&task->MailQueueCb[i], rPtr, "BalQue", MailQueueTable[i].size, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
+		if(!DMCE_Allocate_Memory(&ExeSystemMemory, &rPtr, (MailQueueTable[i].Size << 2), NU_READY)) {
+			qCstatus = QUCE_Create_Queue(&task->MailQueueCb[i], rPtr, "BalQue", MailQueueTable[i].Size, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
 		}
 	}
 	if(!qCstatus) {
