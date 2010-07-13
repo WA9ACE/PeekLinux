@@ -2,8 +2,7 @@ SUBDIR_DEPEND = $(SRCDIR)/zlib/libz.a \
 		$(SRCDIR)/freetype2/freetype2.a \
 		$(SRCDIR)/libpng/libpng.a \
 		$(SRCDIR)/zlib/libz.a \
-		$(SRCDIR)/bam/bam.a \
-		$(SRCDIR)/baf/baf.a \
+		$(SRCDIR)/tasks/peitasks.a \
 		$(SRCDIR)/lua/lua.a \
 		$(SRCDIR)/nmealib/nmealib.a \
 		$(SRCDIR)/emobiix/emobiix.a \
@@ -13,7 +12,7 @@ SUBDIR_DEPEND = $(SRCDIR)/zlib/libz.a \
 
 TARGET = $(SRCDIR)/vin.a
 
-SUBDIR = zlib libpng freetype2 lua nmealib bam baf emobiix bui
+SUBDIR = zlib libpng freetype2 lua nmealib tasks emobiix
 
 .PHONY: $(SUBDIR)
 
@@ -37,9 +36,7 @@ clean:
 	$(MAKE) -C freetype2 clean
 	$(MAKE) -C libpng clean
 	$(MAKE) -C zlib clean
-	$(MAKE) -C bui clean
 	$(MAKE) -C emobiix clean
-	$(MAKE) -C baf clean
-	$(MAKE) -C bam clean
+	$(MAKE) -C tasks clean
 
 include $(BASEDIR)/Makefile.rules

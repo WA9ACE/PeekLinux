@@ -308,16 +308,24 @@ void ExeBufferFree(void *BufferP) {
 }
 
 #if 0
+typedef struct bufMsgs { 
+	void *message;
+	uint32 *messageId;
+	uint32 actual_size;
+
+}bufMsg_s;
+
 bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, void **MsgBufferP, uint32 *MsgSizeP)
 {
-	uint32 actual_size;
 	uint32 suspend = 0;
 	register ExeTaskCbT *task = ExeTaskCb[TaskId];
-	void *tmpMsgBufferP;
-	uint32 tmpMsgSizeP;
-	uint32 tmpMsgIdP;
+	int errCode;
+	bufMsg_s message;
+	message.message = *MsgBufferP;
+	message.messageId = MsgIdP;
+	
+	errCode = QUCE_Receive_From_Queue(&task->MailQueueCb[MailboxId], &message, 3, &message.actual_size, suspend);
 
-	int errCode = QUCE_Receive_From_Queue(&task->MailQueueCb[MailboxId], &tmpMsgIdP, 3, &actual_size, suspend);
 	if (errCode != 0)
 	{
 		if (errCode == NU_QUEUE_EMPTY)
@@ -333,9 +341,9 @@ bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, void
 
 	ExeInterruptEnable();
 
-	*MsgIdP = tmpMsgIdP;
-	*MsgBufferP = tmpMsgBufferP;
-	*MsgSizeP = tmpMsgSizeP;
+	*MsgIdP = *message.messageId;
+	*MsgBufferP = message.message;
+	*MsgSizeP = message.actual_size;
 
 	return 1;
 }
@@ -588,6 +596,7 @@ uint32 ExeGetSemaphoreCount(ExeSemaphoreT *SemaphoreCbP)
 {
         NU_HISR  *cHISR = TCC_Current_HISR_Pointer();
         NU_TASK  *cTCTP;
+	uint32   current_count = 0;
 
         if(!cHISR) {
                 if(!(cTCTP = TCC_Current_Task_Pointer())) {
@@ -595,7 +604,9 @@ uint32 ExeGetSemaphoreCount(ExeSemaphoreT *SemaphoreCbP)
                 }
         }
 
-	//SMF_Semaphore_Information((NU_SEMAPHORE *)SemaphoreCbP, "Semaphor", 0);
+	//SMF_Semaphore_Information((NU_SEMAPHORE *)SemaphoreCbP, "Semaphor", &current_count,  0);
+
+	return current_count;
 }
 
 void ExeSemaphoreCreate(ExeSemaphoreT *SemaphoreCbP, uint32 InitialCount) {

@@ -3,13 +3,11 @@
  *
  */
 
-#include "balbattapi.h"
-#include "balsndapi.h" 
 #include "Sounds.h"
-#include "ballightapi.h"
 
 void SetSettingValue(const int UIType, const int value)
 {
+   /*
     switch(UIType)
     {
         case SET_UI_RINGTONE:
@@ -24,22 +22,22 @@ void SetSettingValue(const int UIType, const int value)
       default:
             break;
      }
+     */
 }
 
 void flash_led(void) {
-//    BalLightFlashOnStatus(BAL_LIGHT_FLASH_BLUE, 5, 5);
-//    BalLightFlashOnStatus(BAL_LIGHT_FLASH_GREEN, 5, 5);
-    BalLightFlashOnStatus(BAL_LIGHT_FLASH_MSG, 20, 1);
-
+    lcd_led_onoff(1);
+    TCCE_Task_Sleep(100);
+    lcd_led_onoff(0);
 }
 void Sounds_PlayMidi(void)
 {
-    BalNewTonePlay(BalGetRingToneType(), BalGetVolumnType());
+    //BalNewTonePlay(BalGetRingToneType(), BalGetVolumnType());
 }
  
 void Sounds_StartVibrate(unsigned int timeout)
 {
-     BalVibratorTimeOut(timeout);
-     BalNewVibratorPlay(BalGetVibrateType());
+     VibratorTimeOut(timeout);
+     //BalNewVibratorPlay(BalGetVibrateType());
 }
 

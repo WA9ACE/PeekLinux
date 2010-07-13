@@ -7,6 +7,7 @@ INCLUDE += $(M23DIR)/bmi/gdi
 INCLUDE += $(INCDIR)/g23m/condat/com/include
 INCLUDE += $(M23DIR)/chipsetsw/riviera/rvf
 INCLUDE += $(M23DIR)/csw-system/drv_app/ffs
+INCLUDE += $(M23DIR)/csw-system/drv_app/lcd
 INCLUDE += $(INCDIR)/csw-system/drv_core
 INCLUDE += $(SRCDIR)/include
 INCLUDE += $(SRCDIR)/bal
@@ -50,7 +51,8 @@ SRC += sms.c
 SRC += Sounds.c
 SRC += StaticList.c
 SRC += stub.c
-SRC += emo_pei.c
+SRC += ems.c
+SRC += emailstask.c
 SRC += Style.c
 SRC += Subscription.c
 SRC += Task.c
@@ -74,19 +76,18 @@ SRC += BootApplication.c
 SRC += RootApplication.c
 SRC += RootStyle.c
 SRC += ArrayWidget.c
-SRC += SetWidget.o
-SRC += ImageWidget.o
-SRC += LabelWidget.o
-SRC += trans_pei.c
-SRC += ems_pei.c
+SRC += SetWidget.c
+SRC += ImageWidget.c
+SRC += TextWidget.c
+SRC += LabelWidget.c
 
 TARGET = $(CURDIR)/emobiix.a
 SOCKET_SIM = $(CURDIR)/socket_sim.a
 
-CCOPTIMIZE0     = -O0
-CCOPTIMIZE1     = -O0
-CCOPTIMIZE2     = -O0
-CCOPTIMIZE3     = -O0
+CCOPTIMIZE0     =
+CCOPTIMIZE1     =
+CCOPTIMIZE2     =
+CCOPTIMIZE3     =
 
 .PHONY: protocol
 

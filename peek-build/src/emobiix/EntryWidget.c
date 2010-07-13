@@ -150,3 +150,4 @@ WidgetRenderer *widgetrenderer_entry(void)
 
 	return output;
 }
+

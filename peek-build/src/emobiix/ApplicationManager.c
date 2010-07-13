@@ -15,7 +15,7 @@
 #include "Script.h"
 
 #include "p_malloc.h"
-#include "buikeymap.h"
+#include "KeyMap.h"
 
 #include <string.h>
 
