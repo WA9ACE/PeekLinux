@@ -267,6 +267,7 @@ static int fsi_new_FT_Stream(const char *filename, FT_Stream output)
 	output->pathname.pointer = NULL;
 	output->read = fsi_FT_Stream_IoFunc;
 	output->close = fsi_FT_Stream_CloseFunc;
+
 	emo_printf("Stream loaded: %p" NL, output);
 	return 1;
 }

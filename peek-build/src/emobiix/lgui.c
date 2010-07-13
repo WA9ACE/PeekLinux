@@ -749,6 +749,9 @@ void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f,
 	unsigned char *data;
 	int fontHeight;
 	
+	if (utf8 == NULL || f == NULL)
+		return;
+
 	fontHeight = font_getHeight(f);
 	maxw += x;
 	maxh += y;
@@ -874,6 +877,9 @@ void lgui_complex_draw_font(int _x, int y, int maxw, int maxh, const char *utf8,
 	int fontHeight;
 	EscapeSequenceState state;
 
+	if (utf8 == NULL || f == NULL)
+		return;
+
 	fontHeight = font_getHeight(f);
 	x = _x;
 	maxw += x;
@@ -977,6 +983,12 @@ void lgui_measure_font(const char *utf8, Font *f, int isBold, IPoint *output)
 	unsigned char *data;
 	int fontHeight;
 	
+	if (f == NULL || utf8 == NULL) {
+		output->x = 0;
+		output->y = 0;
+		return;
+	}
+
 	fontHeight = font_getHeight(f);
 	output->x = 0;
 	output->y = fontHeight+1;
@@ -1003,6 +1015,12 @@ void lgui_measure_font_complex(const char *utf8, Font *f, IPoint *output)
 	int fontHeight;
 	EscapeSequenceState state;
 	
+	if (f == NULL || utf8 == NULL) {
+		output->x = 0;
+		output->y = 0;
+		return;
+	}
+
 	fontHeight = font_getHeight(f);
 	output->y = 0;
 	

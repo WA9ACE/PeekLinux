@@ -17,7 +17,7 @@ Style *RootStyle(void)
 	static Gradient *greengrad1;
 	static Color color;
 	static Gradient *grad1;
-	static Font *defaultFont, *hugeFont, *consoleFont;
+	static Font *defaultFont, *hugeFont;
 	static DataObject *fontObject1, *fontObject2, *fontObject3;
 	static Style *defaultStyle = NULL;
 
@@ -36,16 +36,9 @@ Style *RootStyle(void)
 	hugeFont = font_load(fontObject1);
 	if (hugeFont == NULL) {
 		emo_printf("Failed to load font" NL);
-#ifdef SIMULATOR
-		abort();
-#endif
-		return defaultStyle;
+	} else {
+		font_setHeight(hugeFont, 20);
 	}
-	font_setHeight(hugeFont, 20);
-
-	consoleFont = font_load(fontObject1);
-	font_setHeight(consoleFont, 8);
-
 	greengrad2 = gradient_new();
 	color.value = 0xE4FD13FF;
 	gradient_addStop(greengrad2, 0, color);

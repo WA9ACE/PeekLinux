@@ -848,7 +848,7 @@ void widget_resolveMeasureRelative(Widget *w)
 	DataObject *child;
 	DataObjectField *sField;
 	ListIterator iter;
-	int tmpint, slen;
+	int tmpint, slen, isset;
 
 	/* get specified absolute values */
 #define RELATIVE_FIELD(_x, _y, _z) \
@@ -874,12 +874,18 @@ void widget_resolveMeasureRelative(Widget *w)
 
 	sumWidth = 0;
 	sumHeight = 0;
+	isset = 0;
 
 	sField = dataobject_getValue(w, "type");
 	if (!widget_typeNoChildRender(sField)) {
 		list_begin(w->children, &iter);
 		while (!listIterator_finished(&iter)) {
-			child = (DataObject *)listIterator_item(&iter);
+			if (strcmp(sField->field.string, "set") == 0) {
+				child = setwidget_activeItem(w);
+				isset = 1;
+			} else {
+				child = (DataObject *)listIterator_item(&iter);
+			}
 			widget_resolveMeasureRelative(child);
 			if (widget_getPacking(w) == WP_HORIZONTAL) {
 				sumWidth += child->box.width + child->margin.x + child->margin.width;
@@ -890,6 +896,8 @@ void widget_resolveMeasureRelative(Widget *w)
 				sumWidth = sumNew > sumWidth ? sumNew : sumWidth;
 				sumHeight += child->box.height + child->margin.y + child->margin.height;
 			}
+			if (isset)
+				break;
 			listIterator_next(&iter);
 		}
 		/*listIterator_delete(iter);*/
