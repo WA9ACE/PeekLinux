@@ -114,11 +114,7 @@ void EMSTask(uint32 argc, void *argv)
 	BOSEventWaitT MailBoxIndex;
 	int i;
 
-        while(1) {
-                TCCE_Task_Sleep(50);
-        }
-
-	//wait until BAL is Ready.
+	//wait until EMO is Ready.
 	while (EmoStatusGet() == FALSE)
 	{
 		//the function below is same as NU_Sleep(100);
@@ -129,6 +125,8 @@ void EMSTask(uint32 argc, void *argv)
 	for (MailBoxId = 0; MailBoxId < EM_S_MAX_MAILBOXES; MailBoxId++) 
 		if(EMSMailFuncsTable[MailBoxId].InitFunc)
 			EMSMailFuncsTable[MailBoxId].InitFunc();
+
+	emo_printf("EMS: Starting event loop\n");
 
 	while (TRUE)
 	{
