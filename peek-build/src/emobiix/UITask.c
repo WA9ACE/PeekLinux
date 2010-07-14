@@ -18,34 +18,9 @@
 #include "Application.h"
 #include "ApplicationManager.h"
 
-#include "p_mmi.h"
-#include "m_fac.h"
-#include "p_mmreg.h"
-#include "p_mncc.h"
-#include "p_mnsms.h"
-#include "p_em.h"
-#include "aci_lst.h"
-#include "aci_cmh.h"
-
 #include "gdi.h"
 #include "dspl.h"
 
-void backlightInit() {
-	 int i;
-         for (i=0;i<BL_LAST_OPTION;i++) {
-         	mme_setBacklightEvent(i,BL_MAX_LIGHT);
-	 }
-         mme_setBacklightEvent(BL_IDLE_TIMER,BL_SET_IDLE);
-         mme_setBacklightEvent(BL_KEY_PRESS,BL_MAX_LIGHT);
-         mme_setBacklightEvent(BL_INCOMING_CALL,BL_MAX_LIGHT);
-         mme_setBacklightEvent(BL_EXIT,BL_NO_LIGHT);
-         
-         /*and tell the backlight that the init event has happened */
-         mme_backlightEvent(BL_INIT);
-
-
-
-}
 void display_init()
 {
         dspl_DevCaps displayData;
@@ -147,8 +122,6 @@ static int UIInit(void)
 	//extern void KeyPad_Init();
 	//KeyPad_Init();
 
-	backlightInit();
-
 	display_init();
 
 	if (!initd) {
@@ -168,16 +141,12 @@ static int UIInit(void)
 		 systemApplication = application_new(systemAppObject);
 		 application_setActive(systemApplication);
 	 */
-        sim_init();
-        nm_init();
-        sim_activate();
-        sAT_PercentCSQ ( CMD_SRC_LCL, CSQ_Enable );
 
         dataobject_platformInit();
 	//system_battery_init();
 	//gprs_dataobject_init();
 	//extern void gps_init();
- 
+
 	return 1;
 }
 
