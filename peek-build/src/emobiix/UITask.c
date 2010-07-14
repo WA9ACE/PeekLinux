@@ -10,7 +10,6 @@
 #include "tweet.h"
 #include "msg.h"
 
-
 #include "Transport.h"
 #include "ConnectionContext.h"
 #include "Platform.h"
@@ -18,6 +17,15 @@
 #include "DataObject.h"
 #include "Application.h"
 #include "ApplicationManager.h"
+
+#include "p_mmi.h"
+#include "m_fac.h"
+#include "p_mmreg.h"
+#include "p_mncc.h"
+#include "p_mnsms.h"
+#include "p_em.h"
+#include "aci_lst.h"
+#include "aci_cmh.h"
 
 #include "gdi.h"
 #include "dspl.h"
@@ -158,6 +166,11 @@ static int UIInit(void)
 		 systemApplication = application_new(systemAppObject);
 		 application_setActive(systemApplication);
 	 */
+        sim_init();
+        nm_init();
+        sim_activate();
+        sAT_PercentCSQ ( CMD_SRC_LCL, CSQ_Enable );
+
         dataobject_platformInit();
 	//system_battery_init();
 	//gprs_dataobject_init();
