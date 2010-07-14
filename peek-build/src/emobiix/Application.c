@@ -17,6 +17,8 @@ Application *application_load(DataObject *dobj)
 	DataObjectField *field;
 
 	output = (Application *)p_malloc(sizeof(Application));
+    if (output == NULL)
+        return NULL;
 	output->dobj = dobj;
 	output->currentScreen = NULL;
 	dataobject_resolveReferences(dobj);

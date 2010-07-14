@@ -38,6 +38,7 @@ DataObject *RootApplication(void)
 	DataObject *setw, *setiw, *setc, *testvalue;
 	DataObject *signalstack, *testgprs;
 	DataObject *batterystack, *testbattery, *testcharge;
+	DataObject *testweather;
 
     if (output != NULL)
         return output;
@@ -70,6 +71,9 @@ DataObject *RootApplication(void)
 	dataobject_setValue(testbattery, "data", dataobjectfield_string("4"));
 	testcharge = dataobject_new();
 	dataobject_setValue(testcharge, "data", dataobjectfield_string("1"));
+
+	testweather = dataobject_new();
+	dataobject_setValue(testweather, "data", dataobjectfield_string("1"));
 
 	signalstack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
 
@@ -134,6 +138,42 @@ DataObject *RootApplication(void)
 	batterystack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
 	setc = dobjFromFile("batterycase.png", batterystack);
 	dataobject_setValue(setc, "margintop", dataobjectfield_string("3"));
+
+	/* Weather set */
+	setw = widget_newTypeIdName("set", NULL, NULL, signalstack);
+	dataobject_setValue(setw, "fieldname", dataobjectfield_string("data"));
+	/*dataobject_setValue(setw, "margintop", dataobjectfield_string("3"));
+	dataobject_setValue(setw, "marginleft", dataobjectfield_string("3"));*/
+	widget_setDataObject(setw, testweather);
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("1"));
+	setc = dobjFromFile("wi-cloud.png", setiw);
+	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
+	dataobject_setValue(setc, "color", dataobjectfield_string("00000000"));
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("2"));
+	setc = dobjFromFile("wi-rain.png", setiw);
+	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
+	dataobject_setValue(setc, "color", dataobjectfield_string("00000000"));
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("3"));
+	setc = dobjFromFile("wi-storm.png", setiw);
+	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
+	dataobject_setValue(setc, "color", dataobjectfield_string("00000000"));
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("4"));
+	setc = dobjFromFile("wi-snow.png", setiw);
+	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
+	dataobject_setValue(setc, "color", dataobjectfield_string("00000000"));
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	setc = dobjFromFile("wi-sun.png", setiw);
+	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
+	dataobject_setValue(setc, "color", dataobjectfield_string("00000000"));
 
 	/* battery indicator */
 	setw = widget_newTypeIdName("set", NULL, NULL, batterystack);

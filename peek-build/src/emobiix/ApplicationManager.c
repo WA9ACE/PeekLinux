@@ -1,4 +1,6 @@
+#ifndef SIMULATOR
 #include "typedefs.h"
+#endif
 #include "ApplicationManager.h"
 
 #include "Application.h"
@@ -15,7 +17,12 @@
 #include "Script.h"
 
 #include "p_malloc.h"
+
+#ifdef SIMULATOR
+#include "sim-keymap.h"
+#else
 #include "KeyMap.h"
+#endif
 
 #include <string.h>
 
@@ -37,10 +44,22 @@ void manager_init(void)
     Application *bootApp;
 
 	appManager = (ApplicationManager *)p_malloc(sizeof(ApplicationManager));
+    if (appManager == NULL) {
+        emo_printf("Failed to allocate appManager" NL);
+        return;
+    }
 	appManager->applications = list_new();
+    if (appManager->applications == NULL) {
+        emo_printf("Failed to allocate applications list" NL);
+        return;
+    }
 	appManager->focus = NULL;
 
 	appManager->style = RootStyle();
+    if (appManager->style == NULL) {
+        emo_printf("Failed to create root style" NL);
+        return;
+    }
 
 	appManager->rootApplicationObj = RootApplication();
 	appManager->rootApplication = application_load(appManager->rootApplicationObj);
