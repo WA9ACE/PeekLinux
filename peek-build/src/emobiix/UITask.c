@@ -62,6 +62,8 @@ void display_init()
 	dspl_SetDeviceCaps(&displayData);
 	dspl_GetDeviceCaps(&displayData);
 
+	dspl_Enable(1);
+
 	emo_printf("Display parameters are %dx%d", displayData.Width, displayData.Height);
 }
 

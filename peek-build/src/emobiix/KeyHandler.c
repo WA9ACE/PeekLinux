@@ -51,13 +51,14 @@ void updateScreen(void) {
         int index, upper;
         manager_drawScreen();
 
+				dspl_Enable(0);
         if (!lgui_is_dirty())
             return;
 
         upper = lgui_index_count();
         if (upper == 0) {
             emo_printf("Flipping entire screen" NL);
-						dspl_BitBlt2(0, 0, BWIDTH, BHEIGHT, screenBuf, 0, BMP_FORMAT_16BIT_LCD_COLOUR);
+						dspl_BitBlt2(0, 0, BWIDTH, BHEIGHT, screenBuf, 0, BMP_FORMAT_16BIT_LCD_COMPRESSED_COLOUR);
 #if 0
             dc.BitBlt(0,0,BWIDTH,BHEIGHT,Bmp,0,0);
             dc.UpdateDisplay();
@@ -68,7 +69,7 @@ void updateScreen(void) {
                 rect = lgui_get_region(index);
 		    emo_printf("Flipping partial screen: %d" NL, index);
 
-						dspl_BitBlt2(rect->x, rect->y, rect->width, rect->height, screenBuf, 0, BMP_FORMAT_16BIT_LCD_COLOUR);
+						dspl_BitBlt2(rect->x, rect->y, rect->width, rect->height, screenBuf, 0, BMP_FORMAT_16BIT_LCD_COMPRESSED_COLOUR);
 #if 0
                 dc.BitBlt(rect->x, rect->y, rect->width, rect->height, Bmp,
                         rect->x, rect->y);
@@ -76,6 +77,7 @@ void updateScreen(void) {
 #endif
             }
         }
+	dspl_Enable(1);
 	lgui_blit_done();
 #endif
 }
