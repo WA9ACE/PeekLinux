@@ -224,9 +224,6 @@ SECTIONS
     .data    : {} > D_MEM0     /* Initialized Data */
     .sysmem  : {} > D_MEM0     /* Dynamic Memory Allocation Area */
     
-    /* deleted by xipeng */
-    /* .bdmem   : {} > D_MEM0 */    /* added by Randolph Wang 080303 */
-   
     S_MEM_JUMPTABLE : {} > S_MEM_JUMPTABLE  /* OMAPS00082333: MIDI Jump table */
 	JPEG_JUMP_TABLE : {} > S_MEM_JPEG_JUMPTABLE /* JPEG Jump Table */
 

@@ -1,5 +1,5 @@
 #include "p_malloc.h"
-
+#include "bget.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -16,12 +16,12 @@ char *p_strdup(const char *s)
 
 void *p_malloc(int size)
 {
-	return malloc(size);
+	return bget(size);
 }
 
 void *p_calloc(int elem, int size)
 {
-	void *p = malloc(size * elem);
+	void *p = bget(size * elem);
 	if(!p) return NULL;
 	memset(p, 0, size * elem);
 	return p;
@@ -29,10 +29,12 @@ void *p_calloc(int elem, int size)
 
 void p_free(void *p)
 {
-	free(p);
+	//free(p);
+	brel(p);
 }
 
 void *p_realloc(void *p, int s)
 {
-	return realloc(p, s);
+	//return realloc(p, s);
+	return bgetr(p,s);
 }

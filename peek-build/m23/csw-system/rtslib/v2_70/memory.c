@@ -542,6 +542,8 @@ void *memalign(size_t alignment, size_t size)
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 #endif
 
+void emo_printf(const char *fmt, ...);
+
 void memmap()
 {
     PACKET *current;
@@ -563,7 +565,7 @@ void memmap()
 	int size = current->packet_size & ~BLOCK_USED;
         int used = current->packet_size & BLOCK_USED;
 
-        printf(">> Used:%1d size:%d addr:%x\n", used, size, current);
+        //emo_printf(">> Used:%1d size:%d addr:%x\n", used, size, current);
 
         if (used)
 	{
@@ -580,13 +582,14 @@ void memmap()
 
         current = (PACKET *)((char *)current + size + BLOCK_OVERHEAD);
     }
-
-    printf("fr_nm:%d fr_sp:%d fr_mx:%d us_nm:%d us_sp:%d us_mx:%d ovr:%d\n\n", 
+	/*
+    emo_printf("fr_nm:%d fr_sp:%d fr_mx:%d us_nm:%d us_sp:%d us_mx:%d ovr:%d\n\n", 
 	    free_block_num, free_block_space, free_block_max,
 	    used_block_num, used_block_space, used_block_max,
 	    (free_block_num + used_block_num) * BLOCK_OVERHEAD);
+	*/
 
     _unlock();
-    fflush(stdout);
+    //fflush(stdout);
 }
 #endif

@@ -4,6 +4,7 @@ SUBDIR_DEPEND = $(SRCDIR)/zlib/libz.a \
 		$(SRCDIR)/zlib/libz.a \
 		$(SRCDIR)/tasks/peitasks.a \
 		$(SRCDIR)/lua/lua.a \
+		$(SRCDIR)/bal/bget.a \
 		$(SRCDIR)/nmealib/nmealib.a \
 		$(SRCDIR)/emobiix/emobiix.a \
 		$(SRCDIR)/emobiix/protocol/protocol.a \

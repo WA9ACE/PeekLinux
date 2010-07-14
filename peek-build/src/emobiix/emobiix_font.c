@@ -4,12 +4,12 @@
 
 static void *freetype_do_alloc(FT_Memory memory, long size) 
 { 
-	return malloc(size); 
+	return p_malloc(size); 
 }
 
 static void freetype_do_free(FT_Memory memory, void *block) 
 { 
-	free(block); 
+	p_free(block); 
 }
 
 static void *freetype_do_realloc(FT_Memory memory, long cur_size, 

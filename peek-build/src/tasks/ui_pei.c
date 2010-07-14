@@ -21,26 +21,26 @@
 #include "bal_os.h"
 #include "emopei.h"
 #include "exedefs.h"
-//#include "Lcd_manager.h"
 
 #define         NU_VARIABLE_SIZE                13
 #define         NU_QUEUE_SIZE                   18
 
-extern void EmoTask(void);
 
 /*=========================== MACROS =========================================*/
 
-#define VSI_CALLER EMO_handle, 
-#define pei_create emo_pei_create
+#define VSI_CALLER UI_handle, 
+#define pei_create ui_pei_create
 #define RVM_TRACE_DEBUG_HIGH(string)\
 	rvf_send_trace (string,(sizeof(string)-1),NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
 
 /*===========================Global Variables==================================*/
 
-T_HANDLE EMO_handle;
+T_HANDLE UI_handle;
 
 LOCAL BOOL first_access = TRUE;
-uint32 EmoIsReady = 0;
+uint32 uiIsReady = 0;
+
+extern NU_MEMORY_POOL  ExeSystemMemory;
 
 /*===========================Function Definition================================*/
 /*
@@ -59,7 +59,7 @@ uint32 EmoIsReady = 0;
 */
 LOCAL SHORT pei_monitor (void ** out_monitor)
 {
-  RVM_TRACE_DEBUG_HIGH ("EMO: pei_monitor");
+  RVM_TRACE_DEBUG_HIGH ("UI: pei_monitor");
 
   return PEI_OK;
 } /* End pei_monitor(..) */
@@ -83,7 +83,7 @@ LOCAL SHORT pei_monitor (void ** out_monitor)
 */
 LOCAL SHORT pei_config (char *inString)
 {
-  RVM_TRACE_DEBUG_HIGH ("EMO: pei_config");
+  RVM_TRACE_DEBUG_HIGH ("UI: pei_config");
 
   return PEI_OK;
 
@@ -104,7 +104,7 @@ LOCAL SHORT pei_config (char *inString)
 */
 LOCAL SHORT pei_timeout (unsigned short index)
 {
-  RVM_TRACE_DEBUG_HIGH ("EMO: pei_timeout");
+  RVM_TRACE_DEBUG_HIGH ("UI: pei_timeout");
 
   return PEI_OK;
 }/* End pei_timeout(..) */
@@ -127,7 +127,7 @@ LOCAL SHORT pei_timeout (unsigned short index)
 */
 LOCAL SHORT pei_signal (ULONG opc, void *data)
 {
-  RVM_TRACE_DEBUG_HIGH ("EMO: pei_signal");
+  RVM_TRACE_DEBUG_HIGH ("UI: pei_signal");
   
   return(PEI_OK);
 }/* End pei_signal(..) */
@@ -149,18 +149,18 @@ LOCAL SHORT pei_primitive (void * primptr)
 {
   T_RV_HDR* msg_p;
 
-   RVM_TRACE_DEBUG_HIGH("EMO: pei_primitive");
+   RVM_TRACE_DEBUG_HIGH("UI: pei_primitive");
 
    return PEI_OK;
 }/* End pei_primitive(..) */
 
-uint32 EmoStatusGet(void)
+uint32 uiStatusGet(void) 
 {
-        return EmoIsReady;
+	return uiIsReady;
 }
 
-void EmoStatusSet(void) {
-        EmoIsReady=1;
+void uiStatusSet(void) {
+	uiIsReady=1;
 }
 
 /*
@@ -180,17 +180,19 @@ void EmoStatusSet(void) {
 |
 +------------------------------------------------------------------------------
 */
-extern BOOL powered_on;
+
+extern void mmiInit( void);
+extern void UiTask(void);
 
 LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
 {  
-  RVM_TRACE_DEBUG_HIGH("EMO: pei_run");
 
-  VibratorTimeOut(1500); 
-  powered_on=1;
+  RVM_TRACE_DEBUG_HIGH("UI: pei_run");
+
+  /* Start UI Task */
+  //mmiInit();
+  UITask();
   
-  EmoTask();
-
   return RV_OK;  
 
 }/* End pei_run(..) */
@@ -212,7 +214,7 @@ LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
 */
 LOCAL SHORT pei_exit (void)
 {
-   RVM_TRACE_DEBUG_HIGH ("EMO: pei_exit");
+   RVM_TRACE_DEBUG_HIGH ("UI: pei_exit");
  
    return PEI_OK;
 }/* End pei_exit(..) */
@@ -233,33 +235,14 @@ LOCAL SHORT pei_exit (void)
 +------------------------------------------------------------------------------
 */
 
-NU_MEMORY_POOL ExeSystemMemory;
-uint32 ExeIntStack[20];
-uint32 *ExeIntStackP[];
-
 extern ExeTaskCbT     *ExeTaskCb[];
 
-static char SystemMemory[0xABB4];
+const MailQueueT UiMailQueueTable[] = {{UI_TASK_MAIL_QUEUE_1, BOS_MAILBOX_1_ID},
+				      {UI_TASK_MAIL_QUEUE_2, BOS_MAILBOX_2_ID},
+				      {UI_TASK_MAIL_QUEUE_3, BOS_MAILBOX_3_ID},
+				      {UI_TASK_MAIL_QUEUE_4, BOS_MAILBOX_4_ID}};
+ExeTaskCbT UIExeTaskCb;
 
-const MailQueueT EMOMailQueueTable[] = {{BAL_TASK_MAIL_QUEUE_1, BOS_MAILBOX_1_ID},
-				        {BAL_TASK_MAIL_QUEUE_2, BOS_MAILBOX_2_ID}};
-ExeTaskCbT EMOExeTaskCb;
-
-/*
-static volatile ExeSemaphoreT exeLockSema;
-static void exeLock(void) {
-	ExeSemaphoreGet(&exeLockSema, 0);
-}
-
-static void exeUnlock(void) {
-	ExeSemaphoreRelease(&exeLockSema);
-}
-
-void initLock(void) {
-	ExeSemaphoreCreate(&exeLockSema, 0);
-	
-}
-*/
 LOCAL SHORT pei_init (T_HANDLE handle)
 {
     T_RV_RET ret = RV_OK;
@@ -267,19 +250,16 @@ LOCAL SHORT pei_init (T_HANDLE handle)
     void *rPtr;
     int qCstatus;
     ExeTaskCbT *task;
-    RVM_TRACE_DEBUG_HIGH("EMO: pei_init");
-    EMO_handle = handle;
-    *ExeIntStackP = &ExeIntStack[0];
+    RVM_TRACE_DEBUG_HIGH("UI: pei_init");
+    UI_handle = handle;
 
-    DMCE_Create_Memory_Pool(&ExeSystemMemory, "SysMem", SystemMemory, 0xABB4, 0x32, NU_SEMAPHORE_SUSPEND);
+    ExeTaskCb[EXE_UI_ID] = &UIExeTaskCb;
+    task = ExeTaskCb[EXE_UI_ID];
 
-    ExeTaskCb[EXE_BAL_ID] = &EMOExeTaskCb;
-    task = ExeTaskCb[EXE_BAL_ID];
-
-    if(!EVCE_Create_Event_Group(&task->EventGroupCb, "BalEvGrp")) {
-	for(i=0;i < 2;i++) {
-		if(!DMCE_Allocate_Memory(&ExeSystemMemory, &rPtr, (EMOMailQueueTable[i].Size << 2), NU_READY)) {
-			qCstatus = QUCE_Create_Queue(&task->MailQueueCb[i], rPtr, "BalQue", EMOMailQueueTable[i].Size, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
+    if(!EVCE_Create_Event_Group(&task->EventGroupCb, "UiEvGrp")) {
+	for(i=0;i < 4;i++) {
+		if(!DMCE_Allocate_Memory(&ExeSystemMemory, &rPtr, UiMailQueueTable[i].Size, NU_READY)) {
+			qCstatus = QUCE_Create_Queue(&task->MailQueueCb[i], rPtr, "UiQue", UiMailQueueTable[i].Size, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
 		}
 	}
 	if(!qCstatus) {
@@ -290,11 +270,7 @@ LOCAL SHORT pei_init (T_HANDLE handle)
                 }
 	}
     }
-
-    //initLock();
-    //minit();
-
-    ExeInit();
+    
     return (PEI_OK);
 } /* End pei_init(..) */
 
@@ -318,7 +294,7 @@ GLOBAL SHORT pei_create (T_PEI_INFO **info)
 
 static const T_PEI_INFO pei_info =
               {
-               "EMO",         /* name */
+               "UI",         /* name */
                {              /* pei-table */
                   pei_init,
                   pei_exit,
@@ -329,14 +305,14 @@ static const T_PEI_INFO pei_info =
                   NULL,           /* NO pei_config */
                   NULL            /* NO pei_monitor */
                },
-               0xC00,            /* stack size */
+               0x2000,            /* stack size */
                1,                        /* queue entries */
-	       BAL_PRIORITY,     /* priority (1->low, 255->high) */
+		BAL_UI_PRIORITY,     /* priority (1->low, 255->high) */
                0,                         /* number of timers */
                COPY_BY_REF	/* Flags Settings */
               };
 
-  RVM_TRACE_DEBUG_HIGH("EMO: pei_create");
+  RVM_TRACE_DEBUG_HIGH("UI: pei_create");
 
   /*
    * Close Resources if open

@@ -9,7 +9,7 @@ typedef struct
 {
 	uint32	msgId;
 	uint32	msgSize;
-	void		*msgBuf;
+	void	*msgBuf;
 } sExeMsg;
 
 extern int TCD_Interrupt_Level;
@@ -36,12 +36,12 @@ unsigned long get_NU_Task_HISR_Pointer()
 
 void BOSFree(void* Ptr)
 {
-	free(Ptr);
+	p_free(Ptr);
 }
 
 void* BOSMalloc( unsigned long size )
 {
-	return (void *)malloc(size);
+	return (void *)p_malloc(size);
 }
 
 BOSEventWaitT BOSEventWait(BOSTaskIdT TaskId, bool Signal, 
@@ -99,7 +99,10 @@ void MonFault(MonFaultUnitT UnitNum, uint32 FaultCode1, uint32 FaultCode2, MonFa
 	}
 }
 
+extern char BalMemoryPoolBuffer[];
+
 void CallExeFault(void) {
+	bpoold(&BalMemoryPoolBuffer, 1, 1);
 	MonFault(MON_EXE_FAULT_UNIT, 3, 0, MON_HALT);
 }
 

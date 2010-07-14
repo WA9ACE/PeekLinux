@@ -149,7 +149,6 @@ LOCAL SHORT pei_primitive (void * primptr)
 	T_PRIM * prim = primptr;
 
 	RVM_TRACE_DEBUG_HIGH("trans_pei_primitive");
-
 	if (sock_api_handles_primitive(bal_sock_api_inst, prim) == FALSE)
 	{
 		if(prim->custom.opc & SYS_MASK)
@@ -162,7 +161,6 @@ LOCAL SHORT pei_primitive (void * primptr)
 			return PEI_ERROR;
 		}
 	}
-
 	return PEI_OK;
 }/* End pei_primitive(..) */
 
@@ -206,11 +204,16 @@ LOCAL SHORT pei_exit (void)
 	 +------------------------------------------------------------------------------
  */
 
+extern BOOL powered_on;
+
 LOCAL SHORT pei_init (T_HANDLE handle)
 {
 	trans_handle = handle;
 
-	emo_printf("trans_pei_init");
+	RVM_TRACE_DEBUG_HIGH("trans_pei_init");
+
+        while(!powered_on)
+                TCCE_Task_Sleep(100);
 
 	if (TranshComm < VSI_OK)
 		if ((TranshComm = vsi_c_open (VSI_CALLER "TRANS")) < VSI_OK)
@@ -256,7 +259,7 @@ GLOBAL SHORT pei_create (T_PEI_INFO **info)
 			NULL,           /* NO pei_config */
 			NULL            /* NO pei_monitor */
 		},
-		0xc000,            /* stack size */
+		0xc00,            /* stack size */
 		0xA,                        /* queue entries */
 		BAL_TRANS_PRIORITY,     /* priority (1->low, 255->high) */
 		1,                         /* number of timers */

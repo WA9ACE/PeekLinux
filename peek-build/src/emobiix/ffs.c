@@ -145,3 +145,44 @@ FsiResultT FsiFileClose(FsiHandleT File) {
 	ffsCret = ffs_close(File);
 	return ffsErrorMap(ffsCret);
 }
+
+FsiResultT FsiSeek(FsiHandleT File, FsiFileSeekTypeT SeekFrom, int32 MoveDistance)
+{
+	int ffsSret;
+	uint32 whence;
+
+	switch(SeekFrom) {
+		case FSI_FILE_SEEK_START:
+			whence = FFS_SEEK_SET;
+			break;
+		case FSI_FILE_SEEK_END:
+			whence = FFS_SEEK_END;
+			break;
+		case FSI_FILE_SEEK_CURRENT:
+			whence = FFS_SEEK_CUR;
+			break;
+	   default:
+		return (FsiResultT)1;
+	}
+
+	ffsSret = ffs_seek(File, MoveDistance, whence);
+	if(ffsSret < 0) 
+		return ffsErrorMap(ffsSret);
+	return (FsiResultT)0;
+}
+
+FsiResultT FsiTell(FsiHandleT File, uint32 *PosP) 
+{
+	int ffsSret;
+
+	if(!PosP)
+		return (FsiResultT)1;
+
+	ffsSret = ffs_seek(File, 0, FFS_SEEK_END);
+	if(ffsSret < 0) 
+		return ffsErrorMap(ffsSret);
+
+	*PosP=ffsSret;
+	return (FsiResultT)0;
+}
+

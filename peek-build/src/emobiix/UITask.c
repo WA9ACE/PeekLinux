@@ -31,7 +31,6 @@ void display_init()
 		return;
 	}
 
-	memset((void *)&displayData, 0, sizeof(dspl_DevCaps));
 	displayData.DisplayType = DSPL_TYPE_GRAPHIC;
 
 	dspl_SetDeviceCaps(&displayData);
@@ -43,9 +42,9 @@ void display_init()
 #include "bal_socket_api_ti.h"
 #include "system_battery.h"
 
-void UiTask(void)
+void UITask(void)
 {
-        task_threadFunction(&UITask);
+        task_threadFunction(&UITask_s);
 
         return;
 }
@@ -58,7 +57,7 @@ static int UIWaitForActivity(void);
 static void UICleanup(void);
 ConnectionContext *connectionContext;
 
-Task UITask = {UIInit, UIIteration, UIWaitForActivity, UICleanup};
+Task UITask_s = {UIInit, UIIteration, UIWaitForActivity, UICleanup};
 
 DataObject *systemAppObject;
 Application *systemApplication;
@@ -109,13 +108,13 @@ static int UIInit(void)
 
 	//GprsRegisterRssi();
 
-	/* Wait for BAL Task to complete */
-	//while(!BalStatusGet()) {
-	//	ExeEventWait(EXE_UI_ID,EXE_SIGNAL_FALSE,EXE_MESSAGE_FALSE,0x16);
-	//}
+	/* Wait for Emo Task init to complete */
+	while(!EmoStatusGet()) {
+		ExeEventWait(EXE_UI_ID,EXE_SIGNAL_FALSE,EXE_MESSAGE_FALSE,0x16);
+	}
 
-	/* Update Bui status so baseband initializes in mmi_main() */
-	//BuiStatusSet();
+	/* Update UI status so baseband initializes in mmi_main() */
+	uiStatusSet();
 
 	//extern void KeyPad_Init();
 	//KeyPad_Init();
@@ -123,7 +122,10 @@ static int UIInit(void)
 	display_init();
 
 	if (!initd) {
-		screenBuf = (unsigned char *)malloc(320*240*2);
+		screenBuf = (unsigned char *)p_malloc(320*240*2);
+		if(!screenBuf) {
+			emo_printf("Failed to allocate screenBuf\n");
+		}
 		lgui_attach(screenBuf);
         	manager_init();
 		initd = 1;

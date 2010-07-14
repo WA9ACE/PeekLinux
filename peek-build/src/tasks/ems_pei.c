@@ -171,18 +171,15 @@ LOCAL SHORT pei_primitive (void * primptr)
 	 |
 	 +------------------------------------------------------------------------------
  */
-extern BOOL powered_on;
-extern void mmiInit( void);
-extern void UiTask(void);
 
 LOCAL SHORT pei_run(T_HANDLE task_handle, T_HANDLE com_handle)
 {  
-	RVM_TRACE_DEBUG_HIGH("ems_pei_run");
-
-// XXX taken out for linking	while (!BuiStatusGet())
+	while(!uiStatusGet())
 		TCCE_Task_Sleep(100);
 
-	EMSTask(1, 0);
+        RVM_TRACE_DEBUG_HIGH("ems_pei_run");
+
+	//EMSTask(1, 0);
 
 	return RV_OK;  
 }/* End pei_run(..) */
@@ -204,7 +201,7 @@ LOCAL SHORT pei_run(T_HANDLE task_handle, T_HANDLE com_handle)
  */
 LOCAL SHORT pei_exit (void)
 {
-	RVM_TRACE_DEBUG_HIGH ("trans_pei_exit");
+	RVM_TRACE_DEBUG_HIGH ("ems_pei_exit");
 
 	exit_flag = 1;
 
@@ -227,20 +224,26 @@ LOCAL SHORT pei_exit (void)
 	 +------------------------------------------------------------------------------
  */
 
+ExeTaskCbT EMSExeTaskCb;
+
 LOCAL SHORT pei_init (T_HANDLE handle)
 {
 	int i;
 	void *rPtr;
-	ExeTaskCbT *task = ExeTaskCb[EXE_UI_S_ID];
+	ExeTaskCbT *task;
+
+        RVM_TRACE_DEBUG_HIGH("ems_pei_init");
+
+	ExeTaskCb[EXE_UI_S_ID] = &EMSExeTaskCb;
+    	task = ExeTaskCb[EXE_UI_S_ID];
 
 	ems_handle = handle;
-	emo_printf("trans_pei_init");
 
 	if (!EVCE_Create_Event_Group(&task->EventGroupCb, "EMSEvGrp"))
 	{
 		for (i = 0; i < 1; i++) 
 		{
-			if(!DMCE_Allocate_Memory(&ExeSystemMemory, &rPtr, (EMSMailQueueTable[i].Size << 2), NU_READY)) 
+			if(!DMCE_Allocate_Memory(&ExeSystemMemory, &rPtr, EMSMailQueueTable[i].Size << 2, NU_READY)) 
 			{
 				QUCE_Create_Queue(&task->MailQueueCb[i], rPtr, "EMSQue", EMSMailQueueTable[i].Size, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
 			}
@@ -252,7 +255,6 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 			task->NumMsgsInQueue[i] = 0;
 		}
 	}
-
 	return PEI_OK;
 } /* End pei_init(..) */
 

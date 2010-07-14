@@ -58,6 +58,10 @@ extern SHORT cst_pei_create   (T_PEI_INFO const **Info);
 #ifdef FF_ESIM
 extern SHORT esim_pei_create  (T_PEI_INFO const **Info); /* esim module */
 #endif
+extern SHORT emo_pei_create   (T_PEI_INFO const **Info);
+extern SHORT trans_pei_create   (T_PEI_INFO const **Info);
+extern SHORT ems_pei_create   (T_PEI_INFO const **Info);
+extern SHORT ui_pei_create   (T_PEI_INFO const **Info);
 extern SHORT sim_pei_create   (T_PEI_INFO const **Info);
 extern SHORT sms_pei_create   (T_PEI_INFO const **Info);
 extern SHORT cc_pei_create    (T_PEI_INFO const **Info);
@@ -434,10 +438,15 @@ const T_COMPONENT_ADDRESS emo_list[] =
   { emo_pei_create,       NULL,   ASSIGNED_BY_TI },
   { NULL,                NULL,   0 }
 };
-
 const T_COMPONENT_ADDRESS trans_list[] =
 {
   { trans_pei_create,       NULL,   ASSIGNED_BY_TI },
+  { NULL,                NULL,   0 }
+};
+
+const T_COMPONENT_ADDRESS ui_list[] =
+{
+  { ui_pei_create,       NULL,   ASSIGNED_BY_TI },
   { NULL,                NULL,   0 }
 };
 
@@ -446,7 +455,6 @@ const T_COMPONENT_ADDRESS ems_list[] =
   { ems_pei_create,       NULL,   ASSIGNED_BY_TI },
   { NULL,                NULL,   0 }
 };
-
 #ifndef FF_ATI_BAT
   #ifdef  FF_BAT
 const T_COMPONENT_ADDRESS gdd_dio_list[] =
@@ -1077,6 +1085,7 @@ upm_list,
   l1_list,
 #endif  
   emo_list,
+  ui_list,
   trans_list,
   ems_list,
   NULL

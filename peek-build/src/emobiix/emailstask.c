@@ -114,8 +114,12 @@ void EMSTask(uint32 argc, void *argv)
 	BOSEventWaitT MailBoxIndex;
 	int i;
 
+        while(1) {
+                TCCE_Task_Sleep(50);
+        }
+
 	//wait until BAL is Ready.
-// XXX taken out for linking	while (BalStatusGet() == FALSE)
+	while (EmoStatusGet() == FALSE)
 	{
 		//the function below is same as NU_Sleep(100);
 		BOSEventWait( BOS_EM_S_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_FALSE, BOSCalMsec(100));
