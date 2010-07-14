@@ -21,6 +21,7 @@ File *file_openRead(const char *filename)
     if (result != FSI_SUCCESS) {
         emo_printf("Failed to open %s reason %d\n", filename, result);
         p_free(output);
+        return NULL;
     }
     output->filename = (char *)p_strdup(filename);
     return output;
@@ -38,6 +39,7 @@ File *file_openWrite(const char *filename)
     if (result != FSI_SUCCESS) {
         emo_printf("Failed to open %s reason %d\n", filename, result);
         p_free(output);
+        return NULL;
     }
     output->filename = (char *)p_strdup(filename);
     return output;
@@ -55,6 +57,7 @@ File *file_openAppend(const char *filename)
     if (result != FSI_SUCCESS) {
         emo_printf("Failed to open %s reason %d\n", filename, result);
         p_free(output);
+        return NULL;
     }
     output->filename = (char *)p_strdup(filename);
     file_seek(output, 0, FP_END);
