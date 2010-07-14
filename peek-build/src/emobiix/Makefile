@@ -4,6 +4,7 @@ INCLUDE += $(INCDIR)/g23m/condat/ms/src/aci
 INCLUDE += $(INCDIR)/g23m/condat/ms/src/aci_dti_mng
 INCLUDE += $(INCDIR)/csw-system/drv_core
 INCLUDE += $(M23DIR)/bmi/gdi
+INCLUDE += $(M23DIR)/bmi/Condat/MS/SRC/mfw
 INCLUDE += $(INCDIR)/g23m/condat/com/include
 INCLUDE += $(M23DIR)/chipsetsw/riviera/rvf
 INCLUDE += $(M23DIR)/csw-system/drv_app/ffs

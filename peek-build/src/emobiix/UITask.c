@@ -2,6 +2,8 @@
 #include "Task.h"
 #include "UITask.h"
 #include "LcdControl.h"
+#include "mfw_mfw.h"
+#include "mfw_mme.h"
 #include "Debug.h"
 #include "Gprs.h"
 #include "lgui.h"
@@ -20,6 +22,22 @@
 #include "gdi.h"
 #include "dspl.h"
 
+void backlightInit() {
+	 int i;
+         for (i=0;i<BL_LAST_OPTION;i++) {
+         	mme_setBacklightEvent(i,BL_MAX_LIGHT);
+	 }
+         mme_setBacklightEvent(BL_IDLE_TIMER,BL_SET_IDLE);
+         mme_setBacklightEvent(BL_KEY_PRESS,BL_MAX_LIGHT);
+         mme_setBacklightEvent(BL_INCOMING_CALL,BL_MAX_LIGHT);
+         mme_setBacklightEvent(BL_EXIT,BL_NO_LIGHT);
+         
+         /*and tell the backlight that the init event has happened */
+         mme_backlightEvent(BL_INIT);
+
+
+
+}
 void display_init()
 {
         dspl_DevCaps displayData;
@@ -118,6 +136,8 @@ static int UIInit(void)
 
 	//extern void KeyPad_Init();
 	//KeyPad_Init();
+
+	backlightInit();
 
 	display_init();
 
