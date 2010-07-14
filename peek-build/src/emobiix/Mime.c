@@ -159,6 +159,11 @@ static int load_png(DataObject *dobj)
 			outputFormat = A4;
 			inputFormat = A8;
 			break;
+		case PNG_COLOR_TYPE_GRAY_ALPHA:
+			components = 2;
+			outputFormat = A4;
+			inputFormat = A8A8;
+			break;
         case PNG_COLOR_TYPE_RGB:
             components = 3;
 			outputFormat = RGB565;
@@ -235,9 +240,9 @@ static unsigned char *imageConvert(void *input, int inputFormat, int outputForma
 		int height, int *outSize)
 {
 	int pos, upper;
-	int x, y;
-	unsigned char *src;
-	unsigned char *output;
+	/*int x, y;*/
+	unsigned char *src, *dest;
+	unsigned char *output, *ooutput;
 	unsigned int pixel;
 	unsigned char alpha;
 
@@ -258,9 +263,10 @@ static unsigned char *imageConvert(void *input, int inputFormat, int outputForma
 			return NULL;
 	}
 	output = (unsigned char *)p_malloc(*outSize);
+	ooutput = output;
 
 	if (outputFormat == A4) {
-		if (inputFormat != A8) {
+		if (inputFormat != A8 && inputFormat != A8A8) {
 			emo_printf("Unsupported converstion to A4" NL);
 			return NULL;
 		}
@@ -268,45 +274,55 @@ static unsigned char *imageConvert(void *input, int inputFormat, int outputForma
 		for (pos = 0; pos < upper; pos += 2) {
 			output[pos>>1] = *src & 0xF0;
 			++src;
+			if (inputFormat == A8A8)
+				++src;
+
 			output[pos>>1] |= (*src >> 4);
 			++src;
+			if (inputFormat == A8A8)
+				++src;
 		}
 		return output;
 	}
 
-	for (y = 0; y < height; ++y) {
-		for (x = 0; x < width; ++x) {
-			switch (inputFormat) {
-				case RGB:
-					pixel = RGB_TO_565(src[(x+y*width)*3],
-							src[(x+y*width)*3+1], src[(x+y*width)*3+2]);
-					break;
-				case RGBA:
-					pixel = RGB_TO_565(src[(x+y*width)*4],
-							src[(x+y*width)*4+1], src[(x+y*width)*4+2]);
-					alpha = src[(x+y*width)*4+3];
-					break;
-				default:
-					emo_printf("Unhandled input format" NL);
-					return NULL;
-			}
-
-			switch (outputFormat) {
-				case RGB565:
-					((unsigned short *)output)[x+y*width] = (unsigned short)pixel;
-					break;
-				case RGB565A8:
-					*((unsigned short *)(output+(x+y*width)*3)) = (unsigned short)pixel;
-					*((unsigned char *)(output+(x+y*width)*3+2)) = (unsigned char)alpha;
-					break;
-				default:
-					emo_printf("Unhandled output format" NL);
-					return NULL;
-			}
+	upper = width * height;
+	dest = output;
+	for (pos = 0; pos < upper; ++pos) {
+	/*for (y = 0; y < height; ++y) {
+		for (x = 0; x < width; ++x) {*/
+		switch (inputFormat) {
+			case RGB:
+				pixel = RGB_TO_565((*src), *(src+1), *(src+2));
+				src += 3;
+				break;
+			case RGBA:
+				pixel = RGB_TO_565((*src), *(src+1), *(src+2));
+				alpha = *(src+3);
+				src += 4;
+				break;
+			default:
+				emo_printf("Unhandled input format" NL);
+				return NULL;
 		}
+
+		switch (outputFormat) {
+			case RGB565:
+				*((unsigned short *)output) = (unsigned short)pixel;
+				output += 2;
+				break;
+			case RGB565A8:
+				*((unsigned short *)(output)) = (unsigned short)pixel;
+				*((unsigned char *)(output+2)) = (unsigned char)alpha;
+				output += 3;
+				break;
+			default:
+				emo_printf("Unhandled output format" NL);
+				return NULL;
+		}
+	/*	}*/
 	}
 
-	return output;
+	return ooutput;
 
 }
 
