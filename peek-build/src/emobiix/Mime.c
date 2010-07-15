@@ -243,7 +243,7 @@ static unsigned char *imageConvert(void *input, int inputFormat, int outputForma
 	/*int x, y;*/
 	unsigned char *src, *dest;
 	unsigned char *output, *ooutput;
-	unsigned int pixel;
+	unsigned short pixel;
 	unsigned char alpha;
 
 	src = (unsigned char *)input;
@@ -307,12 +307,13 @@ static unsigned char *imageConvert(void *input, int inputFormat, int outputForma
 
 		switch (outputFormat) {
 			case RGB565:
-				*((unsigned short *)output) = (unsigned short)pixel;
+				*((unsigned short *)output) = pixel;
 				output += 2;
 				break;
 			case RGB565A8:
-				*((unsigned short *)(output)) = (unsigned short)pixel;
-				*((unsigned char *)(output+2)) = (unsigned char)alpha;
+				*((unsigned char *)(output)) = pixel & 0xFF;
+				*((unsigned char *)(output+1)) = (pixel >> 8) & 0xFF;
+				*((unsigned char *)(output+2)) = alpha;
 				output += 3;
 				break;
 			default:
