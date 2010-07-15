@@ -9,7 +9,7 @@
 
 #include <stdio.h>
 
-static DataObject *dobjFromFile(const char *filename, DataObject *root)
+DataObject *dobjFromFile(const char *filename, DataObject *root)
 {
 	DataObject *dobj1;
 	File *mimefile;
@@ -26,6 +26,15 @@ static DataObject *dobjFromFile(const char *filename, DataObject *root)
 		dataobject_setValue(dobj1, "mime-type", dataobjectfield_string("png"));
 		dataobject_setValue(dobj1, "src", dataobjectfield_data(mimedata, mimedata_size));
 		mime_load(dobj1);
+		if (strcmp("batterycharge.png", filename) == 0) {
+			DataObjectField *field;
+			FILE *output;
+
+			field = dataobject_getValue(dobj1, "data");
+			output = fopen("test.raw", "wb");
+			fwrite(field->field.data.bytes, 1, field->field.data.size, output);
+			fclose(output);
+		}
 	}
 
 	return dobj1;
@@ -38,7 +47,7 @@ DataObject *RootApplication(void)
 	DataObject *setw, *setiw, *setc, *testvalue;
 	DataObject *signalstack, *testgprs;
 	DataObject *batterystack, *testbattery, *testcharge;
-	DataObject *testweather;
+	DataObject *testweather, *testspkr;
 
     if (output != NULL)
         return output;
@@ -74,6 +83,9 @@ DataObject *RootApplication(void)
 
 	testweather = dataobject_new();
 	dataobject_setValue(testweather, "data", dataobjectfield_string("1"));
+
+	testspkr = dataobject_new();
+	dataobject_setValue(testspkr, "data", dataobjectfield_string("1"));
 
 	signalstack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
 
@@ -135,12 +147,12 @@ DataObject *RootApplication(void)
 	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
 	dataobject_setValue(setc, "color", dataobjectfield_string("FF555500"));
 
-	batterystack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
-	setc = dobjFromFile("batterycase.png", batterystack);
-	dataobject_setValue(setc, "margintop", dataobjectfield_string("3"));
-
+	setw = widget_newTypeIdName("box", NULL, NULL, dobj1);
+	dataobject_setValue(setw, "width", dataobjectfield_string("64%"));
+	dataobject_setValue(setw, "height", dataobjectfield_string("100%"));
+	
 	/* Weather set */
-	setw = widget_newTypeIdName("set", NULL, NULL, signalstack);
+	setw = widget_newTypeIdName("set", NULL, NULL, dobj1);
 	dataobject_setValue(setw, "fieldname", dataobjectfield_string("data"));
 	/*dataobject_setValue(setw, "margintop", dataobjectfield_string("3"));
 	dataobject_setValue(setw, "marginleft", dataobjectfield_string("3"));*/
@@ -149,33 +161,55 @@ DataObject *RootApplication(void)
 	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
 	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("1"));
 	setc = dobjFromFile("wi-cloud.png", setiw);
-	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
 	dataobject_setValue(setc, "color", dataobjectfield_string("00000000"));
+	dataobject_setValue(setc, "margintop", dataobjectfield_string("3"));
 
 	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
 	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("2"));
 	setc = dobjFromFile("wi-rain.png", setiw);
-	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
 	dataobject_setValue(setc, "color", dataobjectfield_string("00000000"));
 
 	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
 	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("3"));
 	setc = dobjFromFile("wi-storm.png", setiw);
-	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
 	dataobject_setValue(setc, "color", dataobjectfield_string("00000000"));
 
 	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
 	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("4"));
 	setc = dobjFromFile("wi-snow.png", setiw);
-	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
 	dataobject_setValue(setc, "color", dataobjectfield_string("00000000"));
 
 	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	/*dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("5"));*/
 	setc = dobjFromFile("wi-sun.png", setiw);
-	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
 	dataobject_setValue(setc, "color", dataobjectfield_string("00000000"));
 
+	setw = widget_newTypeIdName("label", "label", NULL, dobj1);
+	dataobject_setValue(setw, "data", dataobjectfield_string("73F"));
+	dataobject_setValue(setw, "margintop", dataobjectfield_string("1"));
+
+	/* Spkr set */
+	setw = widget_newTypeIdName("set", NULL, NULL, dobj1);
+	dataobject_setValue(setw, "fieldname", dataobjectfield_string("data"));
+	dataobject_setValue(setw, "margin", dataobjectfield_string("2"));
+	/*dataobject_setValue(setw, "marginleft", dataobjectfield_string("3"));*/
+	widget_setDataObject(setw, testspkr);
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("1"));
+	setc = dobjFromFile("spkr-on.png", setiw);
+	dataobject_setValue(setc, "color", dataobjectfield_string("00000000"));
+	
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	setc = dobjFromFile("spkr-off.png", setiw);
+	dataobject_setValue(setc, "color", dataobjectfield_string("00000000"));
+
+
 	/* battery indicator */
+	batterystack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
+	setc = dobjFromFile("batterycase.png", batterystack);
+	dataobject_setValue(setc, "margintop", dataobjectfield_string("3"));
+
 	setw = widget_newTypeIdName("set", NULL, NULL, batterystack);
 	dataobject_setValue(setw, "fieldname", dataobjectfield_string("data"));
 	dataobject_setValue(setw, "margintop", dataobjectfield_string("3"));
