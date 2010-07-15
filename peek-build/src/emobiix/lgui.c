@@ -395,7 +395,7 @@ void lgui_blitRGB565A8(int destx, int desty, int imgx, int imgy,
 		imgbuf += ccol *3;
         for (col = ccol; col < cwidth; ++col) {
             pixel = *(imgbuf);
-            pixel |= *(imgbuf+1);
+            pixel |= *(imgbuf+1) << 8;
 			scale = *((unsigned char *)(imgbuf+2));
 			srcpixel = *buf;
 			*buf = (unsigned short)(PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale));
