@@ -26,15 +26,6 @@ DataObject *dobjFromFile(const char *filename, DataObject *root)
 		dataobject_setValue(dobj1, "mime-type", dataobjectfield_string("png"));
 		dataobject_setValue(dobj1, "src", dataobjectfield_data(mimedata, mimedata_size));
 		mime_load(dobj1);
-		if (strcmp("batterycharge.png", filename) == 0) {
-			DataObjectField *field;
-			FILE *output;
-
-			field = dataobject_getValue(dobj1, "data");
-			output = fopen("test.raw", "wb");
-			fwrite(field->field.data.bytes, 1, field->field.data.size, output);
-			fclose(output);
-		}
 	}
 
 	return dobj1;
