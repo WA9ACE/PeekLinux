@@ -83,6 +83,7 @@ SRC += SetWidget.c
 SRC += ImageWidget.c
 SRC += TextWidget.c
 SRC += LabelWidget.c
+SRC += StaticApplications.c
 
 TARGET = $(CURDIR)/emobiix.a
 SOCKET_SIM = $(CURDIR)/socket_sim.a
