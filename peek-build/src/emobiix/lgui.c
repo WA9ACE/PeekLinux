@@ -929,7 +929,7 @@ more_escape:
 				y + fontHeight < CLIP.y ||
 				y > CLIP.y + CLIP.height)) {
 			if (data == NULL) {
-				emo_printf(" Glyph missing");
+				/*emo_printf(" Glyph missing" NL);*/
 			} else {
 				++innercount;
 				if (state.useBackground)
