@@ -536,7 +536,7 @@ void widget_focusPrev(Widget *tree, Style *s)
 
 	oldW = widget_focusWhichOne(tree);
 	if (oldW == NULL) {
-		emo_printf("Focus didnt find any widget" NL);
+		/*emo_printf("Focus didnt find any widget" NL);*/
 		/*return;*/
 		goto focus_last;
 	}
@@ -577,14 +577,15 @@ focus_last:
 		style_renderWidgetTree(s, tree);
 	}
 
-	widget_markDirty(newW);
-	lgui_clip_identity();
-	widget_getClipRectangle(newW, &rect);
-	lgui_clip_set(&rect);
-
-	lgui_push_region();
-	style_renderWidgetTree(s, tree);
-
+	if (newW != NULL) {
+		widget_markDirty(newW);
+		lgui_clip_identity();
+		widget_getClipRectangle(newW, &rect);
+		lgui_clip_set(&rect);
+	
+		lgui_push_region();
+		style_renderWidgetTree(s, tree);
+	}
 }
 
 Widget *widget_focusNoneR(Widget *w)
@@ -1050,10 +1051,10 @@ void widget_resolvePosition(Widget *w)
 				break;
 		}
 
+		widget_resolvePosition(cw);
+
 		if (singleChild != NULL)
 			return;
-
-		widget_resolvePosition(cw);
 #if 0
 		if (!positionStatic) {
 			if (packing == WP_HORIZONTAL)
@@ -1116,7 +1117,7 @@ void widget_resolveLayoutRoot(Widget *w, Style *s, int resizeRoot)
 	/* position widgets based on packing and alignment */
 	widget_resolvePosition(w);
 
-	dataobject_debugPrint(w);
+	/*dataobject_debugPrint(w);*/
 }
 
 void widget_setAlignment(Widget *w, WidgetAlignment a)
