@@ -9,6 +9,7 @@
 #include "Style.h"
 #include "BootApplication.h"
 #include "RootApplication.h"
+#include "StaticApplications.h"
 #include "DataObject.h"
 #include "Widget.h"
 #include "RootStyle.h"
@@ -73,7 +74,8 @@ void manager_init(void)
 			dataobject_findByName(appManager->rootApplicationWindow,
 			"placeholder");
 
-    bootApp = application_load(BootApplication());
+    /*bootApp = application_load(BootApplication());*/
+	bootApp = application_load(LockApplication());
     manager_launchApplication(bootApp);
 
 	manager_focusApplication(bootApp);
