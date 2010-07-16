@@ -1465,9 +1465,6 @@ int idle_displayData( int dataId , int txtId, char* txtStr)
 	
 	int noRoom = 0;
 
-        lgui_set_dirty();
-        updateScreen();
-
 	if (txtStr != NULL)
 		lenStr = dspl_GetTextExtent( txtStr, 0);
 	else
@@ -2125,8 +2122,8 @@ LimitedService = 0;//end of crr12653
 							idle_displayData(IDLE_NETWORK_NAME,TxtLimService,NULL);
 							LimitedService = 1;
 						}
-						else
-					idle_displayData(IDLE_NETWORK_NAME,TxtNoNetwork,NULL);
+					//	else
+					//idle_displayData(IDLE_NETWORK_NAME,TxtNoNetwork,NULL);
 				}
 				break;
 			case NETWORK_NO_PLMN_XXX_AVAIL:
@@ -2135,10 +2132,10 @@ LimitedService = 0;//end of crr12653
 // Nov 24, 2005, a0876501, DR: OMAPS00045909
 				else if (sim_status == IMEI_NOT_VALID)
 					idle_displayData(IDLE_NETWORK_NAME,TxtInvalidIMEI,NULL);
-				else
-					idle_displayData(IDLE_NETWORK_NAME,TxtNoNetwork,NULL);
+				//else
+				//	idle_displayData(IDLE_NETWORK_NAME,TxtNoNetwork,NULL);
 			default:
-				idle_displayData(IDLE_NETWORK_NAME,TxtNoNetwork,NULL);
+				//idle_displayData(IDLE_NETWORK_NAME,TxtNoNetwork,NULL);
 				break;
 		}
 
@@ -2477,30 +2474,32 @@ LimitedService = 0;//end of crr12653
 #endif
 			dspl_SetFgdColour( COL_W );
 			dspl_SetBgdColour( COL_TRANSPARENT );     
-
+			
 			strcpy((char *)dt_str,  mfw_td_get_date_str());
 			strcpy((char *)time_str,  mfw_td_get_clock_str());
-
+			if(dt_str && (dt_str[0] != '0' && dt_str[1] != '0'))  { // dont draw if not set
 
 			/* x0045876, 14-Aug-2006 (WR - "xPos" was set but never used) */
 			/* xPos = 10; */
 			
-			yPos = 40;//Mmi_layout_line_height()*7;
+				yPos = 40;//Mmi_layout_line_height()*7;
 
-			dspl_Clear(10, yPos, mmiScrX,mmiScrY);
-			dspl_TextOut (10, yPos, 0, time_str);
+				dspl_Clear(10, yPos, mmiScrX,mmiScrY);
+				dspl_TextOut (10, yPos, 0, time_str);
 
-			dspl_Clear(125, yPos, mmiScrX,mmiScrY);		
-			//x0pleela 09 Nov, 2006 ER: OMAPS00099966
-			//resizing for Endurance Font support
+				dspl_Clear(125, yPos, mmiScrX,mmiScrY);		
+				//x0pleela 09 Nov, 2006 ER: OMAPS00099966
+				//resizing for Endurance Font support
 		#ifdef FF_ENDURANCE_FONT
-			dspl_TextOut( 65, yPos, 0, dt_str );
+				dspl_TextOut( 65, yPos, 0, dt_str );
 		#else
-			dspl_TextOut( 100, yPos, 0, dt_str );
+				dspl_TextOut( 100, yPos, 0, dt_str );
 		#endif
-#if 0
+			
+			}
+#if 0 
 
-		}
+	}
 //End 32642
 
 		resources_restoreMnuColour();//required only if other menu items are to be drawn afterwards
@@ -2528,6 +2527,7 @@ LimitedService = 0;//end of crr12653
 		}
 #endif //FF_PHONE_LOCK		
 #endif
+	dspl_Enable(1);
 	TRACE_FUNCTION("end of idle_draw_main_idle()");
 }
 

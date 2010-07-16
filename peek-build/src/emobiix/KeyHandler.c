@@ -77,7 +77,7 @@ void updateScreen(void) {
 #endif
             }
         }
-	dspl_Enable(1);
+	//dspl_Enable(1);
 	lgui_blit_done();
 #endif
 }
