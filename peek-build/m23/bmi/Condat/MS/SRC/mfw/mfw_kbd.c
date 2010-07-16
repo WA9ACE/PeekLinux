@@ -509,11 +509,14 @@ void kbdSignal (char make, char key)
 			case 49: // power
 				key = 23;
 				break;
-			case 46: // back button
+			case 46: // wheel button
 				key = 16;
 				break;
-			case 47: // wheel button
+			case 47: // back button
 				key = 17;
+				break;
+			case 41: // lock button
+				key = 12;
 				break;
 		}
 		still_processing_flag = 1;

@@ -36,7 +36,7 @@ DataObject *LockApplication(void)
 
 	dobj1 = dobjFromFile("street64.png", root);
 	widget_setPacking(dobj1, WP_VERTICAL);
-
+	/*
 	setw = widget_newTypeIdName("label", "biglabelw", NULL, dobj1);
 	dataobject_setValue(setw, "data", dataobjectfield_string("1:15p"));
 	dataobject_setValue(setw, "weight", dataobjectfield_string("bold"));
@@ -48,6 +48,7 @@ DataObject *LockApplication(void)
 	dataobject_setValue(setw, "weight", dataobjectfield_string("bold"));
 	dataobject_setValue(setw, "marginleft", dataobjectfield_string("20"));
 	dataobject_setValue(setw, "margintop", dataobjectfield_string("4"));
+	*/
 
 	return output;
 }

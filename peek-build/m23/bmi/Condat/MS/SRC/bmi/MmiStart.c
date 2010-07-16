@@ -419,12 +419,12 @@ void startInit( void )
 #ifndef FF_NO_VOICE_MEMO
 	voice_memo_init ();
 #endif
-
+/*
 	voice_mail_init ();
 	sms_cb_init ();
 	
 	mmi_cphs_init();	
-
+*/
 	/* SPR#2346 - SH - GPRS */
 #ifdef MMI_GPRS_ENABLED
 	GPRS_Init();
@@ -492,6 +492,11 @@ void startInit( void )
 	//Emergency call , USB enumeration respectively
 	mmeInit();  //fieldstrength driver
 	/* SH - PIN screen now comes before welcome screen */
+	showwelcome(idle_get_window());
+
+        while(animation_complete == FALSE)
+                TCCE_Task_Sleep(1);
+
 	startregis();	
 }
 
@@ -565,28 +570,17 @@ void startExit( void )
 
 void startExec( int reason, MmiState next )
 {
-        T_DISPLAY_DATA   display_info;
 
     switch (reason)
     {
 		case PhoneInit:
 		{
-			/* initialising, run the animation
-			*/
-        		dlg_initDisplayData_TextId( &display_info, TxtNull, TxtNull, TxtNull, TxtNull , COLOUR_STATUS_WELCOME);
-        		dlg_initDisplayData_events( &display_info, (T_VOID_FUNC)show_welcome_cb, ONE_SECS, 0 );
-
-      			/*
-       			* Call Icon
-       			*/
-       			 mmi_dialogs_insert_animation (info_dialog (win, &display_info), 400 ,(MfwIcnAttr*)&welcome_Attr,animwelcome);
-
 		    sim_init();                     /* init SIM handler         */
 		    nm_init();                      /* init REG handler         */
-	    	startInit();                        /* init startup module      */
+	    	    startInit();                        /* init startup module      */
 	    	
 		}
-        break;
+        	break;
 
 		case FirstTimeNMFound:
 		{
@@ -651,6 +645,8 @@ MfwHnd startWhoIsFocused( void )
 void showwelcome (T_MFW_HND win)			/* SH - not static, as now externally called */
 {
         T_DISPLAY_DATA   display_info;
+	T_MFW_HND       win_parent  = mfw_parent (mfw_header());
+
 
 	TRACE_FUNCTION("showwelcome ()");
 
@@ -692,7 +688,7 @@ void showwelcome (T_MFW_HND win)			/* SH - not static, as now externally called 
  				
 *******************************************************************************/
 
-static int show_welcome_cb(T_MFW_HND win, USHORT identifier, UBYTE reason)
+int show_welcome_cb(T_MFW_HND win, USHORT identifier, UBYTE reason)
 {
 	TRACE_FUNCTION("show_welcome_cb");
 

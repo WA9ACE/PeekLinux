@@ -99,7 +99,7 @@
 */
 #define ENTITY_MFW
 
-#define TRACE_MEMORY_CHECK
+//#define TRACE_MEMORY_CHECK
 
 #include <stdio.h>
 #include <string.h>
@@ -530,7 +530,9 @@ U8 *mfwAlloc (U32 size)
 
     if (!size)
     {
+#ifdef MFW_MEM
         TRACE_ERROR("mfwAlloc(): invalid memory request");
+#endif
         return 0;
     }
     

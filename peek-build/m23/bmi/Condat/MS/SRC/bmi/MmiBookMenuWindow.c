@@ -400,7 +400,7 @@ static int bookMenuWindowCB( MfwEvt e, MfwWin *w )
 			if (mnu)
 			{
 				if (mnu->curAttr)
-			softKeys_displayId( TxtSoftSelect, TxtSoftBack, 0, mnu->curAttr->mnuColour);
+					softKeys_displayId( TxtSoftSelect, TxtSoftBack, 0, mnu->curAttr->mnuColour);
 				else
 					softKeys_displayId( TxtSoftSelect, TxtSoftBack, 0, COLOUR_LIST_SUBMENU);
 					
@@ -666,7 +666,7 @@ static int bookMenuKbdCB( MfwEvt e, MfwKbd *k )
 		}
         break;
         
-        case KCD_STAR:
+        case KCD_VOLUP:
 		{	
 		
 			/*
@@ -676,14 +676,14 @@ static int bookMenuKbdCB( MfwEvt e, MfwKbd *k )
              
 			if(data->status_of_timer EQ FALSE)
 			{
-	            TRACE_EVENT ("activate KEYpadLOCK");
-    	        mnuEscape( data->menu );
+	            		TRACE_EVENT ("activate KEYpadLOCK");
+    	        		mnuEscape( data->menu );
 				settingsKeyPadLockOn ();
 			}
 			
 			/* SPR#1608 - SH - Otherwise, send '*' keypress to idle screen */
 			
-            else if (window == data->phbk->menu_main_win)
+            		else if (window == data->phbk->menu_main_win)
 			{		
 	        	/* Number key presses in phonebook menu returns user to idle screen, 
 	               add key press to Idle edit screen. */
@@ -692,7 +692,7 @@ static int bookMenuKbdCB( MfwEvt e, MfwKbd *k )
 
 				bookMenuDestroy(data->win);
 
-		        SEND_EVENT(idle_get_window(), IDLE_START_DIALLING_NUMBER, 0, &keycode);
+		        	SEND_EVENT(idle_get_window(), IDLE_START_DIALLING_NUMBER, 0, &keycode);
 			}
 		}
         break;

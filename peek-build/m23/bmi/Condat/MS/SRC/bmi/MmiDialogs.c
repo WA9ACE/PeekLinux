@@ -1429,8 +1429,10 @@ static T_MFW_CB dialog_info_tim_cb (T_MFW_EVENT event, T_MFW_TIM *tc)
 
 //TISH modified for MSIM
 //  if (Callback)
-  if (Callback && parent_win)
-     (Callback) (parent_win, Identifier, INFO_TIMEOUT);
+  if (Callback && win)
+     (Callback) (win, Identifier, INFO_TIMEOUT);
+  else
+	TRACE_FUNCTION("dialog_info_tim_cb() Where did my win go?");
 
   return 0;
 }

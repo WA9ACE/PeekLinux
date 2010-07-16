@@ -382,10 +382,10 @@ void four_in_a_row_destroy (T_MFW_HND own_window)
 T_MFW_HND four_in_a_row_start (T_MFW_HND win_parent,char *character)
 {
   T_MFW_HND win; 
- /*
- MmiTetrisStart();
- return;
- */
+ 
+  MmiTetrisStart();
+
+  return;
   win = four_in_a_row_create (win_parent);
   TRACE_EVENT("four_in_a_row_start");
 

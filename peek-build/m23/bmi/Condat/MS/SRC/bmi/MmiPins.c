@@ -2047,7 +2047,7 @@ static void pin_main(T_MFW_HND win, USHORT event, SHORT value, void * parameter)
 			*** registration in full service mode case: PIN was  necessary
 			*/
 				/* SH - show welcome screen */
-				showwelcome(idle_get_window());
+			//	showwelcome(idle_get_window());
 
 			    network_start_full_service ();
 //GW-SPR#1035-Added STK Changes
@@ -2172,7 +2172,7 @@ static void check_plock_to_clock(T_MFW_HND win,USHORT event)
 				*** registration in full service mode case: PIN was not necessary
 				*/
 				/* SH - show welcome screen*/
-				showwelcome(idle_get_window());
+				//showwelcome(idle_get_window());
 				/*SPR 1431*/
 				network_start_full_service();
 //GW-SPR#1035-Added STK Changes

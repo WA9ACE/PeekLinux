@@ -725,7 +725,6 @@ void mainInit (UBYTE InitCause)
       if(FFS_flashData.refresh==1)
 	  	timStart(times);
 #endif
-
     startExec(PhoneInit,0);		 /* get it rolling	    */
 
 }
@@ -2739,7 +2738,8 @@ static void showGoodBye (T_MFW_HND win)
     T_DISPLAY_DATA   display_info;
 
   TRACE_FUNCTION("showGoodBye ()");
-	dlg_zeroDisplayData(&display_info);
+	//dlg_zeroDisplayData(&display_info);
+	dlg_initDisplayData_TextId( &display_info, TxtNull, TxtNull, TxtNull, TxtNull , COLOUR_STATUS_WELCOME);
 	dlg_initDisplayData_events( &display_info, (T_VOID_FUNC)goodbye_cb, FOREVER, 0 );
 
       /*

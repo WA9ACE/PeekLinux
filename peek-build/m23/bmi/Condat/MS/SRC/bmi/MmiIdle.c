@@ -1821,17 +1821,14 @@ LimitedService = 0;//end of crr12653
 		return;
 
         TRACE_FUNCTION("idle_draw_main_idle");
+	resources_setColour( COLOUR_IDLE );
+	dspl_ClearAll();
+	idle_initDisplayData();
         UIInit();
         lgui_set_dirty();
         updateScreen();
-        //idle_displayData(IDLE_CLOCK_STR,        TxtNull, mfw_td_get_clock_str());/*SPR 1725*/
-        //idle_displayData(IDLE_DATE_STR,         TxtNull, mfw_td_get_date_str()); /*SPR 1725*///Only displayed on D-sample
 
 #if 0
-		resources_setColour( COLOUR_IDLE );
-		dspl_ClearAll();
-		idle_initDisplayData();
-
 
 	    if (idle_data.starting_up) /*SPR#1662 - NH Show please wait since the phone is not ready yet*/
 	    {
@@ -1893,8 +1890,8 @@ LimitedService = 0;//end of crr12653
 			else
 				xOfs = 0;
 #ifdef COLOURDISPLAY
-        		lgui_set_dirty();
-        		updateScreen();
+        		//lgui_set_dirty();
+        		//updateScreen();
 	        	dspl_BitBlt2(xOfs,yOfs,icn->area.sx,icn->area.sy,icn->icons,0,icn->icnType);
 #endif
 		}
@@ -2041,6 +2038,7 @@ LimitedService = 0;//end of crr12653
                 /* Marcus: Issue 1618: 24/01/2003: End */
 
 //x0pleela 25 May, 2006  DR: OMAPS00070657
+#if 0
 #ifdef FF_CPHS
 			if (mmi_cphs_get_als_value() )
 			{
@@ -2088,11 +2086,10 @@ LimitedService = 0;//end of crr12653
 			}
                 	
 #endif
-				
+#endif
 				break;
-
 			case NETWORK_SEARCH_NETWORK :
-				idle_displayData(IDLE_NETWORK_NAME,TxtSearching,NULL);
+				//idle_displayData(IDLE_NETWORK_NAME,TxtSearching,NULL);
 				 if(modem_boot_done==0)
 	  			{
 	  			/*OMAPS00091029 x0039928(sumanth) - to mark the end of modem boot event*/
@@ -2469,13 +2466,16 @@ LimitedService = 0;//end of crr12653
 // Jul 08, 2005    REF: ENH 32642 x0018858
 //Code to display the date/time even if the idle_data editor is being displayed.
 //Begin 32642
+#endif
+#if 0
 #ifdef NEW_EDITOR
 		if (idle_data.editor != NULL)
 #else
 		if (idle_data.edt != NULL)
 #endif
 		{
-			dspl_SetFgdColour( COL_BLK );
+#endif
+			dspl_SetFgdColour( COL_W );
 			dspl_SetBgdColour( COL_TRANSPARENT );     
 
 			strcpy((char *)dt_str,  mfw_td_get_date_str());
@@ -2485,12 +2485,12 @@ LimitedService = 0;//end of crr12653
 			/* x0045876, 14-Aug-2006 (WR - "xPos" was set but never used) */
 			/* xPos = 10; */
 			
-			yPos = Mmi_layout_line_height()*7;
+			yPos = 40;//Mmi_layout_line_height()*7;
 
-			dspl_Clear(10, Mmi_layout_line_height()*7,mmiScrX,mmiScrY);
-			dspl_TextOut (10,Mmi_layout_line_height()*7, 0, time_str);
+			dspl_Clear(10, yPos, mmiScrX,mmiScrY);
+			dspl_TextOut (10, yPos, 0, time_str);
 
-			dspl_Clear(125, Mmi_layout_line_height()*7,mmiScrX,mmiScrY);		
+			dspl_Clear(125, yPos, mmiScrX,mmiScrY);		
 			//x0pleela 09 Nov, 2006 ER: OMAPS00099966
 			//resizing for Endurance Font support
 		#ifdef FF_ENDURANCE_FONT
@@ -2498,10 +2498,11 @@ LimitedService = 0;//end of crr12653
 		#else
 			dspl_TextOut( 100, yPos, 0, dt_str );
 		#endif
+#if 0
 
 		}
 //End 32642
-			
+
 		resources_restoreMnuColour();//required only if other menu items are to be drawn afterwards
 
 		resources_restoreColour();
@@ -5095,10 +5096,10 @@ void idle_key_pad_locked (T_MFW_HND win, USHORT event, SHORT value, void * param
 				data->win_info = idle_information_start(win,2000,showPressMenuStar,(T_VOID_FUNC)idle_info_destroy_cb);
 			}
 		break;
-		case KCD_STAR:
+		case KCD_VOLUP:
 			if (data->menuPressed)
 			{
-                TRACE_EVENT ("dactivate the KEYpad");
+                		TRACE_EVENT ("dactivate the KEYpad");
 				settingsKeyPadLockOff();
 				data->menuPressed = FALSE;
 				idle_key_pad_locked_destroy(win);
