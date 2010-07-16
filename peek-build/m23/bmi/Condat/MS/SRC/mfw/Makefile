@@ -31,6 +31,7 @@ INCLUDE += $(M23DIR)/CS_ThirdParty/Beatnik/code/services/bae/Engine/Common_FLASH
 INCLUDE += $(M23DIR)/CS_ThirdParty/Beatnik/code/services/bae/Libraries/G711_Source
 INCLUDE += $(M23DIR)/CS_ThirdParty/Beatnik/code/services/bae/Libraries/zlib_Source
 INCLUDE += $(M23DIR)/CS_ThirdParty/Beatnik/code/services/bae/PAL_Impls/Riviera
+INCLUDE += $(M23DIR)/csw-system/drv_app/kpd
 INCLUDE += $(M23DIR)/bmi/Condat/MS/SRC/mfw
 INCLUDE += $(M23DIR)/bmi/Condat/MS/SRC/atb
 INCLUDE += $(M23DIR)/bmi/Condat/MS/SRC/bmi/Icons

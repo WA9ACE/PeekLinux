@@ -438,6 +438,10 @@ T_WCHAR me_uc[40];
 //extern void rfs_test_01(void);
 extern T_AUDIO_RET audio_mms_play_from_ffs_start (T_AUDIO_MMS_PLAY_FROM_FFS_PARAMETER *p_play_parameter, T_RV_RETURN return_path);
 
+extern int UIInit(void);
+void updateScreen(void);
+void lgui_set_dirty(void);
+
 static UBYTE modem_boot_done; /*OMAPS00091029 x0039928(sumanth) - flag to indicate modem boot has happenned*/
 static UBYTE network_sync_done; /*OMAPS00091029 x0039928(sumanth) - flag to indicate network sync has happenned*/
 
@@ -1323,13 +1327,13 @@ void idleEvent (int reason)
 
     switch (reason)
     {
-		case IdleSearchNetwork:
-		    if (idle_data.win)
-			    SEND_EVENT(idle_data.win,IDLE_NO_NETWORK,0,0);
-	    break;
+	case IdleSearchNetwork:
+	    	if (idle_data.win)
+		    	SEND_EVENT(idle_data.win,IDLE_NO_NETWORK,0,0);
+	break;
     	case IdleUpdate:
     		if (idle_data.win)
-	    		//SEND_EVENT(idle_data.win,IDLE_UPDATE,0,0);
+	    		SEND_EVENT(idle_data.win,IDLE_UPDATE,0,0);
     	break;
 	    case IdleNewSmsMessage:
 		    if (idle_data.win)
@@ -1460,6 +1464,9 @@ int idle_displayData( int dataId , int txtId, char* txtStr)
 	/* int txtFormat = 0; // RAVI */
 	
 	int noRoom = 0;
+
+        lgui_set_dirty();
+        updateScreen();
 
 	if (txtStr != NULL)
 		lenStr = dspl_GetTextExtent( txtStr, 0);
@@ -1807,17 +1814,24 @@ LimitedService = 0;//end of crr12653
 	sim_status = sim_status_check();
 	memset(&current_network,'\0',sizeof(T_CURRENT_NETWORK)); /*x0039928 - Lint warning fix */
 	memset(&srvStat, '\0',sizeof(srvStat));
-		TRACE_FUNCTION("idle_draw_main_idle()");
+	TRACE_FUNCTION("idle_draw_main_idle()");
 
-		/* If we have not finished animation, do not draw any of the idle screen */
-		if (mmiStart_animationComplete()!=TRUE)
-			return;
+	/* If we have not finished animation, do not draw any of the idle screen */
+	if (mmiStart_animationComplete()!=TRUE)
+		return;
 
-TRACE_FUNCTION("idle_draw_main_idle");
+        TRACE_FUNCTION("idle_draw_main_idle");
+        UIInit();
+        lgui_set_dirty();
+        updateScreen();
+        //idle_displayData(IDLE_CLOCK_STR,        TxtNull, mfw_td_get_clock_str());/*SPR 1725*/
+        //idle_displayData(IDLE_DATE_STR,         TxtNull, mfw_td_get_date_str()); /*SPR 1725*///Only displayed on D-sample
 
+#if 0
 		resources_setColour( COLOUR_IDLE );
 		dspl_ClearAll();
 		idle_initDisplayData();
+
 
 	    if (idle_data.starting_up) /*SPR#1662 - NH Show please wait since the phone is not ready yet*/
 	    {
@@ -1843,7 +1857,7 @@ TRACE_FUNCTION("idle_draw_main_idle");
 		// Set the back ground and foreground colour.
      		dspl_SetFgdColour( COL_BLK );
       		dspl_SetBgdColour( COL_TRANSPARENT );     
-
+#endif
        	if (idle_data.nm_status == NETWORK_FULL_SERVICE) 
 		{
 			network_get_name (&current_network);
@@ -1879,14 +1893,17 @@ TRACE_FUNCTION("idle_draw_main_idle");
 			else
 				xOfs = 0;
 #ifdef COLOURDISPLAY
-	        dspl_BitBlt2(xOfs,yOfs,icn->area.sx,icn->area.sy,icn->icons,0,icn->icnType);
+        		lgui_set_dirty();
+        		updateScreen();
+	        	dspl_BitBlt2(xOfs,yOfs,icn->area.sx,icn->area.sy,icn->icons,0,icn->icnType);
 #endif
 		}
-
+#if 0
 		if (smsidle_get_unread_sms_available())
 			iconsSetState(iconIdSMS);/* Indicate SMS delivery to MS-User. */
 		else
 			iconsDeleteState(iconIdSMS);
+#endif
 /*   Jun 09, 2006 REF:OMAPS00079650  a0393213 (R.Prabakar)
        Description : CPHS Roaming indication feature implementation
        Solution     : If current_network.roaming_indicator is set, the roaming icon is set*/
@@ -1941,7 +1958,6 @@ TRACE_FUNCTION("idle_draw_main_idle");
                  TRACE_EVENT("Normal ICON display handled");
                  iconsShow();
               }
-
 		/*
 		DISPLAY ZONE 2
 		*/
@@ -1993,7 +2009,7 @@ TRACE_FUNCTION("idle_draw_main_idle");
 				 * If we have a service provider name, show that,
 				 * else show the PLMN name
 				 */
-				
+		#if 0		
 	  		         if(!timer_start_flag)
 	  		         {
 	  		           timStart(plmn_display);
@@ -2014,7 +2030,7 @@ TRACE_FUNCTION("idle_draw_main_idle");
 				  else //SPN name
 				  	 idle_displayData(IDLE_NETWORK_NAME,TxtNull,(char*)current_network.service_provider_name);
 				}
-
+		#endif
 			if(network_sync_done==0)
 	  		{
 	  		/*OMAPS00091029 x0039928(sumanth) - to mark the end of network sync event*/
@@ -2132,7 +2148,7 @@ TRACE_FUNCTION("idle_draw_main_idle");
 		/*
 		DISPLAY ZONE 3
 		*/
-
+#if 0
 		TRACE_EVENT("DISPLAY ZONE 3");
 		txtStrId = TxtNull;
 		txtNo= 0;
@@ -2510,6 +2526,7 @@ TRACE_FUNCTION("idle_draw_main_idle");
 			}
 		}
 #endif //FF_PHONE_LOCK		
+#endif
 	TRACE_FUNCTION("end of idle_draw_main_idle()");
 }
 

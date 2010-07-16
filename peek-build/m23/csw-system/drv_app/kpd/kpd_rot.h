@@ -1,7 +1,6 @@
 #ifndef __KPD_ROT_H__
 #define __KPD_ROT_H__
 
-
 // temperory 15s for debug
 #define ROT_TIMER_ID			0x01
 #define ROT_TIMER_VAlUE		15000   // ms  //it is to  control the rolling speed and changing direction.

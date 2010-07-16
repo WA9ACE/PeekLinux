@@ -82,9 +82,9 @@
 
 #else
 // by nitin for  QVGA LCD
-#if (BOARD==61)
-#define SCREEN_SIZE_X 				240	
-#define SCREEN_SIZE_Y 				320	
+#if (BOARD==71)
+#define SCREEN_SIZE_X 				320
+#define SCREEN_SIZE_Y 				240
 #else
 #define SCREEN_SIZE_X 				176	
 #define SCREEN_SIZE_Y 				220	
@@ -340,8 +340,8 @@ extern MfwRect selected_area;
 #define WELCOME_ANI_POS_X (SCREEN_SIZE_X  - 56 )/2
 #define WELCOME_ANI_POS_Y (SCREEN_SIZE_Y - (42+4))/2
 #else
-#define WELCOME_ANI_POS_X ((SCREEN_SIZE_X  - 176 )/2)
-#define WELCOME_ANI_POS_Y ((SCREEN_SIZE_Y - 60)/3) //top 1/3 of screen
+#define WELCOME_ANI_POS_X ((SCREEN_SIZE_X  - 240 )/2)
+#define WELCOME_ANI_POS_Y ((SCREEN_SIZE_Y - 106)/3) //top 1/3 of screen
 #endif
 //Definitions for 'pop-up' windows with 1/2 lines of text
 #define DLG_WINDOW1_LINE 10,20,60,30, 0

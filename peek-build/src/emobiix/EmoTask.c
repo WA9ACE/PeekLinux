@@ -34,10 +34,14 @@ void backlightInit() {
          mme_backlightEvent(BL_INIT);
 }
 
+extern void mmiInit(void);
+
 void EmoTask(void) {
 
 	BalMemInit();
-	backlightInit();
+	//backlightInit();
+        //display_init();
+
 	/*
         sim_init();
         nm_init();
@@ -45,7 +49,9 @@ void EmoTask(void) {
         sAT_PercentCSQ ( CMD_SRC_LCL, CSQ_Enable );
 	*/
 
-	EmoStatusSet();
+        //EmoStatusSet();
+  	mmiInit();
+
 	while(1) {
 		TCCE_Task_Sleep(50);
 	}

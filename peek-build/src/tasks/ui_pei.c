@@ -191,7 +191,7 @@ LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
 
   /* Start UI Task */
   //mmiInit();
-  UITask();
+  //UITask();
   
   return RV_OK;  
 

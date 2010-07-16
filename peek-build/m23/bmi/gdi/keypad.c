@@ -28,6 +28,7 @@
 #endif
 /*==== INCLUDES ===================================================*/
 #if defined (NEW_FRAME)
+#include "nucleus.h"
 #include <string.h>
 #include "typedefs.h"
 #include "gdi.h"
@@ -74,28 +75,47 @@ const U8 kbd_map [NUM_KPD_KEYS] =            /* ti mapping               */
     /* KEY_7              */  0x08,
     /* KEY_8              */  0x09,
     /* KEY_9              */  0x0A,
-    /* KEY_STAR           */  0x11,
-    /* KEY_HASH          */  0x12,
-    /* KEY_VOLUP          */  0xFE,
-    /* KEY_VOLDOWN       */ 0xFE,
-    /* KEY_MNUUP          */ 0x0B,
-    /* KEY_MNUDOWN        */0x0C,
-    /* KEY_LEFT            */  0x0D,
-    /* KEY_RIGHT          */  0x0E,
-    /* KEY_CALL           */  0x0F,
-    /* KEY_HUP            */  0x10,
-    /* KEY_OK             */  0xFE,
-    /* KEY_CLEAR          */  0xFE,
-    /* KEY_ABC            */  0xFE,
-    /* KEY_POWER          */  0x19,
-    /* KEY_MNULEFT         */  0x15,
-    /* KEY_MNURIGHT       */  0x16,
-    /* KEY_MNUSELECT      */  0x17,
-    /* KEY_F4              */  0xFE,
-    /* KEY_MAX            */  0xFE,
-    /* KEY_AUTO           */  0xFE,
-    /* KEY_LONG           */  0xFE,
-    /* KEY_MAKE           */  0xFE
+    /* KEY_a              */  0x0B,
+    /* KEY_b              */  0x0C,
+    /* KEY_c              */  0x0D,
+    /* KEY_d              */  0x0E,
+    /* KEY_e              */  0x0F,
+    /* KEY_f              */  0x10,
+    /* KEY_g              */  0x11,
+    /* KEY_h              */  0x12,
+    /* KEY_i              */  0x13,
+    /* KEY_j              */  0x14,
+    /* KEY_k              */  0x15,
+    /* KEY_l              */  0x16,
+    /* KEY_m              */  0x17,
+    /* KEY_n              */  0x18,
+    /* KEY_o              */  0x19,
+    /* KEY_p              */  0x1A,
+    /* KEY_q              */  0x1B,
+    /* KEY_r     	  */  0x1C,
+    /* KEY_s              */  0x1D,
+    /* KEY_t              */  0x1E,
+    /* KEY_u              */  0x1F,
+    /* KEY_v              */  0x20,
+    /* KEY_w              */  0x21,
+    /* KEY_x              */  0x22,
+    /* KEY_y              */  0x23,
+    /* KEY_z              */  0x24,
+    /* KEY_AT             */  0x25, // @
+    /* KEY_SPACE          */  0x26, // Space bar
+    /* KEY_RSHIFT         */  0x27, // Right shift
+    /* KEY_LSHIFT         */  0x28, // Left shift 
+    /* KEY_ENTER          */  0x29, // enter 
+    /* KEY_LOCK           */  0x2A, // lock
+    /* KEY_MINUS          */  0x2B, // -
+    /* KEY_COMMA          */  0x2C, // ,
+    /* KEY_DOT            */  0x2D, // .
+    /* KEY_QUOTE          */  0x2E, // '
+    /* KEY_WPUSH          */  0x2F, // Push on wheel
+    /* KEY_BACK           */  0x30, // Back
+    /* KEY_DEL            */  0x31, // Delete
+    /* KEY_POWER          */  0x32, // Power
+    /* KEY_NULL		 */   0x33
 };
 
 const U8 simkbd_map [NUM_KPD_KEYS] =         /* MOB SIM mapping          */
@@ -212,7 +232,6 @@ const char * const config_map [NUM_KPD_KEYS] =
 
 
 /*==== FUNCTIONS ==================================================*/
-
 /*==== CONSTANTS ==================================================*/
 /*******************************************************************
  *                                                                 *
@@ -243,6 +262,7 @@ GLOBAL UBYTE kbd_Init (drv_SignalCB_Type in_SignalCBPtr)
    * Initialise TI driver with internal callback functions
    */
   KP_Init (kbd_key_pressed, kbd_key_released);
+  
 
   return DRV_OK;
 }

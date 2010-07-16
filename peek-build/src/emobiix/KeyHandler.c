@@ -51,7 +51,7 @@ void updateScreen(void) {
         int index, upper;
         manager_drawScreen();
 
-				dspl_Enable(0);
+	dspl_Enable(0);
         if (!lgui_is_dirty())
             return;
 

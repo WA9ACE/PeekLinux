@@ -247,7 +247,7 @@ static void showDefault( void );
 static int show_welcome_cb(T_MFW_HND win, USHORT identifier, UBYTE reason);
 // 	Oct 11, 2005	REF: LOCOSTO-SPR-34629	-	xpradipg
 #ifdef TI_PS_UICC_CHIPSET_15
-extern unsigned char TIlogColour[];
+//extern unsigned char TIlogColour[];
 #endif
 /*******************************************************************************
                                                                               
@@ -343,7 +343,7 @@ static void startregis( void )
 // 	Oct 11, 2005	REF: LOCOSTO-SPR-34629	-	xpradipg
 //	the static image is displayed just before intiating the full functionality
 #ifdef TI_PS_UICC_CHIPSET_15
-	dspl_BitBlt2(WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y,176,60,(char *)&TIlogColour[0],0,ICON_TYPE_256_COL);
+//	dspl_BitBlt2(WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y,176,60,(char *)&TIlogColour[0],0,ICON_TYPE_256_COL);
 #endif
 	sim_activate();	
 	
@@ -565,12 +565,22 @@ void startExit( void )
 
 void startExec( int reason, MmiState next )
 {
+        T_DISPLAY_DATA   display_info;
+
     switch (reason)
     {
 		case PhoneInit:
 		{
 			/* initialising, run the animation
 			*/
+        		dlg_initDisplayData_TextId( &display_info, TxtNull, TxtNull, TxtNull, TxtNull , COLOUR_STATUS_WELCOME);
+        		dlg_initDisplayData_events( &display_info, (T_VOID_FUNC)show_welcome_cb, ONE_SECS, 0 );
+
+      			/*
+       			* Call Icon
+       			*/
+       			 mmi_dialogs_insert_animation (info_dialog (win, &display_info), 400 ,(MfwIcnAttr*)&welcome_Attr,animwelcome);
+
 		    sim_init();                     /* init SIM handler         */
 		    nm_init();                      /* init REG handler         */
 	    	startInit();                        /* init startup module      */
@@ -640,7 +650,8 @@ MfwHnd startWhoIsFocused( void )
 
 void showwelcome (T_MFW_HND win)			/* SH - not static, as now externally called */
 {
-   	
+        T_DISPLAY_DATA   display_info;
+
 	TRACE_FUNCTION("showwelcome ()");
 
 
@@ -652,11 +663,10 @@ void showwelcome (T_MFW_HND win)			/* SH - not static, as now externally called 
 
  boot_time_snapshot(EAppInit); /*OMAPS00091029 x0039928(sumanth) - to mark the end of app init*/
  TRACE_EVENT("Boot Time Snapshot - EAppInit");
-#ifdef TI_PS_UICC_CHIPSET_15
-	show_welcome_cb(win,0,0);
-#else
-{
-	T_DISPLAY_DATA   display_info;
+//#ifdef TI_PS_UICC_CHIPSET_15
+//	show_welcome_cb(win,0,0);
+//#else
+//{
 	dlg_initDisplayData_TextId( &display_info, TxtNull, TxtNull, TxtNull, TxtNull , COLOUR_STATUS_WELCOME);
 	dlg_initDisplayData_events( &display_info, (T_VOID_FUNC)show_welcome_cb, FOUR_SECS, 0 );
 	
@@ -664,8 +674,8 @@ void showwelcome (T_MFW_HND win)			/* SH - not static, as now externally called 
        * Call Icon
        */
 	mmi_dialogs_insert_animation (info_dialog (win, &display_info), 400 ,(MfwIcnAttr*)&welcome_Attr,animwelcome);
-}
-#endif 
+//}
+//#endif 
 
 
 }
@@ -687,7 +697,7 @@ static int show_welcome_cb(T_MFW_HND win, USHORT identifier, UBYTE reason)
 	TRACE_FUNCTION("show_welcome_cb");
 
    	/* SH - removed call to startregis, now in startInit */
-
+	//startregis();
     /* SPR759 - SH. Initialise homezone */
 #ifdef MMI_HOMEZONE_ENABLED
    	homezoneInit();

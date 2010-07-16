@@ -26,7 +26,7 @@
 */
 
 #define ENTITY_MFW
-
+#include "nucleus.h"
 #include "typedefs.h"
 #include "vsi.h"
 #include "custom.h"
@@ -40,6 +40,7 @@
 #include "mfw_kbd.h"
 #include "gdi.h"
 #include "kbd.h"
+#include "kpd_rot.h"
 
 #include "drv_key.h"
 #include "ti1_key.h"
@@ -201,9 +202,9 @@ void keyExit (void)
 char drvGetKeyIndex( char key)
 {
 	int i;
-
+	TRACE_EVENT_P1("drvGetKeyIndex key = %d", key);
 #ifndef _SIMULATION_
-    for (i = 0; i < 32; i++)
+    for (i = 0; i < NUM_KPD_KEYS; i++)
     {
         if (keyMap[i] == key)
         {
@@ -221,7 +222,6 @@ char drvGetKeyIndex( char key)
         }
     }
 #endif
-
     return (char)(0xFE); //No match./*a0393213 warnings removal - -1 changed to 0xFE*/
 
 
@@ -494,7 +494,6 @@ if ((!powered_on)&&(key_code==POWER_KEY))
              or a status of an asynch. process is requested.
 
 */
-
 void keypad_cb (void* parameter)
 {
 // NITIN
@@ -577,6 +576,19 @@ void keypad_cb (void* parameter)
 
 }
 
+void HwdKypadRotCB(KPD_ROT_DIRECTION_T direction) {
+        T_KPD_KEY_EVENT_MSG param;
+	
+	emo_printf("HwdKypadRotCB: %d\n", direction);
+
+	param.key_info.virtual_key_id = (direction) ? (KCD_MNUUP+1): (KCD_MNUDOWN+1);
+	param.key_info.state = KPD_KEY_PRESSED;
+	param.key_info.press_state = KPD_FIRST_PRESS;
+
+        keypad_cb((void *)&param);
+
+	return;
+}
 
 /*
 +--------------------------------------------------------------------+
@@ -621,24 +633,51 @@ UBYTE keypad_initialize (void)
   notified_keys.notified_keys [7] = KPD_KEY_7;
   notified_keys.notified_keys [8] = KPD_KEY_8;
   notified_keys.notified_keys [9] = KPD_KEY_9;
-  notified_keys.notified_keys [10] = KPD_KEY_UP;
-  notified_keys.notified_keys [11] = KPD_KEY_DOWN;
-  notified_keys.notified_keys [12] = KPD_KEY_LEFT;
-  notified_keys.notified_keys [13] = KPD_KEY_RIGHT;
-  notified_keys.notified_keys [14] = KPD_KEY_CONNECT;
-  notified_keys.notified_keys [15] = KPD_KEY_DISCONNECT;
-  notified_keys.notified_keys [16] = KPD_KEY_STAR;
-  notified_keys.notified_keys [17] = KPD_KEY_DIESE;
+  notified_keys.notified_keys [10] = KPD_KEY_A;
+  notified_keys.notified_keys [11] = KPD_KEY_B;
+  notified_keys.notified_keys [12] = KPD_KEY_C;
+  notified_keys.notified_keys [13] = KPD_KEY_D;
+  notified_keys.notified_keys [14] = KPD_KEY_E;
+  notified_keys.notified_keys [15] = KPD_KEY_F;
+  notified_keys.notified_keys [16] = KPD_KEY_G;
+  notified_keys.notified_keys [17] = KPD_KEY_H;
+  notified_keys.notified_keys [18] = KPD_KEY_I;
+  notified_keys.notified_keys [19] = KPD_KEY_J;
+  notified_keys.notified_keys [20] = KPD_KEY_K;
+  notified_keys.notified_keys [21] = KPD_KEY_L;
+  notified_keys.notified_keys [22] = KPD_KEY_M;
+  notified_keys.notified_keys [23] = KPD_KEY_N;
+  notified_keys.notified_keys [24] = KPD_KEY_O;
+  notified_keys.notified_keys [25] = KPD_KEY_P;
+  notified_keys.notified_keys [26] = KPD_KEY_Q;
+  notified_keys.notified_keys [27] = KPD_KEY_R;
+  notified_keys.notified_keys [28] = KPD_KEY_S;
+  notified_keys.notified_keys [29] = KPD_KEY_T;
+  notified_keys.notified_keys [30] = KPD_KEY_U;
+  notified_keys.notified_keys [31] = KPD_KEY_V;
+  notified_keys.notified_keys [32] = KPD_KEY_W;
+  notified_keys.notified_keys [33] = KPD_KEY_X;
+  notified_keys.notified_keys [34] = KPD_KEY_Y;
+  notified_keys.notified_keys [35] = KPD_KEY_Z;
+  notified_keys.notified_keys [36] = KPD_KEY_AT;
+  notified_keys.notified_keys [37] = KPD_KEY_SPACE;
+  notified_keys.notified_keys [38] = KPD_KEY_SHIFT_L;
+  notified_keys.notified_keys [39] = KPD_KEY_SHIFT_R;
+  notified_keys.notified_keys [40] = KPD_KEY_ENTER;
+  notified_keys.notified_keys [41] = KPD_KEY_LOCK;
+  notified_keys.notified_keys [42] = KPD_KEY_REDUCE;
+  notified_keys.notified_keys [43] = KPD_KEY_DOT;
+  notified_keys.notified_keys [44] = KPD_KEY_COMMA;
+  notified_keys.notified_keys [45] = KPD_KEY_QUOTE;
+  notified_keys.notified_keys [46] = KPD_KEY_NAV_CENTER;
+  notified_keys.notified_keys [47] = KPD_KEY_CANCLE;
+  notified_keys.notified_keys [48] = KPD_KEY_BACKSPACE;
+  notified_keys.notified_keys [49] = KPD_KEY_POWR;
+  notified_keys.notified_keys [50] = KPD_KEY_UP;
+  notified_keys.notified_keys [51] = KPD_KEY_DOWN;
 
-	if (KPD_NB_PHYSICAL_KEYS > 22)
-	{
-		notified_keys.notified_keys [18] = KPD_KEY_SOFT_LEFT;
-		notified_keys.notified_keys [19] = KPD_KEY_SOFT_RIGHT;
-		notified_keys.notified_keys [20] = KPD_KEY_VOL_UP;
-		notified_keys.notified_keys [21] = KPD_KEY_VOL_DOWN;
-		notified_keys.notified_keys [22] = KPD_KEY_ENTER;
-		//? #define KPD_KEY_RECORD     (24)
-	}
+  if(kpd_rot_subscribe(HwdKypadRotCB))
+        emo_printf("kpd_rot_subscribe failed\n");
 
 #ifndef _SIMULATION_
   return_value = kpd_subscribe (&subscriber_p, mode, &notified_keys, return_path);

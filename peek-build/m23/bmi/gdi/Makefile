@@ -6,6 +6,7 @@ VARIANT_INCLUDE =
 INCLUDE += $(M23_VARIANT_INCLUDE)
 INCLUDE += $(M23DIR)/g23m/condat/com/include
 INCLUDE += $(M23DIR)/csw-system/drv_app/lcd
+INCLUDE += $(M23DIR)/csw-system/drv_app/kpd
 INCLUDE += $(M23DIR)/chipsetsw/Services/omx_core/inc
 INCLUDE += $(M23DIR)/chipsetsw/riviera/rvf
 INCLUDE += $(M23DIR)/chipsetsw/riviera/rvm
@@ -14,11 +15,11 @@ SRC  = audio.c
 SRC += display.c
 SRC += font_bitmaps.c
 SRC += power.c
+SRC += keypad.c
 SRC += rtc.c
 SRC += rx.c
 SRC += temp_stub.c
 
-OBJO = keypad.o
 OBJO += light.o
 
 OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(patsubst %.s,%.o,$(SRC)))))

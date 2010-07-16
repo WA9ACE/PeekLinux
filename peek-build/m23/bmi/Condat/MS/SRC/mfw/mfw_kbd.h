@@ -59,9 +59,9 @@
 #define KEY_STAR        0x00000400
 #define KEY_HASH        0x00000800
 #define KEY_VOLUP       0x00001000
-#define KEY_VOLDOWN		0x00002000
-#define KEY_MNUUP		0x00004000
-#define KEY_MNUDOWN		0x00008000
+#define KEY_VOLDOW	0x00002000
+#define KEY_MNUUP	0x00004000
+#define KEY_MNUDOWN	0x00008000
 #define KEY_LEFT        0x00010000
 #define KEY_RIGHT       0x00020000
 #define KEY_CALL        0x00040000
@@ -116,7 +116,7 @@
 #define KCD_MNULEFT     24
 #define KCD_MNURIGHT    25
 #define KCD_MNUSELECT   26
-#define KCD_MAX         28
+#define KCD_MAX         51 
 #define KCD_AUTO        29
 #define KCD_LONG        30
 #define KCD_MAKE        31

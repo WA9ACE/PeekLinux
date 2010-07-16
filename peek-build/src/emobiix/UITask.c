@@ -37,8 +37,6 @@ void display_init()
 	dspl_SetDeviceCaps(&displayData);
 	dspl_GetDeviceCaps(&displayData);
 
-	dspl_Enable(1);
-
 	emo_printf("Display parameters are %dx%d", displayData.Width, displayData.Height);
 }
 
@@ -54,7 +52,7 @@ void UITask(void)
 
 unsigned char *screenBuf; //[320*240*2];
 void updateScreen(void);
-static int UIInit(void);
+int UIInit(void);
 static int UIIteration(void);
 static int UIWaitForActivity(void);
 static void UICleanup(void);
@@ -105,24 +103,24 @@ void UITaskMsgCB(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 
 }
 extern BOOL powered_on;
-static int UIInit(void)
+
+int UIInit(void)
 {	
+
 	static int initd = 0;
 
 	//GprsRegisterRssi();
 
 	/* Wait for Emo Task init to complete */
-	while(!EmoStatusGet()) {
-		ExeEventWait(EXE_UI_ID,EXE_SIGNAL_FALSE,EXE_MESSAGE_FALSE,0x16);
-	}
+	//while(!EmoStatusGet()) {
+	//	ExeEventWait(EXE_UI_ID,EXE_SIGNAL_FALSE,EXE_MESSAGE_FALSE,0x16);
+	//}
 
 	/* Update UI status so baseband initializes in mmi_main() */
 	uiStatusSet();
 
 	//extern void KeyPad_Init();
 	//KeyPad_Init();
-
-	display_init();
 
 	if (!initd) {
 		screenBuf = (unsigned char *)p_malloc(320*240*2);
@@ -132,7 +130,7 @@ static int UIInit(void)
 		lgui_attach(screenBuf);
         	manager_init();
 		initd = 1;
-	}
+	
     	manager_drawScreen();
 	updateScreen();
 
@@ -143,7 +141,8 @@ static int UIInit(void)
 	 */
 
         dataobject_platformInit();
-	system_battery_init();
+	//system_battery_init();
+	}
 	//gprs_dataobject_init();
 	//extern void gps_init();
 

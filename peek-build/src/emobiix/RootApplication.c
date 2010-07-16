@@ -79,7 +79,7 @@ DataObject *RootApplication(void)
 	dataobject_setValue(testspkr, "data", dataobjectfield_string("1"));
 
 	signalstack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
-
+#if 0
 	/* GPRS set */
 	setw = widget_newTypeIdName("set", NULL, NULL, signalstack);
 	dataobject_setValue(setw, "fieldname", dataobjectfield_string("data"));
@@ -250,7 +250,7 @@ DataObject *RootApplication(void)
 	setc = dobjFromFile("batterycharge.png", setiw);
 
 	setiw = widget_newTypeIdName("box", NULL, NULL, setw);
-
+#endif
 	/* application box */
 	dobj1 = widget_newTypeIdName("box", NULL, NULL, root);
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("320"));

@@ -77,7 +77,7 @@ typedef struct kbd_DCB_Type
 /*
  * Number of elements in the keypad arrays
  */
-#define NUM_KPD_KEYS 32
+#define NUM_KPD_KEYS 52
 /*
  * External data
  */

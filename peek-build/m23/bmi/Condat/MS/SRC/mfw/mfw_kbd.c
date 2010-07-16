@@ -504,7 +504,18 @@ void kbdSignal (char make, char key)
               }
 #endif /* ifndef NEPTUNE_BOARD*/
 #endif
-
+		/* temp hack until we can add support for > 32 keys) */
+		switch(key) {
+			case 49: // power
+				key = 23;
+				break;
+			case 46: // back button
+				key = 16;
+				break;
+			case 47: // wheel button
+				key = 17;
+				break;
+		}
 		still_processing_flag = 1;
 		TRACE_EVENT_P2("NDH : KbdSignal - key %d, state %02x", key, make);
 
@@ -535,7 +546,7 @@ void kbdSignal (char make, char key)
 				curMap = map; //ES!!
 				curKey = key; //ES!!
 				timStop(&timLongH);
-				
+
 				if (valAuto)
 					timStop(&timAutoH);
 			}
@@ -615,11 +626,13 @@ static int toLong (U32 t, void *h)
 // Sep 18, 2006 REF: OMAPS00094426 - x0039928
 // Fix: On long key press timer expiry bsp kpd status is checked to see if the state is 
 // in in Kpd pressed state and sets the long key bit.
-#if(BOARD == 71)
    UBYTE state;
+
    kpd_retrieve_key_status(kpd_key, KPD_DEFAULT_MODE, &state);
+   TRACE_EVENT_P2("toLong() state = %d CurKey = %d", state, curKey);
+   if(curKey == 15 || curKey == 14)
+	return 0;
    if(!state)
-#endif   	
        curMap |= KEY_LONG;   
     sigDistribute(curMap,curKey);
 
@@ -641,6 +654,8 @@ static int toAuto (U32 t, void *h)
 {
 #if(BOARD == 71)
    UBYTE state;
+   TRACE_EVENT("toAuto()");
+
    kpd_retrieve_key_status(kpd_key, KPD_DEFAULT_MODE, &state);
    if(!state)
    { 
@@ -741,6 +756,7 @@ int kbd_getMakeAndKey( char* make, char* key)
 
 	*make = !(localKP.make);
 	*key =   drvGetKeyIndex(localKP.key);
+	TRACE_FUNCTION_P1("mfw_kbd: drvGetKeyIndex %d", drvGetKeyIndex(localKP.key));
 	return (mfw_cbuf_num_elements(mfw_kbd_kpress_buf_id));
 }
 

@@ -180,6 +180,7 @@ void EmoStatusSet(void) {
 |
 +------------------------------------------------------------------------------
 */
+
 extern BOOL powered_on;
 
 LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
@@ -188,7 +189,7 @@ LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
 
   VibratorTimeOut(1500); 
   powered_on=1;
-  
+
   EmoTask();
 
   return RV_OK;  

@@ -71,9 +71,10 @@
 *******************************************************************************/
 
 /* GW #1471 11/12/02 - Add TI logo as powerdown animation */
-#ifndef COLOURDISPLAY
+#ifdef COLOURDISPLAY
 #define animwelcome 10
 #define animGoodbye 10
+#define CALLANIMATION 4
 #else
 #define CALLANIMATION 4
 #define animwelcome 2

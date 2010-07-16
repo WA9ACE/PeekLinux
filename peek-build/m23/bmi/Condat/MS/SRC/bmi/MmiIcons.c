@@ -197,7 +197,7 @@ extern void scrOnOff (int on);          /* ES!! add. functions      */
 								  Icon Bitmaps
                                                                               
 *******************************************************************************/
-
+extern const unsigned char I_Bat100[];
 /* battery  0-4%
 */
 #ifndef COLOURDISPLAY
@@ -930,7 +930,7 @@ static const unsigned char iconMainWAP[] =
 	0x00,0x00,0x00,0x00,0x00,0x00,
 };
 #endif
-#if 0
+#if 1
 //Old Condat logo
 /*animframe01 Icon 
 */
@@ -1524,6 +1524,7 @@ const MfwIcnAttr idl_Attr [idlIdMax] =  		        /* all our icon attributes  */
 #endif
 #define ICON_SY			(22)
 
+
 const MfwIcnAttr idl_Attr [idlIdMax] =  		        /* all our icon attributes  */
 {
 
@@ -1582,6 +1583,7 @@ const MfwIcnAttr batt_Attr [iconBattMax] =  	        /* all batt icon attributes
 };	
 #endif
 #else
+#if 1 
 const MfwIcnAttr batt_Attr [iconBattMax] =  	        /* all batt icon attributes */
 {
     { { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour4   }, 		/* battery status 0-4%      */
@@ -1590,6 +1592,17 @@ const MfwIcnAttr batt_Attr [iconBattMax] =  	        /* all batt icon attributes
     { { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour49  }, 		/* battery status 25-49%    */
     { { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour100 }	    /* battery status 50-100%   */
 };	
+#endif
+#if 0 
+const MfwIcnAttr batt_Attr [iconBattMax] =              /* all batt icon attributes */
+{
+    { { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256Colour,  (char *) I_Bat100 },              /* battery status 0-4%      */
+    { { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256Colour,  (char *) I_Bat100 },          /* battery status 5-14%     */
+    { { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256Colour,  (char *) I_Bat100 },              /* battery status 15-24%    */
+    { { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256Colour,  (char *) I_Bat100 },              /* battery status 25-49%    */
+    { { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256Colour,  (char *) I_Bat100 }           /* battery status 50-100%   */
+};
+#endif
 #endif
 
 #ifndef COLOURDISPLAY
@@ -1626,10 +1639,10 @@ const MfwIcnAttr sign_Attr [iconSignalMax] =	        /* all sig icon attributes 
 };
 #endif
 
-#ifndef COLOURDISPLAY
+#ifdef COLOURDISPLAY
 const MfwIcnAttr goodbye_Attr [animGoodbye] =  	        /* all goodby icon attributes */
 {
-/*    { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+1, 56, 42 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe8 }, 		
+    { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+1, 56, 42 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe8 }, 		
     { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+1, 56, 42 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe7 },	    
     { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+4, 56, 36 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe6 },	   
     { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+6, 56, 32 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe5 }, 		
@@ -1638,7 +1651,8 @@ const MfwIcnAttr goodbye_Attr [animGoodbye] =  	        /* all goodby icon attri
     { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+12, 56, 21 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe2 },	   
     { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+13, 56, 19 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe1 }, 
     { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+22, 56, 9 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe0 },	    
-    { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+26, 56, 4 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe01 }	    */
+    { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+26, 56, 4 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe01 }
+/*
 { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   ,  56, 38 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *)&TILogo_bw[0] },
 { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   ,  56, 38 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *)&TILogo_bw[0] },
 { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   ,  56, 38 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *)&TILogo_bw[0] },
@@ -1649,11 +1663,12 @@ const MfwIcnAttr goodbye_Attr [animGoodbye] =  	        /* all goodby icon attri
 { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   ,  56, 38 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *)&TILogo_bw[0] },
 { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   ,  56, 38 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *)&TILogo_bw[0] },
 { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   ,  56, 38 }, 1, COLOUR_STATUS_GOODBYE, ICON_TYPE_1BIT_UNPACKED,  (char *)&TILogo_bw[0] }
+*/
 };	
 
 const MfwIcnAttr welcome_Attr [animwelcome] =  	        
 {
-/*    { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+26, 56, 4 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe01 },		
+    { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+26, 56, 4 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe01 },		
     { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+22, 56, 9 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe0 },	   
     { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+13, 56, 19 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe1 },	   
     { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+12, 56, 21 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe2 }, 	
@@ -1663,7 +1678,7 @@ const MfwIcnAttr welcome_Attr [animwelcome] =
     { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+4, 56, 36 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe6 }, 		
     { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+1, 56, 42 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe7 },	    
     { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+1, 56, 42 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe8 }	    
-*/
+/*
 { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   ,  56, 38 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *)&TILogo_bw[0] },
 { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   ,  56, 38 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *)&TILogo_bw[0] },
 { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   ,  56, 38 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *)&TILogo_bw[0] },
@@ -1674,6 +1689,7 @@ const MfwIcnAttr welcome_Attr [animwelcome] =
 { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   ,  56, 38 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *)&TILogo_bw[0] },
 { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   ,  56, 38 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *)&TILogo_bw[0] },
 { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   ,  56, 38 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *)&TILogo_bw[0] }
+*/
 };	
 
 #else
