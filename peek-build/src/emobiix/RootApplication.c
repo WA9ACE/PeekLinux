@@ -58,7 +58,7 @@ DataObject *RootApplication(void)
 
 	dobj1 = widget_newTypeIdName("box", "gradbox", NULL, root);
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("320"));
-	dataobject_setValue(dobj1, "height", dataobjectfield_string("16"));
+	dataobject_setValue(dobj1, "height", dataobjectfield_string("25"));
 	widget_setPacking(dobj1, WP_HORIZONTAL);
 
 	testvalue = dataobject_new();
@@ -254,12 +254,12 @@ DataObject *RootApplication(void)
 	/* application box */
 	dobj1 = widget_newTypeIdName("box", NULL, NULL, root);
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("320"));
-	dataobject_setValue(dobj1, "height", dataobjectfield_string("220"));
+	dataobject_setValue(dobj1, "height", dataobjectfield_string("215"));
 	widget_setPacking(dobj1, WP_VERTICAL);
 
 	dobj2 = widget_newTypeIdName("stack", NULL, "placeholder", dobj1);
 	dataobject_setValue(dobj2, "width", dataobjectfield_string("320"));
-	dataobject_setValue(dobj2, "height", dataobjectfield_string("224"));
+	dataobject_setValue(dobj2, "height", dataobjectfield_string("215"));
 	widget_setPacking(dobj2, WP_VERTICAL);
 
 	widget_newTypeIdName("box", NULL, NULL, dobj2);
