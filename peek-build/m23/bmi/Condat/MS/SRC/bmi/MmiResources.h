@@ -335,14 +335,13 @@ extern MfwRect selected_area;
 
 #endif
 
-#ifndef COLOURDISPLAY
-
+//#ifndef COLOURDISPLAY
 #define WELCOME_ANI_POS_X (SCREEN_SIZE_X  - 56 )/2
 #define WELCOME_ANI_POS_Y (SCREEN_SIZE_Y - (42+4))/2
-#else
-#define WELCOME_ANI_POS_X ((SCREEN_SIZE_X  - 240 )/2)
-#define WELCOME_ANI_POS_Y ((SCREEN_SIZE_Y - 106)/3) //top 1/3 of screen
-#endif
+//#else
+//#define WELCOME_ANI_POS_X ((SCREEN_SIZE_X  - 240 )/2)
+//#define WELCOME_ANI_POS_Y ((SCREEN_SIZE_Y - 106)/3) //top 1/3 of screen
+//#endif
 //Definitions for 'pop-up' windows with 1/2 lines of text
 #define DLG_WINDOW1_LINE 10,20,60,30, 0
 #define DLG_WINDOW2_LINE 10,20,60,45, 0
