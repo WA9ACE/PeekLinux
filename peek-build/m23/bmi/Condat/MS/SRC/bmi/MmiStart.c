@@ -371,6 +371,7 @@ static void startregis( void )
 
 void startInit( void )
 {
+	//void UIInit();
 
 #ifdef FF_MMI_MMS
     /* TISHMMS Project */
@@ -496,6 +497,8 @@ void startInit( void )
 
         while(animation_complete == FALSE)
                 TCCE_Task_Sleep(1);
+
+	//UIInit();
 
 	startregis();	
 }

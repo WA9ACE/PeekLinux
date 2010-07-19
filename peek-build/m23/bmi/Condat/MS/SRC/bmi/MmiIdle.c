@@ -1773,6 +1773,7 @@ void idle_show_cb_editor_scrollbar(T_ED_DATA *e)
 
 void idle_draw_main_idle( void )
 {
+static int ui_init_done = 0;
 T_CURRENT_NETWORK current_network;
 char text[20];
 int txtStrId;	//Id of text string to be displayed
@@ -1821,9 +1822,16 @@ LimitedService = 0;//end of crr12653
 	resources_setColour( COLOUR_IDLE );
 	dspl_ClearAll();
 	idle_initDisplayData();
-        UIInit();
-        lgui_set_dirty();
-        updateScreen();
+
+	if (!ui_init_done)
+	{
+		ui_init_done = 1;
+		UIInit();
+		lgui_set_dirty();
+		updateScreen();
+	}
+
+	UIWaitForActivity();
 
 #if 0
 

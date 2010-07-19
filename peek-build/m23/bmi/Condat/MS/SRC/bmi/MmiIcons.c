@@ -1693,7 +1693,6 @@ const MfwIcnAttr welcome_Attr [animwelcome] =
 };	
 
 #else
-
 const MfwIcnAttr welcome_Attr [animwelcome] =  	    
 {
 	{ { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   , 176, 60 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *)&TIlogColour[0]  },	

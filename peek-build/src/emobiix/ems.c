@@ -137,30 +137,39 @@ static void TCPSocketCallback(BAL_SOCKET_IND socketInd, void* data)
 
 #define NETWORK_CONFIG "/Peek/peek.cfg"
 
-bool ReadNetworkConfig(char *apn, char *user, char *pass)
+int ReadNetworkConfig(char **apn, char **user, char **pass)
 {
 	BalFsiHandleT handle = NULL;
 	BalFsiResultT ret = FSI_ERR_UNKNOWN;
-	/*
+	BalFsiFileAttribT attr;
+//	CMarkup markup;
+	uint32 nLen;
+	char *contents;
+	const char *str;
+
+	*apn = "track.t-mobile.com";
+	*user = "getpeek";
+	*pass = "txtbl123";
+
+	// XXX Put back config parsing
+#if 0
 	ret = BalFsiFileOpen(&handle, NETWORK_CONFIG, FSI_FILE_OPEN_READ_EXIST);
 	if (ret != FSI_SUCCESS)
 	{
 		emo_printf("Failed to open file: %s", NETWORK_CONFIG);
-		return false;
+		return 0;
 	}
 
-	BalFsiFileAttribT attr;
 	ret = BalFsiGetFileHandleAttrib(handle, &attr);
 	if (ret != FSI_SUCCESS)
 	{
 		emo_printf("Failed to get attributes for file: %s", NETWORK_CONFIG);
 		BalFsiFileClose(handle);
-		return false;
+		return 0;
 	}
 
-	CMarkup markup;
-	uint32 nLen = attr.Size;
-	char *contents = (char *)p_malloc((nLen + 2) * sizeof(char));
+	nLen = attr.Size;
+	contents = (char *)p_malloc((nLen + 2) * sizeof(char));
 	memset(contents, 0, nLen + 2);
 
 	ret = BalFsiFileRead(contents, 1, &nLen, handle);
@@ -169,7 +178,7 @@ bool ReadNetworkConfig(char *apn, char *user, char *pass)
 		emo_printf("Failed to read from file: %s", NETWORK_CONFIG);
 		BalFsiFileClose(handle);
 		p_free(contents);
-		return false;
+		return 0;
 	}
 
 	if (!markup.LoadFromString(contents))
@@ -177,7 +186,7 @@ bool ReadNetworkConfig(char *apn, char *user, char *pass)
 		emo_printf("Failed to parse file: %s", NETWORK_CONFIG);
 		p_free(contents);
 		BalFsiFileClose(handle);
-		return false;
+		return 0;
 	}
 
 	markup.ResetPos();
@@ -185,7 +194,7 @@ bool ReadNetworkConfig(char *apn, char *user, char *pass)
 	{
 		if (markup.FindChildElem("apn"))
 		{
-			const char *str = markup.GetChildData();
+			str = markup.GetChildData();
 			apn = (char *)p_malloc(strlen(str) + 1);
 			strcpy(apn, str);
 		}
@@ -194,7 +203,7 @@ bool ReadNetworkConfig(char *apn, char *user, char *pass)
 
 		if (markup.FindChildElem("username"))
 		{
-			const char *str = markup.GetChildData();
+			str = markup.GetChildData();
 			user = (char *)p_malloc(strlen(str) + 1);
 			strcpy(user, str);
 		}
@@ -203,7 +212,7 @@ bool ReadNetworkConfig(char *apn, char *user, char *pass)
 
 		if (markup.FindChildElem("password"))
 		{
-			const char *str = markup.GetChildData();
+			str = markup.GetChildData();
 			pass = (char *)p_malloc(strlen(str) + 1);
 			strcpy(pass, str);
 		}
@@ -217,7 +226,8 @@ bool ReadNetworkConfig(char *apn, char *user, char *pass)
 	
 	p_free(contents);
 	BalFsiFileClose(handle);
-	*/
+#endif
+
 	return 1;
 }
 
@@ -228,7 +238,7 @@ void EMSInitFunc(void)
 
         bal_printf("EMSInitFun(): Initializing network...");
 
-	if (!ReadNetworkConfig(apn, user, pass))
+	if (!ReadNetworkConfig(&apn, &user, &pass))
 		return;
 
 	if (apn && user && pass)
@@ -241,9 +251,9 @@ void EMSInitFunc(void)
 		emo_printf("Failed to get network info from config %s, apn: %s, user: %s, pass: %s", 
 			NETWORK_CONFIG, apn ? apn : "NULL", user ? user : "NULL", pass ? pass : "NULL");
 
-	if (apn) p_free(apn);
-	if (user) p_free(user);
-	if (pass) p_free(pass);
+//	if (apn) p_free(apn);
+//	if (user) p_free(user);
+//	if (pass) p_free(pass);
 }
 
 void EMSMailFunc(uint32 MsgId, void* MsgDataP, uint32 MsgSize)

@@ -704,8 +704,6 @@ ExeEventWaitT ExeEventWait(ExeTaskIdT TaskId, bool Signal, ExeMessageT Message, 
 	timeout = Timeout;
 	signal_mask = 0;
 
-
-
 	if (Signal == EXE_SIGNAL_TRUE)
 		signal_mask = ~0xFD; // EXE_SIGNAL_1 ... EXE_SIGNAL_23 | EXE_SIGNAL_TYPE
 
@@ -721,6 +719,7 @@ ExeEventWaitT ExeEventWait(ExeTaskIdT TaskId, bool Signal, ExeMessageT Message, 
 		{ 
 			if (!task->NumMsgsInQueue[i])
 				continue;
+
 			if (EVCE_Set_Events(&task->EventGroupCb, MailQueueSig.masks[i] | EXE_MESSAGE_TYPE, 0))
 				CallExeFault();
 		}

@@ -174,12 +174,14 @@ LOCAL SHORT pei_primitive (void * primptr)
 
 LOCAL SHORT pei_run(T_HANDLE task_handle, T_HANDLE com_handle)
 {  
+  RVM_TRACE_DEBUG_HIGH("ems_pei_run");
+
 	while(!uiStatusGet())
 		TCCE_Task_Sleep(100);
 
-        RVM_TRACE_DEBUG_HIGH("ems_pei_run");
+ RVM_TRACE_DEBUG_HIGH("ems_pei_run starting task");
 
-	//EMSTask(1, 0);
+	EMSTask(1, 0);
 
 	return RV_OK;  
 }/* End pei_run(..) */
@@ -232,10 +234,10 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 	void *rPtr;
 	ExeTaskCbT *task;
 
-        RVM_TRACE_DEBUG_HIGH("ems_pei_init");
+	RVM_TRACE_DEBUG_HIGH("ems_pei_init");
 
-	ExeTaskCb[EXE_UI_S_ID] = &EMSExeTaskCb;
-    	task = ExeTaskCb[EXE_UI_S_ID];
+	ExeTaskCb[EXE_EM_S_ID] = &EMSExeTaskCb;
+  task = ExeTaskCb[EXE_EM_S_ID];
 
 	ems_handle = handle;
 
@@ -255,6 +257,8 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 			task->NumMsgsInQueue[i] = 0;
 		}
 	}
+
+ RVM_TRACE_DEBUG_HIGH("ems_pei_init done");
 	return PEI_OK;
 } /* End pei_init(..) */
 
@@ -310,6 +314,8 @@ GLOBAL SHORT pei_create (T_PEI_INFO **info)
 	 * Export startup configuration data
 	 */
 	*info = (T_PEI_INFO *)&pei_info;
+
+	RVM_TRACE_DEBUG_HIGH("ems_pei_create done");
 
 	return PEI_OK;
 }/* End pei_create(..) */

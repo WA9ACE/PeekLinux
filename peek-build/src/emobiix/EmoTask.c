@@ -49,7 +49,7 @@ void EmoTask(void) {
         sAT_PercentCSQ ( CMD_SRC_LCL, CSQ_Enable );
 	*/
 
-        //EmoStatusSet();
+    EmoStatusSet();
   	mmiInit();
 
 	while(1) {

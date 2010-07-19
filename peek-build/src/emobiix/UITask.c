@@ -54,7 +54,7 @@ unsigned char *screenBuf; //[320*240*2];
 void updateScreen(void);
 int UIInit(void);
 static int UIIteration(void);
-static int UIWaitForActivity(void);
+int UIWaitForActivity(void);
 static void UICleanup(void);
 ConnectionContext *connectionContext;
 
@@ -154,7 +154,7 @@ static int UIIteration(void)
 	return 1;
 }
 
-static int UIWaitForActivity(void)
+int UIWaitForActivity(void)
 {
 	Endpoint *ep, *remote;
 	URL *url, *durl;
@@ -172,8 +172,11 @@ static int UIWaitForActivity(void)
 	uint8         MailBoxId;
 	BOSEventWaitT MailBoxIndex;
 
+/* XXX Commenting for later 
 	if (!gprsAttached)
 		hasConnected = 0;
+*/
+/* XXX */ gprsAttached = 1;
 
 	if (!hasConnected && gprsAttached)
 	{
