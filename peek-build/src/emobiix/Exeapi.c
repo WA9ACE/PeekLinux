@@ -566,6 +566,7 @@ void * ExeMsgBufferGet(uint32 MsgBufferSize)
 		}
 
 		if(!allocRet) {
+			((char *)retPtr)[MsgBufferSize] = 0xED;
 			return retPtr; // XXX: FIX ME.. It stores the size at the end of the void* ?
 		} else {
 			ExeFault(EXE_FAULT_TYPE_2, EXE_UNHANDLED_INT_ERR, &ExeFaultType2, sizeof(ExeFaultType2T));
