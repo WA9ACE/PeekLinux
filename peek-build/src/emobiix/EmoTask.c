@@ -34,9 +34,6 @@ void EmoTask(void) {
 	
 #ifdef DAR_HALT
 	File *fp;
-#endif
-	BalMemInit();
-#ifdef DAR_HALT
 	fp = file_openRead("/var/dbg/dar");
 	if(fp){
 		if(file_size(fp) > 0) {
@@ -50,10 +47,10 @@ void EmoTask(void) {
 		}
 	}
 #endif
+        BalMemInit();
+
     	EmoStatusSet();
 	
-  	mmiInit();
-
 	while(1) {
 		TCCE_Task_Sleep(50);
 	}

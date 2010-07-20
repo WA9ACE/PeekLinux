@@ -237,7 +237,7 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 	RVM_TRACE_DEBUG_HIGH("ems_pei_init");
 
 	ExeTaskCb[EXE_EM_S_ID] = &EMSExeTaskCb;
-  task = ExeTaskCb[EXE_EM_S_ID];
+  	task = ExeTaskCb[EXE_EM_S_ID];
 
 	ems_handle = handle;
 
@@ -247,7 +247,7 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 		{
 			if(!DMCE_Allocate_Memory(&ExeSystemMemory, &rPtr, EMSMailQueueTable[i].Size << 2, NU_READY)) 
 			{
-				QUCE_Create_Queue(&task->MailQueueCb[i], rPtr, "EMSQue", EMSMailQueueTable[i].Size, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
+				QUCE_Create_Queue(&task->MailQueueCb[i], "EMSQue", rPtr, EMSMailQueueTable[i].Size, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
 			}
 		}
 
@@ -258,7 +258,7 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 		}
 	}
 
- RVM_TRACE_DEBUG_HIGH("ems_pei_init done");
+ 	RVM_TRACE_DEBUG_HIGH("ems_pei_init done");
 	return PEI_OK;
 } /* End pei_init(..) */
 

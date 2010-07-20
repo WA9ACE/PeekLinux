@@ -173,13 +173,14 @@ void EMSTask(uint32 argc, void *argv)
 							//call Msg handle
 							EMSMailFuncsTable[MailBoxId].MailFunc(MsgId,MsgBufferP,MsgSize);
 						}
-
+						/* Caller should free buffer
 						if (MsgBufferP != NULL)
 						{
 							//free the Msg buffer.
 							BOSMsgBufferFree(MsgBufferP);
 							MsgBufferP = NULL;
 						}
+						*/
 					}
 				}
 				MailBoxIndex = (BOSEventWaitT)(MailBoxIndex << 1);

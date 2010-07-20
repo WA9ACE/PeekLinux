@@ -172,8 +172,9 @@ int UIWaitForActivity(void)
 	uint8         MailBoxId;
 	BOSEventWaitT MailBoxIndex;
 
-	if (!gprsAttached)
-		hasConnected = 0;
+	//if (!gprsAttached)
+	//	hasConnected = 0;
+	gprsAttached = 1;
 
 	if (!hasConnected && gprsAttached)
 	{

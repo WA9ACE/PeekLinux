@@ -190,7 +190,7 @@ LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
   RVM_TRACE_DEBUG_HIGH("UI: pei_run");
 
   /* Start UI Task */
-  //mmiInit();
+  mmiInit();
   //UITask();
   
   return RV_OK;  
@@ -259,7 +259,7 @@ LOCAL SHORT pei_init (T_HANDLE handle)
     if(!EVCE_Create_Event_Group(&task->EventGroupCb, "UiEvGrp")) {
 	for(i=0;i < 4;i++) {
 		if(!DMCE_Allocate_Memory(&ExeSystemMemory, &rPtr, UiMailQueueTable[i].Size, NU_READY)) {
-			qCstatus = QUCE_Create_Queue(&task->MailQueueCb[i], rPtr, "UiQue", UiMailQueueTable[i].Size, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
+			qCstatus = QUCE_Create_Queue(&task->MailQueueCb[i], "UiQue", rPtr, UiMailQueueTable[i].Size, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
 		}
 	}
 	if(!qCstatus) {

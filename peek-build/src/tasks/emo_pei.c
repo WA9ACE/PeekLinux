@@ -235,10 +235,11 @@ LOCAL SHORT pei_exit (void)
 */
 
 NU_MEMORY_POOL ExeSystemMemory;
-uint32 ExeIntStack[20];
-uint32 *ExeIntStackP[];
 
-extern ExeTaskCbT     *ExeTaskCb[];
+uint32 ExeIntStack[20];
+uint32 *ExeIntStackP;
+
+extern ExeTaskCbT *ExeTaskCb[];
 
 static char SystemMemory[0xABB4];
 
@@ -270,7 +271,8 @@ LOCAL SHORT pei_init (T_HANDLE handle)
     ExeTaskCbT *task;
     RVM_TRACE_DEBUG_HIGH("EMO: pei_init");
     EMO_handle = handle;
-    *ExeIntStackP = &ExeIntStack[0];
+
+    ExeIntStackP = &ExeIntStack[0];
 
     DMCE_Create_Memory_Pool(&ExeSystemMemory, "SysMem", SystemMemory, 0xABB4, 0x32, NU_SEMAPHORE_SUSPEND);
 
@@ -280,7 +282,7 @@ LOCAL SHORT pei_init (T_HANDLE handle)
     if(!EVCE_Create_Event_Group(&task->EventGroupCb, "BalEvGrp")) {
 	for(i=0;i < 2;i++) {
 		if(!DMCE_Allocate_Memory(&ExeSystemMemory, &rPtr, (EMOMailQueueTable[i].Size << 2), NU_READY)) {
-			qCstatus = QUCE_Create_Queue(&task->MailQueueCb[i], rPtr, "BalQue", EMOMailQueueTable[i].Size, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
+			qCstatus = QUCE_Create_Queue(&task->MailQueueCb[i], "BalQue", rPtr, EMOMailQueueTable[i].Size, NU_FIXED_SIZE, 3, NU_SEMAPHORE_SUSPEND);
 		}
 	}
 	if(!qCstatus) {

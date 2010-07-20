@@ -14,7 +14,8 @@ typedef struct
 
 extern int TCD_Interrupt_Level;
 ExeTaskCbT *ExeTaskCb[EXE_NUM_TASKS];
-extern uint32 *ExeIntStackP[];
+
+extern uint32 *ExeIntStackP;
 
 extern NU_MEMORY_POOL  ExeSystemMemory;
 #define NU_Thread_Id get_NU_Task_HISR_Pointer()
@@ -47,7 +48,8 @@ void* BOSMalloc( unsigned long size )
 BOSEventWaitT BOSEventWait(BOSTaskIdT TaskId, bool Signal, 
                                   BOSMessageT Message, uint32 Timeout)
 {
-	return ExeEventWait(TaskId, Signal, Message, Timeout);
+	return (BOSEventWaitT)ExeEventWait((ExeTaskIdT) TaskId, Signal, (ExeMessageT)Message, Timeout);
+
 }
 
 void BOSMsgBufferFree(void *MsgBufferP)
@@ -64,21 +66,21 @@ void * BOSMsgBufferGet(uint32 MsgBufferSize)
 int BOSMsgSend(BOSTaskIdT TaskId, BOSMailboxIdT MailboxId, uint32 MsgId, 
                         void *MsgBufferP, uint32 MsgSize)
 {
-	return ExeMsgSend(TaskId, MailboxId, MsgId, MsgBufferP, MsgSize);
+	return ExeMsgSend((ExeTaskIdT)TaskId, (ExeMailboxIdT)MailboxId, MsgId, MsgBufferP, MsgSize);
 
 }
 
 bool BOSMsgRead(BOSTaskIdT TaskId, BOSMailboxIdT MailboxId, uint32 *MsgIdP, 
                         void **MsgBufferP, uint32 *MsgSizeP)
 {
-	return ExeMsgRead(TaskId, MailboxId, MsgIdP, MsgBufferP, MsgSizeP);
+	return ExeMsgRead((ExeTaskIdT) TaskId, (ExeMailboxIdT) MailboxId, MsgIdP, MsgBufferP, MsgSizeP);
 
 }
 
 int BOSMsgSendToFront(BOSTaskIdT TaskId, BOSMailboxIdT MailboxId, uint32 MsgId, 
                         void *MsgBufferP, uint32 MsgSize)
 {
-	return ExeMsgSendToFront(TaskId, MailboxId, MsgId, MsgBufferP, MsgSize);
+	return ExeMsgSendToFront((ExeTaskIdT) TaskId, (ExeMailboxIdT) MailboxId, MsgId, MsgBufferP, MsgSize);
 }
 
 uint32 ExeMsgCheck(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId)
@@ -109,7 +111,7 @@ void CallExeFault(void) {
 ExeEventWaitT ExeEventRetireve( ExeTaskIdT TaskId, uint32 RequestEvent, uint32 Timeout )
 {
 	ExeTaskCbT *task;
-	ExeEventWaitT retFlags = RequestEvent;
+	ExeEventWaitT retFlags = (ExeEventWaitT)RequestEvent;
 
         task = ExeTaskCb[TaskId];
 
@@ -250,16 +252,16 @@ void ExeTimerGetRemainTime(ExeTimerT *TimerCbP, uint32 *RemainTime)
 
 void ExeInterruptDisable(SysIntT IntMask)
 {	
-	IntMask = TCT_Control_Interrupts(TCD_Interrupt_Level | IntMask);
-	*ExeIntStackP[0] = IntMask;
-	ExeIntStackP[0]++;
+	IntMask = (SysIntT)TCT_Control_Interrupts(TCD_Interrupt_Level | IntMask);
+	*ExeIntStackP = IntMask;
+	ExeIntStackP++;
 
 }
 
 void ExeInterruptEnable(void)
 {
-	ExeIntStackP[0]--;
-	TCT_Control_Interrupts(*ExeIntStackP[0]);
+	ExeIntStackP--;
+	TCT_Control_Interrupts(*ExeIntStackP);
 }
 
 void ExePreemptionChange(ExePreemptionT Preemption)
@@ -309,7 +311,8 @@ void ExeBufferFree(void *BufferP) {
                 }
         }
 
-	PMCE_Deallocate_Partition(BufferP);
+	if(PMCE_Deallocate_Partition(BufferP) != 0)
+		MonFault(MON_EXE_FAULT_UNIT, 4, 2, MON_HALT);
 }
 
 typedef struct bufMsgs { 
@@ -321,7 +324,7 @@ typedef struct bufMsgs {
 
 bool ExeMsgRead(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 *MsgIdP, void **MsgBufferP, uint32 *MsgSizeP)
 {
-	register errCode;
+	register int errCode;
 	register ExeTaskCbT *task = ExeTaskCb[TaskId];
 
 	uint32 suspend = 0;
@@ -359,6 +362,7 @@ void ExeFault(ExeFaultTypeT ExeFaultType, ExeErrsT ExeError,
 		void *ExeFaultData, uint16 FaultSize)
 {
 
+	MonFault(MON_EXE_FAULT_UNIT, ExeFaultType, ExeError, MON_HALT);
 	// They don't do anything here
 }
 
@@ -428,8 +432,8 @@ int ExeMsgSend(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 MsgId, void *M
 		{
 			if (MsgBufferP)
 			{
-				if (!PMCE_Deallocate_Partition(MsgBufferP))
-					CallExeFault();
+				if (PMCE_Deallocate_Partition(MsgBufferP) != 0)
+					MonFault(MON_EXE_FAULT_UNIT, 4, 3, MON_HALT);
 
 				//ExeDecMsgBuffStats(MsgBufferP);
 			}
@@ -514,8 +518,8 @@ int ExeMsgSendToFront(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId,
 		{
 			if (MsgBufferP)
 			{
-				if (!PMCE_Deallocate_Partition(MsgBufferP))
-					CallExeFault();
+				if (PMCE_Deallocate_Partition(MsgBufferP) != 0)
+					MonFault(MON_EXE_FAULT_UNIT, 4, 4, MON_HALT);
 
 				//ExeDecMsgBuffStats(MsgBufferP);
 			}
@@ -549,7 +553,7 @@ void * ExeMsgBufferGet(uint32 MsgBufferSize)
         NU_HISR  *cHISR = TCC_Current_HISR_Pointer();
         NU_TASK  *cTCTP;
 	void *retPtr;	
-	uint32 allocRet;
+	int allocRet=-1;
 	int i;
 
         if(!cHISR) {
@@ -557,8 +561,9 @@ void * ExeMsgBufferGet(uint32 MsgBufferSize)
                         MonFault(MON_EXE_FAULT_UNIT, 3, get_NU_Task_HISR_Pointer(), MON_HALT);
                 }
         }
-	
-	if(ExeMsgBuffInfo[EXE_MSG_BUFF_TYPE_4].BuffSize <= MsgBufferSize) {
+
+	emo_printf("ExeMsgBufferGet - 0x%08x - MaxBuffersize 0x%08x\n", MsgBufferSize, ExeMsgBuffInfo[EXE_MSG_BUFF_TYPE_4].BuffSize);	
+	if(MsgBufferSize <= ExeMsgBuffInfo[EXE_MSG_BUFF_TYPE_4].BuffSize) {
 		for(i=0;i < EXE_NUM_DIFF_MSG_BUFFS;i++) {
 			if(MsgBufferSize > ExeMsgBuffInfo[i].BuffSize) 
 				continue;
@@ -586,15 +591,16 @@ void ExeMsgBufferFree(void *MsgBufferP)
 {
 	NU_HISR  *cHISR = TCC_Current_HISR_Pointer();
 	NU_TASK  *cTCTP;
+	int ret = 0;
 
 	if(!cHISR) {
 		if(!(cTCTP = TCC_Current_Task_Pointer())) {
 			MonFault(MON_EXE_FAULT_UNIT, 3, get_NU_Task_HISR_Pointer(), MON_HALT);
 		}
 	}
-
-	if(PMCE_Deallocate_Partition(MsgBufferP))
-		MonFault(MON_EXE_FAULT_UNIT, 3, 0, MON_HALT);
+	ret = PMCE_Deallocate_Partition(MsgBufferP);
+	if(ret != 0)
+		MonFault(MON_EXE_FAULT_UNIT, 4, ret, MON_HALT);
 
 	//ExeDecMsgBuffStats(MsgBufferP);
 }
@@ -737,13 +743,13 @@ ExeEventWaitT ExeEventWait(ExeTaskIdT TaskId, bool Signal, ExeMessageT Message, 
 			return EXE_TIMEOUT_TYPE;
 
 		case NU_SUCCESS:
-			return signal_mask;
+			return (ExeEventWaitT)signal_mask;
 
 	    default:
 		CallExeFault();
 	}
 
-	return suspend;
+	return (ExeEventWaitT)suspend;
 }
 
 void ExeIncMsgBuffStats(void * MsgBuffPtr, uint32 MsgBuffType, uint32 MsgBuffSize, uint32 TaskId) { }
