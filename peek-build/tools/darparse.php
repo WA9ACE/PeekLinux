@@ -44,7 +44,7 @@ for($i=1;$i < count($mapdata);$i++) {
 $addr = $_SERVER["argv"][2];
 
 fclose($fp);
-fp = fopen($_SERVER["argv"][2], "r");
+$fp = fopen($_SERVER["argv"][2], "r");
 
 $contents = fread($fp, filesize($_SERVER["argv"][2]));
 $dardata = explode("-------------------------------", $contents);
