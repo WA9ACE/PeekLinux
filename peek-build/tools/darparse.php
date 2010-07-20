@@ -49,7 +49,7 @@ $fp = fopen($_SERVER["argv"][2], "r");
 $contents = fread($fp, filesize($_SERVER["argv"][2]));
 $dardata = explode("-------------------------------", $contents);
 $regs = explode("\n", $dardata[4]);
-for($i=1;$i <= 15;$i++) {
+for($i=1;$i <= 16;$i++) {
 	$reg = explode("=", $regs[$i]);
 	echo $reg[0], $reg[1], " - ", symbol_find($reg[1], $symbol_data), "\n";
 }
