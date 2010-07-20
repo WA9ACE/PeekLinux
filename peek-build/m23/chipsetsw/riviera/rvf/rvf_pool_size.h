@@ -605,7 +605,7 @@
  * TI_PRF SWE
  */
 #ifdef RVM_TI_PRF_SWE
-  #include "rvt/ti_profiler/ti_prf_pool_size.h"
+  //#include "rvt/ti_profiler/ti_prf_pool_size.h"
   #define RVF_TI_PRF_POOL_SIZE  (TI_PRF_POOL_SIZE)
 #else
   #define RVF_TI_PRF_POOL_SIZE  (0)

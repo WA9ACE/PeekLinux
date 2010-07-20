@@ -213,7 +213,7 @@
          
          #if (DAR_CARKIT_DEBUG==1)   
          dar_dump_init();
-		 #else
+	 #else
          volatile UINT16 *register_p;
          volatile UINT8   i;
 /* jennifer added to avoid current_task_ptr was set to a invalid ptr start*/
@@ -249,7 +249,7 @@
 
          /* Wait until the ARM reset */
          
-		 #endif
+	 #endif
          while(1);
 
       #endif

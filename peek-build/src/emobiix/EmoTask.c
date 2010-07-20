@@ -1,4 +1,5 @@
 #include "typedefs.h"
+#include "Lcd_manager.h"
 #include "Task.h"
 #include "UITask.h"
 #include "LcdControl.h"
@@ -6,19 +7,10 @@
 #include "mfw_mme.h"
 #include "Debug.h"
 #include "Gprs.h"
-#include "lgui.h"
-#include "tweet.h"
-#include "msg.h"
 
-/* For CSQ */
-#include "p_mmi.h"
-#include "m_fac.h"
-#include "p_mmreg.h"
-#include "p_mncc.h"
-#include "p_mnsms.h"
-#include "p_em.h"
-#include "aci_lst.h"
-#include "aci_cmh.h"
+#ifdef DAR_HALT
+#include "File.h"
+#endif
 
 void backlightInit() {
          int i;
@@ -34,22 +26,32 @@ void backlightInit() {
          mme_backlightEvent(BL_INIT);
 }
 
+int gprsAttached = 0;
+
 extern void mmiInit(void);
 
 void EmoTask(void) {
-
+	
+#ifdef DAR_HALT
+	File *fp;
+#endif
 	BalMemInit();
-	//backlightInit();
-        //display_init();
-
-	/*
-        sim_init();
-        nm_init();
-        sim_activate();
-        sAT_PercentCSQ ( CMD_SRC_LCL, CSQ_Enable );
-	*/
-
-    EmoStatusSet();
+#ifdef DAR_HALT
+	fp = file_openRead("/var/dbg/dar");
+	if(fp){
+		if(file_size(fp) > 0) {
+			emo_printf("Dar crash file detected. Going to sleep");
+			file_close(fp);
+			while(1) {
+				lcd_led_onoff(1);
+				TCCE_Task_Sleep(100);
+				lcd_led_onoff(0);
+			}	
+		}
+	}
+#endif
+    	EmoStatusSet();
+	
   	mmiInit();
 
 	while(1) {

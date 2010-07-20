@@ -63,7 +63,7 @@ Task UITask_s = {UIInit, UIIteration, UIWaitForActivity, UICleanup};
 DataObject *systemAppObject;
 Application *systemApplication;
 
-static int gprsAttached;
+extern int gprsAttached;
 
 void UITaskMsgCB(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 {
@@ -172,11 +172,8 @@ int UIWaitForActivity(void)
 	uint8         MailBoxId;
 	BOSEventWaitT MailBoxIndex;
 
-/* XXX Commenting for later 
 	if (!gprsAttached)
 		hasConnected = 0;
-*/
-/* XXX */ gprsAttached = 1;
 
 	if (!hasConnected && gprsAttached)
 	{

@@ -1437,6 +1437,7 @@ static int GPRS_MfwCb(T_MFW_EVENT event, void* para)
 
 *******************************************************************************/
 
+extern int gprsAttached;
 int GPRS_MenuAttach(MfwMnu* m, MfwMnuItem* i)
 {
 	T_MMI_GPRS_DATA *data = GPRS_Data();
@@ -1459,6 +1460,7 @@ int GPRS_MenuAttach(MfwMnu* m, MfwMnuItem* i)
 
 	if (data->reg_status==(int)GPRS_ATTACHED)
 	{
+		gprsAttached = 1;
 		/* Show result */	
 		GPRS_ResultScreen(win, TxtAlreadyAttached, TxtAttached);
 		return FALSE;
