@@ -1832,6 +1832,8 @@ LimitedService = 0;//end of crr12653
 	}
 
 	UIWaitForActivity();
+	lgui_set_dirty();
+	updateScreen();
 
 #if 0
 
