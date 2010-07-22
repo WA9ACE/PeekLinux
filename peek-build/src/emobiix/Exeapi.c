@@ -610,15 +610,17 @@ uint32 ExeGetSemaphoreCount(ExeSemaphoreT *SemaphoreCbP)
         NU_HISR  *cHISR = TCC_Current_HISR_Pointer();
         NU_TASK  *cTCTP;
 	uint32   current_count = 0;
+	uint32   tasks_waiting = 0;
+	NU_TASK *first_task;
+	OPTION   suspend_type = 0;
+	char name[100];
 
         if(!cHISR) {
                 if(!(cTCTP = TCC_Current_Task_Pointer())) {
                         MonFault(MON_EXE_FAULT_UNIT, 3, get_NU_Task_HISR_Pointer(), MON_HALT);
                 }
         }
-
-	//SMF_Semaphore_Information((NU_SEMAPHORE *)SemaphoreCbP, "Semaphor", &current_count,  0);
-
+	SMF_Semaphore_Information((NU_SEMAPHORE *)SemaphoreCbP, (char *)&name, &current_count, &suspend_type, &tasks_waiting, &first_task);
 	return current_count;
 }
 
@@ -639,6 +641,9 @@ int32 ExeSemaphoreGet(ExeSemaphoreT *SemaphoreCbP, uint32 Timeout) {
                         MonFault(MON_EXE_FAULT_UNIT, 3, get_NU_Task_HISR_Pointer(), MON_HALT);
                 }
         }
+	
+        emo_printf("ExeSemaphoreGet with timeout %d\n", Timeout);
+        TCCE_Task_Sleep(10);
 
 	return SMCE_Obtain_Semaphore((NU_SEMAPHORE *)SemaphoreCbP, Timeout);
 }

@@ -40,7 +40,7 @@ extern void EmoTask(void);
 T_HANDLE EMO_handle;
 
 LOCAL BOOL first_access = TRUE;
-uint32 EmoIsReady = 0;
+static uint32 EmoIsReady = 0;
 
 /*===========================Function Definition================================*/
 /*

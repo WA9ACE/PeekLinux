@@ -12,6 +12,17 @@
 #include "File.h"
 #endif
 
+typedef struct {
+        unsigned int eSndAndAlert;
+        unsigned int eBKProfile;
+        unsigned int eDispTheme;
+        unsigned int eFlightMode;
+}SettingModeHelplerInfo;
+
+SettingModeHelplerInfo stCurSettingMode;
+
+unsigned int timer_state = 0;
+
 void backlightInit() {
          int i;
          for (i=0;i<BL_LAST_OPTION;i++) {
@@ -27,13 +38,15 @@ void backlightInit() {
 }
 
 int gprsAttached = 0;
-
 extern void mmiInit(void);
 
 void EmoTask(void) {
 	
 #ifdef DAR_HALT
 	File *fp;
+#endif 
+        BalMemInit();
+#ifdef DAR_HALT
 	fp = file_openRead("/var/dbg/dar");
 	if(fp){
 		if(file_size(fp) > 0) {
@@ -41,17 +54,16 @@ void EmoTask(void) {
 			file_close(fp);
 			while(1) {
 				lcd_led_onoff(1);
-				TCCE_Task_Sleep(100);
+				TCCE_Task_Sleep(1000);
 				lcd_led_onoff(0);
 			}	
 		}
 	}
 #endif
-        BalMemInit();
 
     	EmoStatusSet();
-	
+	stCurSettingMode.eFlightMode = 0; // Set to normal mode
 	while(1) {
-		TCCE_Task_Sleep(50);
+		TCCE_Task_Sleep(10000);
 	}
 }

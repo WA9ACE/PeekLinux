@@ -114,7 +114,7 @@ static void TCPSocketCallback(BAL_SOCKET_IND socketInd, void* data)
 		case BAL_SOCK_RESUME_IND:
 		case BAL_SOCKET_NETWORK_STATUS_IND:
 		{
-			emo_printf("Network status change to: %d", (socketInd >> 8) & 0xff);
+			emo_printf("Network status change to: %d", (socketInd << 8) & 0xff);
 			flash_led();
 		}
 		break;
@@ -282,19 +282,19 @@ void EMSMailFunc(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 			memset(sockReply, 0, sizeof(emsMsg));
 			sockReply->fd = fd;
 
-			//bal_printf("ANDREY::Dispatching socket reply...");
+			bal_printf("ANDREY::Dispatching socket reply...");
 			BOSMsgSend(BOS_UI_ID, BOS_MAILBOX_1_ID, EM_S_SOCKET, (void *)sockReply, sizeof(emsMsg));
 		}
 		break;
 
 		case EM_S_CONNECT:
 		{
-			//bal_printf("ANDREY::Got connect request...");
-
 			struct in_addr addr;
 			struct sockaddr_in connect_in;
 
 			emsMsg *connectReq = (emsMsg *)MsgDataP;
+
+                        bal_printf("ANDREY::Got connect request...");
 
 			memset(&connect_in, 0, sizeof(struct sockaddr_in));
 			connect_in.sin_family = 0; /*AF_INET*/

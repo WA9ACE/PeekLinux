@@ -28,7 +28,7 @@ void bal_printf( const char* fmt, ...) {
         va_end(ap);
 }
 
-unsigned int mfwMmeDrvFlag;
+//unsigned int mfwMmeDrvFlag;
 
 
 void emo_printf( const char* fmt, ...) {

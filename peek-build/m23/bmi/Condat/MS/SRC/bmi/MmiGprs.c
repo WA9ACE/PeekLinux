@@ -187,6 +187,7 @@
 #define EDGE_ICON_SET    2
 #endif
 
+extern int gprsAttached;
 static T_MMI_GPRS_DATA *gprs_data=NULL;
 
 /*******************************************************************************
@@ -1232,6 +1233,7 @@ static int GPRS_MfwCb(T_MFW_EVENT event, void* para)
 #endif
 	// Dec 01, 2005 REF: DR OMAPS00048530   x0039928
 	// Fix : Display GPRS attached only if the request is for attaching.
+					gprsAttached = 1;
 					if(data->status == MMI_GPRS_STATUS_ATTACHING)	
 					{
 						/* Show result */
@@ -1437,7 +1439,6 @@ static int GPRS_MfwCb(T_MFW_EVENT event, void* para)
 
 *******************************************************************************/
 
-extern int gprsAttached;
 int GPRS_MenuAttach(MfwMnu* m, MfwMnuItem* i)
 {
 	T_MMI_GPRS_DATA *data = GPRS_Data();
@@ -1460,7 +1461,6 @@ int GPRS_MenuAttach(MfwMnu* m, MfwMnuItem* i)
 
 	if (data->reg_status==(int)GPRS_ATTACHED)
 	{
-		gprsAttached = 1;
 		/* Show result */	
 		GPRS_ResultScreen(win, TxtAlreadyAttached, TxtAttached);
 		return FALSE;

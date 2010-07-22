@@ -74,7 +74,7 @@ void UITaskMsgCB(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 			UIMsg *rssiMsg = (UIMsg *)MsgDataP;
 			emo_printf("UITaskMsgCB() received RSSI Register\n");	
 			gprsAttached = 1;
-			BOSMsgBufferFree(rssiMsg);
+			//BOSMsgBufferFree(rssiMsg);
                 	break;
 		}
 
@@ -83,7 +83,7 @@ void UITaskMsgCB(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 			UIMsg *rssiMsg = (UIMsg *)MsgDataP;
 			gprsAttached = 0;
 			emo_printf("UITaskMsgCB() received RSSI Detach\n");
-			BOSMsgBufferFree(rssiMsg);
+			//BOSMsgBufferFree(rssiMsg);
 			break;
 		}
 
@@ -92,7 +92,7 @@ void UITaskMsgCB(uint32 MsgId, void* MsgDataP, uint32 MsgSize)
 			UIMsg *udpMsg = (UIMsg *)MsgDataP;
 			emo_printf("UITaskMsgCB(): Received UDP notification: %s\n", udpMsg->payload);
 
-			BOSFree(udpMsg->payload);
+			//BOSFree(udpMsg->payload);
 			break;
 		}
 
@@ -154,6 +154,7 @@ static int UIIteration(void)
 	return 1;
 }
 
+static uint32 sock_initnm = 0;
 int UIWaitForActivity(void)
 {
 	Endpoint *ep, *remote;
@@ -172,12 +173,16 @@ int UIWaitForActivity(void)
 	uint8         MailBoxId;
 	BOSEventWaitT MailBoxIndex;
 
-	//if (!gprsAttached)
-	//	hasConnected = 0;
-	gprsAttached = 1;
+	if (!gprsAttached)
+		hasConnected = 0;
 
 	if (!hasConnected && gprsAttached)
 	{
+		if(!sock_initnm) {
+			bal_socket_set_nm_status(1,1);
+			sock_initnm = 1;
+		}
+
 		url = url_parse("tcp://10.150.9.6:12345/dataobject", URL_ALL);
 
 		transport = transport_get(url->scheme);
@@ -241,12 +246,12 @@ int UIWaitForActivity(void)
 
 					//call Msg handler
 					UITaskMsgCB(MsgId,MsgBufferP,MsgSize);
-					if (MsgBufferP != NULL)
-					{
+					//if (MsgBufferP != NULL)
+					//{
 						//free the Msg buffer.
-						BOSMsgBufferFree(MsgBufferP);
-						MsgBufferP = NULL;
-					}
+					//	BOSMsgBufferFree(MsgBufferP);
+					//	MsgBufferP = NULL;
+					//}
 				}
 			}
 			MailBoxIndex = (BOSEventWaitT)(MailBoxIndex << 1);

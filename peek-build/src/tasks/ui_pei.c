@@ -38,7 +38,7 @@
 T_HANDLE UI_handle;
 
 LOCAL BOOL first_access = TRUE;
-uint32 uiIsReady = 0;
+static uint32 uiIsReady = 0;
 
 extern NU_MEMORY_POOL  ExeSystemMemory;
 
@@ -188,6 +188,10 @@ LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
 {  
 
   RVM_TRACE_DEBUG_HIGH("UI: pei_run");
+
+  /* Wait for Main EMO task to start */
+  while(!EmoStatusGet())
+ 	TCCE_Task_Sleep(100);
 
   /* Start UI Task */
   mmiInit();

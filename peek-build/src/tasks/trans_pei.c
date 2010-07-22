@@ -147,6 +147,7 @@ LOCAL VOID primitive_not_supported(void *data)
 LOCAL SHORT pei_primitive (void * primptr)
 {
 	T_PRIM * prim = primptr;
+	bal_sock_api_inst = 0;
 
 	RVM_TRACE_DEBUG_HIGH("trans_pei_primitive");
 	if (sock_api_handles_primitive(bal_sock_api_inst, prim) == FALSE)
@@ -212,8 +213,8 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 
 	RVM_TRACE_DEBUG_HIGH("trans_pei_init");
 
-        while(!powered_on)
-                TCCE_Task_Sleep(100);
+  	while(!EmoStatusGet())
+        	TCCE_Task_Sleep(100);
 
 	if (TranshComm < VSI_OK)
 		if ((TranshComm = vsi_c_open (VSI_CALLER "TRANS")) < VSI_OK)
