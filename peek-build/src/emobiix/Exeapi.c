@@ -642,8 +642,8 @@ int32 ExeSemaphoreGet(ExeSemaphoreT *SemaphoreCbP, uint32 Timeout) {
                 }
         }
 	
-        emo_printf("ExeSemaphoreGet with timeout %d\n", Timeout);
-        TCCE_Task_Sleep(10);
+        //emo_printf("ExeSemaphoreGet with timeout %d\n", Timeout);
+        //TCCE_Task_Sleep(10);
 
 	return SMCE_Obtain_Semaphore((NU_SEMAPHORE *)SemaphoreCbP, Timeout);
 }

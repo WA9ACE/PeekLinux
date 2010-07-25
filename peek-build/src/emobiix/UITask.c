@@ -223,6 +223,7 @@ int UIWaitForActivity(void)
 		hasConnected = 1;
 	}
 
+	emo_printf("UIWaitForActivity(): c:%d g:%d ", hasConnected, gprsAttached);
 	if (hasConnected)
 	{
 		connectionContext_loopIteration(ctx);
@@ -231,6 +232,8 @@ int UIWaitForActivity(void)
 #endif
 	}
 	updateScreen();
+
+	emo_printf("UIWaitForActivity(): Going into event loop");
 
 	EvtStatus = BOSEventWait(BOS_UI_ID, BOS_SIGNAL_FALSE, BOS_MESSAGE_TRUE, BOSCalMsec(100));
 	if(EvtStatus & BOS_MESSAGE_TYPE)
@@ -257,6 +260,8 @@ int UIWaitForActivity(void)
 			MailBoxIndex = (BOSEventWaitT)(MailBoxIndex << 1);
 		}
 	}
+
+	emo_printf("UIWaitForActivity(): Events processed");
 
 	return 1;
 }

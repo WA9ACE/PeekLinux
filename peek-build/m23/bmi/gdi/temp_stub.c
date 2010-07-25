@@ -47,7 +47,7 @@ void bal_printf( const char* fmt, ...) {
         TCCE_Task_Sleep(2);
 }
 
-//unsigned int mfwMmeDrvFlag;
+unsigned int mfwMmeDrvFlag;
 
 
 void emo_printf( const char* fmt, ...) {

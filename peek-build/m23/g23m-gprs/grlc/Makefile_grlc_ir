@@ -1,0 +1,29 @@
+DEFINE += 
+
+UNDEFINE += RELEASE99
+
+VARIANT_INCLUDE=$(M23_VARIANT_INCLUDE)
+INCLUDE += $(M23DIR)/gpf/inc
+INCLUDE += $(M23DIR)/g23m/condat/com/inc
+INCLUDE += $(M23DIR)/g23m/condat/com/include
+
+SRC  = grlc_func.c
+
+OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+TARGET = $(CURDIR)/grlc_ir.a
+
+all: $(TARGET)
+
+$(TARGET): $(OBJ)
+	$(AR) $(ARFLAGS) $@ $(OBJ)
+
+clean:
+	$(RM) $(OBJ)
+	$(RM) $(TARGET)
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules
