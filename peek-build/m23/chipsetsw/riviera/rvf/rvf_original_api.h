@@ -35,10 +35,10 @@
 #include "general.h"
 #include "rv/rv_general.h"
 #include "rvf/rvf_target.h"
-#include "config/rv.cfg"
+#include "rv.cfg"
 
 #ifndef _WINDOWS
-  #include "config/swconfig.cfg"
+  #include "swconfig.cfg"
 #endif
 
 #ifdef __cplusplus

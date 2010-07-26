@@ -23,7 +23,6 @@ DEFINE += TRACE_USER_CLASS_P4=emo_printf
 
 UNDEFINE += L1
 
-VARIANT_INCLUDE=$(M23_VARIANT_INCLUDE)
 INCLUDE += $(M23DIR)/csw-system/rtslib/v2_70
 INCLUDE += $(M23DIR)/chipsetsw/riviera
 INCLUDE += $(M23DIR)/chipsetsw/riviera/rv
@@ -34,6 +33,7 @@ INCLUDE += $(M23DIR)/csw-system/drv_core/i2c
 INCLUDE += $(M23DIR)/csw-system/drv_app
 INCLUDE += $(M23DIR)/csw-system/drv_app/rtc
 INCLUDE += $(M23DIR)/cdginc
+INCLUDE += $(M23DIR)/config
 INCLUDE += $(M23DIR)/gpf/inc
 INCLUDE += $(M23DIR)/L1/layer1/include
 INCLUDE += $(M23DIR)/g23m/condat/ms/src/ati_ext

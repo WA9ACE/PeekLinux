@@ -23,6 +23,7 @@ This task receive signal and Msg and handle it.
 /*=====================================================================================
 	Include File Section
 =====================================================================================*/
+#include "general.h"
 #include "typedefs.h"
 #include "sysdefs.h"
 #include "bal_os.h"

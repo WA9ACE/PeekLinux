@@ -2,6 +2,7 @@
  * QEMU driver for socket emulation
  * 
 */ 
+#include "general.h"
 #include "socket_api.h"
 #include "balapi.h"
 #include "Debug.h"

@@ -1,8 +1,7 @@
 DEFINE += 
 UNDEFINE += L1
 
-VARIANT_INCLUDE = 
-INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(VARIANT_INCLUDE)
 INCLUDE += $(M23DIR)/csw-system/rtslib/v2_70
 
 SRC  = vsprintf.c

@@ -4,7 +4,7 @@ DEFINE += calloc=p_calloc
 DEFINE += realloc=p_realloc
 DEFINE += free=p_free
 
-INCLUDE = $(INCDIR)/csw-system/drv_core
+INCLUDE = $(M23DIR)/csw-system/drv_core
 
 SRC  = $(patsubst %.c,%.o,$(wildcard *.c))
 OBJ  = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))

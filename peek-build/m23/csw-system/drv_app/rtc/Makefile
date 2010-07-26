@@ -1,8 +1,7 @@
 DEFINE += 
 UNDEFINE += 
 
-VARIANT_INCLUDE = 
-INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(VARIANT_INCLUDE)
 
 SRC  = board/rtc_functions.c
 SRC += rtc_tz.c

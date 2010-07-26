@@ -38,8 +38,8 @@ NOTE:
 
 #ifndef _SIMULATION_
 #include "ffs/ffs.h"
-#include "config/chipset.cfg"
-#include "config/board.cfg"
+#include "chipset.cfg"
+#include "board.cfg"
 #include "memif/mem.h"
 #include "pcm.h"
 #endif /* ifdef SIMULATION */

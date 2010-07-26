@@ -1,8 +1,7 @@
 DEFINE += ETM=0
 UNDEFINE += 
 
-VARIANT_INCLUDE = 
-INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(VARIANT_INCLUDE)
 
 SRC  = etm_task.c
 SRC += etm_pei.c

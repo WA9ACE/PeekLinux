@@ -29,8 +29,8 @@
 #define _RVF_TARGET_H
 
 #ifndef _WINDOWS
-	#include "config/rv.cfg"
-	#include "config/swconfig.cfg"
+	#include "rv.cfg"
+	#include "swconfig.cfg"
 #endif
 
 

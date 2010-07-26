@@ -24,7 +24,7 @@
 #define __RVM_GEN_H_
 
 #ifndef _WINDOWS
-  #include "config/rv.cfg"
+  #include "rv.cfg"
 #endif
 
 #include "rvf/rvf_api.h" /* for memory bank related definitions & GD*/

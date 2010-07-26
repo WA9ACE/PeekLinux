@@ -1,8 +1,8 @@
 DEFINE += FT2_BUILD_LIBRARY
 DEFINE += FT_CONFIG_MODULES_H="<ftmodule.h>"
 
-INCLUDE += $(INCDIR)/csw-system/drv_core
-INCLUDE += $(INCDIR)/g23m/condat/ms/src/aci
+INCLUDE += $(M23DIR)/csw-system/drv_core
+INCLUDE += $(M23DIR)/g23m/condat/ms/src/aci
 INCLUDE += $(SRCDIR)/include
 INCLUDE += $(SRCDIR)/bal
 INCLUDE += $(SRCDIR)/freetype2/include

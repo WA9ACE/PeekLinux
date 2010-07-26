@@ -1,8 +1,7 @@
 DEFINE += 
 UNDEFINE += 
 
-VARIANT_INCLUDE = 
-INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(VARIANT_INCLUDE)
 
 SRC  = mpk_api.c
 SRC += mpk_pei.c

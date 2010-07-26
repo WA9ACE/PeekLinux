@@ -1,8 +1,7 @@
 DEFINE += 
 UNDEFINE += 
 
-VARIANT_INCLUDE = 
-INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(VARIANT_INCLUDE)
 
 SRC  = hash_pei.c
 SRC += hash_api.c

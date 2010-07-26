@@ -5,12 +5,11 @@ UNDEFINE += DATA_INT_RAM
 
 CCTHUMB=
 
-VARIANT_INCLUDE = 
 INCLUDE += $(M23DIR)/chipsetsw/Services/omx_core/inc
 INCLUDE += $(M23DIR)/chipsetsw/Services/omx_img/inc
 INCLUDE += $(M23DIR)/chipsetsw/Services/omx_img/src
 
-INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(VARIANT_INCLUDE)
 
 SRC  = src/omx_imgcomponent.c
 

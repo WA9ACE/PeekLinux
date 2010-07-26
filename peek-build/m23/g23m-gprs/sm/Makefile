@@ -2,7 +2,6 @@ DEFINE += ENTITY_SM
 
 UNDEFINE += RELEASE99
 
-VARIANT_INCLUDE=$(M23_VARIANT_INCLUDE)
 INCLUDE += $(M23DIR)/gpf/inc
 INCLUDE += $(M23DIR)/g23m/condat/com/inc
 INCLUDE += $(M23DIR)/g23m/condat/com/include

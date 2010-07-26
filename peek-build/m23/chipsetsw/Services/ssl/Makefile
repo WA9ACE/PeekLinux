@@ -2,7 +2,6 @@ DEFINE +=
 UNDEFINE += CONFIG_MODULE
 UNDEFINE += DATA_EXT_RAM
 
-VARIANT_INCLUDE = 
 INCLUDE += $(M23DIR)/chipsetsw/Services/omx_core/inc
 INCLUDE += $(M23DIR)/chipsetsw/Services/omx_ssl/inc
 INCLUDE += $(M23DIR)/chipsetsw/Services/omx_ssl/src
@@ -12,7 +11,7 @@ INCLUDE += $(M23DIR)/csw-system/drv_app/lcd
 INCLUDE += $(M23DIR)/CS_ThirdParty/Emuzed/imaging/SourceCode/Code/Inc/Decoder
 INCLUDE += $(M23DIR)/CS_ThirdParty/Emuzed/imaging/SourceCode/Export_hdr
 
-INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(VARIANT_INCLUDE)
 
 SRC  = src/ssl_pei.c
 

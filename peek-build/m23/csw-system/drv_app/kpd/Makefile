@@ -1,8 +1,7 @@
 DEFINE += 
 UNDEFINE += 
 
-VARIANT_INCLUDE = 
-INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(VARIANT_INCLUDE)
 
 SRC  = kpd_api.c
 SRC += kpd_functions.c

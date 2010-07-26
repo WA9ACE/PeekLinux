@@ -19,7 +19,6 @@ DEFINE += TRACE_FUNCTION_P1=emo_printf
 DEFINE += TRACE_FUNCTION_P2=emo_printf
 
 
-VARIANT_INCLUDE=$(M23_VARIANT_INCLUDE)
 INCLUDE += $(M23DIR)/config
 INCLUDE += $(M23DIR)/gpf/inc
 INCLUDE += $(M23DIR)/g23m/condat/com/inc

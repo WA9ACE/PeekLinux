@@ -1,8 +1,7 @@
 DEFINE += 
 UNDEFINE += 
 
-VARIANT_INCLUDE = 
-INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(VARIANT_INCLUDE)
 
 SRC  = rng_pei.c
 SRC += rng_api.c

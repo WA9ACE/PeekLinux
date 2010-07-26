@@ -2,7 +2,6 @@ DEFINE += FF_BAT
 
 UNDEFINE += 
 
-VARIANT_INCLUDE=$(M23_VARIANT_INCLUDE)
 INCLUDE += $(M23DIR)/config
 INCLUDE += $(M23DIR)/gpf/inc
 INCLUDE += $(M23DIR)/g23m/condat/com/inc

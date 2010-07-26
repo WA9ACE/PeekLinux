@@ -17,8 +17,7 @@ UNDEFINE += PCM_2_FFS
 
 CCBASE = -mv4 --abi=tiabi
 
-VARIANT_INCLUDE = 
-INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(VARIANT_INCLUDE)
 INCLUDE += $(M23DIR)/bmi/ZI/include
 INCLUDE += $(M23DIR)/CS_ThirdParty/Beatnik/code/services
 INCLUDE += $(M23DIR)/CS_ThirdParty/Beatnik/code/services/bae/Engine/Client_API/Private

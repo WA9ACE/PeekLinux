@@ -44,7 +44,7 @@
 /*
  *  Use SAP DTI2.DOC
  */
-#include "P_DTI2.h"
+#include "p_dti2.h"
 #else
 /*
  *  Make this code compatible to SAP dti.doc.

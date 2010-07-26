@@ -4,8 +4,7 @@ DEFINE += FAX_AND_DATA=FAX_AND_DATA
 
 UNDEFINE += 
 
-VARIANT_INCLUDE = 
-INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(VARIANT_INCLUDE)
 INCLUDE += $(M23DIR)/L1/layer1/gtt_include
 INCLUDE += $(M23DIR)/L1/layer1/gtt_include/ctm
 INCLUDE += $(M23DIR)/L1/layer1/dyn_dwl_include

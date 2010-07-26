@@ -1,3 +1,7 @@
+#include "general.h"
+#include "bal_os.h"
+#include "bal_socket_api_ti.h"
+#include "msg.h"
 #include "TCPTransport.h"
 #include "p_malloc.h"
 
@@ -5,10 +9,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <errno.h>
-
-#include "bal_socket_api_ti.h"
-#include "bal_os.h"
-#include "msg.h"
 
 #define AF_INET        0
 #define SOCK_STREAM    0

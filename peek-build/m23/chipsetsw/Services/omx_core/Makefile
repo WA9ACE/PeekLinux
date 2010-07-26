@@ -2,9 +2,8 @@ DEFINE +=
 UNDEFINE += CONFIG_MODULE
 UNDEFINE += DATA_EXT_RAM
 
-VARIANT_INCLUDE = 
 INCLUDE += $(M23DIR)/chipsetsw/Services/omx_core/inc
-INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(VARIANT_INCLUDE)
 
 SRC  = src/omx_componenttable.c
 SRC += src/omx_core.c

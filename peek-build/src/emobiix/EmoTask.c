@@ -1,3 +1,4 @@
+#include "general.h"
 #include "typedefs.h"
 #include "Lcd_manager.h"
 #include "Task.h"

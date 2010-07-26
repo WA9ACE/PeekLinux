@@ -2,8 +2,7 @@ DEFINE +=
 UNDEFINE += FF_MIDI_LOAD_FROM_MEM
 UNDEFINE += FF_MIDI_LOAD_FROM_LFS
 
-VARIANT_INCLUDE = 
-INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(VARIANT_INCLUDE)
 INCLUDE += $(M23DIR)/g23m/condat/com/include
 INCLUDE += $(M23DIR)/csw-system/drv_app/lcd
 INCLUDE += $(M23DIR)/csw-system/drv_app/kpd

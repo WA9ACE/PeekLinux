@@ -30,17 +30,17 @@
 #define _RV_DEFINED_SWE_H_
 
 #ifndef _WINDOWS
-   #include "config/l1sw.cfg"
-   #include "config/rv.cfg"
-   #include "config/swconfig.cfg"
-   #include "config/debug.cfg"
+   #include "l1sw.cfg"
+   #include "rv.cfg"
+   #include "swconfig.cfg"
+   #include "debug.cfg"
 #endif
 
 /*
  * rv_swe.h is generated before build from System/env.mak
  * It is used both for RivieraTool and Target.
  */
-#include "config/rv_swe.h"
+#include "rv_swe.h"
 
 
 /* ------------------------------------------------------------------

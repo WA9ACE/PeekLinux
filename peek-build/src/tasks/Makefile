@@ -1,11 +1,11 @@
 DEFINE +=
 
-INCLUDE += $(INCDIR)/g23m-aci/aci
-INCLUDE += $(INCDIR)/g23m/condat/ms/src/aci
-INCLUDE += $(INCDIR)/g23m/condat/ms/src/aci_dti_mng
-INCLUDE += $(INCDIR)/g23m/condat/com/inc
-INCLUDE += $(INCDIR)/csw-system/drv_core
-INCLUDE += $(INCDIR)/g23m/condat/com/include
+INCLUDE += $(M23DIR)/g23m-aci/aci
+INCLUDE += $(M23DIR)/g23m/condat/ms/src/aci
+INCLUDE += $(M23DIR)/g23m/condat/ms/src/aci_dti_mng
+INCLUDE += $(M23DIR)/g23m/condat/com/inc
+INCLUDE += $(M23DIR)/csw-system/drv_core
+INCLUDE += $(M23DIR)/g23m/condat/com/include
 INCLUDE += $(SRCDIR)/include
 INCLUDE += $(SRCDIR)/bal/ata
 INCLUDE += $(SRCDIR)/bal/gprs

@@ -1,4 +1,5 @@
 #ifndef SIMULATOR
+#include "general.h"
 #include "typedefs.h"
 #include "KeyMap.h"
 //#include "Debug.h"

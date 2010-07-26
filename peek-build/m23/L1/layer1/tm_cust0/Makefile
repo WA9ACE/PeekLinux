@@ -2,8 +2,7 @@ DEFINE +=
 UNDEFINE += RSSI
 UNDEFINE += L1_NAVC_TRACE
 
-VARIANT_INCLUDE = 
-INCLUDE += $(M23_VARIANT_INCLUDE)
+INCLUDE += $(VARIANT_INCLUDE)
 
 SRC  = ../audio_cust0/l1audio_cust.c
 SRC += l1tm_cust.c

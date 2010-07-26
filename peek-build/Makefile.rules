@@ -1,8 +1,3 @@
-BASEOUT_INC  = $(INCDIR)
-BASEOUT_INC += $(INCDIR)/cdginc
-BASEOUT_INC += $(INCDIR)/cdginc_tools
-BASEOUT_INC += $(INCDIR)/config
-
 CFLAGS_BASE = -me
 CFLAGS_BASE += -q 
 CFLAGS_BASE += $(CCALIGNSTRUCTS)
@@ -21,7 +16,7 @@ CFLAGS := $(addprefix -D,$(VARIANT_DEFINE)) \
 					$(addprefix -U,$(VARIANT_UNDEFINE)) \
 					$(addprefix -D,$(DEFINE)) \
 					$(addprefix -U,$(UNDEFINE)) \
-					$(addprefix -I,$(addprefix $(INCDIR)/,$(VARIANT_INCLUDE)) $(INCLUDE) $(COMPILER_INC) $(BASEOUT_INC))
+					$(addprefix -I,$(VARIANT_INCLUDE) $(INCLUDE) $(COMPILER_INC))
 
 ASFLAGS := $(ASFLAGS_BASE) $(CFLAGS_BASE) $(CFLAGS)
 
