@@ -62,6 +62,7 @@ m23:
 	$(MAKE) -C $(M23DIR)/csw-system/drv_core $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/csw-system/init_common $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/tty $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/gpf/CCD $(MAKECMDGOALS)
 
 clean: m23
 
