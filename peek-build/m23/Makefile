@@ -43,6 +43,7 @@ m23:
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/omx_img $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/omx_ssl $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/ssl $(MAKECMDGOALS)
+	$(MAKE) -C $(M23DIR)/chipsetsw/riviera/rvt $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/bmi $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/g23m $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/csw-system/rtslib/v2_70 -f Makefile_rts16le_flash $(MAKECMDGOALS)

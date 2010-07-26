@@ -200,3 +200,6 @@ ti_prf_kill (void)
 }
 
 #endif
+void ti_env_prf_stub(void) {
+
+}

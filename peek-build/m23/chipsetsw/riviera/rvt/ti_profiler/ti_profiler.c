@@ -1817,3 +1817,6 @@ T_RVT_RET ti_nuc_monitor_mem_alloc(T_RVT_USER_ID user_id, T_RVT_MSG_LG buffer_le
 
 #endif // NUC_MONITOR || PROFILER
 
+void ti_prof_stub(void) {
+
+}
