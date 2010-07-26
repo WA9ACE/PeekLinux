@@ -16,7 +16,7 @@ CFLAGS := $(addprefix -D,$(VARIANT_DEFINE)) \
 					$(addprefix -U,$(VARIANT_UNDEFINE)) \
 					$(addprefix -D,$(DEFINE)) \
 					$(addprefix -U,$(UNDEFINE)) \
-					$(addprefix -I,$(VARIANT_INCLUDE) $(INCLUDE) $(COMPILER_INC))
+					$(addprefix -I,$(INCLUDE) $(COMPILER_INC))
 
 ASFLAGS := $(ASFLAGS_BASE) $(CFLAGS_BASE) $(CFLAGS)
 

@@ -20,6 +20,13 @@ INCLUDE   = .
 INCLUDE += $(SRCDIR)/include
 INCLUDE += $(M23DIR)/chipsetsw/riviera/rvf
 INCLUDE += $(M23DIR)/chipsetsw/riviera/rvm
+INCLUDE += $(M23DIR)/csw-system/os/nucleus/1_15/plus
+INCLUDE += $(M23DIR)/csw-system/os/nucleus/1_15
+INCLUDE += $(M23DIR)/gpf/inc
+INCLUDE += $(M23DIR)/chipsetsw/riviera
+INCLUDE += $(M23DIR)/config
+INCLUDE += $(M23DIR)/cdginc
+
 
 .PHONY: prepare
 

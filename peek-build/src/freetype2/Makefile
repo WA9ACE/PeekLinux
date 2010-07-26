@@ -3,6 +3,7 @@ DEFINE += FT_CONFIG_MODULES_H="<ftmodule.h>"
 
 INCLUDE += $(M23DIR)/csw-system/drv_core
 INCLUDE += $(M23DIR)/g23m/condat/ms/src/aci
+INCLUDE += $(M23DIR)/gpf/inc
 INCLUDE += $(SRCDIR)/include
 INCLUDE += $(SRCDIR)/bal
 INCLUDE += $(SRCDIR)/freetype2/include

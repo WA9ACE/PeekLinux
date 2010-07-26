@@ -1,6 +1,12 @@
 DEFINE +=
 
 INCLUDE += $(M23DIR)/g23m-aci/aci
+INCLUDE += $(M23DIR)/csw-system/os/nucleus/1_15/plus
+INCLUDE += $(M23DIR)/csw-system/os/nucleus/1_15
+INCLUDE += $(M23DIR)/gpf/inc
+INCLUDE += $(M23DIR)/chipsetsw/riviera
+INCLUDE += $(M23DIR)/config
+INCLUDE += $(M23DIR)/cdginc
 INCLUDE += $(M23DIR)/g23m/condat/ms/src/aci
 INCLUDE += $(M23DIR)/g23m/condat/ms/src/aci_dti_mng
 INCLUDE += $(M23DIR)/g23m/condat/com/inc
