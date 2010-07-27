@@ -1362,6 +1362,22 @@ static void proc_hostinfo_recvd(PROC_CONTEXT_T *pcont)
 /*==== Exported functions ====================================================*/
 
 
+void app_connect_emobiix_server()
+{
+	app_bearer("gprs");
+
+  custom_apn_valid = TRUE;
+	strcpy(custom_apn, "track.t-mobile.com");
+	strcpy(custom_user_id, "getpeek");
+	strcpy(custom_password, "txtbl123");
+
+	app_server("10.150.9.6");
+	app_port("12345");
+
+	app_start_tcpdl(APP_PROV_CUSTOM, 1, 1);
+//	app_open_bearer(APP_PROV_CUSTOM, 0, 0);
+}
+
 /** Initialize the application core.
  *
  * @param handle    own communication handle
@@ -1371,6 +1387,7 @@ BOOL app_initialize_tcpip(T_HANDLE app_handle)
 {
   TRACE_FUNCTION("app_initialize_tcpip()") ;
   memset(&proc_context, 0, sizeof(proc_context)) ;
+
   return PEI_OK ;
 }
 

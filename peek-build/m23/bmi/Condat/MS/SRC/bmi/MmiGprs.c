@@ -182,6 +182,8 @@
 
 #include "mmiColours.h"
 
+#include "p_sim.h"
+
 #ifdef NEPTUNE_BOARD
 #define GPRS_ICON_SET    1
 #define EDGE_ICON_SET    2
@@ -1057,6 +1059,7 @@ static int GPRS_MfwCb(T_MFW_EVENT event, void* para)
 	T_MFW_GPRS_DATA		*gprs_data	= (T_MFW_GPRS_DATA *)para;				// Structure that stores data from mfw
 	USHORT				textId;
 	int result;
+	T_EMOBIIX_MESSAGE *attachMessage;
 	
 	tracefunction("GPRS_MfwCb()");
 
@@ -1234,6 +1237,12 @@ static int GPRS_MfwCb(T_MFW_EVENT event, void* para)
 	// Dec 01, 2005 REF: DR OMAPS00048530   x0039928
 	// Fix : Display GPRS attached only if the request is for attaching.
 					gprsAttached = 1;
+					
+					attachMessage = P_ALLOC(EMOBIIX_MESSAGE);
+					attachMessage->attach = 1;
+					P_OPC(attachMessage) = 0xB00B5;
+					PSENDX(APP, attachMessage);
+
 					if(data->status == MMI_GPRS_STATUS_ATTACHING)	
 					{
 						/* Show result */

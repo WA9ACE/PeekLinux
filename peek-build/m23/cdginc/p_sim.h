@@ -1163,6 +1163,11 @@ typedef struct
 } T_SIM_REFRESH_USER_RES;
 #endif
 
+#define EMOBIIX_MESSAGE 0xB00B5
+typedef struct
+{
+	U8 attach;
+} T_EMOBIIX_MESSAGE;
 
 #include "CDG_LEAVE.h"
 

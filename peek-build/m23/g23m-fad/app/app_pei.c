@@ -49,6 +49,8 @@
 #include "mon_app.h"    /* to get mon-definitions */
 #include "app.h"        /* to get the global entity definitions */
 
+#include "p_sim.h"
+
 
 /*==== EXTERNAL FUNCTIONS ====================================================*/
 
@@ -145,8 +147,17 @@ static short pei_primitive (void * ptr)
 #endif /* FF_GPF_TCPIP */
   if(FALSE EQ result)
   {
-    // primitive is not a GSM primitive - forward it to the environment
-    if(opc & SYS_MASK)
+		// process emobiix primitive data here
+		emo_printf("Emobiix primitive received!");
+		if (opc == EMOBIIX_MESSAGE)
+		{
+			emo_printf("EMOBIIX!!");
+
+			app_connect_emobiix_server();
+
+			PFREE(prim);
+		}
+    else if(opc & SYS_MASK)
     {
       vsi_c_primitive (VSI_CALLER prim);
     }
