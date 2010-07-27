@@ -133,6 +133,80 @@ EXTERN char custom_password[SOCK_MAX_PASSWORD_LEN+1];
 
 #ifdef FF_GPF_TCPIP
 
+/* We can run different types of application processes, according to the
+ * commend sent by the user. */
+typedef enum {
+  AP_NONE,                      /* For uninitialized process types. */
+  AP_TCPDL,                     /* Download some data over TCP. */
+  AP_TCPUL,                     /* Upload some data over TCP. */
+  AP_UDPDL,                     /* Download some data over UDP. */
+  AP_UDPUL,                     /* Upload some data over UDP. */
+  AP_TCPECHO,                   /* Send/receive data to/from TCP echo port. */
+  AP_UDPECHO,                   /* Send/receive data to/from UDP echo port. */
+  AP_TCPSRV,                    /* TCP server application. */
+  AP_DNSQRY,                    /* Issue DNS queries and collect result. */
+  AP_TCPFORK,                   /* Forked TCP server process. */
+  AP_INVALID
+} APP_PROCTYPE_T ;
+
+/* Process states; the state transitions are mostly linear in this order. */
+typedef enum {
+  PS_IDLE,                      /* Initial state, process not running. */
+  PS_W_DCM_OPEN,                /* Waiting for DCM to open connection. */
+  PS_W_DCM_OPEN_ONLY,           /* Waiting for DCM to open connection - no further action. */
+  PS_W_CREAT,                   /* Waiting for socket create confirmation. */
+  PS_W_SCONN,                   /* Waiting for socket connect confirmation. */
+  PS_W_BIND,                    /* Waiting for socket bind confirmation. */
+  PS_W_LISTN,                   /* Waiting for confirmation of listen call. */
+  PS_LISTENS,                   /* Listens for client connections. */
+  PS_W_DNS,                     /* Waiting for a DNS query. */
+  PS_COMM,                      /* Happily exchanging data. */
+  PS_W_SCLOS,                   /* Waiting for socket close confirmation. */
+  PS_W_DCLOS,                   /* Waiting for DCM to close connection. */
+  PS_W_CONN_INFO,               /* Waiting for connection information */
+  PS_DCM_OPEN,                  /* DCM (bearer) connecion opened*/
+  PS_SOCK_OPEN,                 /* Socket and bearer open */
+  PS_INVALID
+} PROC_STAT_T ;
+
+/* The data a process holds. May be dynamically allocated in the future. */
+typedef struct PROCESS_CONTEXT_S {
+  APP_PROCTYPE_T ptype ;        /* Type of application process */
+  PROC_STAT_T pstate ;          /* Process status as defined above. */
+  int in_shutdown ;             /* Non-zero iff process is being shut down. */
+  T_SOCK_EVENTSTRUCT *last_evt; /* Last event passed from the Socket API. */
+  T_SOCK_IPPROTO ipproto ;      /* IP protocol number for this process (TCP or
+                                 * UDP); unused with dq. */
+  char *server_name ;           /* May be a domain name or an IP address in
+                                 * dotted decimal notation. */
+  T_SOCK_IPADDR server_ipaddr ; /* Server IP address. (Will be IPADDR_ANY in
+                                 * case of AP_TCPSRV.) */
+  T_SOCK_PORT server_port ;     /* Server port number. (Also in case of
+                                 * AP_TCPSRV.) */
+
+  /* The following variables are in use only where appropriate, of course --
+   * as indicated in the comment. */
+
+  int f_id ;                    /* Identity of TCP server fork. */
+  int spec_items ;              /* Specified number of items to transfer. (The
+                                 * items are single bytes for dl and ul.) */
+  int spec_reps ;               /* Specified number of repetitions. */
+
+  int data_sent ;               /* Total amount of data sent (ul, te, ue). */
+  int data_rcvd ;               /* Total amount of data recvd (dl, te, ue). */
+  int items_sent ;              /* Number of blocks/packets/queries sent (ul,
+                                 * te, ue, dq). */
+  int items_rcvd ;              /* Number of blocks/packets/responses received
+                                 * (dl, te, ue, dq). */
+  int n_reps ;                  /* Number of repetitions done. */
+  int errors ;                  /* Number of errors at all. */
+  T_SOCK_SOCKET psocket ;       /* The socket in use by the process. */
+  int network_is_open ;         /* Non-zero iff we have an open network
+                                 * connection. */
+  int psocket_is_open ;         /* Non-zero iff we have an open psocket. */
+  BOOL bearer_only;             /* if set, only a Bearer will be opened */ 
+} PROC_CONTEXT_T ;
+
 /*==== Callbacks =============================================================*/
 
 void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context) ;
@@ -165,12 +239,12 @@ void app_start_udpecho(int prov, int size, int reps) ;
 void app_start_tcpsrv(int prov, int port, int repeat) ;
 void app_start_dnsquery(int prov, int times, char *address) ;
 void app_shutdown(void) ;
-void app_pstat(void) ;
+void app_pstat(PROC_CONTEXT_T *pcont) ;
 void app_server(char *server) ;
 void app_port(char *port) ;
 void app_buffer(char *bufsize) ;
 void app_bearer(char *bearer) ;
-void app_switch_flow(int flow_on) ;
+void app_switch_flow(PROC_CONTEXT_T *pcont, int flow_on) ;
 LOCAL void app_print_conn_info(T_SOCK_BEARER_INFO_CNF *info);
 
 void app_open_bearer(int prov, int size, int reps);

@@ -63,22 +63,6 @@
 #define NTOHS(a) HTONS(a)
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-/* We can run different types of application processes, according to the
- * commend sent by the user. */
-typedef enum {
-  AP_NONE,                      /* For uninitialized process types. */
-  AP_TCPDL,                     /* Download some data over TCP. */
-  AP_TCPUL,                     /* Upload some data over TCP. */
-  AP_UDPDL,                     /* Download some data over UDP. */
-  AP_UDPUL,                     /* Upload some data over UDP. */
-  AP_TCPECHO,                   /* Send/receive data to/from TCP echo port. */
-  AP_UDPECHO,                   /* Send/receive data to/from UDP echo port. */
-  AP_TCPSRV,                    /* TCP server application. */
-  AP_DNSQRY,                    /* Issue DNS queries and collect result. */
-  AP_TCPFORK,                   /* Forked TCP server process. */
-  AP_INVALID
-} APP_PROCTYPE_T ;
-
 /* Strings for process types; used for debugging and MUST correspond strictly
  * to the process type enum labels defined above. */
 static char *proc_type_name[] = {
@@ -94,26 +78,6 @@ static char *proc_type_name[] = {
   "AP_TCPFORK",
   "AP_INVALID"
 } ;
-
-/* Process states; the state transitions are mostly linear in this order. */
-typedef enum {
-  PS_IDLE,                      /* Initial state, process not running. */
-  PS_W_DCM_OPEN,                /* Waiting for DCM to open connection. */
-  PS_W_DCM_OPEN_ONLY,           /* Waiting for DCM to open connection - no further action. */
-  PS_W_CREAT,                   /* Waiting for socket create confirmation. */
-  PS_W_SCONN,                   /* Waiting for socket connect confirmation. */
-  PS_W_BIND,                    /* Waiting for socket bind confirmation. */
-  PS_W_LISTN,                   /* Waiting for confirmation of listen call. */
-  PS_LISTENS,                   /* Listens for client connections. */
-  PS_W_DNS,                     /* Waiting for a DNS query. */
-  PS_COMM,                      /* Happily exchanging data. */
-  PS_W_SCLOS,                   /* Waiting for socket close confirmation. */
-  PS_W_DCLOS,                   /* Waiting for DCM to close connection. */
-  PS_W_CONN_INFO,               /* Waiting for connection information */
-  PS_DCM_OPEN,                  /* DCM (bearer) connecion opened*/
-  PS_SOCK_OPEN,                 /* Socket and bearer open */
-  PS_INVALID
-} PROC_STAT_T ;
 
 /* Strings for the process states; used for debugging and MUST correspond
  * strictly to the process state enum labels defined above, as the array is
@@ -137,45 +101,9 @@ static char *proc_state_name[] = {
   "PS_INVALID"
 } ;
 
-/* The data a process holds. May be dynamically allocated in the future. */
-typedef struct PROCESS_CONTEXT_S {
-  APP_PROCTYPE_T ptype ;        /* Type of application process */
-  PROC_STAT_T pstate ;          /* Process status as defined above. */
-  int in_shutdown ;             /* Non-zero iff process is being shut down. */
-  T_SOCK_EVENTSTRUCT *last_evt; /* Last event passed from the Socket API. */
-  T_SOCK_IPPROTO ipproto ;      /* IP protocol number for this process (TCP or
-                                 * UDP); unused with dq. */
-  char *server_name ;           /* May be a domain name or an IP address in
-                                 * dotted decimal notation. */
-  T_SOCK_IPADDR server_ipaddr ; /* Server IP address. (Will be IPADDR_ANY in
-                                 * case of AP_TCPSRV.) */
-  T_SOCK_PORT server_port ;     /* Server port number. (Also in case of
-                                 * AP_TCPSRV.) */
+static PROC_CONTEXT_T proc_context_tcp ;
+static PROC_CONTEXT_T proc_context_udp ;
 
-  /* The following variables are in use only where appropriate, of course --
-   * as indicated in the comment. */
-
-  int f_id ;                    /* Identity of TCP server fork. */
-  int spec_items ;              /* Specified number of items to transfer. (The
-                                 * items are single bytes for dl and ul.) */
-  int spec_reps ;               /* Specified number of repetitions. */
-
-  int data_sent ;               /* Total amount of data sent (ul, te, ue). */
-  int data_rcvd ;               /* Total amount of data recvd (dl, te, ue). */
-  int items_sent ;              /* Number of blocks/packets/queries sent (ul,
-                                 * te, ue, dq). */
-  int items_rcvd ;              /* Number of blocks/packets/responses received
-                                 * (dl, te, ue, dq). */
-  int n_reps ;                  /* Number of repetitions done. */
-  int errors ;                  /* Number of errors at all. */
-  T_SOCK_SOCKET psocket ;       /* The socket in use by the process. */
-  int network_is_open ;         /* Non-zero iff we have an open network
-                                 * connection. */
-  int psocket_is_open ;         /* Non-zero iff we have an open psocket. */
-  BOOL bearer_only;             /* if set, only a Bearer will be opened */ 
-} PROC_CONTEXT_T ;
-
-static PROC_CONTEXT_T proc_context ;
 static PROC_CONTEXT_T cl_context[APP_N_CLIENTS] ;
 static char server_name[FQDN_LENGTH+1] = APP_DEF_SERVER ;
                                 /* Global server name. */
@@ -533,21 +461,20 @@ static void proc_free_tcpfork(PROC_CONTEXT_T *pcont)
 }
 
 
-static void proc_init(int prov, int size, int reps, APP_PROCTYPE_T ptype,
+static void proc_init(PROC_CONTEXT_T *pcont, int prov, int size, int reps, APP_PROCTYPE_T ptype,
                       T_SOCK_IPPROTO ipproto, U16 port)
 {
   T_SOCK_BEARER_INFO bearer_info;
-  PROC_CONTEXT_T *pcont ;
-  BOOL bear_only = proc_context.bearer_only;
+  BOOL bear_only = pcont->bearer_only;
 
   TRACE_FUNCTION("proc_init()") ;
 
-  pcont = &proc_context ;
   if (pcont->pstate != PS_IDLE)
   {
-    TRACE_ERROR("proc_init: process still active") ;
+    TRACE_ERROR("proc_init: process still active, but ok...") ;
     return ;
   }
+
   memset(pcont, 0, sizeof(*pcont)) ;
   pcont->bearer_only = bear_only;
   pcont->ptype = ptype ;
@@ -569,7 +496,7 @@ static void proc_init(int prov, int size, int reps, APP_PROCTYPE_T ptype,
                  inet_ntoa(pcont->server_ipaddr), NTOHS(pcont->server_port),
                  (ipproto EQ SOCK_IPPROTO_UDP) ? "udp" : "tcp",
                  sock_bearer_type_string(sock_bearer_type)) ;
-  app_pstat();
+  app_pstat(pcont);
 
   // fill connection params
   bearer_info.bearer_handle = sock_bearer_handle;
@@ -844,32 +771,32 @@ static void comm_send(PROC_CONTEXT_T *pcont)
       /* Do nothing -- the server will send again anyway. */
       return ;
     case AP_UDPDL:
-      if (pcont->data_sent >= pcont->spec_items)
-      {
-        return;
-      }
+//      if (pcont->data_sent >= pcont->spec_items)
+//      {
+//        return;
+//      }
       break;
     case AP_TCPUL:
     case AP_UDPUL:
-      if (pcont->data_sent >= pcont->spec_items)
-      {
+//      if (pcont->data_sent >= pcont->spec_items)
+//      {
         TRACE_EVENT_P2("%s done after %d bytes",
                        proc_string(pcont), pcont->data_sent) ;
-        proc_close_socket(pcont) ;
+//        proc_close_socket(pcont) ;
         pcont->n_reps++ ;
-        return ;
-      }
+//				return ;
+//      }
       break ;
     case AP_TCPECHO:
     case AP_UDPECHO:
-      if (pcont->items_sent >= pcont->spec_items)
-      {
+//      if (pcont->items_sent >= pcont->spec_items)
+//      {
         TRACE_EVENT_P2("%s done after %d writes",
                        proc_string(pcont), pcont->items_sent) ;
-        proc_close_socket(pcont) ;
-        pcont->n_reps++ ;
-        return ;
-      }
+//        proc_close_socket(pcont) ;
+//        pcont->n_reps++ ;
+//        return ;
+//      }
       break ;
     case AP_DNSQRY:
       comm_query(pcont) ;
@@ -981,26 +908,26 @@ static void comm_recv(PROC_CONTEXT_T *pcont)
        * TODO: why (pcont->items_sent-1), I assume that the server "confirms"
        *       every packet
        */
-      if ((pcont->data_sent >= pcont->spec_items) &&
-          (pcont->items_rcvd == pcont->items_sent))
-      {
+//      if ((pcont->data_sent >= pcont->spec_items) &&
+//          (pcont->items_rcvd == pcont->items_sent))
+//      {
         TRACE_EVENT("last UDP-DL packet received");
         pcont->n_reps++ ;
-        proc_close_socket(pcont) ;
-      }
-      else {
+//        proc_close_socket(pcont) ;
+//			}
+//      else {
         comm_send(pcont);
-      }
+//      }
       break;
     case AP_TCPDL:
-      if (pcont->data_rcvd >= pcont->spec_items)
-      {
+//      if (pcont->data_rcvd >= pcont->spec_items)
+//      {
         TRACE_EVENT_P3("%s done after %d/%d bytes",
                        proc_string(pcont), pcont->data_rcvd,
                        pcont->spec_items) ;
         pcont->n_reps++ ;
-        proc_close_socket(pcont) ;
-      }
+//        proc_close_socket(pcont) ;
+//      }
       break ;
     case AP_UDPECHO:
     case AP_TCPECHO:
@@ -1119,7 +1046,7 @@ static void proc_shutdown(PROC_CONTEXT_T *pcont)
     return;
   }
   pcont->in_shutdown = TRUE ;
-  app_pstat() ;
+  app_pstat(pcont) ;
   if (pcont->psocket_is_open)
   {
     proc_close_socket(pcont);
@@ -1373,9 +1300,20 @@ void app_connect_emobiix_server()
 
 	app_server("10.150.9.6");
 	app_port("12345");
-
 	app_start_tcpdl(APP_PROV_CUSTOM, 1, 1);
-//	app_open_bearer(APP_PROV_CUSTOM, 0, 0);
+}
+
+void app_bind_emobiix_udp_server()
+{
+	app_bearer("gprs");
+
+  custom_apn_valid = TRUE;
+	strcpy(custom_apn, "track.t-mobile.com");
+	strcpy(custom_user_id, "getpeek");
+	strcpy(custom_password, "txtbl123");
+
+	app_port("7");
+	app_start_udpecho(APP_PROV_CUSTOM, 1, 1);
 }
 
 /** Initialize the application core.
@@ -1386,7 +1324,8 @@ void app_connect_emobiix_server()
 BOOL app_initialize_tcpip(T_HANDLE app_handle)
 {
   TRACE_FUNCTION("app_initialize_tcpip()") ;
-  memset(&proc_context, 0, sizeof(proc_context)) ;
+  memset(&proc_context_tcp, 0, sizeof(proc_context_tcp)) ;
+  memset(&proc_context_udp, 0, sizeof(proc_context_udp)) ;
 
   return PEI_OK ;
 }
@@ -1498,6 +1437,9 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
       else if(pcont->ipproto == SOCK_IPPROTO_TCP)
       {
         proc_connect_socket(pcont) ;
+				
+				// bind UDP once TCP socket is established
+				app_bind_emobiix_udp_server();
       }
       else
       {
@@ -1517,7 +1459,7 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
 
     case PS_W_LISTN:
       CHECK_SOCK_EVT(SOCK_LISTEN_CNF) ;
-      app_pstat() ;
+      app_pstat(pcont) ;
       proc_new_state(pcont, PS_LISTENS) ; /* Nothing more to do here. */
       break ;
 
@@ -1553,7 +1495,7 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
                                                                      
       pcont->psocket_is_open = FALSE ;
       pcont->psocket = 0;
-      app_pstat() ;
+      app_pstat(pcont) ;
       if (pcont->n_reps >= pcont->spec_reps OR
           pcont->in_shutdown)
       {        
@@ -1624,27 +1566,27 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
  * @param size     Amount of data to download or number of items to transfer.
  */
 void app_start_tcpdl(int prov, int size, int reps)
-{ proc_init(prov, size, reps, AP_TCPDL, SOCK_IPPROTO_TCP,
+{ proc_init(&proc_context_tcp, prov, size, reps, AP_TCPDL, SOCK_IPPROTO_TCP,
             port_number ? port_number : PORT_CHARGEN) ; }
 
 void app_start_tcpul(int prov, int size, int reps)
-{ proc_init(prov, size, reps, AP_TCPUL, SOCK_IPPROTO_TCP,
+{ proc_init(&proc_context_tcp, prov, size, reps, AP_TCPUL, SOCK_IPPROTO_TCP,
             port_number ? port_number : PORT_DISCARD) ; }
 
 void app_start_udpdl(int prov, int size, int reps)
-{ proc_init(prov, size, reps, AP_UDPDL, SOCK_IPPROTO_UDP,
+{ proc_init(&proc_context_udp, prov, size, reps, AP_UDPDL, SOCK_IPPROTO_UDP,
             port_number ? port_number : PORT_CHARGEN) ; }
 
 void app_start_udpul(int prov, int size, int reps)
-{ proc_init(prov, size, reps, AP_UDPUL, SOCK_IPPROTO_UDP,
+{ proc_init(&proc_context_udp, prov, size, reps, AP_UDPUL, SOCK_IPPROTO_UDP,
             port_number ? port_number : PORT_DISCARD) ; }
 
 void app_start_tcpecho(int prov, int items, int reps)
-{ proc_init(prov, items, reps, AP_TCPECHO, SOCK_IPPROTO_TCP,
+{ proc_init(&proc_context_tcp, prov, items, reps, AP_TCPECHO, SOCK_IPPROTO_TCP,
             port_number ? port_number : PORT_ECHO) ; }
 
 void app_start_udpecho(int prov, int items, int reps)
-{ proc_init(prov, items, reps, AP_UDPECHO, SOCK_IPPROTO_UDP,
+{ proc_init(&proc_context_udp, prov, items, reps, AP_UDPECHO, SOCK_IPPROTO_UDP,
             port_number ? port_number : PORT_ECHO) ; }
 
 void app_start_dnsquery(int prov, int times, char *address)
@@ -1657,11 +1599,11 @@ void app_start_dnsquery(int prov, int times, char *address)
   {
     query_name[0] =0 ;
   }
-  proc_init(prov, times,1, AP_DNSQRY,(T_SOCK_IPPROTO)0, 0) ;
+  proc_init(&proc_context_tcp, prov, times,1, AP_DNSQRY,(T_SOCK_IPPROTO)0, 0) ;
 }
 
 void app_start_tcpsrv(int prov, int port, int repeat)
-{ proc_init(prov, 0, repeat, AP_TCPSRV, SOCK_IPPROTO_TCP, port) ; }
+{ proc_init(&proc_context_tcp, prov, 0, repeat, AP_TCPSRV, SOCK_IPPROTO_TCP, port) ; }
 
 
 
@@ -1672,7 +1614,8 @@ void app_start_tcpsrv(int prov, int port, int repeat)
 void app_shutdown(void)
 {
   TRACE_FUNCTION("app_shutdown()") ;
-  proc_shutdown(&proc_context) ;
+  proc_shutdown(&proc_context_tcp) ;
+  proc_shutdown(&proc_context_udp) ;
 }
 
 
@@ -1765,13 +1708,10 @@ void app_bearer(char *bearer)
 
 /** Trace information about the process.
  */
-void app_pstat(void)
+void app_pstat(PROC_CONTEXT_T *pcont)
 {
-  PROC_CONTEXT_T *pcont ;
-
   TRACE_FUNCTION("app_pstat()") ;
 
-  pcont = &proc_context ;
   TRACE_EVENT_P3("%s in_shutdown %d last_evt %08x",
                  proc_string(pcont), pcont->in_shutdown, pcont->last_evt) ;
   TRACE_EVENT_P6("prot %d srv %s %s:%d sp_it %d sp_rep %d",
@@ -1804,9 +1744,8 @@ void app_pstat(void)
  *
  * @param flow_on    if non-zero, switch flow on; off otherwise.
  */
-void app_switch_flow(int flow_on)
+void app_switch_flow(PROC_CONTEXT_T *pcont, int flow_on)
 {
-  PROC_CONTEXT_T *pcont = &proc_context ;
   TRACE_FUNCTION("app_switch_flow()") ;
 
   if (flow_on)
@@ -1841,9 +1780,9 @@ LOCAL void app_print_conn_info(T_SOCK_BEARER_INFO_CNF *info)
 
 void app_open_bearer(int prov, int size, int reps)
 {
-  proc_context.bearer_only = TRUE;
-  proc_init(prov, size, reps, AP_NONE, SOCK_IPPROTO_TCP, port_number );
-  proc_context.bearer_only = FALSE;
+  proc_context_tcp.bearer_only = TRUE;
+  proc_init(&proc_context_tcp, prov, size, reps, AP_NONE, SOCK_IPPROTO_TCP, port_number );
+  proc_context_tcp.bearer_only = FALSE;
   
 }
 
