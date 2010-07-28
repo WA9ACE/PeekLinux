@@ -238,6 +238,9 @@ GLOBAL BOOL bootup_response_cb (ULONG opc, void * data);
 *******************************************************************************/
 extern void emo_printf(const char *fmt, ...);
 
+EXTERN BOOL appdata_response_cb (ULONG opc, void * data);
+static int pSlot;
+
 void mmi_main( void )
 {
     /* JVJ #1874 - mmi_main doesnt start the MMI. It only initilizes the Keyboard handler*/
@@ -275,6 +278,8 @@ void mmi_main( void )
 
 #else  /* Other Builds */
      emo_printf("mmi_main() keypower init called\n");
+
+     pSlot = aci_create(appdata_response_cb,NULL);
      key_power_init();
 #endif
 

@@ -1163,7 +1163,13 @@ typedef struct
 } T_SIM_REFRESH_USER_RES;
 #endif
 
-#define EMOBIIX_MESSAGE 0xB00B5
+#define EMOBIIX_SOCK_CREA   0xB00B5
+#define EMOBIIX_SOCK_CONN   0xB00B6
+#define EMOBIIX_SOCK_RECV   0xB00B7
+#define EMOBIIX_SOCK_DCON   0xB00B8
+
+#define EMOBIIX_MESSAGE	    0xB00B5
+
 typedef struct
 {
 	U8 attach;

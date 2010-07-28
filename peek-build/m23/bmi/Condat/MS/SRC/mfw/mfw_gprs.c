@@ -70,6 +70,8 @@ $End
 #include "mfw_win.h"
 #include "mfw_gprs.h"
 
+#include "p_sim.h"
+
 /* Definition for Edge Icon display */
 #ifdef NEPTUNE_BOARD
 #define TEMP_STRING_SIZE    50
@@ -855,10 +857,17 @@ BOOL gprs_sign_exec ( T_MFW_HDR     *cur_elem,
 */
 void gprs_ok(T_ACI_AT_CMD cmdId)
 {
+  T_EMOBIIX_MESSAGE *attachMessage;
+
   TRACE_FUNCTION("mfw_gprs.gprs_ok");
 
   gprs_signal(E_MFW_GPRS_OK, &cmdId);
-  
+
+  attachMessage = P_ALLOC(EMOBIIX_MESSAGE);
+  attachMessage->attach = 1;
+  P_OPC(attachMessage) = EMOBIIX_SOCK_CREA;
+  PSENDX(APP, attachMessage);
+
   return;
 }
 

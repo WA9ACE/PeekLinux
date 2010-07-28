@@ -21,6 +21,30 @@
 
 #include "gdi.h"
 #include "dspl.h"
+#include "p_sim.h"
+
+GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
+{
+	TRACE_FUNCTION("appdata_response_cb");
+
+	switch(opc) 
+	{
+		case EMOBIIX_SOCK_RECV: // Data received 
+			emo_printf("appdata_response_cb(): APP_DATA_RECV");
+			break;
+		case EMOBIIX_SOCK_CONN: // Sock connected
+			emo_printf("appdata_response_cb(): APP_DATA_CONN");
+			break;
+		case EMOBIIX_SOCK_DCON: // Sock disconnected
+			emo_printf("appdata_response_cb(): APP_DATA_DCON");
+			break;
+	    default:
+		break;
+	}
+
+	/* Not handled by this extention */
+	return FALSE;
+}
 
 void display_init()
 {
