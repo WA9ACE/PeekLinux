@@ -249,17 +249,16 @@ static int networkRequest_peek()
 
 static void networkRequest_send(int fd, const char *buffer, int size)
 {
-  T_EMOBIIX_WRITEMSG *writeMessage;
-  
+  void *msg;
+ 
   emo_printf("networkRequest_send() of size %d", size);
 
-  writeMessage = P_ALLOC(EMOBIIX_WRITEMSG);
-  writeMessage->data = (U32)p_malloc(size);
-  memcpy((void *)writeMessage->data, buffer, size);
-  writeMessage->size = size;
-
-  P_OPC(writeMessage) = EMOBIIX_WRITEMSG;
-  PSENDX(APP, writeMessage);
+  msg = P_ALLOC(EMOBIIX_WRITEMSG);
+  ((T_EMOBIIX_SOCK_RECV *)msg)->size = size;
+  ((T_EMOBIIX_SOCK_RECV *)msg)->data = (U32)p_malloc(size);
+  memcpy((void *)((T_EMOBIIX_SOCK_RECV *)msg)->data, buffer, size);
+ 
+  PSENDX(APP, msg);
 	
 #if 0
 	BOSEventWaitT EvtStatus;

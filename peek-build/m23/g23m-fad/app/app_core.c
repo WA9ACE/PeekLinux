@@ -1496,7 +1496,7 @@ static BOOL app_send_buf(PROC_CONTEXT_T *pcont, char *buffer, int size)
 {
   T_SOCK_RESULT result ;        /* Result of send call. */
 
-  TRACE_FUNCTION("app_send_buf()") ;
+  emo_printf("app_send_buf()") ;
   
   if(pcont->ipproto == SOCK_IPPROTO_UDP)
   {
@@ -1513,12 +1513,13 @@ static BOOL app_send_buf(PROC_CONTEXT_T *pcont, char *buffer, int size)
   switch (result)
   {
     case SOCK_RESULT_OK:
-      TRACE_EVENT_P1("app_send_buf() Sent (%d) bytes", pcont->data_sent);
+      emo_printf("app_send_buf() Sent (%d) bytes", pcont->data_sent);
       return TRUE;
     case SOCK_RESULT_NO_BUFSPACE:
-      TRACE_EVENT("app_send_buf() sock_send result no bufferspace");
+      emo_printf("app_send_buf() sock_send result no bufferspace");
       return FALSE;            /* Pause until SOCK_FLOW_READY_IND. */
     default:
+      emo_printf("app_send_buf() Bad result from sock_send %d", result);
       proc_shutdown(pcont);
       return FALSE;
   }
@@ -1539,7 +1540,8 @@ void app_connect_emobiix_server()
 void app_send(void *data) 
 {
   	T_EMOBIIX_WRITEMSG *writeMessage = (T_EMOBIIX_WRITEMSG *)data;
-
+	emo_printf("app_send()");
+	trace_dump_data((U8 *)writeMessage->data, writeMessage->size);
 	// XXX: Will have to split up bigger buffers
 	if(app_send_buf(&proc_context_tcp, (char *)writeMessage->data, writeMessage->size)) {
 		// Handle Data sent ok
@@ -1548,6 +1550,8 @@ void app_send(void *data)
 		// handle failed to send data
 		emo_printf("app_send(): Failed to write data");
 	}
+
+	p_free(writeMessage->data);
 
 }
 /*

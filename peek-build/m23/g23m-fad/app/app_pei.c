@@ -161,14 +161,16 @@ static short pei_primitive (void * ptr)
 			app_connect_emobiix_server();
 
 			PFREE(prim);
+			return PEI_OK;
 		}
 
 		if(opc == EMOBIIX_WRITEMSG) 
 		{
 			emo_printf("app_send()");
-			app_send(prim->data);
+			app_send((void*)(&(prim->data)));
 
 			PFREE(prim);
+			return PEI_OK;
 		}
 
     else if(opc & SYS_MASK)
