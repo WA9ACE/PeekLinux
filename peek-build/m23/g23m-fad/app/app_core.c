@@ -120,6 +120,7 @@ static T_SOCK_BEARER_TYPE bearer_select    = SOCK_BEARER_AS_SPECIFIED;
 static T_SOCK_BEARER_TYPE sock_bearer_type = SOCK_BEARER_GPRS;
 EXTERN BOOL custom_apn_valid;
 
+void app_ui_send(U32 event_type);
 
 /* The cache for DNS queries is RNET_RT_RESOLV_CACHE_MAX queries big, i. e. 8
  * in the current configuration. We need to overflow this cache in order to
@@ -1049,6 +1050,8 @@ static void proc_shutdown(PROC_CONTEXT_T *pcont)
 {
   TRACE_FUNCTION("proc_shutdown()") ;
 
+	app_ui_send(EMOBIIX_SOCK_DCON);
+
   if(pcont->in_shutdown)
   {
     TRACE_EVENT("Allready in shutdown");
@@ -1670,6 +1673,8 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
       pcont->psocket = event->socket ;
       pcont->psocket_is_open = TRUE ;
 
+			app_ui_send(EMOBIIX_SOCK_CREA);
+
       if(pcont->ipproto == SOCK_IPPROTO_TCP)
       {
         proc_connect_socket(pcont) ;
@@ -1722,7 +1727,9 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
       CHECK_SOCK_EVT(SOCK_CONNECT_CNF) ;
       /* Notify UI of socket connection */
       app_ui_send(EMOBIIX_SOCK_CONN);
+
       //proc_begin_comm(pcont) ;
+			proc_new_state(pcont, PS_COMM); // advance to read/write state
       break ;
 
     case PS_COMM:               /* Happily exchanging data. */
