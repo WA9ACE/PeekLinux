@@ -25,12 +25,15 @@
 
 GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 {
-	emo_printf("appdata_response_cb(): %d %x", opc, data);
+	emo_printf("appdata_response_cb(): %d (%08X)", opc, opc);
 
 	switch(opc) 
 	{
 		case EMOBIIX_SOCK_RECV: // Data received 
 			emo_printf("appdata_response_cb(): APP_DATA_RECV");
+			break;
+		case EMOBIIX_SOCK_CREA: // Sock created
+			emo_printf("appdata_response_cb(): APP_DATA_CREA");
 			break;
 		case EMOBIIX_SOCK_CONN: // Sock connected
 			emo_printf("appdata_response_cb(): APP_DATA_CONN");
@@ -38,8 +41,8 @@ GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 		case EMOBIIX_SOCK_DCON: // Sock disconnected
 			emo_printf("appdata_response_cb(): APP_DATA_DCON");
 			break;
-	    default:
-		break;
+		default:
+			break;
 	}
 
 	/* Not handled by this extention */
@@ -48,7 +51,7 @@ GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 
 void display_init()
 {
-        dspl_DevCaps displayData;
+	dspl_DevCaps displayData;
 	UBYTE ret = dspl_Init();
         emo_printf("Initializing display driver");
 	if (ret != DRV_OK)

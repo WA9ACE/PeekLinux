@@ -1164,16 +1164,28 @@ typedef struct
 #endif
 
 #define EMOBIIX_SOCK_CREA   0xB00B5
+typedef struct 
+{
+	U8 created;
+} T_EMOBIIX_SOCK_CREA;
+
 #define EMOBIIX_SOCK_CONN   0xB00B6
-#define EMOBIIX_SOCK_RECV   0xB00B7
-#define EMOBIIX_SOCK_DCON   0xB00B8
-
-#define EMOBIIX_MESSAGE	    0xB00B5
-
 typedef struct
 {
-	U8 attach;
-} T_EMOBIIX_MESSAGE;
+	U8 conn;
+} T_EMOBIIX_SOCK_CONN;
+
+#define EMOBIIX_SOCK_RECV   0xB00B7
+typedef struct
+{
+	U8 conn;
+} T_EMOBIIX_SOCK_RECV;
+
+#define EMOBIIX_SOCK_DCON   0xB00B8
+typedef struct
+{
+	U8 conn;
+} T_EMOBIIX_SOCK_DCON;
 
 #include "CDG_LEAVE.h"
 

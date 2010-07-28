@@ -1303,12 +1303,34 @@ static void proc_hostinfo_recvd(PROC_CONTEXT_T *pcont)
 
 void app_ui_send(U32 event_type)
 {
-        T_EMOBIIX_MESSAGE *msg;
+	void *msg;
 
-        msg = P_ALLOC(EMOBIIX_MESSAGE);
-        P_OPC(msg) = event_type;
+	emo_printf("app_ui_send() generating event: %d (%08X)", event_type, event_type);
 
-        PSENDX(ACI, msg);
+	switch (event_type)
+	{
+		case EMOBIIX_SOCK_CREA:
+			msg = P_ALLOC(EMOBIIX_SOCK_CREA);
+			break;
+
+		case EMOBIIX_SOCK_RECV:
+			msg = P_ALLOC(EMOBIIX_SOCK_RECV);
+			break;
+
+		case EMOBIIX_SOCK_CONN:
+			msg = P_ALLOC(EMOBIIX_SOCK_CONN);
+			break;
+
+		case EMOBIIX_SOCK_DCON:
+			msg = P_ALLOC(EMOBIIX_SOCK_DCON);
+			break;
+	
+		default:
+			emo_printf("app_ui_send() unknown event_type %d", event_type);
+			return;
+	}
+
+	PSENDX(ACI, msg);
 }
 
 int app_socket (int __family, int __type, int __protocol) {
