@@ -71,5 +71,5 @@ _print2fp(const void *buffer, size_t size, void *app_key) {
  */
 void ASN_DEBUG_f(const char *fmt, ...);
 void ASN_DEBUG_f(const char *fmt, ...) {
-	/* Fix me */
+
 }

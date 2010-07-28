@@ -10,7 +10,7 @@ DEFINE += realloc=p_realloc
 DEFINE += free=p_free
 
 # Debug
-# DEFINE += EMIT_ASN_DEBUG=1
+DEFINE += EMIT_ASN_DEBUG=1
 
 FILTER = converter-sample.c
 SRC = $(filter-out $(FILTER),$(wildcard *.c))

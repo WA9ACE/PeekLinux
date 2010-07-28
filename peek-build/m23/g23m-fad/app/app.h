@@ -191,7 +191,7 @@ typedef struct PROCESS_CONTEXT_S {
   int spec_items ;              /* Specified number of items to transfer. (The
                                  * items are single bytes for dl and ul.) */
   int spec_reps ;               /* Specified number of repetitions. */
-
+  char *eventBuf;
   int data_sent ;               /* Total amount of data sent (ul, te, ue). */
   int data_rcvd ;               /* Total amount of data recvd (dl, te, ue). */
   int items_sent ;              /* Number of blocks/packets/queries sent (ul,

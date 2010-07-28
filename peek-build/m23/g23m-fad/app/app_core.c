@@ -1307,6 +1307,7 @@ static void proc_hostinfo_recvd(PROC_CONTEXT_T *pcont)
 void app_ui_send(U32 event_type)
 {
 	void *msg;
+        PROC_CONTEXT_T *pcont = &proc_context_tcp;
 
 	emo_printf("app_ui_send() generating event: %d (%08X)", event_type, event_type);
 
@@ -1318,6 +1319,11 @@ void app_ui_send(U32 event_type)
 
 		case EMOBIIX_SOCK_RECV:
 			msg = P_ALLOC(EMOBIIX_SOCK_RECV);
+  			trace_dump_data((U8 *) pcont->eventBuf, pcont->data_rcvd);//MIN(APP_DATA_DUMP_LENGTH, pcont->data_rcvd));
+			//((T_EMOBIIX_SOCK_RECV *)msg)->data = (U32)pcont->eventBuf;
+			((T_EMOBIIX_SOCK_RECV *)msg)->size = pcont->data_rcvd;
+			((T_EMOBIIX_SOCK_RECV *)msg)->data = (U32)p_malloc(pcont->data_rcvd);
+			memcpy((void *)((T_EMOBIIX_SOCK_RECV *)msg)->data, pcont->eventBuf, pcont->data_rcvd);
 			break;
 
 		case EMOBIIX_SOCK_CONN:
@@ -1408,9 +1414,14 @@ static void app_comm_recv(PROC_CONTEXT_T *pcont)
 
   //trace_dump_data((U8 *) recv_ind->data_buffer,
   //                MIN(APP_DATA_DUMP_LENGTH, recv_ind->data_length)) ;
-  recv_ind->data_buffer = 0;
+  //recv_ind->data_buffer = 0;
+  if(recv_ind->data_length > 0) {
 
-  app_ui_send(EMOBIIX_SOCK_RECV);
+	  pcont->data_rcvd = recv_ind->data_length;
+	  pcont->eventBuf = recv_ind->data_buffer;
+
+	  app_ui_send(EMOBIIX_SOCK_RECV);
+  }
 
 }
 

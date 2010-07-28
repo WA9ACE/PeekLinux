@@ -104,7 +104,7 @@ static const char *generate_mapKey(Endpoint *ep, long sid)
 	return (transport->write(ctx->endpoint, buffer, size) == size) ? 0 : -1;
 }*/
 
-ConnectionContext *connectionContext_new(void)
+ConnectionContext *connectionContext_new(Endpoint *ep)
 {
 	Map *map;
 	ConnectionContext *output;
@@ -120,6 +120,7 @@ ConnectionContext *connectionContext_new(void)
 		map_delete(map);
 		return NULL;
 	}
+	memset(buffer, 0, CCTX_BUFLEN);
 
 	list = list_new();
 	if (list == NULL) {
@@ -135,6 +136,7 @@ ConnectionContext *connectionContext_new(void)
 		list_delete(list);
 		return NULL;
 	}
+        output->endpoint = ep;
 	output->syncRequests = map;
 	output->buffer = buffer;
 	output->bufferBytes = 0;
@@ -155,9 +157,11 @@ void connectionContext_delete(ConnectionContext *ctx)
 
 void connectionContext_setBuffer(ConnectionContext *ctx, char *buffer, int size) 
 {
+	emo_printf("connectionContext_setBuffer() buffer size %d", size);
         memcpy(ctx->buffer+ctx->bufferBytes, buffer, size); 
         ctx->bufferBytes += size;
 }
+
 /*
  * we return after trying only one action in here.
  * this is so we dont try and do too much since the
@@ -289,10 +293,11 @@ int connectionContext_consumePacket(ConnectionContext *ctx)
 		if (retval.code != RC_WMORE)
 			break;
 	}
-#else
+#endif
 	retval = uper_decode_complete(&ctx->decodeContext, &asn_DEF_FRIPacketP,
 			(void **)&packet, ctx->buffer, ctx->bufferBytes);
-#endif
+
+	emo_printf("connectionContext_consumePacket(): uper_decode_complete returned %d", retval.code);
 	switch (retval.code) {
 		case RC_OK:
 			consumed = retval.consumed;
@@ -300,7 +305,7 @@ int connectionContext_consumePacket(ConnectionContext *ctx)
 			memmove(ctx->buffer, ctx->buffer + consumed,
 					ctx->bufferBytes - consumed);
 			ctx->bufferBytes -= consumed;
-
+			emo_printf("connectionContext_consumePacket() RC_OK finished");
 			protocolFreeFRIPacketP(packet);
 			return consumed;
 		case RC_WMORE:

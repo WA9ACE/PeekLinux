@@ -250,8 +250,11 @@ static int networkRequest_peek()
 static void networkRequest_send(int fd, const char *buffer, int size)
 {
   T_EMOBIIX_WRITEMSG *writeMessage;
+  
+  emo_printf("networkRequest_send() of size %d", size);
 
   writeMessage = P_ALLOC(EMOBIIX_WRITEMSG);
+  writeMessage->data = (U32)p_malloc(size);
   memcpy((void *)writeMessage->data, buffer, size);
   writeMessage->size = size;
 

@@ -48,8 +48,10 @@ int asn_debug_indent;
 			__FILE__, __LINE__);		\
 	} while(0)
 #else	/* !__GNUC__ */
-void ASN_DEBUG_f(const char *fmt, ...);
-#define	ASN_DEBUG	ASN_DEBUG_f
+//void ASN_DEBUG_f(const char *fmt, ...);
+//#define	ASN_DEBUG	ASN_DEBUG_f
+void emo_printf( const char* fmt, ...);
+#define ASN_DEBUG	emo_printf
 #endif	/* __GNUC__ */
 #else	/* EMIT_ASN_DEBUG != 1 */
 static void ASN_DEBUG(const char *fmt, ...) { (void)fmt; }

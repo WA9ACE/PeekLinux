@@ -38,6 +38,10 @@ void p_free(void *p)
 #ifdef SIMULATOR
 	free(p);
 #else
+	if(!p){ 
+	    emo_printf("______________FREE TRIED TO FREE A NULL POINTER....________________");
+	    return;
+	}
 	brel(p);
 #endif
 }

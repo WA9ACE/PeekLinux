@@ -1163,7 +1163,7 @@ typedef struct
 } T_SIM_REFRESH_USER_RES;
 #endif
 
-#define EMOBIIX_MESSAGE   0xB00B1E5
+#define EMOBIIX_MESSAGE   0xB00B5
 typedef struct 
 {
 	U8 attach;

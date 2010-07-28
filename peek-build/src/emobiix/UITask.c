@@ -43,21 +43,41 @@ extern int gprsAttached;
 
 void uiAppConn(void *connData)
 {
-        static ConnectionContext *ctx;
+        Endpoint *ep;
+        URL *url;
+        Transport *transport;
 
-        ctx = connectionContext_new();
-        connectionContext = ctx;
 
-        connectionContext_loopIteration(ctx);
+	emo_printf("uiAppConn()");
+
+        url = url_parse("tcp://10.150.9.6:12345/dataobject", URL_ALL);
+
+        transport = transport_get(url->scheme);
+        if (transport == NULL) {
+        	emo_printf("No 'tcp' transport available");
+                	NU_Sleep(100);
+                        return;
+        }
+
+        ep = transport->socket();
+
+        connectionContext = connectionContext_new(ep);
+	if(!connectionContext) {
+		emo_printf("uiAppConn() Failed to allocate connectionContext");
+		return;
+	}
+        connectionContext_loopIteration(connectionContext);
 }
 
 void uiAppRecv(void *recvData)
 {
-        ConnectionContext *ctx = connectionContext;
         T_EMOBIIX_WRITEMSG *writeMsg = (T_EMOBIIX_WRITEMSG *) recvData;
 
-	connectionContext_setBuffer(ctx, (char *)writeMsg->data, writeMsg->size);
-        connectionContext_consumePacket(ctx);
+        emo_printf("uiAppRecv()");
+
+	connectionContext_setBuffer(connectionContext, (char *)writeMsg->data, writeMsg->size);
+
+        connectionContext_consumePacket(connectionContext);
 }
 
 GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
@@ -69,7 +89,9 @@ GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 		case EMOBIIX_SOCK_RECV: // Data received 
 			emo_printf("appdata_response_cb(): APP_DATA_RECV");
 			uiAppRecv(data);
-			PFREE(data);
+			/* Free the p_malloc'd buffer that we created in app_core */
+			p_free(((T_EMOBIIX_SOCK_RECV *)data)->data);
+			//PFREE(data);
 			return TRUE;
 		case EMOBIIX_SOCK_CREA: // Sock created
 			emo_printf("appdata_response_cb(): APP_DATA_CREA");
@@ -77,7 +99,7 @@ GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 		case EMOBIIX_SOCK_CONN: // Sock connected
 			emo_printf("appdata_response_cb(): APP_DATA_CONN");
 			uiAppConn(data);
-			PFREE(data);
+			//PFREE(data);
 			return TRUE;
 		case EMOBIIX_SOCK_DCON: // Sock disconnected
 			emo_printf("appdata_response_cb(): APP_DATA_DCON");
