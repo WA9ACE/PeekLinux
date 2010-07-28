@@ -50,7 +50,11 @@
 #include "app.h"        /* to get the global entity definitions */
 
 #include "p_sim.h"
+#include "gprs.h"
 
+#define hCommACI _ENTITY_PREFIXED (hCommACI)
+
+extern T_HANDLE hCommACI;
 
 /*==== EXTERNAL FUNCTIONS ====================================================*/
 
@@ -79,6 +83,7 @@ static  BOOL          first_access  = TRUE;
 static  BOOL          exit_flag = FALSE;
 static  T_MONITOR     app_mon;
 
+T_HANDLE hCommACI = VSI_ERROR;
 
 #ifdef FF_GPF_TCPIP
 T_SOCK_API_INSTANCE   sock_api_inst = 0 ; /* Also needed by the appl. core. */
@@ -148,8 +153,8 @@ static short pei_primitive (void * ptr)
   if(FALSE EQ result)
   {
 		// process emobiix primitive data here
-		emo_printf("Emobiix primitive received!");
-		if (opc == EMOBIIX_MESSAGE)
+		emo_printf("Emobiix primitive %d", opc);
+		if (opc == EMOBIIX_SOCK_CREA)
 		{
 			emo_printf("EMOBIIX!!");
 
@@ -197,6 +202,11 @@ static short pei_init (T_HANDLE handle)
    * entity data.
    */
   app_data = &app_data_base;
+
+  if(hCommACI < VSI_OK)
+  	if ((hCommACI = vsi_c_open (VSI_CALLER ACI_NAME)) < VSI_OK)
+      		return PEI_ERROR;
+
 
 #ifdef FF_GPF_TCPIP
   /* initialize socket API */
@@ -282,6 +292,9 @@ static short pei_exit (void)
 #ifdef FF_GPF_TCPIP
   sock_api_deinitialize(sock_api_inst) ;
 #endif /* FF_GPF_TCPIP */
+
+  vsi_c_close (VSI_CALLER hCommACI);
+  hCommACI = VSI_ERROR;
 
   exit_flag = TRUE;
 

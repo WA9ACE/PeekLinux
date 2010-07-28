@@ -103,6 +103,7 @@ static char *app_cmd_set_provider(app_cmd_entry_t *, char *, char *, char *, cor
 
 /* Command handler table. */
 static app_cmd_entry_t app_cmd_table[] = {
+#if 0
   { "tcpdl",    app_cmd_data,     app_start_tcpdl,    "[Provider][size] [reps]" },
   { "tcpul",    app_cmd_data,     app_start_tcpul,    "[Provider][size] [reps]" },
   { "udpdl",    app_cmd_data,     app_start_udpdl,    "[Provider][size] [reps]" },
@@ -117,12 +118,15 @@ static app_cmd_entry_t app_cmd_table[] = {
   { "bearer",   app_cmd_bearer,   0,                  "[gsm|gprs|best|none]" },
   { "shutdown", app_cmd_shutdown, 0,                  "" },
   { "stat",     app_cmd_pstat,    0,                  "" },
+#endif 
   { "help",     app_cmd_help,     0,                  "" },
+#if 0
   { "xon",      app_cmd_xon,      0,                  "" },
   { "xoff",     app_cmd_xoff,     0,                  "" },
   { "open_bearer", app_cmd_open_bearer,app_open_bearer,"[Provider]" },
   { "close_bearer", app_cmd_close_bearer,0,            "[Provider]" },
   { "set_provider", app_cmd_set_provider, 0,"[apn] [user_id] [password]" },
+#endif
   { 0,          0,                0,                  0},
 } ;
 
@@ -196,7 +200,7 @@ static char *app_cmd_tcpsrv(app_cmd_entry_t *cmd_entry_ptr,
   
   TRACE_FUNCTION("app_cmd_tcpsrv()") ;
 
-  app_start_tcpsrv(prov,port, rep) ;
+  //app_start_tcpsrv(prov,port, rep) ;
   return 0 ;
 }
 
@@ -207,7 +211,7 @@ static char *app_cmd_dnsquery(app_cmd_entry_t *cmd_entry_ptr,
   U32 prov  = get_provider(param1);
   int times = get_item(param2, APP_DEF_DNSQUERY_TIMES,FALSE);
 
-  app_start_dnsquery(prov,times, param3) ;
+  //app_start_dnsquery(prov,times, param3) ;
   return 0 ;
 }
 
@@ -215,7 +219,7 @@ static char *app_cmd_dnsquery(app_cmd_entry_t *cmd_entry_ptr,
 static char *app_cmd_server(app_cmd_entry_t *cmd_entry_ptr,
                             char *param1, char *param2, char *param3, core_func_t core_func)
 {
-  app_server(param1) ;
+  ///app_server(param1) ;
   return 0 ;
 }
 
@@ -223,7 +227,7 @@ static char *app_cmd_server(app_cmd_entry_t *cmd_entry_ptr,
 static char *app_cmd_buffer(app_cmd_entry_t *cmd_entry_ptr,
                             char *param1, char *param2, char *param3, core_func_t core_func)
 {
-  app_buffer(param1) ;
+  //app_buffer(param1) ;
   return 0 ;
 }
 
@@ -231,7 +235,7 @@ static char *app_cmd_buffer(app_cmd_entry_t *cmd_entry_ptr,
 static char *app_cmd_port(app_cmd_entry_t *cmd_entry_ptr,
                           char *param1, char *param2, char *param3, core_func_t core_func)
 {
-  app_port(param1) ;
+  //app_port(param1) ;
   return 0 ;
 }
 
@@ -239,7 +243,7 @@ static char *app_cmd_port(app_cmd_entry_t *cmd_entry_ptr,
 static char *app_cmd_shutdown(app_cmd_entry_t *cmd_entry_ptr,
                               char *param1, char *param2, char *param3, core_func_t core_func)
 {
-  app_shutdown() ;
+  //app_shutdown() ;
   return 0 ;
 }
 
@@ -247,7 +251,7 @@ static char *app_cmd_shutdown(app_cmd_entry_t *cmd_entry_ptr,
 static char *app_cmd_bearer(app_cmd_entry_t *cmd_entry_ptr,
                             char *param1, char *param2, char *param3, core_func_t core_func)
 {
-  app_bearer(param1) ;
+  //app_bearer(param1) ;
   return 0 ;
 }
 
@@ -255,7 +259,7 @@ static char *app_cmd_bearer(app_cmd_entry_t *cmd_entry_ptr,
 static char *app_cmd_pstat(app_cmd_entry_t *cmd_entry_ptr,
                            char *param1, char *param2, char *param3, core_func_t core_func)
 {
-  app_pstat() ;
+  //app_pstat() ;
   return 0 ;
 }
 
@@ -263,7 +267,7 @@ static char *app_cmd_pstat(app_cmd_entry_t *cmd_entry_ptr,
 static char *app_cmd_xon(app_cmd_entry_t *cmd_entry_ptr,
                          char *param1, char *param2, char *param3, core_func_t core_func)
 {
-  app_switch_flow(1) ;
+  //app_switch_flow(1) ;
   return 0 ;
 }
 
@@ -271,7 +275,7 @@ static char *app_cmd_xon(app_cmd_entry_t *cmd_entry_ptr,
 static char *app_cmd_xoff(app_cmd_entry_t *cmd_entry_ptr,
                           char *param1, char *param2, char *param3, core_func_t core_func)
 {
-  app_switch_flow(0) ;
+  //app_switch_flow(0) ;
   return 0 ;
 }
 
@@ -305,7 +309,7 @@ static char *app_cmd_close_bearer(app_cmd_entry_t *cmd_entry_ptr,  char *param1,
                                   char *param2, char *param3, core_func_t core_func)
 {
   TRACE_FUNCTION("app_cmd_close_bearer()") ;
-  app_close_bearer();
+  //app_close_bearer();
   return 0;
 }
 

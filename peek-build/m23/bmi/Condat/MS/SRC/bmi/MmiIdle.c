@@ -852,9 +852,6 @@ EXTERN UBYTE phlock_auto;
 
 *******************************************************************************/
 
-
-
-
 void idleInit (MfwHnd parent)
 {
 	/* x0045876, 14-Aug-2006 (WR - "hnd" was set but never used) */
@@ -879,7 +876,7 @@ void idleInit (MfwHnd parent)
 	//Create timer to display Phone lock unlock screen - timer is 10 secs duration
 	autoPhLock_timer = timCreate(0, 10000, (MfwCb)idle_autoPhoneLock_timer_cb);
 #endif /*FF_PHONE_LOCK*/
-	
+
 	/* x0045876, 14-Aug-2006 (WR - "hnd" was set but never used) */
     	/* hnd = idle_create (parent); */
 	idle_create (parent);
