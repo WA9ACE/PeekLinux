@@ -1525,13 +1525,17 @@ void app_connect_emobiix_server()
 	//app_start_tcpdl(APP_PROV_CUSTOM, 1, 1);
 }
 
-void app_send(char *buffer, int size)
+void app_send(void *data) 
 {
+  	T_EMOBIIX_WRITEMSG *writeMessage = (T_EMOBIIX_WRITEMSG *)data;
+
 	// XXX: Will have to split up bigger buffers
-	if(app_send_buf(&proc_context_tcp, buffer, size)) {
+	if(app_send_buf(&proc_context_tcp, (char *)writeMessage->data, writeMessage->size)) {
 		// Handle Data sent ok
+		emo_printf("app_send(): Wrote data");
 	} else {
 		// handle failed to send data
+		emo_printf("app_send(): Failed to write data");
 	}
 
 }

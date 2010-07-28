@@ -104,7 +104,7 @@ static const char *generate_mapKey(Endpoint *ep, long sid)
 	return (transport->write(ctx->endpoint, buffer, size) == size) ? 0 : -1;
 }*/
 
-ConnectionContext *connectionContext_new(Endpoint *ep)
+ConnectionContext *connectionContext_new(void)
 {
 	Map *map;
 	ConnectionContext *output;
@@ -135,7 +135,6 @@ ConnectionContext *connectionContext_new(Endpoint *ep)
 		list_delete(list);
 		return NULL;
 	}
-	output->endpoint = ep;
 	output->syncRequests = map;
 	output->buffer = buffer;
 	output->bufferBytes = 0;
@@ -154,6 +153,11 @@ void connectionContext_delete(ConnectionContext *ctx)
 	p_free(ctx);
 }
 
+void connectionContext_setBuffer(ConnectionContext *ctx, char *buffer, int size) 
+{
+        memcpy(ctx->buffer+ctx->bufferBytes, buffer, size); 
+        ctx->bufferBytes += size;
+}
 /*
  * we return after trying only one action in here.
  * this is so we dont try and do too much since the
@@ -167,6 +171,7 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 	void *key;
 	SyncRequest *sreq;
 
+#if 0
 	transport = endpoint_getTransport(ctx->endpoint);
 
 	/*emo_printf("Loop iteration...");*/
@@ -191,7 +196,7 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 			return 1;
 		}
 	}
-
+#endif
 	if (!((ctx->needAuth == NA_YES && ctx->hasAuth) || ctx->needAuth == NA_NO)) {
 		emo_printf("Not doing outgoing sync because we are not authorized" NL);
 		return 0;
@@ -523,8 +528,10 @@ static void connectionContext_packetSend(ConnectionContext *ctx,
 	size = (erv.encoded+7)/8;
 	transport = endpoint_getTransport(ctx->endpoint);
 	retval = transport->write(ctx->endpoint, buffer, size);
+#if 0
 	if (retval != size)
 		emo_printf("Sent %d bytes, wanted to send %d" NL, retval, size);
+#endif
 	p_free(buffer);
 	protocolFreeFRIPacketP_children(packet);
 }

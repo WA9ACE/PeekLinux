@@ -162,6 +162,15 @@ static short pei_primitive (void * ptr)
 
 			PFREE(prim);
 		}
+
+		if(opc == EMOBIIX_WRITEMSG) 
+		{
+			emo_printf("app_send()");
+			app_send(prim->data);
+
+			PFREE(prim);
+		}
+
     else if(opc & SYS_MASK)
     {
       vsi_c_primitive (VSI_CALLER prim);

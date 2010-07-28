@@ -593,6 +593,7 @@ typedef struct
   #elif defined (ENTITY_APP)
     #define _ENTITY_PREFIXED(N) app_##N
   #endif
-#endif
-
+  #elif defined (ENTITY_UI)
+    #define _ENTITY_PREFIXED(N) ui_##N
+  #endif
 #endif

@@ -4,8 +4,14 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include "typedefs.h"
-#include "vsi.h"
 #include "ccdapi.h"
+
+#include "vsi.h"        /* to get a lot of macros */
+#include "gsm.h"        /* to get a lot of macros */
+#include "prim.h"       /* to get the definitions of used SAP and directions */
+#include "pei.h"        /* to get PEI interface */
+#include "tools.h"      /* to get common tools */
+#include "typedefs.h"   /* to get Condat data types */
 
 #include "pei.h"
 #include "tok.h"
@@ -22,9 +28,13 @@
 #include "emopei.h"
 #include "exedefs.h"
 
+#include "p_sim.h"
+#include "gprs.h"
+
 #define         NU_VARIABLE_SIZE                13
 #define         NU_QUEUE_SIZE                   18
 
+#define ENTITY_UI
 
 /*=========================== MACROS =========================================*/
 
@@ -34,11 +44,16 @@
 	rvf_send_trace (string,(sizeof(string)-1),NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
 
 /*===========================Global Variables==================================*/
-
 T_HANDLE UI_handle;
+
+#define _ENTITY_PREFIXED(N) ui_##N
+
+#define hCommAPP        _ENTITY_PREFIXED(hCommAPP)
 
 LOCAL BOOL first_access = TRUE;
 static uint32 uiIsReady = 0;
+
+T_HANDLE hCommAPP = VSI_ERROR;
 
 extern NU_MEMORY_POOL  ExeSystemMemory;
 
@@ -275,6 +290,10 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 	}
     }
     
+  if(hCommAPP < VSI_OK)
+        if ((hCommAPP = vsi_c_open (VSI_CALLER APP_NAME)) < VSI_OK)
+                return PEI_ERROR;
+
     return (PEI_OK);
 } /* End pei_init(..) */
 

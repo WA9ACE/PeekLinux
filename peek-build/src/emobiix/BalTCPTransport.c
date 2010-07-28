@@ -4,6 +4,8 @@
 #include "msg.h"
 #include "TCPTransport.h"
 #include "p_malloc.h"
+#include "vsi.h"
+#include "p_sim.h"
 
 #include <ctype.h>
 #include <string.h>
@@ -44,6 +46,11 @@ Transport TCPTransport = {
 	TCPSequenceID
 };
 
+#define _ENTITY_PREFIXED(N) ui_##N
+#define hCommAPP        _ENTITY_PREFIXED(hCommAPP)
+
+extern T_HANDLE hCommAPP;
+
 struct TCPEndpoint_t {
 	Transport *transport;
 	int fd;
@@ -55,6 +62,8 @@ static int TCPInit(void);
 
 static int networkRequest_socket()
 {
+	return 0;
+#if 0
 	BOSEventWaitT EvtStatus;
 	uint32        MsgId;
 	uint32        MsgSize;
@@ -92,10 +101,13 @@ static int networkRequest_socket()
 
 		return sockFd;
 	}
+#endif
 }
 
 static int networkRequest_connect(int fd, const char *host, int port)
 {
+	return 0;
+#if 0
 	BOSEventWaitT EvtStatus;
 	uint32        MsgId;
 	uint32        MsgSize;
@@ -134,10 +146,13 @@ static int networkRequest_connect(int fd, const char *host, int port)
 
 		return connectRet;
 	}
+#endif
 }
 
 static int networkRequest_recv(int fd, char *buffer, int size)
 {
+	return 0;
+#if 0
 	BOSEventWaitT EvtStatus;
 	uint32        MsgId;
 	uint32        MsgSize;
@@ -183,10 +198,14 @@ static int networkRequest_recv(int fd, char *buffer, int size)
 
 		return readRet;
 	}
+#endif
+
 }
 
 static int networkRequest_peek()
 {
+	return 0;
+#if 0
 	BOSEventWaitT EvtStatus;
 	uint32        MsgId;
 	uint32        MsgSize;
@@ -223,10 +242,23 @@ static int networkRequest_peek()
 
 		return peekRet;
 	}
+#endif
 }
 
-static int networkRequest_send(int fd, const char *buffer, int size)
+// this is basically all we need in here.. all the packetsend functions use this
+
+static void networkRequest_send(int fd, const char *buffer, int size)
 {
+  T_EMOBIIX_WRITEMSG *writeMessage;
+
+  writeMessage = P_ALLOC(EMOBIIX_WRITEMSG);
+  memcpy((void *)writeMessage->data, buffer, size);
+  writeMessage->size = size;
+
+  P_OPC(writeMessage) = EMOBIIX_WRITEMSG;
+  PSENDX(APP, writeMessage);
+	
+#if 0
 	BOSEventWaitT EvtStatus;
 	uint32        MsgId;
 	uint32        MsgSize;
@@ -270,10 +302,13 @@ static int networkRequest_send(int fd, const char *buffer, int size)
 
 		return writeRet;
 	}
+#endif
 }
 
 static int networkRequest_close(int fd)
 {
+	return 0;
+#if 0
 	BOSEventWaitT EvtStatus;
 	uint32        MsgId;
 	uint32        MsgSize;
@@ -311,6 +346,7 @@ static int networkRequest_close(int fd)
 
 		return closeRet;
 	}
+#endif
 }
 
 Endpoint *TCPSocket(void)
@@ -335,6 +371,8 @@ Endpoint *TCPSocket(void)
 int TCPConnect(Endpoint *iep, URL *destination)
 {
 	TCPEndpoint *ep;
+#if 0
+	TCPEndpoint *ep;
 	unsigned short port;
 	struct in_addr addr;
 	struct sockaddr_in connect_in;
@@ -353,6 +391,9 @@ int TCPConnect(Endpoint *iep, URL *destination)
     return -1;
 	}
 
+	ep->sequenceID = 1;
+#endif
+	ep = (TCPEndpoint *)iep;
 	ep->sequenceID = 1;
 
 	return 0;
@@ -384,7 +425,9 @@ int TCPWrite(Endpoint *ep, const void *buffer, size_t len)
 		return 0;
 
 	tep = (TCPEndpoint *)ep;
-	return networkRequest_send(tep->fd, buffer, len);
+	networkRequest_send(tep->fd, buffer, len);
+
+	return 0;
 }
 
 int TCPRead(Endpoint *ep, void *output, size_t len)
@@ -399,6 +442,7 @@ int TCPRead(Endpoint *ep, void *output, size_t len)
 
 	tep = (TCPEndpoint *)ep;
 	return networkRequest_recv(tep->fd, output, len);
+
 }
 
 int TCPPeek(Endpoint *ep, void *output, size_t len)

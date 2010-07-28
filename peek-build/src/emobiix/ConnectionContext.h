@@ -10,7 +10,7 @@ extern "C" {
 struct ConnectionContext_t;
 typedef struct ConnectionContext_t ConnectionContext;
 
-ConnectionContext *connectionContext_new(Endpoint *ep);
+ConnectionContext *connectionContext_new(void);
 void connectionContext_delete(ConnectionContext *ctx);
 int connectionContext_loopIteration(ConnectionContext *ctx);
 

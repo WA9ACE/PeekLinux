@@ -21,7 +21,7 @@ int main(int argc, char **argv)
 	cerr << "Using \"peek\" pass \"peek123\" for authentication..." << endl;
 	if (emobiix::soap_request::GetAuthentication(url, "1234567", "peek", "peek123"))
 		cerr << "Authentication successful!" << endl;
-
+	return 0;
 	string tree;
 	if (emobiix::soap_request::GetTreeDataObject(url, "1234567", "dataobject", tree))
 		cerr << "Tree data request successful: " << endl << tree << endl;
