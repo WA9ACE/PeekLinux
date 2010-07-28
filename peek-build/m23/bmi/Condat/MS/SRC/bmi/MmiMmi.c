@@ -280,6 +280,8 @@ void mmi_main( void )
      emo_printf("mmi_main() keypower init called\n");
 
      pSlot = aci_create(appdata_response_cb,NULL);
+
+     emo_printf("mmi_main() aci_create() returned = %d", pSlot);
      key_power_init();
 #endif
 

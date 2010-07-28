@@ -25,7 +25,7 @@
 
 GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 {
-	TRACE_FUNCTION("appdata_response_cb");
+	emo_printf("appdata_response_cb(): %d %x", opc, data);
 
 	switch(opc) 
 	{

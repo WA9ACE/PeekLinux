@@ -74,7 +74,7 @@
 #include "mfw_acie.h"
 #include <string.h>
 
-T_MFW_ACI_EXT aci_ext_handler [MAX_ACI_HANDLER];
+static T_MFW_ACI_EXT aci_ext_handler [MAX_ACI_HANDLER];
 #ifdef BT_INTERFACE
 int pSlotBt = 0;
 #endif
@@ -127,6 +127,7 @@ GLOBAL int aci_create(T_PRIM_HANDLER prim_func, T_CMD_HANDLER cmd_func)
         if(aci_ext_handler[i].prim_handler EQ prim_func AND
             aci_ext_handler[i].cmd_handler EQ cmd_func)
        {
+							emo_printf("aci_create() duplicate found %d", i);
                return i;
        }
 
@@ -142,6 +143,7 @@ GLOBAL int aci_create(T_PRIM_HANDLER prim_func, T_CMD_HANDLER cmd_func)
            */
             aci_ext_handler[i].prim_handler = prim_func;
             aci_ext_handler[i].cmd_handler  = cmd_func;
+						emo_printf("aci_create() assigning %d for %x", i, prim_func);
             return i;
          }
      }
@@ -190,6 +192,7 @@ GLOBAL BOOL aci_check_primitive(ULONG opc, void * data)
 
   for (i=0;i<MAX_ACI_HANDLER;i++)
   {
+		emo_printf("aci_check_primitive() checking %i %x", i, aci_ext_handler[i].prim_handler);
     if (aci_ext_handler[i].prim_handler NEQ NULL)
     {
       /*
@@ -199,6 +202,7 @@ GLOBAL BOOL aci_check_primitive(ULONG opc, void * data)
        * to 32 bit opcodes needs to be performed inside those handling functions 
        * which handle still 16bit SAPs
        */
+			emo_printf("aci_check_primitive() calling %i %x", i, aci_ext_handler[i].prim_handler);
       if (aci_ext_handler[i].prim_handler(opc, data))
         /*
          * primitive is processed by the extension
