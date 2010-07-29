@@ -98,7 +98,7 @@ void uiAppRecv(void *recvData)
 
 GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 {
-	emo_printf("appdata_response_cb(): %d (%08X)", opc, opc);
+	//emo_printf("appdata_response_cb(): %d (%08X)", opc, opc);
 
 	switch(opc) 
 	{

@@ -246,7 +246,7 @@ GLOBAL BOOL nma_response_cb (ULONG opc, void * data)
   T_MMR_INFO_IND  mmr_nitz_ind;//x0066814 (Geetha), OMAPS00098351
   T_GMMREG_INFO_IND *gmmreg_info_ind;//x0066814 (Geetha), OMAPS00098351
 
-  TRACE_FUNCTION ("nma_response_cb()");
+  //TRACE_FUNCTION ("nma_response_cb()");
 
   switch (opc)
   {

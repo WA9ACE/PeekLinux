@@ -104,7 +104,7 @@ void MonFault(MonFaultUnitT UnitNum, uint32 FaultCode1, uint32 FaultCode2, MonFa
 extern char BalMemoryPoolBuffer[];
 
 void CallExeFault(void) {
-	bpoold(&BalMemoryPoolBuffer, 1, 1);
+	//bpoold(&BalMemoryPoolBuffer, 1, 1);
 	MonFault(MON_EXE_FAULT_UNIT, 3, 0, MON_HALT);
 }
 

@@ -55,7 +55,7 @@ static uint32 uiIsReady = 0;
 
 T_HANDLE hCommAPP = VSI_ERROR;
 
-extern NU_MEMORY_POOL  ExeSystemMemory;
+//extern NU_MEMORY_POOL  ExeSystemMemory;
 
 /*===========================Function Definition================================*/
 /*
@@ -253,7 +253,7 @@ LOCAL SHORT pei_exit (void)
 |
 +------------------------------------------------------------------------------
 */
-
+/*
 extern ExeTaskCbT     *ExeTaskCb[];
 
 const MailQueueT UiMailQueueTable[] = {{UI_TASK_MAIL_QUEUE_1, BOS_MAILBOX_1_ID},
@@ -261,17 +261,20 @@ const MailQueueT UiMailQueueTable[] = {{UI_TASK_MAIL_QUEUE_1, BOS_MAILBOX_1_ID},
 				      {UI_TASK_MAIL_QUEUE_3, BOS_MAILBOX_3_ID},
 				      {UI_TASK_MAIL_QUEUE_4, BOS_MAILBOX_4_ID}};
 ExeTaskCbT UIExeTaskCb;
-
+*/
 LOCAL SHORT pei_init (T_HANDLE handle)
 {
     T_RV_RET ret = RV_OK;
+/*
     int i;
     void *rPtr;
     int qCstatus;
     ExeTaskCbT *task;
+*/
     RVM_TRACE_DEBUG_HIGH("UI: pei_init");
     UI_handle = handle;
 
+    /*
     ExeTaskCb[EXE_UI_ID] = &UIExeTaskCb;
     task = ExeTaskCb[EXE_UI_ID];
 
@@ -289,7 +292,7 @@ LOCAL SHORT pei_init (T_HANDLE handle)
                 }
 	}
     }
-    
+    */
   if(hCommAPP < VSI_OK)
         if ((hCommAPP = vsi_c_open (VSI_CALLER APP_NAME)) < VSI_OK)
                 return PEI_ERROR;

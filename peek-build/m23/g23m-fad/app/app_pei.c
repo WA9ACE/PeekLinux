@@ -130,8 +130,6 @@ static short pei_primitive (void * ptr)
   unsigned long  opc;
   BOOL           result = FALSE;
 
-  TRACE_FUNCTION ("pei_primitive");
-
   if (prim EQ NULL)
   {
     TRACE_EVENT("Empty primitive");
@@ -153,12 +151,10 @@ static short pei_primitive (void * ptr)
   if(FALSE EQ result)
   {
 		// process emobiix primitive data here
-		emo_printf("Emobiix primitive %d", opc);
 		if (opc == EMOBIIX_SOCK_CREA)
 		{
-			emo_printf("EMOBIIX!!");
-
-			app_connect_emobiix_server();
+			emo_printf("app_conn()");
+			app_connect();
 
 			PFREE(prim);
 			return PEI_OK;

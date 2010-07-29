@@ -1446,7 +1446,7 @@ static void app_comm_event(PROC_CONTEXT_T *pcont)
       break ;
     case SOCK_FLOW_READY_IND:
       // XXX: Event notify ready to send again
-			app_ui_send(EMOBIIX_SOCK_SENT);
+      app_ui_send(EMOBIIX_SOCK_SENT);
       break ;
     case SOCK_HOSTINFO_CNF: // result event of sock_gethostbyname
       /*
@@ -1530,7 +1530,7 @@ static BOOL app_send_buf(PROC_CONTEXT_T *pcont, char *buffer, int size)
   }
 }
 
-void app_connect_emobiix_server()
+void app_connect(void)
 {
 	app_set_profile("track.t-mobile.com", "getpeek", "txtbl123");
 	app_connect_info("10.150.9.6", "12345");

@@ -905,7 +905,7 @@ static int tdCommand (U32 cmd, void *h)
 
 GLOBAL BOOL mfw_td_response_cb (ULONG opc, void * data)
 {
-  TRACE_FUNCTION ("mfw_td_response_cb");
+  //TRACE_FUNCTION ("mfw_td_response_cb");
 
 
   return FALSE;       /* not processed by extension */

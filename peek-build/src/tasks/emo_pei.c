@@ -187,7 +187,9 @@ LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
 {  
   RVM_TRACE_DEBUG_HIGH("EMO: pei_run");
 
+/*
   VibratorTimeOut(1500); 
+*/
   powered_on=1;
 
   EmoTask();
@@ -234,6 +236,7 @@ LOCAL SHORT pei_exit (void)
 +------------------------------------------------------------------------------
 */
 
+/*
 NU_MEMORY_POOL ExeSystemMemory;
 
 uint32 ExeIntStack[20];
@@ -246,6 +249,7 @@ static char SystemMemory[0xABB4];
 const MailQueueT EMOMailQueueTable[] = {{BAL_TASK_MAIL_QUEUE_1, BOS_MAILBOX_1_ID},
 				        {BAL_TASK_MAIL_QUEUE_2, BOS_MAILBOX_2_ID}};
 ExeTaskCbT EMOExeTaskCb;
+*/
 
 /*
 static volatile ExeSemaphoreT exeLockSema;
@@ -265,13 +269,16 @@ void initLock(void) {
 LOCAL SHORT pei_init (T_HANDLE handle)
 {
     T_RV_RET ret = RV_OK;
+/*
     int i;
     void *rPtr;
     int qCstatus;
     ExeTaskCbT *task;
+*/
     RVM_TRACE_DEBUG_HIGH("EMO: pei_init");
     EMO_handle = handle;
 
+/*
     ExeIntStackP = &ExeIntStack[0];
 
     DMCE_Create_Memory_Pool(&ExeSystemMemory, "SysMem", SystemMemory, 0xABB4, 0x32, NU_SEMAPHORE_SUSPEND);
@@ -298,6 +305,7 @@ LOCAL SHORT pei_init (T_HANDLE handle)
     //minit();
 
     ExeInit();
+    */
     return (PEI_OK);
 } /* End pei_init(..) */
 

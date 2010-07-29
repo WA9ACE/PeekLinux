@@ -21,7 +21,7 @@ void *p_malloc(int size)
 #ifdef SIMULATOR
 	return malloc(size);
 #else
-	return bget(size);
+	return malloc(size);
 #endif
 }
 
@@ -42,7 +42,7 @@ void p_free(void *p)
 	    emo_printf("______________FREE TRIED TO FREE A NULL POINTER....________________");
 	    return;
 	}
-	brel(p);
+	free(p);
 #endif
 }
 
@@ -51,6 +51,6 @@ void *p_realloc(void *p, int s)
 #ifdef SIMULATOR
 	return realloc(p, s);
 #else
-	return bgetr(p,s);
+	return realloc(p,s);
 #endif
 }

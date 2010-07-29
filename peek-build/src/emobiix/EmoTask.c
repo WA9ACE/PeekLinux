@@ -46,7 +46,7 @@ void EmoTask(void) {
 #ifdef DAR_HALT
 	File *fp;
 #endif 
-        BalMemInit();
+        //BalMemInit();
 #ifdef DAR_HALT
 	fp = file_openRead("/var/dbg/dar");
 	if(fp){
@@ -63,7 +63,7 @@ void EmoTask(void) {
 #endif
 
     	EmoStatusSet();
-	stCurSettingMode.eFlightMode = 0; // Set to normal mode
+	//stCurSettingMode.eFlightMode = 0; // Set to normal mode
 	while(1) {
 		TCCE_Task_Sleep(10000);
 	}

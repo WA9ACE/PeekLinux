@@ -26,8 +26,8 @@ INCLUDE += $(SRCDIR)/emobiix
 INCLUDE += $(SRCDIR)/nmealib/include
 
 SRC = emo_pei.c
-SRC += ems_pei.c
-SRC += trans_pei.c
+#SRC += ems_pei.c
+#SRC += trans_pei.c
 SRC += ui_pei.c
 
 TARGET = $(CURDIR)/peitasks.a

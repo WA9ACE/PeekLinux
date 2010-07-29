@@ -188,7 +188,7 @@ GLOBAL BOOL aci_check_primitive(ULONG opc, void * data)
 {
   UBYTE i;
 
-  TRACE_FUNCTION ("aci_check_primitive()");
+  //TRACE_FUNCTION ("aci_check_primitive()");
 
   for (i=0;i<MAX_ACI_HANDLER;i++)
   {

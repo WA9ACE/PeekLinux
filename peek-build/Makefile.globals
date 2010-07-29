@@ -32,8 +32,7 @@ ASN1CINC = $(ASN1CDIR)/share/asn1c
 CP = cp
 MV = mv
 
-LDFLAGS     = -x --trampolines -w -wr --no_sym_merge --issue_remarks --verbose_diagnostics
-# -heap=0x200000
+LDFLAGS     = -x --trampolines -w -wr --no_sym_merge --issue_remarks --verbose_diagnostics -heap=0x200000
 ARFLAGS	    = -rvu
 HEXFLAGS    = -m -memwidth 16 -romwidth 16
 
