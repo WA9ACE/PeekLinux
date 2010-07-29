@@ -392,9 +392,8 @@ int TCPConnect(Endpoint *iep, URL *destination)
 		p_free(ep);
     return -1;
 	}
-
-	ep->sequenceID = 1;
 #endif
+
 	ep = (TCPEndpoint *)iep;
 	ep->sequenceID = 1;
 

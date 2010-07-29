@@ -767,7 +767,7 @@ void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f,
 				y + fontHeight < CLIP.y ||
 				y > CLIP.y + CLIP.height)) {
 			if (data == NULL)
-				emo_printf(" Glyph missing");
+				emo_printf("lgui_draw_font() Glyph missing: %s", utf8);
 			else
 				lgui_luminence_A4_blitC(x, y+fontHeight-baselinedy, 0, 0, width, height,
 						width, height, data, c, LGUI_MODE_ALPHA, 0);
@@ -1000,7 +1000,7 @@ void lgui_measure_font(const char *utf8, Font *f, int isBold, IPoint *output)
 		data = (unsigned char *)font_getGlyph(f, val, isBold, A4, &width,
                 &height, &xadvance, &yadvance, &baselinedy);
 		if (data == NULL) {
-			emo_printf(" Glyph missing");
+			emo_printf("lgui_measure_font() Glyph missing: %s", utf8);
 			return;
 		} else {
 			output->x += xadvance;

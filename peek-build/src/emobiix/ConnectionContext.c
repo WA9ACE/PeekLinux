@@ -206,16 +206,15 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 		return 0;
 	}
 
-
-	/*emo_printf("Outgoing sync");*/
+	emo_printf("Outgoing sync");
 
 	/* perform any outgoing sync requests */
 	map_begin(ctx->syncRequests, &iter);
 	while (!mapIterator_finished(&iter)) {
 		sreq = (SyncRequest *)mapIterator_item(&iter, &key);
-#if 0
+
 		emo_printf("Processing sync request %s" NL, sreq->url->all);
-#endif
+
 		connectionContext_processSyncRequest(ctx, sreq);
 		if (sreq->finalize)
 			mapIterator_remove(&iter);
@@ -224,7 +223,7 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 		return 1;
 	}
 
-	/*emo_printf("Outgoing sync complete");*/
+	emo_printf("Outgoing sync complete");
 
 	return 0;
 }

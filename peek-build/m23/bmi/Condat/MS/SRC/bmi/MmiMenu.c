@@ -168,6 +168,8 @@ static MfwHnd kbdLong;  */
 static SimMenuFunc SimCallback;
 static MfwHnd      SimWindow;
 
+static MfwHnd			 emobiixWindow;
+
 /* x0039928 - Lint warning removal
 static MmiState nextState;              
 static BOOL fromHotKey;
@@ -202,6 +204,72 @@ int menuSimItemCallback( MfwMnu* m, MfwMnuItem* i)
     return MfwResOk;
 }
 
+void updateScreen(void);
+void lgui_set_dirty(void);
+void manager_handleKey(int key);
+
+static int winEmobiixCB( MfwEvt e, MfwWin *w )
+{
+	emo_printf("winEmobiixCB() in callback");
+
+	switch(e)
+	{
+		case MfwWinVisible:
+			dspl_ClearAll();
+			lgui_set_dirty();
+			updateScreen();		
+			break;
+
+		default:
+			return MFW_EVENT_PASSED;
+	}
+
+	return MFW_EVENT_CONSUMED;
+}
+
+static int kbdEmobiixCB(MfwEvt e, MfwKbd *k)
+{
+	emo_printf("kbdEmobiixCB() in callback");
+
+	switch (k->code)
+	{
+		case KCD_HUP:
+			winHide(emobiixWindow);
+			break;
+
+		case KCD_MNUSELECT:
+			manager_handleKey(13);
+			break;
+
+		case KCD_MNUUP:
+			manager_handleKey(87);
+			break;
+		
+		case KCD_MNUDOWN:
+			manager_handleKey(86);
+			break;
+	}
+
+	return MFW_EVENT_CONSUMED;
+}
+
+int menuEmobiixItemCallback(MfwMnu* m, MfwMnuItem* i)
+{
+	static int created = 0;
+
+	emo_printf("menuEmobiixItemCallback() in callback");
+
+	if (!created)
+	{
+		created = 1;
+
+		emobiixWindow = win_create(mfwParent(mfw_header()), 0, E_WIN_VISIBLE|E_WIN_RESUME|E_WIN_SUSPEND, (T_MFW_CB)winEmobiixCB);
+		kbdCreate(emobiixWindow, KEY_ALL, (MfwCb)kbdEmobiixCB);
+	}
+
+	winShow(emobiixWindow);
+	return MfwResOk;
+}
 
 
 

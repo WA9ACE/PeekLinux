@@ -92,6 +92,7 @@ EXTERN USHORT item_flag_none( struct MfwMnuTag * m, struct MfwMnuAttrTag * ma, s
 EXTERN USHORT item_flag_WAP_2_0( struct MfwMnuTag * m, struct MfwMnuAttrTag * ma, struct MfwMnuItemTag * mi );
 EXTERN USHORT item_flag_hide( T_MFW_MNU * m, T_MFW_MNU_ATTR * ma, T_MFW_MNU_ITEM * mi );
 EXTERN int menuSimItemCallback( MfwMnu* m, MfwMnuItem* i );
+EXTERN int menuEmobiixItemCallback( MfwMnu* m, MfwMnuItem* i );
 
 
 /* Display the soft keys associated with the menu window

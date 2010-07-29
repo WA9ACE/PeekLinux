@@ -1668,6 +1668,7 @@ static const tPointerStructure LanguageIndex_1[LEN_LANGUAGE1+1] = {
 #endif
 	 //06 July, 2007 DR: OMAPS00137334 x0062172 Syed
 	{TxtConferenceFull, "Conference Full"}, /* String for Conference Full notification */
+	{TxtEmobiixApps, "Emobiix Applications"}, 
     { 0, 0 }
 };
 

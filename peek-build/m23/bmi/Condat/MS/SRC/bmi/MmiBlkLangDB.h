@@ -1567,6 +1567,7 @@ TxtLockEnabled,
 	TxtFwdIncomingCall,  /* String for Fwd Incoming  call */
 	 //06 July, 2007 DR: OMAPS00137334 x0062172 Syed
 	TxtConferenceFull,  // String for Conference Full notification 
+	TxtEmobiixApps,  // String for Conference Full notification 
 
 #ifdef FF_MMI_FILEMANAGER
 	/* File Management related Strings. */

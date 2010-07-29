@@ -2696,6 +2696,7 @@ BEGIN_ICON_MENU( menuMainMenu )
 #ifdef SIM_TOOLKIT/*MC SPR 975, added compiler switch*/
     MENU_ICON_ITEM( &mainIconSimToolkit,TxtSimToolkit,  menuSimItemCallback,     sim_toolkit_check ),
 #endif
+    MENU_ICON_ITEM( &mainIconWAP, TxtEmobiixApps,  menuEmobiixItemCallback,     item_flag_none ),
     SUB_ICON_MENU ( &mainIconMessages,TxtMessages,    menuMsg,  				item_flag_none ),
     SUB_ICON_MENU ( &mainIconPhonebook,TxtPhonebook,   menuPhbk,                item_flag_none ),
     SUB_ICON_MENU ( &mainIconRecentCalls,TxtRecentCalls, menuRecent,        item_flag_none ),

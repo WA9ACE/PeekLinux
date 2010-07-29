@@ -1326,6 +1326,10 @@ void app_ui_send(U32 event_type)
 			memcpy((void *)((T_EMOBIIX_SOCK_RECV *)msg)->data, pcont->eventBuf, pcont->data_rcvd);
 			break;
 
+		case EMOBIIX_SOCK_SENT:
+			msg = P_ALLOC(EMOBIIX_SOCK_SENT);
+			break;
+
 		case EMOBIIX_SOCK_CONN:
 			msg = P_ALLOC(EMOBIIX_SOCK_CONN);
 			break;
@@ -1442,6 +1446,7 @@ static void app_comm_event(PROC_CONTEXT_T *pcont)
       break ;
     case SOCK_FLOW_READY_IND:
       // XXX: Event notify ready to send again
+			app_ui_send(EMOBIIX_SOCK_SENT);
       break ;
     case SOCK_HOSTINFO_CNF: // result event of sock_gethostbyname
       /*

@@ -1186,7 +1186,6 @@ typedef struct
 {
         U32 data;
         U32 size;
-
 } T_EMOBIIX_SOCK_RECV;
 
 #define EMOBIIX_SOCK_DCON   0xB00B8
@@ -1202,6 +1201,13 @@ typedef struct
 	U32 size;
 
 } T_EMOBIIX_WRITEMSG;
+
+#define EMOBIIX_SOCK_SENT   0xB00BA
+typedef struct 
+{
+	U8 sent;
+} T_EMOBIIX_SOCK_SENT;
+
 
 #include "CDG_LEAVE.h"
 

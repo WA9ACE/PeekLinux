@@ -43,41 +43,57 @@ extern int gprsAttached;
 
 void uiAppConn(void *connData)
 {
-        Endpoint *ep;
-        URL *url;
-        Transport *transport;
-
+	Endpoint *ep;
+	URL *url;
+	Transport *transport;
 
 	emo_printf("uiAppConn()");
 
-        url = url_parse("tcp://10.150.9.6:12345/dataobject", URL_ALL);
+	url = url_parse("tcp://10.150.9.6:12345/dataobject", URL_ALL);
 
-        transport = transport_get(url->scheme);
-        if (transport == NULL) {
-        	emo_printf("No 'tcp' transport available");
-                	NU_Sleep(100);
-                        return;
-        }
+	transport = transport_get(url->scheme);
+	if (transport == NULL) {
+		emo_printf("No 'tcp' transport available");
+		NU_Sleep(100);
+		return;
+	}
 
-        ep = transport->socket();
+	ep = transport->socket();
+	transport->connect(ep, url);
 
-        connectionContext = connectionContext_new(ep);
+	connectionContext = connectionContext_new(ep);
 	if(!connectionContext) {
 		emo_printf("uiAppConn() Failed to allocate connectionContext");
 		return;
 	}
-        connectionContext_loopIteration(connectionContext);
+
+	connectionContext_syncRequest(connectionContext, url);
+	connectionContext_loopIteration(connectionContext);
+}
+
+
+void uiAppSent()
+{
+	emo_printf("uiAppSent() Looping...");
+	connectionContext_loopIteration(connectionContext);
 }
 
 void uiAppRecv(void *recvData)
 {
-        T_EMOBIIX_WRITEMSG *writeMsg = (T_EMOBIIX_WRITEMSG *) recvData;
+	T_EMOBIIX_WRITEMSG *writeMsg = (T_EMOBIIX_WRITEMSG *) recvData;
+	int status = 1;
 
-        emo_printf("uiAppRecv()");
+	emo_printf("uiAppRecv()");
 
 	connectionContext_setBuffer(connectionContext, (char *)writeMsg->data, writeMsg->size);
 
-        connectionContext_consumePacket(connectionContext);
+	while (status > 0)
+	{
+		status = connectionContext_consumePacket(connectionContext);
+		emo_printf("uiAppRecv() Consumed %d bytes" NL, status);
+	}
+
+	connectionContext_loopIteration(connectionContext);
 }
 
 GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
@@ -93,17 +109,26 @@ GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 			p_free(((T_EMOBIIX_SOCK_RECV *)data)->data);
 			//PFREE(data);
 			return TRUE;
+
 		case EMOBIIX_SOCK_CREA: // Sock created
 			emo_printf("appdata_response_cb(): APP_DATA_CREA");
 			break;
+
+		case EMOBIIX_SOCK_SENT: // Sock data sent
+			emo_printf("appdata_response_cb(): APP_DATA_SENT");
+			uiAppSent();
+			break;
+
 		case EMOBIIX_SOCK_CONN: // Sock connected
 			emo_printf("appdata_response_cb(): APP_DATA_CONN");
 			uiAppConn(data);
 			//PFREE(data);
 			return TRUE;
+
 		case EMOBIIX_SOCK_DCON: // Sock disconnected
 			emo_printf("appdata_response_cb(): APP_DATA_DCON");
 			break;
+
 		default:
 			break;
 	}
@@ -116,7 +141,7 @@ void display_init()
 {
 	dspl_DevCaps displayData;
 	UBYTE ret = dspl_Init();
-        emo_printf("Initializing display driver");
+	emo_printf("Initializing display driver");
 	if (ret != DRV_OK)
 	{
 		emo_printf("Display driver initialization failed: %d", ret);
@@ -133,9 +158,9 @@ void display_init()
 
 void UITask(void)
 {
-        task_threadFunction(&UITask_s);
+	task_threadFunction(&UITask_s);
 
-        return;
+	return;
 }
 
 extern BOOL powered_on;
@@ -153,13 +178,13 @@ int UIInit(void)
 			emo_printf("Failed to allocate screenBuf\n");
 
 		lgui_attach(screenBuf);
-        	manager_init();
+		manager_init();
 		initd = 1;
-	
-    		manager_drawScreen();
+
+		manager_drawScreen();
 		updateScreen();
 
-        	dataobject_platformInit();
+		dataobject_platformInit();
 	}
 
 	return 1;
@@ -199,36 +224,36 @@ int UIWaitForActivity(void)
 
 		//transport = transport_get(url->scheme);
 		/*
-		if (transport == NULL) {
-			emo_printf("No 'tcp' transport available");
-			NU_Sleep(100);
-			return 1;
-		}
+			 if (transport == NULL) {
+			 emo_printf("No 'tcp' transport available");
+			 NU_Sleep(100);
+			 return 1;
+			 }
 
-		emo_printf("ANDREY::Calling transport->socket())");
+			 emo_printf("ANDREY::Calling transport->socket())");
 
-		ep = transport->socket();
-		*/
+			 ep = transport->socket();
+		 */
 		//if (ep == NULL) {
 		//		emo_printf("Failed Transport::Socket()\n");
-			/* removed due to bal_get_socket.. Why are we calling socket functions in UI task?
-			emo_printf("Failed Transport::Socket(), error code: %d",
+		/* removed due to bal_get_socket.. Why are we calling socket functions in UI task?
+			 emo_printf("Failed Transport::Socket(), error code: %d",
 #ifdef SIMULATOR
-					0
+0
 #else
-					bal_get_socket_last_error()
+bal_get_socket_last_error()
 #endif
-					);
-			NU_Sleep(100);
-			*/
-	//		return 1;
-	//	}
+);
+NU_Sleep(100);
+		 */
+		//		return 1;
+		//	}
 
-	//	emo_printf("ANDREY::Calling transport->connect())");
-	//	if (transport->connect(ep, url) < 0) {
-	//		emo_printf("Connect failed");
-	//		return 1;
-	//	}
+		//	emo_printf("ANDREY::Calling transport->connect())");
+		//	if (transport->connect(ep, url) < 0) {
+		//		emo_printf("Connect failed");
+		//		return 1;
+		//	}
 
 		ctx = connectionContext_new();
 		connectionContext = ctx;
