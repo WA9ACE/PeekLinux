@@ -286,8 +286,8 @@ TRACE_FUNCTION("  case MMREG_INFO_IND: ");
 	 memcpy (&(mmr_nitz_ind.ntz), &(gmmreg_info_ind->net_time_zone),sizeof (T_ntz));
 	 memcpy (&(mmr_nitz_ind.time), &(gmmreg_info_ind->net_time), sizeof(T_time));
 
-	   
 	 nm_nitz_info_ind(&mmr_nitz_ind);
+    	 gprs_attach(1);
       return FALSE;   /* normal processing of ACI   */
   }
 
