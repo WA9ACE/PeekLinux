@@ -1779,7 +1779,8 @@ OCTET_STRING_fromBuf(OCTET_STRING_t *st, const char *str, int len) {
 
 	memcpy(buf, str, len);
 	((uint8_t *)buf)[len] = '\0';	/* Couldn't use memcpy(len+1)! */
-	FREEMEM(st->buf);
+	if (st->buf != NULL)
+		FREEMEM(st->buf);
 	st->buf = (uint8_t *)buf;
 	st->size = len;
 

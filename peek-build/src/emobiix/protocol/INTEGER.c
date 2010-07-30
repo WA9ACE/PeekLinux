@@ -577,7 +577,8 @@ INTEGER_decode_uper(asn_codec_ctx_t *opt_codec_ctx, asn_TYPE_descriptor_t *td,
 		if(inext) ct = 0;
 	}
 
-	FREEMEM(st->buf);
+	if (st->buf != NULL)
+		FREEMEM(st->buf);
 	st->buf = 0;
 	st->size = 0;
 	if(ct) {
