@@ -1545,8 +1545,8 @@ const MfwIcnAttr idl_Attr [idlIdMax] =  		        /* all our icon attributes  */
 	Roaming icon is made to overlap with voice mail indication icon since there's no space in the first row of the screen*/
     { { ICON_POS_X_VMAIL, ICON_POS_Y, ICON_SX, ICON_SY }, 	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) RoamingIcon  },   /* Roaming Indication            */
     { { ICON_POS_X_KLK, ICON_POS_Y, ICON_SX, ICON_SY }, 	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_klkColour  },   /* keypad locked            */
-    //{ { ICON_POS_X_CPR, ICON_POS_Y, ICON_SX, ICON_SY }, 	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_cipheringActivColour },		/* Ciphering       */    
-    //{ { ICON_POS_X_CPR, ICON_POS_Y, ICON_SX, ICON_SY }, 	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_cipheringDeactivColour },		/* Ciphering       */    
+    { { ICON_POS_X_CPR, ICON_POS_Y, ICON_SX, ICON_SY }, 	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_cipheringActivColour },		/* Ciphering       */    
+    { { ICON_POS_X_CPR, ICON_POS_Y, ICON_SX, ICON_SY }, 	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_cipheringDeactivColour },		/* Ciphering       */    
     { {  0,  0,  0,  0 }, 1, COLOUR_ICON_XX, ICON_TYPE_1BIT_UNPACKED,  0 },					/*ringer icon*/
     { {  0,  0,  0,  0 }, 1, COLOUR_ICON_XX, ICON_TYPE_1BIT_UNPACKED,  0 },					/*vibrator icon*/
     { {  0,  0,  0,  0 }, 1, COLOUR_ICON_XX, ICON_TYPE_1BIT_UNPACKED,  0 },					/*ringvibrator icon*/
