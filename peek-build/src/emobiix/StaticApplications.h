@@ -6,6 +6,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+DataObject *LoadingApplication(void);
 
 DataObject *LockApplication(void);
 
