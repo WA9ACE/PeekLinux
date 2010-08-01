@@ -2680,7 +2680,7 @@ static int idle_kbd_cb (MfwEvt e, MfwKbd *k)
       	case KCD_MNUSELECT:
 	    case KCD_LEFT:
 	      idle_data.missedCalls = 0;
-	      bookPhonebookStart(idle_data.win,PhbkMissedCallsListNormal);
+	      //bookPhonebookStart(idle_data.win,PhbkMissedCallsListNormal);
 /* Power management */
 #ifdef NEPTUNE_BOARD
 #ifdef MMI_POWER_MANAGEMENT_TEST
@@ -2756,7 +2756,7 @@ static int idle_kbd_cb (MfwEvt e, MfwKbd *k)
 				/*28th Mar 2007 OMAPS00121870 a0393213(R.Prabakar)
 				   "Menu" is mapped to right softkey*/	
  				case KCD_RIGHT:
-					emoMainStart(idle_data.win, PhbkMainMenu);
+					//emoMainStart(idle_data.win, PhbkMainMenu);
 					break;
 				/*CONQ 6436, MC allow entry of emergency number*/
 				/*API - 13-09-02 -Add all KCD_0 and KCD_8 */
@@ -3020,6 +3020,7 @@ static int idle_kbd_cb (MfwEvt e, MfwKbd *k)
 #endif
 #endif
 /* Stop Playing Audio on Key press - RAVI - 23-12-2005 */
+#if 0
 #ifdef NEPTUNE_BOARD
 				  if (idle_data.new_sms == TRUE)
 				  {
@@ -3046,9 +3047,9 @@ static int idle_kbd_cb (MfwEvt e, MfwKbd *k)
 #endif
 #endif
 /* END RAVI - 23-12-2005 */
-
-					
-					bookPhonebookStart(idle_data.win,PhbkNormal);
+#endif
+					emoMainStart(idle_data.win, PhbkMainMenu);
+					//bookPhonebookStart(idle_data.win,PhbkNormal);
 				break;
 				case KCD_CALL:
 /* Power management */
@@ -3057,7 +3058,7 @@ static int idle_kbd_cb (MfwEvt e, MfwKbd *k)
                       /*  mmi_pm_enable(0); */ /*Disable PM*/
 #endif
 #endif
-					bookPhonebookStart(idle_data.win,PhbkRedialListNormal);
+					//bookPhonebookStart(idle_data.win,PhbkRedialListNormal);
 				break;
 				case KCD_RIGHT:                 /* contacts (ADN)           */
            			/* SPR#1449 - SH - Remove, as terminates GPRS connection.
@@ -3099,7 +3100,7 @@ static int idle_kbd_cb (MfwEvt e, MfwKbd *k)
                       /*  mmi_pm_enable(0); */ /*Disable PM*/
 #endif
 #endif
-					 emoMainStart(idle_data.win, PhbkMainMenu);
+					 //emoMainStart(idle_data.win, PhbkMainMenu);
 				break;
 				case KCD_HUP:
 //Apr 05, 2005    REF: ENH 29994 xdeepadh
@@ -3145,9 +3146,9 @@ static int idle_kbd_cb (MfwEvt e, MfwKbd *k)
 				case KCD_9:
 				case KCD_STAR:
 				case KCD_HASH:
-					memset(idle_data.edt_buf,'\0',sizeof(idle_data.edt_buf));
-					idle_data.edt_buf[0]=editControls[k->code];
-					idle_dialling_start(idle_data.win,NULL);
+					//memset(idle_data.edt_buf,'\0',sizeof(idle_data.edt_buf));
+					//idle_data.edt_buf[0]=editControls[k->code];
+					//idle_dialling_start(idle_data.win,NULL);
 					break;
 
 				default:
@@ -4557,6 +4558,7 @@ static int idle_dialling_kbd_cb (MfwEvt e, MfwKbd *k)
 
        	case KCD_LEFT:						/* call establishment	*/
 			/* Ensure next update is a full update */
+	/*
 #ifdef NEW_EDITOR
 			data->editor->update = ED_UPDATE_DEFAULT;
 #endif
@@ -4566,6 +4568,8 @@ static int idle_dialling_kbd_cb (MfwEvt e, MfwKbd *k)
 				phbk_win = bookPhonebookStart(idle_data.win,PhbkNameEnterIdle);
 		        SEND_EVENT( phbk_win, PHBK_SEND_NUMBER, 0,(char*)idle_data.edt_buf );
 			}
+		*/
+		emoMainStart(idle_data.win, PhbkMainMenu);
 		break;
 
 		case KCD_RIGHT:
