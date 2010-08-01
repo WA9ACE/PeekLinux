@@ -25,6 +25,16 @@
 
 #include "system_battery.h"
 
+#include "mfw_mfw.h"
+#include "mfw_tim.h"
+#include "mfw_win.h"
+#include "mfw_kbd.h"
+#include "mfw_sat.h"
+#include "mfw_icn.h"
+#include "mfw_mnu.h"
+#include "MmiDummy.h"
+#include "MmiDialogs.h"
+#include "MmiMenu.h"
 
 unsigned char *screenBuf; //[320*240*2];
 void updateScreen(void);
@@ -67,8 +77,8 @@ void uiAppConn(void *connData)
 		return;
 	}
 
-	connectionContext_syncRequest(connectionContext, url);
-	connectionContext_loopIteration(connectionContext);
+	//connectionContext_syncRequest(connectionContext, url);
+	//connectionContext_loopIteration(connectionContext);
 }
 
 
@@ -94,6 +104,8 @@ void uiAppRecv(void *recvData)
 	}
 
 	connectionContext_loopIteration(connectionContext);
+	if(emoMenu_get_window())
+		SEND_EVENT(emoMenu_get_window(), SCREEN_UPDATE, 0, 0);
 }
 
 GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)

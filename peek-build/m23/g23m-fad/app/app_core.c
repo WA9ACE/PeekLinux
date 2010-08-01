@@ -1319,7 +1319,7 @@ void app_ui_send(U32 event_type)
 
 		case EMOBIIX_SOCK_RECV:
 			msg = P_ALLOC(EMOBIIX_SOCK_RECV);
-  			trace_dump_data((U8 *) pcont->eventBuf, pcont->data_rcvd);//MIN(APP_DATA_DUMP_LENGTH, pcont->data_rcvd));
+  			//trace_dump_data((U8 *) pcont->eventBuf, pcont->data_rcvd);//MIN(APP_DATA_DUMP_LENGTH, pcont->data_rcvd));
 			//((T_EMOBIIX_SOCK_RECV *)msg)->data = (U32)pcont->eventBuf;
 			((T_EMOBIIX_SOCK_RECV *)msg)->size = pcont->data_rcvd;
 			((T_EMOBIIX_SOCK_RECV *)msg)->data = (U32)p_malloc(pcont->data_rcvd);
@@ -1546,7 +1546,7 @@ void app_send(void *data)
 {
   	T_EMOBIIX_WRITEMSG *writeMessage = (T_EMOBIIX_WRITEMSG *)data;
 	emo_printf("app_send()");
-	trace_dump_data((U8 *)writeMessage->data, writeMessage->size);
+	//trace_dump_data((U8 *)writeMessage->data, writeMessage->size);
 	// XXX: Will have to split up bigger buffers
 	if(app_send_buf(&proc_context_tcp, (char *)writeMessage->data, writeMessage->size)) {
 		// Handle Data sent ok

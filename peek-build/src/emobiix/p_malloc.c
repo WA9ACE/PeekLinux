@@ -39,7 +39,7 @@ void p_free(void *p)
 	free(p);
 #else
 	if(!p){ 
-	    emo_printf("______________FREE TRIED TO FREE A NULL POINTER....________________");
+	    //emo_printf("______________FREE TRIED TO FREE A NULL POINTER....________________");
 	    return;
 	}
 	free(p);

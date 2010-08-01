@@ -18,6 +18,7 @@ void manager_applications(ListIterator *iter);
 void manager_focusApplication(Application *app);
 Application *manager_getFocusedApplication(void);
 void manager_focusNextApplication(void);
+Application *manager_getBootApp(void);
 
 #ifdef __cplusplus
 }

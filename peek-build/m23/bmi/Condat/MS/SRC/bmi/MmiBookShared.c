@@ -2689,24 +2689,27 @@ END_MENU( menuTestMode, menuListArea )
 #endif
 /*---------------------------------------------------------------------------*/
 
+extern int menuEmobiixItemCallback(MfwMnu* m, MfwMnuItem* i);
+extern int menuEmobiixItemCallback2(MfwMnu* m, MfwMnuItem* i);
+extern int menuEmobiixItemCallback3(MfwMnu* m, MfwMnuItem* i);
+extern int menuEmobiixItemCallback4(MfwMnu* m, MfwMnuItem* i);
+extern int menuEmobiixItemCallback5(MfwMnu* m, MfwMnuItem* i);
 
 /* Main system menu, keep this here until we get the real one implemented
 */
 BEGIN_ICON_MENU( menuMainMenu )
-#ifdef SIM_TOOLKIT/*MC SPR 975, added compiler switch*/
-    MENU_ICON_ITEM( &mainIconSimToolkit,TxtSimToolkit,  menuSimItemCallback,     sim_toolkit_check ),
-#endif
     MENU_ICON_ITEM( &mainIconWAP, TxtEmobiixApps,  menuEmobiixItemCallback,     item_flag_none ),
-    SUB_ICON_MENU ( &mainIconMessages,TxtMessages,    menuMsg,  				item_flag_none ),
-    SUB_ICON_MENU ( &mainIconPhonebook,TxtPhonebook,   menuPhbk,                item_flag_none ),
-    SUB_ICON_MENU ( &mainIconRecentCalls,TxtRecentCalls, menuRecent,        item_flag_none ),
-    SUB_ICON_MENU ( &mainIconCallDivert,TxtNetworkServices,  menuNetwork,       item_flag_none ),
-    SUB_ICON_MENU ( &mainIconSecurity,TxtSecurity,    menuSecurity,     item_flag_none ),
-    SUB_ICON_MENU ( &mainIconCalculator,TxtApplications, menuApplications,    item_flag_none ),
-  SUB_ICON_MENU ( &mainIconSettings,TxtPhoneSettings,    menuSet,          item_flag_none ),
-#ifdef FF_WAP
-    MENU_ICON_ITEM ( &mainIconWAP,TxtWAP, AUI_menu,   item_flag_none )
-#endif
+    MENU_ICON_ITEM( &mainIconMessages, TxtEmobiixApps,  menuEmobiixItemCallback2,     item_flag_none ),
+    MENU_ICON_ITEM( &mainIconPhonebook, TxtEmobiixApps,  menuEmobiixItemCallback3,     item_flag_none ),
+    MENU_ICON_ITEM( &mainIconRecentCalls, TxtEmobiixApps,  menuEmobiixItemCallback4,     item_flag_none ),
+    MENU_ICON_ITEM( &mainIconCallDivert, TxtEmobiixApps,  menuEmobiixItemCallback5,     item_flag_none ),
+    //SUB_ICON_MENU ( &mainIconMessages,TxtMessages,    menuMsg,  				item_flag_none ),
+    //SUB_ICON_MENU ( &mainIconPhonebook,TxtPhonebook,   menuPhbk,                item_flag_none ),
+    //SUB_ICON_MENU ( &mainIconRecentCalls,TxtRecentCalls, menuRecent,        item_flag_none ),
+    //SUB_ICON_MENU ( &mainIconCallDivert,TxtNetworkServices,  menuNetwork,       item_flag_none ),
+    //SUB_ICON_MENU ( &mainIconSecurity,TxtSecurity,    menuSecurity,     item_flag_none ),
+    //SUB_ICON_MENU ( &mainIconCalculator,TxtApplications, menuApplications,    item_flag_none ),
+    //SUB_ICON_MENU ( &mainIconSettings,TxtPhoneSettings,    menuSet,          item_flag_none ),
 END_ICON_MENU( menuMainMenu, menuListArea, COLOUR_LIST_MAIN, &mainIconBackground )
 
 

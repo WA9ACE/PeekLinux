@@ -32,6 +32,7 @@ struct ApplicationManager_t {
 	List *applications;
 	Application *focus;
 	Application *rootApplication;
+        Application *bootApp;
 	DataObject *rootApplicationObj;
 	DataObject *rootApplicationWindow;
 	DataObject *rootApplicationPlaceHolder;
@@ -40,6 +41,12 @@ struct ApplicationManager_t {
 typedef struct ApplicationManager_t ApplicationManager;
 
 static ApplicationManager *appManager = NULL;
+
+Application *manager_getBootApp(void) {
+	if(appManager->bootApp)
+		return appManager->bootApp;
+	return NULL;
+}
 
 void manager_init(void)
 {
@@ -77,9 +84,10 @@ void manager_init(void)
 
     /*bootApp = application_load(BootApplication());*/
 	bootApp = application_load(LockApplication());
-    manager_launchApplication(bootApp);
+    	manager_launchApplication(bootApp);
 
 	manager_focusApplication(bootApp);
+	appManager->bootApp = bootApp;
 }
 
 void manager_drawScreen(void)

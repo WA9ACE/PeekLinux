@@ -427,7 +427,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 				/*widget_resolveLayout(sreq->dobj, currentStyle);*/
 				widget_markDirty(sreq->dobj);
 				mime_loadAll(sreq->dobj);
-				dataobject_debugPrint(sreq->dobj);
+				//dataobject_debugPrint(sreq->dobj);
 				field = dataobject_getValue(sreq->dobj, "type");
 				if (field != NULL && field->type == DOF_STRING)
 					emo_printf("Finished Type: %s" NL, field->field.string); 
@@ -436,7 +436,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 					app = application_load(sreq->dobj);
 					manager_launchApplication(app);
 					manager_focusApplication(app);
-					dataobject_debugPrint(sreq->dobj);
+					//dataobject_debugPrint(sreq->dobj);
 				} else {
 					/* shouldnt refocus, should force a reloayout and draw instead */
 					manager_focusApplication(manager_getFocusedApplication());

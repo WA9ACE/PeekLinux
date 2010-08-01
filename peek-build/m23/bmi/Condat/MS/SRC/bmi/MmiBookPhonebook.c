@@ -150,7 +150,7 @@
 //Jul 21, 2004        REF: CRR 13348  xvilliva
 //This is a global variable used to store the handle, when 
 //phonebook menu is created.
-T_MFW_HND gPhbkMenu = NULL;
+extern T_MFW_HND gPhbkMenu;
 //Sep 29, 2004        REF: CRR 25041  xvilliva  
 extern int menuFDN;
 

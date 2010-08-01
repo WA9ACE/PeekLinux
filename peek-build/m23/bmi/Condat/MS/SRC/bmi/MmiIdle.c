@@ -324,6 +324,7 @@
 
 
 #include "prim.h"
+#include "MmiEmo.h"
 #include "mfw_mfw.h"
 #include "mfw_win.h"
 #include "mfw_kbd.h"
@@ -430,6 +431,9 @@ int pm_on = 2;  /*Neither PM is ON nor PM is OFF */
 #include "usb/usb_api.h"
 #endif /* FF_PHONE_LOCK */
 
+#include "MmiEmo.h"
+#include "ApplicationManager.h"
+#include "StaticApplications.h"
 #include "mfw_camapp.h"
 #include "MmiCameraApp.h"
 T_AUDIO_MMS_PLAY_FROM_FFS_PARAMETER *wefilename=NULL;
@@ -890,6 +894,7 @@ void idleInit (MfwHnd parent)
 	
     /* x0045876, 14-Aug-2006 (WR - pointless comparison of unsigned integer with zero) */
     /* if((FFS_flashData.IdleScreenBgd >= BGD_NONE) && (FFS_flashData.IdleScreenBgd < BGD_LAST)) */
+#if 0
     if (FFS_flashData.IdleScreenBgd < BGD_LAST)
 		idle_setBgdBitmap(FFS_flashData.IdleScreenBgd);
     else
@@ -901,7 +906,7 @@ void idleInit (MfwHnd parent)
 		icon_setMainBgdBitmap(FFS_flashData.MainMenuBgd);
     else
 		icon_setMainBgdBitmap(BGD_SQUARE);
-
+#endif
 
 /* Power management */
 /* create power management timer*/
@@ -1827,8 +1832,7 @@ LimitedService = 0;//end of crr12653
 		lgui_set_dirty();
 		updateScreen();
 	}
-
-	UIWaitForActivity();
+	manager_focusApplication(manager_getBootApp());
 	lgui_set_dirty();
 	updateScreen();
 
@@ -1974,7 +1978,7 @@ LimitedService = 0;//end of crr12653
 					}
 					else
 					{
-						idle_displayData(IDLE_CHARGING_MODE,TxtCharging,NULL);
+						//idle_displayData(IDLE_CHARGING_MODE,TxtCharging,NULL);
 					}
 					break;
 				}
@@ -2752,7 +2756,7 @@ static int idle_kbd_cb (MfwEvt e, MfwKbd *k)
 				/*28th Mar 2007 OMAPS00121870 a0393213(R.Prabakar)
 				   "Menu" is mapped to right softkey*/	
  				case KCD_RIGHT:
-					bookPhonebookStart(idle_data.win,PhbkMainMenu);	
+					emoMainStart(idle_data.win, PhbkMainMenu);
 					break;
 				/*CONQ 6436, MC allow entry of emergency number*/
 				/*API - 13-09-02 -Add all KCD_0 and KCD_8 */
@@ -2945,7 +2949,7 @@ static int idle_kbd_cb (MfwEvt e, MfwKbd *k)
                        /* mmi_pm_enable(0); */ /*Disable PM*/
 #endif
 #endif
-						idle_data.info_win=bookMenuStart(idle_data.win, ringerVolumeSetting(), SettingVolume);
+						//idle_data.info_win=bookMenuStart(idle_data.win, ringerVolumeSetting(), SettingVolume);
 					}
 					break;
 
@@ -3003,7 +3007,7 @@ static int idle_kbd_cb (MfwEvt e, MfwKbd *k)
                       /*  mmi_pm_enable(0); */ /*Disable PM*/
 #endif
 #endif
-						idle_data.info_win=bookMenuStart(idle_data.win, ringerVolumeSetting(), SettingVolume);
+						//idle_data.info_win=bookMenuStart(idle_data.win, ringerVolumeSetting(), SettingVolume);
 					}
 					break;
 				// break;  // RAVI
@@ -3095,7 +3099,7 @@ static int idle_kbd_cb (MfwEvt e, MfwKbd *k)
                       /*  mmi_pm_enable(0); */ /*Disable PM*/
 #endif
 #endif
-					 bookPhonebookStart(idle_data.win,PhbkMainMenu);
+					 emoMainStart(idle_data.win, PhbkMainMenu);
 				break;
 				case KCD_HUP:
 //Apr 05, 2005    REF: ENH 29994 xdeepadh
@@ -3749,7 +3753,7 @@ void mmi_usb_enumeration_options(void)
 {
 	TRACE_FUNCTION("mmi_usb_enumeration_options()");
 	
-	usb_opt_win=bookMenuStart(idle_data.win, USBMenuAttributes(),0);
+	//usb_opt_win=bookMenuStart(idle_data.win, USBMenuAttributes(),0);
 	//xashmic 14 Sep 2006, OMAPS00092732 HOT_FIX
 	//Enumerate all the ports if user does not select any option/exit this menu within 5 Sec
 	usb_auto_enum_timer=timCreate(usb_opt_win, AUTO_USB_ENUMERATION_TIMER, (MfwCb)mmi_usb_enumeration_timer_cb);

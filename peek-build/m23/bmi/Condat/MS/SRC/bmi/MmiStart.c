@@ -730,6 +730,7 @@ int show_welcome_cb(T_MFW_HND win, USHORT identifier, UBYTE reason)
 
     /* SPR#1929 - DS - Check if there is voicemail waiting. Port of 1960 */
 	/*a0393213 cphs rel4*/
+#if 0
    #ifdef FF_CPHS_REL4    
    if(!isMWISFilePresent())
    #endif	
@@ -759,7 +760,7 @@ int show_welcome_cb(T_MFW_HND win, USHORT identifier, UBYTE reason)
 			iconsDeleteState(iconIdCallFor);
 		}
     #endif
-
+#endif
     idleEvent(IdleUpdate);
 	
 	return 1;  // RAVI - Changed Return to Return 1

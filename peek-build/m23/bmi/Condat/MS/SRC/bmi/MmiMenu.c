@@ -119,6 +119,8 @@
 
 
 #include "cus_aci.h"
+#include "DataObject.h"
+
 
 #include "prim.h"
 #ifndef PCM_2_FFS
@@ -168,7 +170,10 @@ static MfwHnd kbdLong;  */
 static SimMenuFunc SimCallback;
 static MfwHnd      SimWindow;
 
-static MfwHnd			 emobiixWindow;
+static MfwHnd	 emobiixWindow = (MfwHnd) 0;
+static int emoWinCreated = 0;
+
+static tEmoMenuData *tEmoMenuItem = NULL;
 
 /* x0039928 - Lint warning removal
 static MmiState nextState;              
@@ -208,18 +213,33 @@ void updateScreen(void);
 void lgui_set_dirty(void);
 void manager_handleKey(int key);
 
+
+static void menuEmobiixDestroy(MfwHnd own_window)
+{
+    T_MFW_WIN 	     * win_data;
+
+        emo_printf("menuEmobiixDestroy");
+
+        if(own_window) {
+           	win_data = ((T_MFW_HDR *)own_window)->data;
+            	tEmoMenuItem = (tEmoMenuData *)win_data->user;
+
+                win_delete(tEmoMenuItem->win);
+        }
+}
+
 static int winEmobiixCB( MfwEvt e, MfwWin *w )
 {
-	emo_printf("winEmobiixCB() in callback");
+	emo_printf("winEmobiixCB() event %d", e);
 
 	switch(e)
 	{
 		case MfwWinVisible:
-			dspl_ClearAll();
+                        //dspl_Clear( 0,0, SCREEN_SIZE_X,SCREEN_SIZE_Y);
 			lgui_set_dirty();
 			updateScreen();		
+			dspl_Enable(1);
 			break;
-
 		default:
 			return MFW_EVENT_PASSED;
 	}
@@ -229,12 +249,19 @@ static int winEmobiixCB( MfwEvt e, MfwWin *w )
 
 static int kbdEmobiixCB(MfwEvt e, MfwKbd *k)
 {
+    	T_MFW_HND     win  = mfwParent(mfw_header());
+    	T_MFW_WIN     *win_data = ((T_MFW_HDR *)win)->data;
+    	
+	tEmoMenuItem = (tEmoMenuData *)win_data->user;
+
 	emo_printf("kbdEmobiixCB() in callback");
 
 	switch (k->code)
 	{
+		case KCD_RIGHT:
 		case KCD_HUP:
-			winHide(emobiixWindow);
+			menuEmobiixDestroy(tEmoMenuItem->win);
+			free(tEmoMenuItem);
 			break;
 
 		case KCD_MNUSELECT:
@@ -253,24 +280,110 @@ static int kbdEmobiixCB(MfwEvt e, MfwKbd *k)
 	return MFW_EVENT_CONSUMED;
 }
 
-int menuEmobiixItemCallback(MfwMnu* m, MfwMnuItem* i)
-{
-	static int created = 0;
+#define URL_ALL                 0x3FF
+typedef struct URL_t URL;
+typedef struct ConnectionContext_t ConnectionContext;
+extern int connectionContext_syncRequest(ConnectionContext *, URL *);
+extern int connectionContext_loopIteration(ConnectionContext *ctx);
+extern URL *url_parse(const char *URL, unsigned int parts);
+extern ConnectionContext *connectionContext;
 
-	emo_printf("menuEmobiixItemCallback() in callback");
-
-	if (!created)
-	{
-		created = 1;
-
-		emobiixWindow = win_create(mfwParent(mfw_header()), 0, E_WIN_VISIBLE|E_WIN_RESUME|E_WIN_SUSPEND, (T_MFW_CB)winEmobiixCB);
-		kbdCreate(emobiixWindow, KEY_ALL, (MfwCb)kbdEmobiixCB);
-	}
-
-	winShow(emobiixWindow);
-	return MfwResOk;
+int menuEmobiixItemCallback(MfwMnu* m, MfwMnuItem* i) {
+	URL *purl = url_parse("tcp://10.150.9.6:12345/calc", URL_ALL);
+        emo_printf("menuEmobiixItemCallback()");
+        return menuEmobiixItemCB(purl, m, i);
 }
 
+int menuEmobiixItemCallback2(MfwMnu* m, MfwMnuItem* i) {
+        URL *purl = url_parse("tcp://10.150.9.6:12345/whereami", URL_ALL);
+        emo_printf("menuEmobiixItemCallback2()");
+        return menuEmobiixItemCB(purl, m, i);
+}
+
+int menuEmobiixItemCallback3(MfwMnu* m, MfwMnuItem* i) { 
+        URL *purl = url_parse("tcp://10.150.9.6:12345/mail", URL_ALL);
+        emo_printf("menuEmobiixItemCallback3()");
+        return menuEmobiixItemCB(purl, m, i);
+}
+
+int menuEmobiixItemCallback4(MfwMnu* m, MfwMnuItem* i) { 
+        URL *purl = url_parse("tcp://10.150.9.6:12345/helloworld", URL_ALL);
+        emo_printf("menuEmobiixItemCallback4()");
+        return menuEmobiixItemCB(purl, m, i);
+}
+
+int menuEmobiixItemCallback5(MfwMnu* m, MfwMnuItem* i) { 
+        URL *purl = url_parse("tcp://10.150.9.6:12345/sample", URL_ALL);
+	emo_printf("menuEmobiixItemCallback5()");
+        return menuEmobiixItemCB(purl, m, i);
+}
+
+void menuEmobiixDialogCB (T_MFW_HND win, USHORT event, SHORT value, void * parameter)
+{
+    U8 * key_code;
+    T_MFW_WIN      * win_data = ((T_MFW_HDR *) win)->data;
+    
+    emo_printf("menuEmobiixDialogCB()");
+
+    switch(event) {
+		case SCREEN_UPDATE:
+			emo_printf("menuEmobiixDialogCB() Got Screen Update\n");
+			lgui_set_dirty();
+			updateScreen();
+			dspl_Enable(1);
+			break;
+    }
+}
+
+int menuEmobiixItemCB(URL *purl, MfwMnu* m, MfwMnuItem* i)
+{
+	T_MFW_HND  parent = mfwParent(mfw_header());
+        DataObject *dobj;
+        T_MFW_WIN  * win;
+
+	if(!tEmoMenuItem) {
+		tEmoMenuItem = (tEmoMenuData *)ALLOC_MEMORY (sizeof (tEmoMenuData ));
+	}
+
+        emo_printf("menuEmobiixItemCB()");
+
+        tEmoMenuItem->win = win_create(mfwParent(mfw_header()), 0, E_WIN_VISIBLE, (T_MFW_CB)winEmobiixCB);
+        kbdCreate(tEmoMenuItem->win, KEY_ALL, (MfwCb)kbdEmobiixCB);
+        //connectionContext_syncRequest(connectionContext, url);
+        //connectionContext_loopIteration(connectionContext);
+
+    	tEmoMenuItem->mmi_control.dialog    = (T_DIALOG_FUNC)menuEmobiixDialogCB;
+    	tEmoMenuItem->mmi_control.data      = tEmoMenuItem;
+    	win                         = ((T_MFW_HDR *)tEmoMenuItem->win)->data;
+    	win->user                   = (void *)tEmoMenuItem;
+
+        dobj = dataobject_locate(purl);
+        if (dobj == NULL)
+        {
+		emo_printf("menuEmobiixItemCB() calling connectionContext_syncRequest()");
+                connectionContext_syncRequest(connectionContext, purl);
+                dobj = dataobject_locate(purl);
+        } else {
+		//XXX: ryan fix me to grab application by data object	
+		// manager_focusApplication();
+	}
+
+        connectionContext_loopIteration(connectionContext);
+        winShow(tEmoMenuItem->win);
+
+        lgui_set_dirty();
+        updateScreen();
+	dspl_Enable(1);
+
+        return MfwResOk;
+}
+
+MfwHnd * emoMenu_get_window (void)
+{
+	if(tEmoMenuItem)
+        	return tEmoMenuItem->win;
+	return NULL;
+}
 
 
 /*******************************************************************************

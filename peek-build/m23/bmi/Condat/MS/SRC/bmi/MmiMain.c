@@ -1174,7 +1174,7 @@ int globalMme(MfwEvt e, MfwHnd para)
 //x0pleela 10 Apr, 2006 ER: OMAPS00075178
 	case PWR_CHG_PLUG:
 		TRACE_EVENT("Mme Event:PWR_CHG_PLUG");
-		charging_start_info();
+		//charging_start_info();
 		break;
 	/* External Power Plugged Off */
     //case 0: //x0pleela 10 Apr, 2006 

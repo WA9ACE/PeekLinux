@@ -79,9 +79,25 @@ typedef void ( *SimMenuFunc )( MfwHnd window );
 
 /* Standard menu initialise, exit and handler routines
 */
+MfwHnd * emoMenu_get_window (void);
+
 void menuInit( MfwHnd parent );
 void menuExit( void );
 void menuEnter( void );
+
+#define SCREEN_UPDATE 0
+typedef struct _tEmoMenuData_
+{
+    /* administrative data */
+
+    T_MMI_CONTROL     mmi_control;
+    T_MFW_HND         win;
+    T_MFW_HND         parent_win;
+
+    T_MFW_HND         kbd;
+    T_MFW_HND         kbd_long;
+
+} tEmoMenuData;
 
 
 /* Following functinos are provided to allow dynamic menu
