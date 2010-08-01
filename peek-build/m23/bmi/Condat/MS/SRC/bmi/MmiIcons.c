@@ -145,6 +145,7 @@
 #include "mmiColours.h"
 
 #include "cicons/mailicon.c"
+#include "cicons/aimicon.c"
 #include "cicons/batt.c"
 #include "cicons/edataicon.c"
 #include "cicons/signal0.c"
@@ -1846,7 +1847,7 @@ MfwIcnAttr mainIconCallDivert        =
 #ifdef USE_110X110
 	{ 0, 12, 110, 110 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) networkservices110x110_bmp
 #else
-	{ 0, 12, 96, 96 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) netWorkServices96x96_bmp
+	{ 0, 12, 128, 128}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) aimicon.pixel_data
 #endif
 	
 #endif
