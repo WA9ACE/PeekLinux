@@ -174,7 +174,11 @@ bool tree_parser::createEntry(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
 	FRIPacketP *entry = dataobject_factory::blockSyncListP(m_currentSyncId);
 	setCommonAttributes(entry, node);
-	dataobject_factory::addStringAttribute(entry, "data", xml_parser::XMLToString(node->getFirstChild()->getNodeValue()).c_str());
+
+	if (node->getFirstChild())
+		dataobject_factory::addStringAttribute(entry, "data", xml_parser::XMLToString(node->getFirstChild()->getNodeValue()).c_str());
+	else
+		dataobject_factory::addStringAttribute(entry, "data", "");
 
 	packets.push_back(entry);
 	return true;
