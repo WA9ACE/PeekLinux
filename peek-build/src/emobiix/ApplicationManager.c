@@ -122,6 +122,8 @@ void manager_handleKey(int key)
 	static Rectangle clip = {0, 0, 320, 240};
 	char keyStr[2];
 
+	emo_printf("Got Key[%d]\n", key);
+
 #ifndef SIMULATOR
 	switch (key) {
 		case KP_0_KEY: key = '0'; break;
@@ -316,6 +318,21 @@ void manager_focusNextApplication(void)
 		/*listIterator_delete(iter);*/
 	}
 	manager_focusApplication(newFocus);	
+}
+
+Application *manager_applicationForDataObject(DataObject *obj)
+{
+	ListIterator iter;
+	Application *item;
+
+	list_begin(appManager->applications, &iter);
+	while (!listIterator_finished(&iter)) {
+		item = (Application *)listIterator_item(&iter);
+		if (application_getDataObject(item) == obj)
+			return item;
+		listIterator_next(&iter);
+	}
+	return NULL;
 }
 
 #ifdef __cplusplus

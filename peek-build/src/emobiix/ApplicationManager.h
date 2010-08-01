@@ -19,6 +19,7 @@ void manager_focusApplication(Application *app);
 Application *manager_getFocusedApplication(void);
 void manager_focusNextApplication(void);
 Application *manager_getBootApp(void);
+Application *manager_applicationForDataObject(DataObject *obj);
 
 #ifdef __cplusplus
 }

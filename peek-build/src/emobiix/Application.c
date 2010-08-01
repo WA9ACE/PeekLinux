@@ -43,3 +43,7 @@ DataObject *application_getCurrentScreen(Application *app)
 	return app->currentScreen;
 }
 
+DataObject *application_getDataObject(Application *app)
+{
+	return app->dobj;
+}

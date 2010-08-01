@@ -13,6 +13,7 @@ typedef struct Application_t Application;
 Application *application_load(DataObject *dobj);
 void application_setActive(Application *app);
 DataObject *application_getCurrentScreen(Application *app);
+DataObject *application_getDataObject(Application *app);
 
 #ifdef __cplusplus
 }
