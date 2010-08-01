@@ -506,12 +506,13 @@ void screen_capture(void)
 	U8 *dest_data;
 	U8 filename[16];
 	U32 dest_size;
-       dest_size=get_screen_size();
-       dest_data=(U8*)mfwAlloc(dest_size);
+        dest_size=get_screen_size();
+        dest_data=(U8*)malloc(dest_size);
+	memset(dest_data, 0, 320*240*4);
 	get_screen_capture(dest_data);
 	sprintf((char*)filename,(const char*)"/sc%04d",screen_capture_index);
 	screen_capture_write(filename, dest_data, dest_size);
-       mfwFree(dest_data, dest_size);
+        free(dest_data);//, dest_size);
 	screen_capture_index++;
 }
 #endif /* ifndef NEPTUNE_BOARD*/

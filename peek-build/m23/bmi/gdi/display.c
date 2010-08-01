@@ -2068,17 +2068,19 @@ void scrPoint (int px, int py, int col);
 #if (BOARD == 70) || (BOARD == 71)
 U8* get_LCD_bitmap(void)
 {
-       return NULL;
+       return ((U8*)picture_col);
 }
 
 U32 get_screen_size(void)
 {
-    return 0;
+    emo_printf("get_screen_size()");
+    return (320*240*4);
 }
 
 void get_screen_capture(U8 *dest_data)
 {
-
+        emo_printf("get_screen_capture()");
+	memcpy(dest_data, get_LCD_bitmap(), (320*240*4));
 }
 
 #else
@@ -2122,7 +2124,7 @@ U32 get_screen_size(void)
 #ifdef DSAMPLE_COLOUR16
     return SC_BITMAP_SIZE;
 #else
-    return 0;
+    return NULL;
 #endif
 }
 

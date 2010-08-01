@@ -494,10 +494,11 @@ void kbdSignal (char make, char key)
               //we write the LCD buffer into the FFS and and consume the key 
               //event here itself without sending it to BMI
               // Also the screen capture key will be disabled here
+	      screenCaptureKey=41;
               if(key== screenCaptureKey && make==1)
               {
                     TRACE_EVENT("*****Capturing the screen");
-                    screenCaptureKey=KCD_NONE;
+                    //screenCaptureKey=KCD_NONE;
                     screen_capture();
                     dspl_Enable(temp);
                     return;
