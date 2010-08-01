@@ -1522,7 +1522,6 @@ const MfwIcnAttr idl_Attr [idlIdMax] =  		        /* all our icon attributes  */
 #else
 #define ICON_SX			(19)	
 #define ICON_WIDTH 			((SCREEN_SIZE_X)/9)
-#define ICON_POS_X_CPR		(ICON_WIDTH)
 #define ICON_POS_X_MSG		(ICON_WIDTH*2)
 #define ICON_POS_X_VMAIL	(ICON_WIDTH*3)
 #define ICON_POS_X_FOR		(ICON_WIDTH*4)
@@ -1531,8 +1530,8 @@ const MfwIcnAttr idl_Attr [idlIdMax] =  		        /* all our icon attributes  */
 #define ICON_POS_X_SRNG		(0)
 
 #define ICON_POS_X_SIG		(2)
-#define ICON_POS_X_GPRS		(30)
-#define ICON_POS_EMO		(58)
+#define ICON_POS_X_GPRS		(ICON_POS_X_SIG + 26)
+#define ICON_POS_EMO      (ICON_POS_X_GPRS + 26)
 #define ICON_POS_X_BATT		(SCREEN_SIZE_X - 28)
 
 #endif
