@@ -5923,8 +5923,8 @@ void idle_Ciphering (UBYTE gsm_ciph, UBYTE gprs_ciph)
 
 		idle_data.ciphering = SHOW_CPRS_DEACTIV;
 		//show the DEACTIVATED ciphering indication
-		//iconsSetState(iconIdCipheringDeActiv);
-		//iconsDeleteState(iconIdCipheringActiv);
+		iconsSetState(iconIdCipheringDeActiv);
+		iconsDeleteState(iconIdCipheringActiv);
 
 	}
 	else if (gsm_ciph == 1 || gprs_ciph == 1)
@@ -5935,8 +5935,8 @@ void idle_Ciphering (UBYTE gsm_ciph, UBYTE gprs_ciph)
 
 		idle_data.ciphering = SHOW_CPRS_ACITV;
 
-		//iconsSetState(iconIdCipheringActiv);
-		//iconsDeleteState(iconIdCipheringDeActiv);
+		iconsSetState(iconIdCipheringActiv);
+		iconsDeleteState(iconIdCipheringDeActiv);
 	}
 	else if (gsm_ciph == 2 || gprs_ciph == 2)
 	{
