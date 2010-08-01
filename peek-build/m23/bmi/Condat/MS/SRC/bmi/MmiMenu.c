@@ -122,7 +122,7 @@
 #include "DataObject.h"
 #include "Application.h"
 #include "StaticApplications.h"
-
+#include "ApplicationManager.h"
 
 #include "prim.h"
 #ifndef PCM_2_FFS
@@ -342,7 +342,7 @@ int menuEmobiixItemCB(URL *purl, MfwMnu* m, MfwMnuItem* i)
 	T_MFW_HND  parent = mfwParent(mfw_header());
         DataObject *dobj;
         T_MFW_WIN  * win;
-	Application *loadApp;
+	Application *App;
 
 	if(!tEmoMenuItem) {
 		tEmoMenuItem = (tEmoMenuData *)ALLOC_MEMORY (sizeof (tEmoMenuData ));
@@ -363,9 +363,9 @@ int menuEmobiixItemCB(URL *purl, MfwMnu* m, MfwMnuItem* i)
         dobj = dataobject_locate(purl);
         if (dobj == NULL)
         {
-		loadApp = application_load(LoadingApplication());
-		manager_launchApplication(loadApp);
-		manager_focusApplication(loadApp);
+		App = application_load(LoadingApplication());
+		manager_launchApplication(App);
+		manager_focusApplication(App);
 	        lgui_set_dirty();
 		updateScreen();
         	dspl_Enable(1);
@@ -374,8 +374,8 @@ int menuEmobiixItemCB(URL *purl, MfwMnu* m, MfwMnuItem* i)
                 connectionContext_syncRequest(connectionContext, purl);
                 dobj = dataobject_locate(purl);
         } else {
-		//XXX: ryan fix me to grab application by data object	
-		// manager_focusApplication();
+		App = manager_applicationForDataObject(dobj);
+		manager_focusApplication(App);
 	}
 
         connectionContext_loopIteration(connectionContext);
