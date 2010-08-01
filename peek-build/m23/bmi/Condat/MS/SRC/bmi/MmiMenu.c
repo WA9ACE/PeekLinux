@@ -120,6 +120,8 @@
 
 #include "cus_aci.h"
 #include "DataObject.h"
+#include "Application.h"
+#include "StaticApplications.h"
 
 
 #include "prim.h"
@@ -340,6 +342,7 @@ int menuEmobiixItemCB(URL *purl, MfwMnu* m, MfwMnuItem* i)
 	T_MFW_HND  parent = mfwParent(mfw_header());
         DataObject *dobj;
         T_MFW_WIN  * win;
+	Application *loadApp;
 
 	if(!tEmoMenuItem) {
 		tEmoMenuItem = (tEmoMenuData *)ALLOC_MEMORY (sizeof (tEmoMenuData ));
@@ -360,6 +363,13 @@ int menuEmobiixItemCB(URL *purl, MfwMnu* m, MfwMnuItem* i)
         dobj = dataobject_locate(purl);
         if (dobj == NULL)
         {
+		loadApp = application_load(LoadingApplication());
+		manager_launchApplication(loadApp);
+		manager_focusApplication(loadApp);
+	        lgui_set_dirty();
+		updateScreen();
+        	dspl_Enable(1);
+
 		emo_printf("menuEmobiixItemCB() calling connectionContext_syncRequest()");
                 connectionContext_syncRequest(connectionContext, purl);
                 dobj = dataobject_locate(purl);

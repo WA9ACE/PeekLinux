@@ -13,6 +13,33 @@
 /* in BootApplication.c */
 extern DataObject *dobjFromFile(const char *filename, DataObject *root);
 
+DataObject *LoadingApplication(void)
+{
+        static DataObject *output = NULL;
+        DataObject *dobj1, *root, *setw;
+
+        if (output != NULL)
+        return output;
+
+    	output = dataobject_new();
+    	dataobject_setValue(output, "type", dataobjectfield_string("application"));
+    	dataobject_setValue(output, "name", dataobjectfield_string("Load Screen"));
+    	dataobject_setValue(output, "description",
+        dataobjectfield_string("load mobile"));
+    	dataobject_setValue(output, "startupview",
+        dataobjectfield_string("mainview"));
+        dataobject_setValue(output, "fullscreen",
+        dataobjectfield_string("true"));
+
+        root = widget_newTypeIdName("view", NULL, "mainview", output);
+        widget_setPacking(root, WP_VERTICAL);
+
+        dobj1 = dobjFromFile("loading.png", root);
+        widget_setPacking(dobj1, WP_VERTICAL);
+
+        return output;
+}
+
 DataObject *LockApplication(void)
 {
 	static DataObject *output = NULL;
