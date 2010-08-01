@@ -144,6 +144,15 @@
 #include "MmiResources.h"
 #include "mmiColours.h"
 
+#include "cicons/mailicon.c"
+#include "cicons/batt.c"
+#include "cicons/edataicon.c"
+#include "cicons/signal0.c"
+#include "cicons/signal1.c"
+#include "cicons/signal2.c"
+#include "cicons/signal3.c"
+#include "cicons/signal4.c"
+
 #include "IcnDefs.h"
 
 // Oct 28, 2004    REF: CRR 25886 xnkulkar
@@ -1536,8 +1545,8 @@ const MfwIcnAttr idl_Attr [idlIdMax] =  		        /* all our icon attributes  */
 	Roaming icon is made to overlap with voice mail indication icon since there's no space in the first row of the screen*/
     { { ICON_POS_X_VMAIL, ICON_POS_Y, ICON_SX, ICON_SY }, 	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) RoamingIcon  },   /* Roaming Indication            */
     { { ICON_POS_X_KLK, ICON_POS_Y, ICON_SX, ICON_SY }, 	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_klkColour  },   /* keypad locked            */
-    { { ICON_POS_X_CPR, ICON_POS_Y, ICON_SX, ICON_SY }, 	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_cipheringActivColour },		/* Ciphering       */    
-    { { ICON_POS_X_CPR, ICON_POS_Y, ICON_SX, ICON_SY }, 	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_cipheringDeactivColour },		/* Ciphering       */    
+    //{ { ICON_POS_X_CPR, ICON_POS_Y, ICON_SX, ICON_SY }, 	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_cipheringActivColour },		/* Ciphering       */    
+    //{ { ICON_POS_X_CPR, ICON_POS_Y, ICON_SX, ICON_SY }, 	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_cipheringDeactivColour },		/* Ciphering       */    
     { {  0,  0,  0,  0 }, 1, COLOUR_ICON_XX, ICON_TYPE_1BIT_UNPACKED,  0 },					/*ringer icon*/
     { {  0,  0,  0,  0 }, 1, COLOUR_ICON_XX, ICON_TYPE_1BIT_UNPACKED,  0 },					/*vibrator icon*/
     { {  0,  0,  0,  0 }, 1, COLOUR_ICON_XX, ICON_TYPE_1BIT_UNPACKED,  0 },					/*ringvibrator icon*/
@@ -1550,7 +1559,7 @@ const MfwIcnAttr idl_Attr [idlIdMax] =  		        /* all our icon attributes  */
     { {  0,  0,  0,  0 }, 1, COLOUR_ICON_XX, ICON_TYPE_1BIT_UNPACKED,  0 },			    		/* Services    Large        */
     { {  0,  0,  0,  0 }, 1, COLOUR_ICON_XX, ICON_TYPE_1BIT_UNPACKED,  0 },		    			/* SPR#1626 - SH - Added */
     { {  0,  0,  0,  0 }, 1, COLOUR_ICON_XX, ICON_TYPE_1BIT_UNPACKED,  0 },			    		/* SPR#1626 - SH - Added        */
-    { { ICON_POS_X_GPRS, ICON_POS_Y, ICON_SX, ICON_SY }, 	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,   (char *)I_gprsColour  },		/* sbh - GPRS On icon           */
+    { { ICON_POS_X_GPRS, ICON_POS_Y, 25, 25 }, 	1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,   (char *)edataicon.pixel_data  },		/* sbh - GPRS On icon           */
     { { ICON_POS_X_HZONE, ICON_POS_Y, ICON_SX, ICON_SY },	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_homeZoneColour  },	/* sbh - GPRS Attached icon           */
     { { ICON_POS_X_HZONE,  ICON_POS_Y,  15,  14 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) idlTTYLarge  },	/* SPR#1958 - SH - TTY icon now larger,colour */
 #ifdef NEPTUNE_BOARD
@@ -1586,11 +1595,15 @@ const MfwIcnAttr batt_Attr [iconBattMax] =  	        /* all batt icon attributes
 #if 1 
 const MfwIcnAttr batt_Attr [iconBattMax] =  	        /* all batt icon attributes */
 {
-    { { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour4   }, 		/* battery status 0-4%      */
-    { { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour14  },	    /* battery status 5-14%     */
-    { { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour24  },	   	/* battery status 15-24%    */
-    { { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour49  }, 		/* battery status 25-49%    */
-    { { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour100 }	    /* battery status 50-100%   */
+    //{ { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour4   }, 		/* battery status 0-4%      */
+    //{ { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour14  },	    /* battery status 5-14%     */
+    //{ { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour24  },	   	/* battery status 15-24%    */
+    //{ { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour49  }, 		/* battery status 25-49%    */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batticon.pixel_data },        /* battery status 50-100%   */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batticon.pixel_data },        /* battery status 50-100%   */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batticon.pixel_data },        /* battery status 50-100%   */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batticon.pixel_data },        /* battery status 50-100%   */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batticon.pixel_data }	    /* battery status 50-100%   */
 };	
 #endif
 #if 0 
@@ -1630,11 +1643,11 @@ const MfwIcnAttr sign_Attr [iconSignalMax] =	        /* all sig icon attributes 
 #else
 const MfwIcnAttr sign_Attr [iconSignalMax] =	        /* all sig icon attributes  */
 {
-    { { ICON_POS_X_SIG, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_sigColour49  }, 		/* signal status 0-49       */
-    { { ICON_POS_X_SIG, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_sigColour99  },    	/* signal status 50-99      */
-    { { ICON_POS_X_SIG, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_sigColour149 },	    /* signal status 100-149    */
-    { { ICON_POS_X_SIG, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL, (char *) I_sigColour199 },    	/* signal status 150-199    */
-    { { ICON_POS_X_SIG, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL, (char *) I_sigColour255 }	    /* signal status 200-255    */
+    { { ICON_POS_X_SIG, ICON_POS_Y, 25, 25 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) signal0.pixel_data  }, 		/* signal status 0-49       */
+    { { ICON_POS_X_SIG, ICON_POS_Y, 25, 25 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) signal1.pixel_data  },    	/* signal status 50-99      */
+    { { ICON_POS_X_SIG, ICON_POS_Y, 25, 25 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) signal2.pixel_data },	    /* signal status 100-149    */
+    { { ICON_POS_X_SIG, ICON_POS_Y, 25, 25 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR, (char *) signal3.pixel_data },    	/* signal status 150-199    */
+    { { ICON_POS_X_SIG, ICON_POS_Y, 25, 25 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR, (char *) signal4.pixel_data }	    /* signal status 200-255    */
 
 };
 #endif
@@ -1882,7 +1895,7 @@ MfwIcnAttr mainIconWAP		        =
 #ifdef USE_110X110
 	{ 0, 12, 110, 110 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) wap110x110_bmp
 #else
-	{ 0, 12, 96, 96 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) wap96x96_bmp
+	{ 0, 12, 128 , 128 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) mailicon.pixel_data
 #endif
 #endif
 };
