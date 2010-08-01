@@ -145,6 +145,7 @@
 #include "mmiColours.h"
 
 #include "cicons/mailicon.c"
+#include "cicons/emostatus.c"
 #include "cicons/aimicon.c"
 #include "cicons/batt.c"
 #include "cicons/edataicon.c"
