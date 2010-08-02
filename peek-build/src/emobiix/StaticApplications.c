@@ -21,23 +21,29 @@ DataObject *LoadingApplication(void)
         if (output != NULL)
         return output;
 
-    	output = dataobject_new();
-    	dataobject_setValue(output, "type", dataobjectfield_string("application"));
-    	dataobject_setValue(output, "name", dataobjectfield_string("Load Screen"));
-    	dataobject_setValue(output, "description",
-        dataobjectfield_string("load mobile"));
-    	dataobject_setValue(output, "startupview",
-        dataobjectfield_string("mainview"));
-        dataobject_setValue(output, "fullscreen",
-        dataobjectfield_string("true"));
+				output = dataobject_new();
+				dataobject_setValue(output, "type", dataobjectfield_string("application"));
+				dataobject_setValue(output, "name", dataobjectfield_string("Load Screen"));
+				dataobject_setValue(output, "description", dataobjectfield_string("load mobile"));
+				dataobject_setValue(output, "startupview", dataobjectfield_string("mainview"));
+				dataobject_setValue(output, "fullscreen", dataobjectfield_string("true"));
 
-        root = widget_newTypeIdName("view", NULL, "mainview", output);
-        widget_setPacking(root, WP_VERTICAL);
+				root = widget_newTypeIdName("view", NULL, "mainview", output);
+				widget_setPacking(root, WP_VERTICAL);
 
-        dobj1 = dobjFromFile("loading.png", root);
-        widget_setPacking(dobj1, WP_VERTICAL);
+				dobj1 = widget_newTypeIdName("box", "gradboxdark", NULL, root);
+				dataobject_setValue(dobj1, "width", dataobjectfield_string("320"));
+				dataobject_setValue(dobj1, "height", dataobjectfield_string("240"));
+				dataobject_setValue(dobj1, "alignment", dataobjectfield_string("center"));
+				widget_setPacking(dobj1, WP_VERTICAL);
 
-        return output;
+				setw = widget_newTypeIdName("label", "biglabelw", NULL, dobj1);
+				dataobject_setValue(setw, "data", dataobjectfield_string("Downloading Application"));
+				dataobject_setValue(setw, "alignment", dataobjectfield_string("center"));
+				//        dobj1 = dobjFromFile("loading.png", root);
+				//        widget_setPacking(dobj1, WP_VERTICAL);
+
+				return output;
 }
 
 DataObject *LockApplication(void)
