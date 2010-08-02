@@ -1751,7 +1751,6 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
     case PS_W_BIND:
       CHECK_SOCK_EVT(SOCK_BIND_CNF) ;
       //app_listen(pcont);
-      sock_set_callback(pcont->psocket, app_sock_callback, pcont);
       proc_new_state(pcont, PS_COMM);
       break ;
 
