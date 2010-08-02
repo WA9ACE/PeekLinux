@@ -144,6 +144,8 @@
 #include "MmiResources.h"
 #include "mmiColours.h"
 
+#include "cicons/controlpanel.c"
+#include "cicons/history.c"
 #include "cicons/mailicon.c"
 #include "cicons/emostatus.c"
 #include "cicons/aimicon.c"
@@ -1873,7 +1875,7 @@ MfwIcnAttr mainIconMessages        =
 #ifdef USE_110X110
 	{ 0, 12, 110, 110 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) messages110x110_bmp
 #else
-	{ 0, 12, 96, 96 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) messages96x96_bmp
+	{ 0, 12, 128, 128 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) controlpanel.pixel_data
 #endif
 #endif
 };
@@ -1886,7 +1888,7 @@ MfwIcnAttr mainIconPhonebook        =
 #ifdef USE_110X110
 	{ 0, 12, 110, 110 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) phonebook110x110_bmp
 #else
-	{ 0, 12, 96, 96 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) phonebook96x96_bmp
+	{ 0, 12, 128, 128 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) history.pixel_data
 #endif
 #endif
 };
