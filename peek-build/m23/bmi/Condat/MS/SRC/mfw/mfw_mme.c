@@ -1024,7 +1024,6 @@ void rAT_PercentBC (BYTE val)
 static BOOL mmePrimHandler (USHORT opc, void *data)
 {
     U8 level;
-    U16 vlevel;
     U8 state;
 //  	xpradipg - LOCOSTO-ENH-31895 : 23 June 2005
 #ifdef FF_MMI_AUDIO_PROFILE
@@ -1044,19 +1043,9 @@ static BOOL mmePrimHandler (USHORT opc, void *data)
             mmeSignal(MfwMmeSignal,level);
             return TRUE;                /* processed by MME, delete */
         case MMI_BATTERY_IND:
-	    vlevel = lcc_get_batteryVotage();
-   	    if (vlevel  <  3500)
-    		level = 0;
-  	    else if ( (vlevel  < 3650) AND (vlevel  >=  3500) )
-    		level = 1;
-  	    else if ( ( vlevel  < 3800) AND (vlevel  >= 3650) )
-    		level = 2;
-            else if ( ( vlevel  < 3950) AND (vlevel  >= 3800) )
-    		level = 3;
-  	    else
-    		level = 4;
-            state = lcc_get_state();//((T_MMI_BATTERY_IND *) data)->temp;
-	    emo_printf("mmePrimHandler() Battery_ind volts: %d - state: %d", level, state);
+	    level = ((T_MMI_BATTERY_IND *) data)->volt;
+            state = ((T_MMI_BATTERY_IND *) data)->temp;
+            emo_printf("mmePrimHandler() MMI_BATTERY_IND - state %d voltage - %d", state, level);
             if (battLevel != level)
             {
                 battLevel = level;

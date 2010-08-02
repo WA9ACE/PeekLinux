@@ -130,7 +130,7 @@ static void lcc_cb_function(void *ptr)
 #ifdef FF_EM_MODE
 	memcpy(&curBatInfo, event, sizeof(T_PWR_MMI_INFO_IND_EVENT));
 #endif
-
+	emo_printf("lcc_cb_function() voltage - %d - msg_id %d", event->Vbat, event->header.msg_id);
   if (event->Vbat  <  3500)
     calculated_level = 0;
   else if ( (event->Vbat  < 3650) AND (event->Vbat  >=  3500) )

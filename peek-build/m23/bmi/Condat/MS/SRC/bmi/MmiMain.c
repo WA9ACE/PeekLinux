@@ -1171,45 +1171,38 @@ int globalMme(MfwEvt e, MfwHnd para)
 	TRACE_EVENT_P1("MfwMmeBaState:mc->value: %d", mc->value);
 	switch(value)
 	{
-//x0pleela 10 Apr, 2006 ER: OMAPS00075178
-	case PWR_CHG_PLUG:
-		TRACE_EVENT("Mme Event:PWR_CHG_PLUG");
-		//charging_start_info();
+		case PWR_CHG_PLUG:
+			TRACE_EVENT("Mme Event:PWR_CHG_PLUG");
+			//charging_start_info(); // Charging pop up
+			break;
+		/* External Power Plugged Off */
+		case PWR_CHG_UNPLUG:
+      			TRACE_EVENT("Mme Event:Discharging");
+	    		globalMobileMode = globalMobileMode & (~GlobalCharging);
+	    		globalMobileMode = globalMobileMode & (~GlobalBatteryPower);
+			globalBatteryMode = GlobalBatteryGreater5;
+			timStop(battery_charging_animate);
+			idleEvent(IdleUpdate);
 		break;
-	/* External Power Plugged Off */
-    //case 0: //x0pleela 10 Apr, 2006 
-	case PWR_CHG_UNPLUG://x0pleela 10 Apr, 2006 ER: OMAPS00075178
-      		TRACE_EVENT("Mme Event:Discharging");
-	    	globalMobileMode = globalMobileMode & (~GlobalCharging);
-	    	globalMobileMode = globalMobileMode & (~GlobalBatteryPower);
-		globalBatteryMode = GlobalBatteryGreater5; //x0pleela 10 Apr, 2006
-		timStop(battery_charging_animate ); //x0pleela 11 Apr, 2006
-		idleEvent(IdleUpdate); //x0pleela 10 Apr, 2006
-	break;
 
-	/* Mme Event: External Power Connected or End of Charge */
- //      case 1: //x0pleela 10 Apr, 2006 
-	case PWR_CHG_STOP: //x0pleela 10 Apr, 2006 ER: OMAPS00075178
-      		TRACE_EVENT("Mme Event:GlobalBatteryPower");
-//		globalMobileMode = globalMobileMode & (~GlobalCharging);
-	    	globalMobileMode = (globalMobileMode | GlobalBatteryPower);
-	    /* indicate that the battery is full*/
-	  	globalBatteryMode = GlobalBatteryFull;
-		timStop(battery_charging_animate ); //x0pleela 11 Apr, 2006
-		idleEvent(IdleUpdate); //x0pleela 10 Apr, 2006
-	 	 TRACE_EVENT("globalBatteryPicNumber = GlobalBatteryFull");
-	break;
-	/* Mme Event: Start of Charge */
-//	case 2: //x0pleela 10 Apr, 2006
-	case PWR_CHG_BEGIN: //x0pleela 10 Apr, 2006 ER: OMAPS00075178
-	    TRACE_EVENT("Mme Event:Charging");	   
-	    globalMobileMode = globalMobileMode & (~GlobalBatteryPower);
-	    globalMobileMode = (globalMobileMode | GlobalCharging);
-		globalBatteryMode = GlobalBatteryGreater5; //x0pleela 10 Apr, 2006
-		idleEvent(IdleUpdate); //x0pleela 10 Apr, 2006
-		//globalFlashBattery (); //x0pleela 10 Apr, 2006 : included to show animation of battery charging
-	break;
-	default:
+		/* Mme Event: External Power Connected or End of Charge */
+		case PWR_CHG_STOP:
+      			TRACE_EVENT("Mme Event:GlobalBatteryPower");
+	    		globalMobileMode = (globalMobileMode | GlobalBatteryPower);
+	  		globalBatteryMode = GlobalBatteryFull;
+			timStop(battery_charging_animate);
+			idleEvent(IdleUpdate);
+	 		TRACE_EVENT("globalBatteryPicNumber = GlobalBatteryFull");
+		break;
+		/* Mme Event: Start of Charge */
+		case PWR_CHG_BEGIN:
+	        	TRACE_EVENT("Mme Event:Charging");	   
+	        	globalMobileMode = globalMobileMode & (~GlobalBatteryPower);
+	        	globalMobileMode = (globalMobileMode | GlobalCharging);
+ 	        	globalBatteryMode = GlobalBatteryGreater5;
+			idleEvent(IdleUpdate); 
+		break;
+	  default:
 	    break;
     }
     break;
