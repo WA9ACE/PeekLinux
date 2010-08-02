@@ -256,7 +256,7 @@ static int kbdEmobiixCB(MfwEvt e, MfwKbd *k)
     	
 	tEmoMenuItem = (tEmoMenuData *)win_data->user;
 
-	emo_printf("kbdEmobiixCB() in callback");
+	emo_printf("kbdEmobiixCB() in callback: %d", k->code);
 
 	switch (k->code)
 	{
@@ -267,18 +267,19 @@ static int kbdEmobiixCB(MfwEvt e, MfwKbd *k)
 			break;
 
 		case KCD_MNUSELECT:
+		case KCD_LEFT:
 			manager_handleKey(13);
-                        updateScreen();
+			updateScreen();
 			break;
 
 		case KCD_MNUUP:
 			manager_handleKey(87);
-                        updateScreen();
+			updateScreen();
 			break;
 		
 		case KCD_MNUDOWN:
 			manager_handleKey(86);
-                        updateScreen();
+			updateScreen();
 			break;
 	}
 
