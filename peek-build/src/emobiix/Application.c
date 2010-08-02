@@ -40,6 +40,8 @@ void application_setActive(Application *app)
 
 DataObject *application_getCurrentScreen(Application *app)
 {
+	if(!app)
+		return NULL;
 	return app->currentScreen;
 }
 

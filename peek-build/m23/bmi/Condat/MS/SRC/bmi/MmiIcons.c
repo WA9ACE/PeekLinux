@@ -149,7 +149,11 @@
 #include "cicons/mailicon.c"
 #include "cicons/emostatus.c"
 #include "cicons/aimicon.c"
-#include "cicons/batt.c"
+#include "cicons/batt0.c"
+#include "cicons/batt1.c"
+#include "cicons/batt2.c"
+#include "cicons/batt3.c"
+#include "cicons/batt4.c"
 #include "cicons/edataicon.c"
 #include "cicons/signal0.c"
 #include "cicons/signal1.c"
@@ -1605,11 +1609,11 @@ const MfwIcnAttr batt_Attr [iconBattMax] =  	        /* all batt icon attributes
     //{ { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour14  },	    /* battery status 5-14%     */
     //{ { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour24  },	   	/* battery status 15-24%    */
     //{ { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour49  }, 		/* battery status 25-49%    */
-    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batticon.pixel_data },        /* battery status 50-100%   */
-    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batticon.pixel_data },        /* battery status 50-100%   */
-    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batticon.pixel_data },        /* battery status 50-100%   */
-    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batticon.pixel_data },        /* battery status 50-100%   */
-    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batticon.pixel_data }	    /* battery status 50-100%   */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batt0.pixel_data },        /* battery status 0-4%   */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batt1.pixel_data },        /* battery status 5-14%   */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batt2.pixel_data },        /* battery status 15-24%   */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batt3.pixel_data },        /* battery status 25-49%   */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batt4.pixel_data }	    /* battery status 50-100%   */
 };	
 #endif
 #if 0 

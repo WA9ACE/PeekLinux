@@ -220,7 +220,7 @@ void manager_handleKey(int key)
 		script_event(accessKey, "onreturn");
 		return;
 	}
-
+	emo_printf("manager_handleKey() key - %d", key);
 	switch (key) {
 		case KP_1_KEY:
 		case KP_2_KEY:
