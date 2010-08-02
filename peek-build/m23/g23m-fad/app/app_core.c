@@ -80,7 +80,7 @@ static char *proc_type_name[] = {
   "AP_UDPECHO",                 /* ue */
   "AP_TCPSRV",
   "AP_DNSQRY",                  /* dq */
-  "AP_TCPFORK",
+  "AP_UDPFORK",
   "AP_INVALID"
 } ;
 
@@ -240,12 +240,12 @@ void trace_dump_data(U8 *data, int size)
 char *proc_string(PROC_CONTEXT_T *pcont)
 {
   /* This string must fit the longest possible process string. */
-  static char procstring[sizeof("AP_TCPFORK99(PS_W_DCM_OPEN_ONLY)")] ;
+  static char procstring[sizeof("AP_UDPFORK99(PS_W_DCM_OPEN_ONLY)")] ;
 
   /*lint -e685 (Warning -- Relational operator always evaluates to true) */
   sprintf(procstring, "%s%d(%s)",
           pcont->ptype <= AP_INVALID  ? proc_type_name[pcont->ptype] : "AP_UNKNOWN",
-          pcont->ptype == AP_TCPFORK  ? pcont->f_id : 0,
+          pcont->ptype == AP_UDPFORK  ? pcont->f_id : 0,
           pcont->pstate <= PS_INVALID ? proc_state_name[pcont->pstate] : "PS_UNKNOWN") ;
   /*lint +e685 (Warning -- Relational operator always evaluates to true) */
   return procstring ;
@@ -444,7 +444,7 @@ static PROC_CONTEXT_T *proc_new_tcpfork(PROC_CONTEXT_T *oldp)
     pcont = &cl_context[i] ;
     memset(pcont, 0, sizeof(*pcont)) ;
     pcont->f_id = i ;
-    pcont->ptype = AP_TCPFORK ;
+    pcont->ptype = AP_UDPFORK ;
     pcont->pstate = PS_IDLE ;
     pcont->ipproto = oldp->ipproto ;
     pcont->server_name = oldp->server_name ;
@@ -612,7 +612,7 @@ static void proc_client_closed(PROC_CONTEXT_T *pcont)
     proc_shutdown(pcont) ;
     return;
   }
-  proc_free_tcpfork(pcont) ;
+  app_free_udpfork(pcont) ;
 }
 
 #if 0
@@ -808,7 +808,7 @@ static void comm_send(PROC_CONTEXT_T *pcont)
     case AP_DNSQRY:
       comm_query(pcont) ;
       return ;
-    case AP_TCPFORK:             /* Send some data, perhaps. */
+    case AP_UDPFORK:             /* Send some data, perhaps. */
       switch (pcont->server_port)
       {
         case PORT_CHARGEN:      /* Send something (below). */
@@ -938,7 +938,7 @@ static void comm_recv(PROC_CONTEXT_T *pcont)
       break ;
     case AP_UDPECHO:
     case AP_TCPECHO:
-    case AP_TCPFORK:
+    case AP_UDPFORK:
       comm_send(pcont) ;
       break ;
     default:
@@ -960,7 +960,7 @@ static void comm_event(PROC_CONTEXT_T *pcont)
   switch (pcont->last_evt->event_type)
   {
     case SOCK_CONN_CLOSED_IND:
-      if (pcont->ptype EQ AP_TCPFORK)
+      if (pcont->ptype EQ AP_UDPFORK)
       {
         proc_client_closed(pcont) ;
         break ;
@@ -971,7 +971,7 @@ static void comm_event(PROC_CONTEXT_T *pcont)
                      sock_event_string(pcont->last_evt->event_type)) ;
       // server should not reset , even if connection is reset by client.
       // but client should shutdown , if connection is reset by server.
-      if((pcont->ptype EQ AP_TCPFORK)  AND
+      if((pcont->ptype EQ AP_UDPFORK)  AND
          (pcont->last_evt->result == SOCK_RESULT_CONN_RESET OR
           pcont->last_evt->result == SOCK_RESULT_TIMEOUT))
       {
@@ -992,6 +992,8 @@ static void comm_event(PROC_CONTEXT_T *pcont)
       }
       */
       break ;
+    case SOCK_LISTEN_CNF:
+	break;
     case SOCK_HOSTINFO_CNF:
       if (pcont->ptype EQ AP_DNSQRY) {
         comm_dns_result(pcont) ;
@@ -1001,7 +1003,6 @@ static void comm_event(PROC_CONTEXT_T *pcont)
     case SOCK_CREATE_CNF:
     case SOCK_CLOSE_CNF:
     case SOCK_BIND_CNF:
-    case SOCK_LISTEN_CNF:
     case SOCK_CONNECT_CNF:
     case SOCK_SOCKNAME_CNF:
     case SOCK_PEERNAME_CNF:
@@ -1188,7 +1189,7 @@ static void proc_begin_comm(PROC_CONTEXT_T *pcont)
     case AP_TCPECHO:
     case AP_UDPECHO:
     case AP_DNSQRY:
-    case AP_TCPFORK:
+    case AP_UDPFORK:
       comm_send(pcont) ;
       break ;
     default:
@@ -1346,8 +1347,7 @@ void app_ui_send(U32 event_type)
 	PSENDX(ACI, msg);
 }
 
-int app_socket (int __family, int __type, int __protocol) {
-	PROC_CONTEXT_T *pcont = &proc_context_tcp;
+int app_socket (PROC_CONTEXT_T *pcont, int __type, int __protocol) {
 	T_SOCK_BEARER_INFO bearer_info;
 	int bearerRet;
 
@@ -1359,10 +1359,12 @@ int app_socket (int __family, int __type, int __protocol) {
 	pcont->psocket = 0;
 	pcont->network_is_open = FALSE;
 	pcont->psocket_is_open = FALSE;
-  	pcont->server_name = server_name;
-  	pcont->server_ipaddr = inet_aton(server_name);
-  	pcont->server_port = HTONS(port_number);
-
+  	pcont->server_port = (__type EQ AP_UDPFORK) ? 0x700 : HTONS(port_number); // 0x700 some how maps to port 7
+  	pcont->server_name = (__type EQ AP_UDPFORK) ? "<myself>" : server_name ;
+  	pcont->server_ipaddr = (__type EQ AP_UDPFORK) ?  SOCK_IPADDR_ANY : inet_aton(pcont->server_name) ;
+	
+	if(pcont->ipproto == SOCK_IPPROTO_UDP)	
+		return 0;
 	bearer_info.bearer_handle = sock_bearer_handle;
 	bearer_info.app_handle    = APP_handle;
 	bearer_info.bearer_type   = sock_bearer_type;
@@ -1405,6 +1407,35 @@ int app_socket (int __family, int __type, int __protocol) {
 
 	return 0;
 
+}
+
+static void app_bind_socket(PROC_CONTEXT_T *pcont)
+{
+  T_SOCK_RESULT result ;
+  TRACE_FUNCTION("proc_bind_socket()") ;
+
+  if ((result = sock_bind(pcont->psocket, pcont->server_port))
+      != SOCK_RESULT_OK)
+  {
+    sock_trace_result(pcont, "sock_bind()", result) ;
+    proc_shutdown(pcont) ;
+    return;
+  }
+  proc_new_state(pcont, PS_W_BIND) ;
+}
+
+static void app_listen(PROC_CONTEXT_T *pcont)
+{
+  T_SOCK_RESULT result ;
+  TRACE_FUNCTION("proc_listen()") ;
+
+  if ((result = sock_listen(pcont->psocket)) != SOCK_RESULT_OK)
+  {
+    sock_trace_result(pcont, "sock_listen()", result) ;
+    proc_shutdown(pcont) ;
+    return;
+  }
+  proc_new_state(pcont, PS_W_LISTN) ;
 }
 
 // Start of Emobiix socket stuff
@@ -1535,7 +1566,7 @@ void app_connect(void)
 	app_set_profile("track.t-mobile.com", "getpeek", "txtbl123");
 	app_connect_info("10.150.9.6", "12345");
 
-	app_socket(0, AP_TCPUL, SOCK_IPPROTO_TCP);
+	app_socket(&proc_context_tcp, AP_TCPUL, SOCK_IPPROTO_TCP);
 
 	//app_server("10.150.9.6");
 	//app_port("12345");
@@ -1559,20 +1590,19 @@ void app_send(void *data)
 	p_free(writeMessage->data);
 
 }
-/*
-void app_bind_emobiix_udp_server()
+void app_bind_udp_server()
 {
-	app_bearer("gprs");
-
-  	custom_apn_valid = TRUE;
-	strcpy(custom_apn, "track.t-mobile.com");
-	strcpy(custom_user_id, "getpeek");
-	strcpy(custom_password, "txtbl123");
-
-	app_port("7");
-	app_start_udpecho(APP_PROV_CUSTOM, 1, 1);
+	T_SOCK_RESULT result ;
+	app_socket(&proc_context_udp, AP_UDPFORK, SOCK_IPPROTO_UDP);
+        result = sock_create(sock_api_inst, 17, app_sock_callback, &proc_context_udp);
+    	if (result NEQ SOCK_RESULT_OK)
+    	{
+      		sock_trace_result(&proc_context_udp, "app_bind_udp_server() - sock_create()", result) ;
+      		proc_shutdown(&proc_context_udp) ;
+      		return;
+    	}
+        proc_new_state(&proc_context_udp, PS_W_CREAT) ;
 }
-*/
 // End of emobiix socket stuff
 
 /** Initialize the application core.
@@ -1697,14 +1727,13 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
       pcont->psocket = event->socket ;
       pcont->psocket_is_open = TRUE ;
 
-			app_ui_send(EMOBIIX_SOCK_CREA);
-
       if(pcont->ipproto == SOCK_IPPROTO_TCP)
       {
+      	app_ui_send(EMOBIIX_SOCK_CREA);
         proc_connect_socket(pcont) ;
 	TRACE_EVENT("app_sock_callback() PS_W_CREAT event tcp");
-	// bind UDP once TCP socket is established
-	//app_bind_emobiix_udp_server();
+	//bind UDP once TCP socket is established
+	app_bind_udp_server();
       }
       else
       {
@@ -1714,13 +1743,16 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
         // TODO: if the next statement will be enabled the "proc_connect_socket()" has to be removed!!
         // proc_begin_comm(pcont);
         //proc_connect_socket(pcont) ;
-        TRACE_EVENT("app_sock_callback() PS_W_CREAT event udp");
+        TRACE_EVENT("app_sock_callback() PS_W_CREAT event udp");	
+        app_bind_socket(pcont);
       }
       break ;
 
     case PS_W_BIND:
       CHECK_SOCK_EVT(SOCK_BIND_CNF) ;
-      //proc_listen(pcont) ;
+      //app_listen(pcont);
+      sock_set_callback(pcont->psocket, app_sock_callback, pcont);
+      proc_new_state(pcont, PS_COMM);
       break ;
 
     case PS_W_LISTN:
@@ -1730,17 +1762,19 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
       break ;
 
     case PS_LISTENS:            /* SOCK_CONNECT_IND or SOCK_CLOSE_CNF */
-      //if (event->event_type EQ SOCK_CONNECT_IND)
-      //{
-      //  proc_incoming(pcont) ;
-      //}
-      break ;
+      emo_printf("app_sock_callback() PS_LISTENS");
+      if (event->event_type EQ SOCK_CONNECT_IND AND (pcont->ipproto == SOCK_IPPROTO_UDP))
+      {
+	emo_printf("app_sock_callback(): PS_LISTENS event for UDP");
+        app_incoming(pcont);
+      }
+      break;
 
     case PS_W_DNS:
       /* After sending connect confirm to client, client will send data to server
          and server is dnsquerying now , server will be shutdown ,here Unfortunately..
          but we want to exchange data happily, so this code is added....  */
-      if((event->event_type == SOCK_RECV_IND) AND (pcont->ptype == AP_TCPFORK))
+      if((event->event_type == SOCK_RECV_IND) AND (pcont->ptype == AP_UDPFORK))
          break;
 
       CHECK_SOCK_EVT(SOCK_HOSTINFO_CNF) ;
@@ -1753,7 +1787,7 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
       app_ui_send(EMOBIIX_SOCK_CONN);
 
       //proc_begin_comm(pcont) ;
-			proc_new_state(pcont, PS_COMM); // advance to read/write state
+      proc_new_state(pcont, PS_COMM); // advance to read/write state
       break ;
 
     case PS_COMM:               /* Happily exchanging data. */
