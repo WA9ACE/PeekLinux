@@ -10,6 +10,7 @@ void BalKeypadGetNotify(void)
 }
 
 void bal_trace(const char* fmt, ...) {
+#ifndef EMO_PROD
         char buf[10000];
         va_list ap;
         NU_TASK *tp;
@@ -26,9 +27,11 @@ void bal_trace(const char* fmt, ...) {
         rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
         va_end(ap);
         TCCE_Task_Sleep(2);
+#endif
 }
 
 void bal_printf( const char* fmt, ...) {
+#ifndef EMO_PROD
         char buf[10000];
         va_list ap;
         NU_TASK *tp;
@@ -45,12 +48,14 @@ void bal_printf( const char* fmt, ...) {
         rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
         va_end(ap);
         TCCE_Task_Sleep(2);
+#endif
 }
 
 unsigned int mfwMmeDrvFlag;
 
 
 void emo_printf( const char* fmt, ...) {
+#ifndef EMO_PROD
 	char buf[10000];
         va_list ap;
 	NU_TASK *tp;
@@ -67,4 +72,5 @@ void emo_printf( const char* fmt, ...) {
   	rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
         va_end(ap);
 	TCCE_Task_Sleep(2);
+#endif
 }
