@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "star.c"
+
+#define guint unsigned int
+#define guint8 unsigned char
+
+#include "icons/battcharge4.c"
  
 static void rgba_to_trgb(unsigned int * px, int width, int height)
 {

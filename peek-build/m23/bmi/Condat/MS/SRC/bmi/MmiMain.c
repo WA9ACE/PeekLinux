@@ -1668,6 +1668,25 @@ int globalBatteryUpdate (U8 value)
     return 0;
 }
 
+void updateBatteryStatus(void) {
+	U16 level = lcc_get_batteryVotage();
+	U8  value;
+	
+	emo_printf("updateBatteryStatus(): voltage %d", level);
+
+	if (level  <  3500)
+    		value = 0;
+  	else if ( (level  < 3650) AND (level  >=  3500) )
+    		value = 1;
+  	else if ( ( level  < 3800) AND (level  >= 3650) )
+    		value = 2;
+  	else if ( ( level  < 3950) AND (level  >= 3800) )
+    		value = 3;
+  	else
+    		value = 4;
+
+	globalBatteryPicNumber = value;
+}
 
 /*******************************************************************************
 

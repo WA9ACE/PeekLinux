@@ -154,6 +154,13 @@
 #include "cicons/batt2.c"
 #include "cicons/batt3.c"
 #include "cicons/batt4.c"
+
+#include "cicons/battcharge0.c"
+#include "cicons/battcharge1.c"
+#include "cicons/battcharge2.c"
+#include "cicons/battcharge3.c"
+#include "cicons/battcharge4.c"
+
 #include "cicons/edataicon.c"
 #include "cicons/signal0.c"
 #include "cicons/signal1.c"
@@ -1605,16 +1612,22 @@ const MfwIcnAttr batt_Attr [iconBattMax] =  	        /* all batt icon attributes
 #if 1 
 const MfwIcnAttr batt_Attr [iconBattMax] =  	        /* all batt icon attributes */
 {
-    //{ { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour4   }, 		/* battery status 0-4%      */
-    //{ { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour14  },	    /* battery status 5-14%     */
-    //{ { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour24  },	   	/* battery status 15-24%    */
-    //{ { ICON_POS_X_BATT, ICON_POS_Y, ICON_SX, ICON_SY }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_batColour49  }, 		/* battery status 25-49%    */
     { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batt0.pixel_data },        /* battery status 0-4%   */
     { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batt1.pixel_data },        /* battery status 5-14%   */
     { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batt2.pixel_data },        /* battery status 15-24%   */
     { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batt3.pixel_data },        /* battery status 25-49%   */
     { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batt4.pixel_data }	    /* battery status 50-100%   */
 };	
+
+const MfwIcnAttr battcharge_Attr [iconBattMax] =              /* all batt icon attributes */
+{
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) battcharge0.pixel_data },        /* battery charge status 0-4%     */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) battcharge1.pixel_data },        /* battery charge status 5-14%    */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) battcharge2.pixel_data },        /* battery charge status 15-24%   */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) battcharge3.pixel_data },        /* battery charge status 25-49%   */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) battcharge4.pixel_data }         /* battery charge status 50-100%  */
+};
+
 #endif
 #if 0 
 const MfwIcnAttr batt_Attr [iconBattMax] =              /* all batt icon attributes */
@@ -1996,6 +2009,7 @@ typedef struct iconStateTag             /* state icons              */
 
 static IconState state[ idlIdMax ];
 static IconState battstate[ iconBattMax ];
+static IconState battchargestate[ iconBattMax ];
 static IconState signalstate[ iconSignalMax ];
 
 
@@ -2142,6 +2156,9 @@ void iconsInit()
     {
         battstate[i].state = ICON_INVISIBLE;
         battstate[i].h = icnCreate( 0, (MfwIcnAttr *)&batt_Attr[i], E_ICN_VISIBLE, (MfwCb) iconsBattEvent );
+        battchargestate[i].state = ICON_INVISIBLE;
+        battchargestate[i].h = icnCreate( 0, (MfwIcnAttr *)&battcharge_Attr[i], E_ICN_VISIBLE, (MfwCb) iconsBattEvent );
+
     }
 
 	/* Signal icons
@@ -2181,7 +2198,10 @@ void iconsExit( void )
     for ( i = 0; i < iconBattMax; i++ )
         icnDelete( battstate[i].h );
 
-	for ( i = 0; i < iconSignalMax; i++ )
+    for ( i = 0; i < iconBattMax; i++ )
+        icnDelete( battchargestate[i].h );
+
+    for ( i = 0; i < iconSignalMax; i++ )
         icnDelete( signalstate[i].h );
 
 }
@@ -2421,7 +2441,7 @@ int iconsShowBattery( U8 batterystatus )
   {
     if ( idleIsFocussed() AND battery_charging_animate) 
     {
-      icn=((MfwHdr *)battstate[ icon_ctr].h)->data;
+      icn=((MfwHdr *)battchargestate[ icon_ctr].h)->data;
       dspl_BitBlt2(icn->attr->area.px,icn->attr->area.py,
 	 	icn->attr->area.sx,icn->attr->area.sy,
 		icn->attr->icons,icn->index,icn->attr->icnType);
@@ -2474,13 +2494,13 @@ int BattChargeEventTim( MfwEvt e, MfwTim *tc )
 	TRACE_EVENT_P1("icon_ctr:%d", icon_ctr);
 	for( i = 0; i < iconBattMax; i++ )
        {
-         battstate[ i ].state = ICON_INVISIBLE;
-	  icnHide(battstate[ i].h );
+         battchargestate[ i ].state = ICON_INVISIBLE;
+	  icnHide(battchargestate[ i].h );
        }
-	battstate[ icon_ctr ].state = ICON_VISIBLE;
+	battchargestate[ icon_ctr ].state = ICON_VISIBLE;
 
 	/* and display the current selection */  
-	icnUnhide(battstate[ icon_ctr ].h );
+	icnUnhide(battchargestate[ icon_ctr ].h );
     	
 	windowsUpdate();  //redraw the idle screen again.
 	timStart(battery_charging_animate);
