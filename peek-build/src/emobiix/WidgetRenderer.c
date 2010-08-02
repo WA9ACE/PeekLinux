@@ -47,6 +47,19 @@ static void gradbox_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 			box->x+margin->x, box->y+margin->y, box->width, box->height);
 }
 
+static void gradboxdark_renderer(WidgetRenderer *wr, Style *s, Widget *w,
+		DataObject *dobj) {
+	Rectangle *box, *margin;
+	Gradient *g;
+
+	box = widget_getBox(w);
+	margin = widget_getMargin(w);
+	g = (Gradient *)style_getProperty(s, NULL, "gradboxdark", "box", "gradient");
+
+	lgui_vertical_gradientG(g,
+			box->x+margin->x, box->y+margin->y, box->width, box->height);
+}
+
 WidgetRenderer *widgetrenderer_gradbox(void)
 {
 	static WidgetRenderer *output = NULL;
@@ -61,6 +74,22 @@ WidgetRenderer *widgetrenderer_gradbox(void)
 
 	return output;
 }
+
+WidgetRenderer *widgetrenderer_gradboxdark(void)
+{
+	static WidgetRenderer *output = NULL;
+
+	if (output != NULL)
+		return output;
+
+	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
+	output->render = gradboxdark_renderer;
+	output->measure = NULL;
+	output->margin = widgetrenderer_zeroMargin;
+
+	return output;
+}
+
 /* gradboxr renderer */
 static void gradboxr_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj) {

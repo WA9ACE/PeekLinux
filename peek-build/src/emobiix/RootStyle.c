@@ -16,7 +16,7 @@ Style *RootStyle(void)
 	static Gradient *grad2;
 	static Gradient *greengrad1;
 	static Color color;
-	static Gradient *grad1;
+	static Gradient *grad1, *darkGrad;
 	static Font *defaultFont, *hugeFont;
 	static DataObject *fontObject1, *fontObject2, *fontObject3;
 	static Style *defaultStyle = NULL;
@@ -79,6 +79,12 @@ Style *RootStyle(void)
 	color.value = 0xDEDEDEFF;
 	gradient_addStop(grad1, 100, color);
 
+	darkGrad = gradient_new();
+	color.value = 0x666666FF;
+	gradient_addStop(darkGrad, 0, color);
+	color.value = 0x000000FF;
+	gradient_addStop(darkGrad, 100, color);
+
 	defaultStyle = style_new();
 	style_setProperty(defaultStyle, NULL, "image", NULL,
 			"renderer", (void *)widgetrenderer_image());
@@ -111,6 +117,9 @@ Style *RootStyle(void)
 	color.value = 0x696989FF;
 	style_setProperty(defaultStyle, NULL, "gradboxr", "box",
 			"focusoutline", (void *)color.value);
+
+	style_setProperty(defaultStyle, NULL, "gradboxdark", "box", "renderer", (void *)widgetrenderer_gradboxdark());
+	style_setProperty(defaultStyle, NULL, "gradboxdark", "box", "gradient", (void *)darkGrad);
 
 	style_setProperty(defaultStyle, NULL, "gradboxr", "button",
 			"renderer", (void *)widgetrenderer_button());

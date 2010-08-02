@@ -1505,7 +1505,7 @@ const MfwIcnAttr idl_Attr [idlIdMax] =  		        /* all our icon attributes  */
 #else
 
 
-#define ICON_POS_Y		(1)
+#define ICON_POS_Y		(0)
 #ifdef WIDEICONS
 #define ICON_SX			(21)
 #define ICON_WIDTH 			((SCREEN_SIZE_X)/8)
