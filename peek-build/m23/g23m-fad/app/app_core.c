@@ -1765,7 +1765,7 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
       if (event->event_type EQ SOCK_CONNECT_IND AND (pcont->ipproto == SOCK_IPPROTO_UDP))
       {
 	emo_printf("app_sock_callback(): PS_LISTENS event for UDP");
-        app_incoming(pcont);
+        //app_incoming(pcont);
       }
       break;
 
