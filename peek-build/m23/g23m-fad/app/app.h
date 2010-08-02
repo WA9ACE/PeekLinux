@@ -145,7 +145,7 @@ typedef enum {
   AP_UDPECHO,                   /* Send/receive data to/from UDP echo port. */
   AP_TCPSRV,                    /* TCP server application. */
   AP_DNSQRY,                    /* Issue DNS queries and collect result. */
-  AP_TCPFORK,                   /* Forked TCP server process. */
+  AP_UDPFORK,                   /* Forked TCP server process. */
   AP_INVALID
 } APP_PROCTYPE_T ;
 
