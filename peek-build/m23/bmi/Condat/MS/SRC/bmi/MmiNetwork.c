@@ -1696,18 +1696,21 @@ else if(modify_date_positive)
   newDate.year = network_time->year + 2000; // year 
     }
   
-if(FFS_flashData.nitz_option==NitzAutomatic)
-{
-	   // Update RTC with new time info
-            mfw_td_set_time(&newTime);
+//if(FFS_flashData.nitz_option==NitzAutomatic)
+//{
+	
+   /* Lets assume get RTC automatically */
+   // Update RTC with new time info
+   mfw_td_set_time(&newTime);
 
-            // Update RTC with new date info            
-            mfw_td_set_date(&newDate);
+   // Update RTC with new date info            
+   mfw_td_set_date(&newDate);
 
-            // Send IDLE_UPDATE event to force idle screen refresh             
-            SEND_EVENT(idle_get_window(), IDLE_UPDATE, 0, 0);
+   // Send IDLE_UPDATE event to force idle screen refresh             
+   SEND_EVENT(idle_get_window(), IDLE_UPDATE, 0, 0);
 
 	       
+/*
 }
 else //if(FFS_flashData.nitz_option==NITZOn)
 {
@@ -1716,6 +1719,7 @@ else //if(FFS_flashData.nitz_option==NITZOn)
   dlg_initDisplayData_events( &display_info, (T_VOID_FUNC)nw_time_update_callback, FOREVER, KEY_HUP | KEY_LEFT | KEY_RIGHT);
   info_dialog (NULL, &display_info);
 }
+*/
 }
   }
   break;
