@@ -1437,6 +1437,7 @@ PROTECTED_MENU_HANDLER( bookMoveAll )
 
 #endif
 
+#ifdef FF_CPHS
 PIN2RQD_MENU_HANDLER( CphsAlsLock )
 {
 	return cphs_lock_als( Menu, Item );
@@ -1446,6 +1447,7 @@ PIN2RQD_MENU_HANDLER( CphsAlsUnlock )
 {
 	return cphs_unlock_als( Menu, Item );
 }
+#endif
 /*******************************************************************************
 
                                 End of File

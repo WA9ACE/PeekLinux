@@ -226,6 +226,7 @@ static void bookCallDetails( T_MFW_HND win, USHORT event, SHORT value, void * pa
 	ATB_edit_InsertString(data->editor, &numberText);
 	ATB_edit_Char(data->editor, ctrlEnter, FALSE);
 	
+#ifdef FF_CPHS
 	if (CphsPresent() == TRUE)
 	{
 		sprintf(TempBuffer, "Line %d", my->line);
@@ -235,7 +236,7 @@ static void bookCallDetails( T_MFW_HND win, USHORT event, SHORT value, void * pa
 		ATB_edit_InsertString(data->editor, &otherText);
 		ATB_edit_Char(data->editor, ctrlEnter, FALSE);
 	}
-	
+#endif
 	/* API - 10/09/03 - SPR2513 - Add support to display chinese Data & Time */
 	/* API - 05/09/03 - SPR2357 - Get the character string for the date */
 	
@@ -450,6 +451,7 @@ static int bookCallDetailsWinCB( MfwEvt e, MfwWin *w )
 				else
 #endif /* EASY_TEXT_ENABLED */
 				{
+#ifdef FF_CPHS
 					if (CphsPresent() == TRUE)
 					{
 						sprintf( (char *) data->edtBuf, "%s%s%s%s%d%s%s",
@@ -466,9 +468,11 @@ static int bookCallDetailsWinCB( MfwEvt e, MfwWin *w )
 					/* show the editor and update the soft keys
 					*/
 					edtShow( data->edt );
+#endif
 				}
 
 #else /* NO_ASCIIZ */
+#if FF_CPHS
 				if (CphsPresent() == TRUE)
 					{
 						sprintf( (char *) data->edtBuf, "%s%s%s%s%d%s%s",
@@ -487,6 +491,7 @@ static int bookCallDetailsWinCB( MfwEvt e, MfwWin *w )
 					edtShow( data->edt );
 #endif /* NO_ASCIIZ */
 #endif /* NEW_EDITOR */
+#endif
 
 			displaySoftKeys( TxtNull, TxtSoftBack );
 		}

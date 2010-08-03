@@ -460,6 +460,8 @@
 #include "MmiSounds.h"
 #endif /* FF_PHONE_LOCK */
 
+char g_pin2[MAX_PIN+1];
+
 #ifdef SIM_PERS
 //x0pleela 25 Apr, 2006  DR: OMAPS00067919
 //Global variable to store the code result of qAT_PlusCPIN() result
@@ -1146,7 +1148,7 @@ int sim_event_cb_main (T_MFW_EVENT event, T_MFW_HND para)
 
 						limited = FALSE;
 						TRACE_FUNCTION("sim_event_cb_main:no Pin");
-						mmi_cphs_refresh();
+						//mmi_cphs_refresh();
 						SEND_EVENT(pin_data->pin_win,PIN_OK, 0, NULL);//back to idle
 						break;
 
@@ -1319,7 +1321,7 @@ int sim_event_cb_main (T_MFW_EVENT event, T_MFW_HND para)
 			 */
 					case MFW_SIM_NO_PIN:
 						TRACE_FUNCTION("sim_event_cb_main:PIN ok without sim unlock");
-						mmi_cphs_refresh();
+						//mmi_cphs_refresh();
 						pin_data->pin_case = PIN_OK_INFO;
 						if (pin_data->set_state == PIN2_CHECK)
 						{
@@ -1358,7 +1360,7 @@ int sim_event_cb_main (T_MFW_EVENT event, T_MFW_HND para)
 					break;
 				case MFW_SIM_SUCCESS:
 					TRACE_FUNCTION("sim_event_cb_main:unblock success");
-					mmi_cphs_refresh();
+					//mmi_cphs_refresh();
 					SEND_EVENT(pin_data->pin_win,PUK1_UNBL_SUCC,0,pin_data);
 					break;
 				case MFW_SIM_FAILURE:
@@ -2061,7 +2063,7 @@ static void pin_main(T_MFW_HND win, USHORT event, SHORT value, void * parameter)
 		       break;
 //nm		       
 	  case TXT_SIM_LOCK_ALL:
-	  		ShowMessage(idle_get_window(), pin_data->display_id1, pin_data->display_id2);
+	  		//ShowMessage(idle_get_window(), pin_data->display_id1, pin_data->display_id2);
 			   pin_destroy(pin_data->pin_win);// finish main pin dialog
 			   TRACE_FUNCTION("pin_destroy 4");
 		       break;
@@ -4104,7 +4106,7 @@ int pin_info_cb(T_MFW_HND win, USHORT identifier, UBYTE reasons)
 			if (sim_check_sim_Plock() != MFW_SIM_BLOCKED)
 				SEND_EVENT(pin_data->pin_win,SIM_PLOCK_REQ,0,NULL);//pin_main data !!
 			else
-			{	ShowMessage(idle_get_window(), TxtBlckPerm, TxtDealer);
+			{	//ShowMessage(idle_get_window(), TxtBlckPerm, TxtDealer);
 				pin_destroy(pin_data->pin_win);
 			}
 			break;
@@ -4112,7 +4114,7 @@ int pin_info_cb(T_MFW_HND win, USHORT identifier, UBYTE reasons)
 			if (sim_check_sim_Nlock() != MFW_SIM_BLOCKED)
 				SEND_EVENT(pin_data->pin_win,SIM_NLOCK_REQ,0,NULL);//pin_main data !!
 			else
-			{	ShowMessage(idle_get_window(), TxtBlckPerm, TxtDealer);
+			{	//ShowMessage(idle_get_window(), TxtBlckPerm, TxtDealer);
 				pin_destroy(pin_data->pin_win);
 			}
 			break;
@@ -4120,7 +4122,7 @@ int pin_info_cb(T_MFW_HND win, USHORT identifier, UBYTE reasons)
 			if (sim_check_sim_SPlock() != MFW_SIM_BLOCKED)
 				SEND_EVENT(pin_data->pin_win,SIM_SPLOCK_REQ,0,NULL);//pin_main data !!
 			else
-			{	ShowMessage(idle_get_window(), TxtBlckPerm, TxtDealer);
+			{	//ShowMessage(idle_get_window(), TxtBlckPerm, TxtDealer);
 				pin_destroy(pin_data->pin_win);
 			}
 			break;
@@ -4128,7 +4130,7 @@ int pin_info_cb(T_MFW_HND win, USHORT identifier, UBYTE reasons)
 			if (sim_check_sim_NSlock() != MFW_SIM_BLOCKED)
 				SEND_EVENT(pin_data->pin_win,SIM_NSLOCK_REQ,0,NULL);//pin_main data !!
 			else
-			{	ShowMessage(idle_get_window(), TxtBlckPerm, TxtDealer);
+			{	//ShowMessage(idle_get_window(), TxtBlckPerm, TxtDealer);
 				pin_destroy(pin_data->pin_win);
 			}
 		    break;
@@ -4136,7 +4138,7 @@ int pin_info_cb(T_MFW_HND win, USHORT identifier, UBYTE reasons)
 			if (sim_check_sim_Clock() != MFW_SIM_BLOCKED)
 				SEND_EVENT(pin_data->pin_win,SIM_CLOCK_REQ,0,NULL);//pin_main data !!
 			else
-			{	ShowMessage(idle_get_window(), TxtBlckPerm, TxtDealer);
+			{	//ShowMessage(idle_get_window(), TxtBlckPerm, TxtDealer);
 				pin_destroy(pin_data->pin_win);
 			}
 			break;
@@ -6744,7 +6746,7 @@ int pin_disable (struct MfwMnuTag * m, struct MfwMnuItemTag * i)
 		/*MC CONQ 5578, 27/05/02, if pin disabling NOT available*/
 		if(status.stat EQ MFW_SIM_NO_DISABLE)
 		{	/*tell user and destroy PIN window*/
-			ShowMessage(win, TxtNotAllowed, TxtNull);
+			//ShowMessage(win, TxtNotAllowed, TxtNull);
 			setting_pin_destroy(win);
 		}
 		else

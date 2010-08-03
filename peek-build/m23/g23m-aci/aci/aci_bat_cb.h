@@ -379,6 +379,7 @@ GLOBAL void rBAT_PercentCGREG(
   BOOL bActiveContext);
 #endif
 
+#ifdef FF_EM_MODE
 GLOBAL void rBAT_PercentEM(
   T_EM_VAL *val_tmp);
 
@@ -387,7 +388,7 @@ GLOBAL void rBAT_PercentEMET(
 
 GLOBAL void rBAT_PercentEMETS(
   UBYTE entity);
-
+#endif
 GLOBAL void rBAT_PercentCPNUMS(
   UBYTE element_index,
   UBYTE index_level,

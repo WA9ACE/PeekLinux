@@ -1247,7 +1247,7 @@ void services (T_MFW_HND win, USHORT event, SHORT value, void * parameter)
 								#endif
 								
 		    			case CFAuxVoice:
-
+#ifdef FF_CPHS
 							if (GetAlsLine() == MFW_SERV_LINE2) 
 								{
 								TRACE_EVENT("services():call forward activation successful for line2");
@@ -1263,6 +1263,7 @@ void services (T_MFW_HND win, USHORT event, SHORT value, void * parameter)
 								if(GetCphsDivertStatus(MFW_SERV_LINE1)!=MFW_CFLAG_SET)
 									cphs_set_divert_status(MFW_CFLAG_SET, MFW_CFLAG_NotPresent, MFW_CFLAG_NotPresent, MFW_CFLAG_NotPresent);
 								}
+#endif
 						break;
 						case (CFData): 	
 							/*a0393213 cphs rel4*/
@@ -1316,7 +1317,6 @@ void services (T_MFW_HND win, USHORT event, SHORT value, void * parameter)
 							#ifdef FF_CPHS_REL4
 							if(!isCFISFilePresent() )
 								{
-							#endif
 							if (GetAlsLine() == MFW_SERV_LINE2)
 								{
 								TRACE_EVENT("services():call forward activation successful for all");
@@ -1333,7 +1333,6 @@ void services (T_MFW_HND win, USHORT event, SHORT value, void * parameter)
 								   GetCphsDivertStatus(MFW_SERV_FAX)!=MFW_CFLAG_SET)
 									cphs_set_divert_status(MFW_CFLAG_SET,MFW_CFLAG_NotPresent,MFW_CFLAG_SET,MFW_CFLAG_SET);
 								}
-							#ifdef FF_CPHS_REL4
 								}
 							else
 								{
@@ -1455,7 +1454,6 @@ void services (T_MFW_HND win, USHORT event, SHORT value, void * parameter)
 							#ifdef FF_CPHS_REL4
 							if(!isCFISFilePresent() )
 								{
-							#endif
 							if (GetAlsLine() == MFW_SERV_LINE2)
 								{
 								TRACE_EVENT("services():call forward deactivation successful for all");
@@ -1472,7 +1470,6 @@ void services (T_MFW_HND win, USHORT event, SHORT value, void * parameter)
 								   GetCphsDivertStatus(MFW_SERV_FAX)!=MFW_CFLAG_NOTSet)
 									cphs_set_divert_status(MFW_CFLAG_NOTSet, MFW_CFLAG_NotPresent, MFW_CFLAG_NOTSet, MFW_CFLAG_NOTSet);
 								}
-							#ifdef FF_CPHS_REL4
 								}
 							else
 								{
@@ -5077,10 +5074,12 @@ void servicesDivertVoice(void)
 {
     TRACE_FUNCTION("servicesDivertVoice");
  /*mc SPR 742 check if line2 is the current line*/
+#ifdef FF_CPHS
    if (!ALSPresent(NULL, NULL, NULL) && GetAlsLine() == MFW_SERV_LINE2/*FFS_flashData.als_selLine == MFW_SERV_LINE2*/)
     	CFService = CFAuxVoice;
     else /*mc end*/
    	CFService = CFVoice;
+#endif
 }
 
 /*******************************************************************************

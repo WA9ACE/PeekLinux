@@ -537,7 +537,7 @@ extern T_MFW_HND satDisplayTextWin; // Nov 09, 2005 REF: OMAPS00043190 - x001885
 extern UBYTE getCurrentRingerSettings(void );
 extern int M_exeSendNew(MfwMnu* m, MfwMnuItem* i); // MZ
 extern MfwMnuAttr *settingMenuAttributes(void);//May 27, 2004    REF: CRR 19186  Deepa M.D 
-extern MfwMnuAttr *applicationsMenuAttributes(void);//August 24, 2004    e-armanetsaid
+//extern MfwMnuAttr *applicationsMenuAttributes(void);//August 24, 2004    e-armanetsaid
 void deflect_destroy(BOOL delete_call_windows); //GW
 /*******************************************************************************
                 End
@@ -3032,8 +3032,10 @@ static int M_exeApplication(MfwMnu* m, MfwMnuItem* i)
 //  T_call_menu * data = (T_call_menu *)win_data->user;    // RAVI
 	TRACE_FUNCTION("M_exeSetting");
 	
+#if 0
 	/* Create the  Application menu*/
 	bookMenuStart(call_data.win, applicationsMenuAttributes(),0);
+#endif
 	
 	return 1;
 }
@@ -6508,7 +6510,7 @@ else if (CALL_NAME_NETWORK)
     }
     //GW-SPR#762 - Wrap number/name onto 2nd line (if too long)
     call_data.inc_call_data.WrapStrings = WRAP_STRING_2;
-
+#ifdef FF_CPHS
     if (!ALSPresent(NULL, NULL, NULL))
     {
         if (call_data.globalCWInfo.type EQ  VOICE_CALL)
@@ -6539,7 +6541,7 @@ else if (CALL_NAME_NETWORK)
     	/* end SH */
 
     }
-
+#endif
     if (call_data.globalCWInfo.type EQ  DATA_CALL)
         call_data.inc_call_data.TextId       = TxtIncomingData; // Only to be able to compile.
 

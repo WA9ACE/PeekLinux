@@ -4876,6 +4876,7 @@ GLOBAL void rBAT_PercentCGREG(
 
   PURPOSE : 
 */
+#if FF_EM_MODE
 GLOBAL void rBAT_PercentEM(
   T_EM_VAL *val_tmp)
 {
@@ -4897,7 +4898,7 @@ GLOBAL void rBAT_PercentEM(
 
 #endif
 }
-
+#endif
 /*
 +--------------------------------------------------------------------+
 | PROJECT : GSM-F&D (8411)            MODULE  : ACI_BAT              |
@@ -4906,6 +4907,7 @@ GLOBAL void rBAT_PercentEM(
 
   PURPOSE : 
 */
+#if FF_EM_MODE
 GLOBAL void rBAT_PercentEMET(
   T_DRV_SIGNAL_EM_EVENT *Signal)
 {
@@ -4927,7 +4929,7 @@ GLOBAL void rBAT_PercentEMET(
 
 #endif
 }
-
+#endif
 /*
 +--------------------------------------------------------------------+
 | PROJECT : GSM-F&D (8411)            MODULE  : ACI_BAT              |
@@ -4936,6 +4938,7 @@ GLOBAL void rBAT_PercentEMET(
 
   PURPOSE : 
 */
+#if FF_EM_MODE
 GLOBAL void rBAT_PercentEMETS(
   UBYTE entity)
 {
@@ -4957,7 +4960,7 @@ GLOBAL void rBAT_PercentEMETS(
 
 #endif
 }
-
+#endif
 /*
 +--------------------------------------------------------------------+
 | PROJECT : GSM-F&D (8411)            MODULE  : ACI_BAT              |

@@ -297,7 +297,9 @@ EXTERN void time_date_init(void);
 EXTERN void sms_cb_exit (void);
 EXTERN void time_date_delete(void);
 EXTERN UBYTE getCurrentRingerSettings(void);
+#ifdef FF_CPHS
 EXTERN UBYTE CphsPresent(void);
+#endif
 EXTERN void  cphs_support_check(void);
 // END RAVI
 
@@ -1407,9 +1409,10 @@ static int timesEvent (MfwEvt e, MfwTim *t)
    idleEvent(IdleUpdate);
 
    /*MC CONQUEST 5999->6007,21/05/02 if CPHS reading didn't work on switch-on, try again*/
+#ifdef FF_CPHS
    if (CphsPresent() == CPHS_ERR)
 		cphs_support_check();
-	
+#endif
 
   mme_backlightEvent(BL_IDLE_TIMER);
 	

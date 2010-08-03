@@ -45,7 +45,7 @@
 //Includes for Audio Services
 #include "as/as_api.h" 
 #include "as/as_message.h"
-
+#include "mfw_mfw.h"
 
 /*******************************************************************************
                                                                               

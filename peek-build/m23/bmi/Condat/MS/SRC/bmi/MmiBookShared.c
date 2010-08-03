@@ -1301,7 +1301,9 @@ END_MENU( menuEmergency, menuListArea, COLOUR_LIST_SUBMENU )
 // Menu of Phonebook
 BEGIN_MENU( menuPhbk )
     MENU_ITEM( TxtSearchName,     bookNameSearch,       item_flag_none ),
+#ifdef FF_CPHS
     MENU_ITEM(TxtInfoNumbers, InfoNumbers,        item_flag_none),
+#endif
     MENU_ITEM( TxtAddNew,         bookNameEnter,        item_flag_none ),
     MENU_ITEM( TxtServiceNumbers, bookServiceNumbers,   item_flag_none ),
     SUB_MENU(  TxtMyNumber,       menuOwnNumber,        item_flag_none ),
@@ -1663,6 +1665,7 @@ BEGIN_MENU(menuMidiAudioOutput)
  END_MENU( menuMidiAudioOutput, menuListArea, COLOUR_LIST_SUBMENU )
 
 //Sub-Menu of Midi Change Config
+#if 0
 BEGIN_MENU(menuMidiChangeConfig)
     MENU_ITEM( TxtChConfigVoiceLimit,     midi_test_cc_voice_limit,         item_flag_none ),
     SUB_MENU( TxtChConfigLoop,     menuMidiLoop,         item_flag_none ),
@@ -1672,11 +1675,12 @@ BEGIN_MENU(menuMidiChangeConfig)
     ,SUB_MENU( TxtPBar,    menuPB,         item_flag_none )
 #endif
 END_MENU( menuMidiChangeConfig, menuListArea, COLOUR_LIST_SUBMENU )
-
+#endif
 //Sub-Menu of Midi Test
 // Dec 08, 2004	REF: CRR MMI-SPR-27284
 // Description: MIDI Player: Back Key malfunctions in MIDI application.
 // Solution: Calling function midi_test_files_browse() when user select "Browse Midi Files"
+#if 0
 BEGIN_MENU( menuMidiTest )
     MENU_ITEM( TxtChConfigFile,     midi_test_files_browse,         item_flag_none ), 
     SUB_MENU( TxtMidiChangeConfig,    menuMidiChangeConfig,         item_flag_none ),
@@ -1684,6 +1688,7 @@ BEGIN_MENU( menuMidiTest )
     MENU_ITEM( TxtMidiPlayAllFiles,   midi_test_play_all,         item_flag_none ),
     MENU_ITEM( TxtMidiExit,   midi_stop_player,         item_flag_none )
 END_MENU( menuMidiTest, menuListArea, COLOUR_LIST_SUBMENU )
+#endif
 #endif//#ifdef FF_MMI_TEST_MIDI
 #ifdef BTE_MOBILE
 //Sub-Menu of Bluetooth Discoverable
@@ -2018,7 +2023,9 @@ BEGIN_MENU( menuFMListOptions )
     MENU_ITEM( TxtDelete,        mmi_fm_remove,       item_flag_none),
     MENU_ITEM( TxtProperties,  mmi_fm_properties,  item_flag_none), 
     MENU_ITEM( TxtCreateDir,  mmi_fm_newdir,  showCreate),
+#if 0
     SUB_MENU( TxtSettings,    menuMidiChangeConfig, check_source_setting),
+#endif
 END_MENU( menuFMListOptions, menuListArea, COLOUR_LIST_SUBMENU )
 
 BEGIN_MENU( menuRootFolders )
@@ -2142,16 +2149,17 @@ END_MENU( menuApplications, menuListArea, COLOUR_LIST_SUBMENU )
 
 //Jun 19, 2006  DR: OMAPS00070657 xdeepadh
 //Only selected applications can be accessed from active call screen
+/*
 BEGIN_MENU( activecallApps )
   #ifdef MMI_MELODYGENERATOR
   MENU_ITEM( TxtMelodygenerator,  (MenuFunc)melody_generator_aktivate,  item_flag_none ),
-  #endif /* MMI_MELODYGENERATOR */
+  #endif
 #ifdef NEPTUNE_BOARD
 #ifdef MMI_POWER_MANAGEMENT_TEST
   MENU_ITEM( TxtPowerMgnt,     (MenuFunc)mmi_PowerManagement, item_flag_none ),
 #endif
 #else
-#endif /* MMIGAME */
+#endif 
 
 // Aug 22, 2005    REF: ENH 31154 xdeepadh
 #ifdef FF_MMI_FILE_VIEWER
@@ -2163,7 +2171,6 @@ MENU_ITEM(TxtFileViewer, LaunchFileViewer,         item_flag_none ),
 #endif
 
 #ifndef FF_NO_VOICE_MEMO
-/* Voice memo Menu Display */
 #ifdef FF_MMI_VOICEMEMO
    SUB_MENU( TxtVoiceMemo,       menuVoiceMemoUC,        item_flag_none ),  
 #else   
@@ -2180,11 +2187,10 @@ MENU_ITEM(TxtFileViewer, LaunchFileViewer,         item_flag_none ),
 #endif
 
 #ifdef FF_MMI_MULTIMEDIA
-     /* Multimedia Application initial menu specification. */
     SUB_MENU( TxtMultimediaApp, menuMultimediaApp, item_flag_none ),
 #endif
 END_MENU( activecallApps, menuListArea, COLOUR_LIST_SUBMENU )
-
+*/
 /*---------------------------------------------------------------------------*/
 
 /*
@@ -2881,11 +2887,12 @@ MfwMnuAttr *ViewOptionsMenuAttributes( void )//file viewer
 //Jun 19, 2006  DR: OMAPS00070657 xdeepadh
 //Only selected applications can be accessed from active call screen
 //returns the pointer to the Applications  Menu.
+/*
 MfwMnuAttr *applicationsMenuAttributes(void)
 {
   return (MfwMnuAttr *) &activecallApps;
 }
-
+*/
 #ifdef MMI_MELODYGENERATOR
 MfwMnuAttr *MelgenOptionMenuAttributes( void )
 {
@@ -3893,10 +3900,12 @@ MfwMnuAttr *GetmenuImgEditOptions(void)
 #endif
 //Sep 11, 2006 DR: OMAPS00094182 xrashmic
 #ifdef FF_MMI_TEST_MIDI 
+#if 0
 MfwMnuAttr *MidiTestAppMenuAttributes(void)
 {
   return (MfwMnuAttr *) &menuMidiTest;
 }
+#endif
 #endif
 #if defined(FF_MMI_TEST_MP3) ||  defined(FF_MMI_TEST_AAC) 
 MfwMnuAttr *AudioPlayerAppMenuAttributes(void)

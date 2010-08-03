@@ -4855,12 +4855,14 @@ static int idle_dialling_kbd_long_cb (MfwEvt e, MfwKbd *k)
 			   Description : Wrong string is displayed when pressing long [1]
 			   Solution     : M_callVoice() was called which checks the voice mail number stored in flash
 			   Now menu_cphs_call_mailbox_number() is called which checks cphs4.2 file if it's present else it would call M_callVoice()*/
+#ifdef FF_CPHS
 			if(strcmp(idle_data.edt_buf,"1")==0)
 				{
 			//long press on key 1 start to dial the voicemail
 				menu_cphs_call_mailbox_number(NULL,NULL);
 			return MFW_EVENT_CONSUMED;
 				}
+#endif
 		}
 		/* MZ cq11414 support for Pause seperator for DTMF strings. */
 		if(e & KEY_STAR)
