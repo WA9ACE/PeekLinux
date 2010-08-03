@@ -176,7 +176,7 @@ typedef struct
     UBYTE right_key_pressed;
     UBYTE silent_mode;
     UBYTE clean_screen;
-    UBYTE ciphering;
+    UBYTE protoStatus;
     UBYTE starting_up;                  /*SPR#1662 - NH - New field for checking the start up status */
     /* xreddymn OMAPS00080543 Jun-06-2006 */
     CHAR incoming_sat_msg[MAX_SATMSG_LEN];		/* SPR759 - SH*/

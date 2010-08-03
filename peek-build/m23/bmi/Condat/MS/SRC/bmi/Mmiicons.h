@@ -90,8 +90,8 @@ typedef enum                            /* AVAILABLE ICONS IDLE MODE*/
     iconIdSilRin,                       /* icon silent ringer       */
     iconIdRoaming,		/*icon Roaming Indicator */ /*Jun 09, 2006 REF:OMAPS00079650  a0393213 (R.Prabakar)*/
     iconIdKeyplock,                     /* icon Keypad locked       */
-    iconIdCipheringActiv,                        /* icon Ciphering              */        
-    iconIdCipheringDeActiv,                        /* icon Ciphering              */            
+    iconIdAppProtoActiv,                        /* icon Ciphering              */        
+    iconIdAppProtoDeActiv,                        /* icon Ciphering              */            
 	iconIdRinger,                       /* icon ringer              */
 	iconIdVibrator,                     /* icon vibrator            */
 	iconIdRingVibr,                     /* icon ringer + vibrator   */

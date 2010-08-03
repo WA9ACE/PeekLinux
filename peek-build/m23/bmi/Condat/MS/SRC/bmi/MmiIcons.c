@@ -146,7 +146,7 @@
 
 #include "cicons/controlpanel.c"
 #include "cicons/history.c"
-#include "cicons/mailicon.c"
+#include "cicons/calendar.c"
 #include "cicons/emostatus.c"
 #include "cicons/aimicon.c"
 #include "cicons/batt0.c"
@@ -1918,7 +1918,7 @@ MfwIcnAttr mainIconWAP		        =
 #ifdef USE_110X110
 	{ 0, 12, 110, 110 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) wap110x110_bmp
 #else
-	{ 0, 12, 128 , 128 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) mailicon.pixel_data
+	{ 0, 12, 128 , 128 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) calendaricon.pixel_data
 #endif
 #endif
 };
@@ -2343,11 +2343,11 @@ void iconsShow( void )
 		if ( GlobalIconStatus & GlobalKeyplockIconFlag )
 			iconsShowIcon( &state[ iconIdKeyplock ] );
 
-		if ( GlobalIconStatus & GlobalCipheringActivIconFlag )
-			iconsShowIcon( &state[ iconIdCipheringActiv ] );
+		if ( GlobalIconStatus & GlobalAppProtoActivIconFlag )
+			iconsShowIcon( &state[ iconIdAppProtoActiv ] );
 
-		if ( GlobalIconStatus & GlobalCipheringDeactivIconFlag )
-			iconsShowIcon( &state[ iconIdCipheringDeActiv ] );
+		if ( GlobalIconStatus & GlobalAppProtoDeactivIconFlag )
+			iconsShowIcon( &state[ iconIdAppProtoDeActiv ] );
 
 		/* SPR#2346 - SH - Show GPRS Attached icon*/
 

@@ -43,6 +43,7 @@ static int UIIteration(void);
 int UIWaitForActivity(void);
 static void UICleanup(void);
 ConnectionContext *connectionContext;
+extern void appProtocolStatus(int status);
 
 Task UITask_s = {UIInit, UIIteration, UIWaitForActivity, UICleanup};
 
@@ -139,6 +140,7 @@ GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 
 		case EMOBIIX_SOCK_DCON: // Sock disconnected
 			emo_printf("appdata_response_cb(): APP_DATA_DCON");
+			appProtocolStatus(0);
 			break;
 
 		default:

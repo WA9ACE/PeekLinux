@@ -906,6 +906,7 @@ static int keyAction (MfwEvt e, MfwKbd *res)
     }
     else if ((FFS_flashData.settings_status & SettingsKeypadDTMF) && (e & KEY_MAKE))
     {
+#ifdef FF_CPHS
       TRACE_EVENT ("Keypad DTMF activ");
       switch (e &= mask)
 	{
@@ -1021,6 +1022,7 @@ static int keyAction (MfwEvt e, MfwKbd *res)
 	  break;
 
       }
+#endif /* FF_CPHS */
     }
 
 #ifdef NEPTUNE_BOARD

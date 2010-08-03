@@ -2627,8 +2627,8 @@ static void showDefault (void)
 						| GlobalCallForwardingIconFlag| GlobalKeyplockIconFlag
 						| GlobalRingerIconFlag | GlobalRingVibrIconFlag
 						| GlobalVibratorIconFlag | GlobalAlarmIconFlag
-						| GlobalSilentRingerIconFlag|GlobalCipheringActivIconFlag
-						| GlobalCipheringDeactivIconFlag
+						| GlobalSilentRingerIconFlag|GlobalAppProtoActivIconFlag
+						| GlobalAppProtoDeactivIconFlag
  /* SH 18/01/02. Flag for GPRS On icon.
     Note: Homezone icon not displayed during call. */
 		#ifdef MMI_GPRS_ENABLED

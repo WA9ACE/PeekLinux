@@ -105,7 +105,7 @@ EXTERN MfwHdr * current_mfw_elem;
 #ifdef FF_MMI_REDUCED_KBD_BUFFER
 #define MAX_KPRESS_BFR 20
 #else
-#define MAX_KPRESS_BFR 50
+#define MAX_KPRESS_BFR 52
 #endif
 typedef struct keyPressDetailsTag {
 	char make;
@@ -351,10 +351,14 @@ static int sigExec (MfwHdr *curElem, U32 map, U8 key)
                 kc->code = key;         /* set current key code     */
                 if (map & KEY_MAKE)
                 {
+		    if(key > 26) 
+			kc->key |= KEY_MUX;
                     kc->key |= map;     /* set key in control block */
                 }
                 else
                 {
+		    if(key > 26) 
+			kc->key &= ~KEY_MUX;
                     kc->key &= ~map;    /* del key in control block */
                     kc->key &= ~KEY_MAKE; /* del make/break flag    */
                 }
@@ -485,54 +489,42 @@ void kbdSignal (char make, char key)
 
 	while (kbd_getMakeAndKey(&make,&key) != -1)
 	{
-#ifdef MMI_EM_ENABLED
-#ifndef NEPTUNE_BOARD
-/* This is not valid for Neptune Engineering Mode, hence*/
-
-              //xrashmic 22 Aug, 2004 MMI-SPR-32798
-              //If screen capture is enabled the key pressed is the screen capture key, 
-              //we write the LCD buffer into the FFS and and consume the key 
-              //event here itself without sending it to BMI
-              // Also the screen capture key will be disabled here
-	      screenCaptureKey=41;
-              if(key== screenCaptureKey && make==1)
-              {
+		#ifdef EMO_DEBUG 
+		/* For debugging map lock key to screen capture */
+	        screenCaptureKey=41;
+		#endif
+                if(key== screenCaptureKey && make==1)
+                {
                     TRACE_EVENT("*****Capturing the screen");
-                    //screenCaptureKey=KCD_NONE;
+		    #ifdef EMO_DEBUG
+		    /* Leave it enabled */
+                    screenCaptureKey=KCD_NONE;
+		    #endif
                     screen_capture();
                     dspl_Enable(temp);
                     return;
-              }
-#endif /* ifndef NEPTUNE_BOARD*/
-#endif
-		/* temp hack until we can add support for > 32 keys) */
-		switch(key) {
-			case 49: // power
-				key = 23;
-				break;
-			case 46: // wheel button
-				key = 16;
-				break;
-			case 47: // back button
-				key = 17;
-				break;
-			case 41: // lock button
-				key = 12;
-				break;
-		}
+                }
+
 		still_processing_flag = 1;
 		TRACE_EVENT_P2("NDH : KbdSignal - key %d, state %02x", key, make);
 
-		if (key <= KCD_MAX) /*a0393213 compiler warnings removal - comparison of key with 0 removed*/
+		if (key <= KCD_MAX)
 		{
 			loopNo++;
 			keyNo++;
 			
-			map = 1L << key;
+			if(key > 26) {
+				/* Key requires muxing */
+				map = (1L << (key - 26)) | KEY_MUX;
+
+			} else {
+				map = 1L << key;
+			}
 
 			if (make)
 			{
 				map |= KEY_MAKE;
+
 				curMap = map;
 				curKey = key;
 				timStart(&timLongH);
@@ -634,8 +626,6 @@ static int toLong (U32 t, void *h)
 
    kpd_retrieve_key_status(kpd_key, KPD_DEFAULT_MODE, &state);
    TRACE_EVENT_P2("toLong() state = %d CurKey = %d", state, curKey);
-   if(curKey == 15 || curKey == 14)
-	return 0;
    if(!state)
        curMap |= KEY_LONG;   
     sigDistribute(curMap,curKey);
@@ -760,7 +750,7 @@ int kbd_getMakeAndKey( char* make, char* key)
 
 	*make = !(localKP.make);
 	*key =   drvGetKeyIndex(localKP.key);
-	TRACE_FUNCTION_P1("mfw_kbd: drvGetKeyIndex %d", drvGetKeyIndex(localKP.key));
+	TRACE_FUNCTION_P1("mfw_kbd: drvGetKeyIndex %d", *key);
 	return (mfw_cbuf_num_elements(mfw_kbd_kpress_buf_id));
 }
 

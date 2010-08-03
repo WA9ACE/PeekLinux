@@ -208,7 +208,7 @@ char drvGetKeyIndex( char key)
     {
         if (keyMap[i] == key)
         {
-        	return (i);
+        	return (i+1);
         }
     }
 
@@ -256,60 +256,7 @@ void drvKeyUpDown (char upDown, char key)
       /* END RAVI - 22-11-2005 */
     }
 
-	if (key != (char)0)
-	{
-		if ((key >= 48) && (key <=57))
-		{
-			key -= 47;
-		}
-		else
-		{
-			switch(key)
-			{
-				case 35:
-					key = (char)18;
-					break;
-
-				case 42:
-					key = (char)17;
-					break;
-
-				case 45:
-					key = (char)11;
-					break;
-
-				case 67:
-					key = (char)13;
-					break;
-
-				case 69:
-					key = (char)25;
-					break;
-
-				case 86:
-					key = (char)16;
-					break;
-
-				case 94:
-					key = (char)14;
-					break;
-
-				case 97:
-					key = (char)15;
-					break;
-
-				case 98:
-					key = (char)12;
-					break;
-
-				default:
-					key = (char)0;
-					break;
-			}
-		}
-
-		kbd_putMakeAndKey( upDown, key);
-	}
+    kbd_putMakeAndKey( upDown, key);
 
     if (!sig) return;                   /* no event handler         */
 
@@ -336,7 +283,7 @@ void drvKeyUpDown (char upDown, char key)
 void mfw_keystroke (char * key)
 {
   char i;  //, number;  // RAVI
-
+  emo_printf("mfw_keystroke()");
   if (!sig) return;                   /* no event handler         */
   if (!key) return;                   /* no valid key             */
 
@@ -472,7 +419,7 @@ if ((!powered_on)&&(key_code==POWER_KEY))
 
 	//Add keypress to queue of key presses
 	nPresses = kbd_getNumElements();
-
+	emo_printf("kbdCb(): key %d keystate %d", (char)key_code, (char)key_state);
 
 	kbd_putMakeAndKey( (char)key_state, (char)key_code);
 
@@ -581,7 +528,7 @@ void HwdKypadRotCB(KPD_ROT_DIRECTION_T direction) {
 	
 	emo_printf("HwdKypadRotCB: %d\n", direction);
 
-	param.key_info.virtual_key_id = (direction) ? (KCD_MNUUP+1): (KCD_MNUDOWN+1);
+	param.key_info.virtual_key_id = (direction) ? (KCD_UP): (KCD_DOWN);
 	param.key_info.state = KPD_KEY_PRESSED;
 	param.key_info.press_state = KPD_FIRST_PRESS;
 

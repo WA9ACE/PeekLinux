@@ -115,7 +115,8 @@ const U8 kbd_map [NUM_KPD_KEYS] =            /* ti mapping               */
     /* KEY_BACK           */  0x30, // Back
     /* KEY_DEL            */  0x31, // Delete
     /* KEY_POWER          */  0x32, // Power
-    /* KEY_NULL		 */   0x33
+    /* KEY_UP		  */  0x33, // Up on wheel
+    /* KEY_Down           */  0x34, // Up on wheel
 };
 
 const U8 simkbd_map [NUM_KPD_KEYS] =         /* MOB SIM mapping          */

@@ -151,8 +151,8 @@ extern char stringTrace[50];
 #define GlobalVibratorIconFlag      0x100
 #define GlobalRingVibrIconFlag      0x200
 #define GlobalAlarmIconFlag         0x400
-#define GlobalCipheringActivIconFlag       0x800
-#define GlobalCipheringDeactivIconFlag       0x1000
+#define GlobalAppProtoActivIconFlag       0x800
+#define GlobalAppProtoDeactivIconFlag       0x1000
 /* SH 18/01/02.  Indication for GPRS */
 #ifdef MMI_GPRS_ENABLED
 #define GlobalGPRSOnIconFlag				0x2000

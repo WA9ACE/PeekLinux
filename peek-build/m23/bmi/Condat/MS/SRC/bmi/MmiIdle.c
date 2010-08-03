@@ -1103,8 +1103,8 @@ T_MFW_HND idle_create (T_MFW_HND parent_window)
 	addCBCH(NULL, IdleNewCBImmediateMessage);
 	data->new_cbch= FALSE;
 	data->clean_screen = FALSE; //for clean the DISPLAY ZONE 3
-	data->ciphering = DONT_SHOW_CPRS; //use as a default
-    data->starting_up = TRUE; /*SPR#1662 JVJ New flag for the start up procedure */
+    	data->starting_up = TRUE; /*SPR#1662 JVJ New flag for the start up procedure */
+	idle_data.protoStatus = 0; /* Not connected */
 
 
 	//init the Ciphering indication
@@ -1931,8 +1931,8 @@ LimitedService = 0;//end of crr12653
 						| GlobalCallForwardingIconFlag| GlobalKeyplockIconFlag
 						| GlobalRingerIconFlag | GlobalRingVibrIconFlag
 						| GlobalVibratorIconFlag | GlobalAlarmIconFlag
-						| GlobalSilentRingerIconFlag|GlobalCipheringActivIconFlag
-						| GlobalCipheringDeactivIconFlag
+						| GlobalSilentRingerIconFlag|GlobalAppProtoActivIconFlag
+						| GlobalAppProtoDeactivIconFlag
 		/* SH 18/01/02. Flag for GPRS On icon. */
 #ifdef MMI_GPRS_ENABLED
 						| GlobalGPRSOnIconFlag
@@ -5920,8 +5920,7 @@ static int idle_imei_info_cb(T_MFW_HND win, USHORT identifier, UBYTE reason)
 *******************************************************************************/
 void idle_Ciphering (UBYTE gsm_ciph, UBYTE gprs_ciph)
 {
-
-
+	/*
 	if (gsm_ciph == 0 || gprs_ciph == 0)
 	{
 
@@ -5929,8 +5928,8 @@ void idle_Ciphering (UBYTE gsm_ciph, UBYTE gprs_ciph)
 
 		idle_data.ciphering = SHOW_CPRS_DEACTIV;
 		//show the DEACTIVATED ciphering indication
-		iconsSetState(iconIdCipheringDeActiv);
-		iconsDeleteState(iconIdCipheringActiv);
+		iconsSetState(iconIdAppProtoDeActiv);
+		iconsDeleteState(iconIdAppProtoActiv);
 
 	}
 	else if (gsm_ciph == 1 || gprs_ciph == 1)
@@ -5941,8 +5940,8 @@ void idle_Ciphering (UBYTE gsm_ciph, UBYTE gprs_ciph)
 
 		idle_data.ciphering = SHOW_CPRS_ACITV;
 
-		iconsSetState(iconIdCipheringActiv);
-		iconsDeleteState(iconIdCipheringDeActiv);
+		iconsSetState(iconIdAppProtoActiv);
+		iconsDeleteState(iconIdAppProtoDeActiv);
 	}
 	else if (gsm_ciph == 2 || gprs_ciph == 2)
 	{
@@ -5952,13 +5951,31 @@ void idle_Ciphering (UBYTE gsm_ciph, UBYTE gprs_ciph)
 
 		idle_data.ciphering = DONT_SHOW_CPRS;
 
-		iconsDeleteState(iconIdCipheringActiv);
-		iconsDeleteState(iconIdCipheringDeActiv);
+		iconsDeleteState(iconIdAppProtoActiv);
+		iconsDeleteState(iconIdAppProtoDeActiv);
 	}
 
 	//update the screen
 	windowsUpdate();
+	*/
 
+}
+
+void appProtocolStatus(int status) {
+	
+	if(status) {
+		emo_printf("appProtocolStatus() Connected");
+                iconsSetState(iconIdAppProtoActiv);
+		iconsDeleteState(iconIdAppProtoDeActiv);
+	} else {
+		emo_printf("appProtocolStatus() Disconnected");
+                iconsDeleteState(iconIdAppProtoActiv);
+		iconsDeleteState(iconIdAppProtoDeActiv);
+	}
+
+	idle_data.protoStatus = status;
+
+	windowsUpdate();
 }
 
 /*******************************************************************************
