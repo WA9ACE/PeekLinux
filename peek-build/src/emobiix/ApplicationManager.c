@@ -122,78 +122,78 @@ void manager_handleKey(int key)
 	Widget *focus, *accessKey;
 	static Rectangle clip = {0, 0, 320, 240};
 	char keyStr[2];
+	int mappedKey = 0;
 
 	emo_printf("Got Key[%d]\n", key);
 
 #ifndef SIMULATOR
 	switch (key) {
-                case KCD_0: key = '0'; break;
-                case KCD_1: key = '1'; break;
-                case KCD_2: key = '2'; break;
-                case KCD_3: key = '3'; break;
-                case KCD_4: key = '4'; break;
-                case KCD_5: key = '5'; break;
-                case KCD_6: key = '6'; break;
-                case KCD_7: key = '7'; break;
-                case KCD_8: key = '8'; break;
-                case KCD_9: key = '9'; break;
-		/*
-                case KCD_a: key = 'a'; break;
-                case KCD_b: key = 'b'; break;
-                case KCD_c: key = 'c'; break;
-                case KCD_d: key = 'd'; break;
-                case KCD_e: key = 'e'; break;
-                case KCD_f: key = 'f'; break;
-                case KCD_g: key = 'g'; break;
-                case KCD_h: key = 'h'; break;
-                case KCD_i: key = 'i'; break;
-                case KCD_j: key = 'j'; break;
-                case KCD_k: key = 'k'; break;
-                case KCD_l: key = 'l'; break;
-                case KCD_m: key = 'm'; break;
-                case KCD_n: key = 'n'; break;
-                case KCD_o: key = 'o'; break;
-                case KCD_p: key = 'p'; break;
-                case KCD_q: key = 'q'; break;
-                case KCD_r: key = 'r'; break;
-                case KCD_s: key = 's'; break;
-                case KCD_t: key = 't'; break;
-                case KCD_u: key = 'u'; break;
-                case KCD_v: key = 'v'; break;
-                case KCD_w: key = 'w'; break;
-                case KCD_x: key = 'x'; break;
-                case KCD_y: key = 'y'; break;
-                case KCD_z: key = 'z'; break;
-		*/
-                case KCD_A: key = 'A'; break;
-                case KCD_B: key = 'B'; break;
-                case KCD_C: key = 'C'; break;
-                case KCD_D: key = 'D'; break;
-                case KCD_E: key = 'E'; break;
-                case KCD_F: key = 'F'; break;
-                case KCD_G: key = 'G'; break;
-                case KCD_H: key = 'H'; break;
-                case KCD_I: key = 'I'; break;
-                case KCD_J: key = 'J'; break;
-                case KCD_K: key = 'K'; break;
-                case KCD_L: key = 'L'; break;
-                case KCD_M: key = 'M'; break;
-                case KCD_N: key = 'N'; break;
-                case KCD_O: key = 'O'; break;
-                case KCD_P: key = 'P'; break;
-                case KCD_Q: key = 'Q'; break;
-                case KCD_R: key = 'R'; break;
-                case KCD_S: key = 'S'; break;
-                case KCD_T: key = 'T'; break;
-                case KCD_U: key = 'U'; break;
-                case KCD_V: key = 'V'; break;
-                case KCD_W: key = 'W'; break;
-                case KCD_X: key = 'X'; break;
-                case KCD_Y: key = 'Y'; break;
-		case KCD_Z: key = 'Z'; break;
-                case KCD_SPACE: key = ' '; break;
-                case KCD_BACKSPACE: key = '\b'; break;
-
+		case KCD_0: mappedKey = '0'; break;
+		case KCD_1: mappedKey = '1'; break;
+		case KCD_2: mappedKey = '2'; break;
+		case KCD_3: mappedKey = '3'; break;
+		case KCD_4: mappedKey = '4'; break;
+		case KCD_5: mappedKey = '5'; break;
+		case KCD_6: mappedKey = '6'; break;
+		case KCD_7: mappedKey = '7'; break;
+		case KCD_8: mappedKey = '8'; break;
+		case KCD_9: mappedKey = '9'; break;
+	/*
+		 case KCD_a: mappedKey = 'a'; break;
+		 case KCD_b: mappedKey = 'b'; break;
+		 case KCD_c: mappedKey = 'c'; break;
+		 case KCD_d: mappedKey = 'd'; break;
+		 case KCD_e: mappedKey = 'e'; break;
+		 case KCD_f: mappedKey = 'f'; break;
+		 case KCD_g: mappedKey = 'g'; break;
+		 case KCD_h: mappedKey = 'h'; break;
+		 case KCD_i: mappedKey = 'i'; break;
+		 case KCD_j: mappedKey = 'j'; break;
+		 case KCD_k: mappedKey = 'k'; break;
+		 case KCD_l: mappedKey = 'l'; break;
+		 case KCD_m: mappedKey = 'm'; break;
+		 case KCD_n: mappedKey = 'n'; break;
+		 case KCD_o: mappedKey = 'o'; break;
+		 case KCD_p: mappedKey = 'p'; break;
+		 case KCD_q: mappedKey = 'q'; break;
+		 case KCD_r: mappedKey = 'r'; break;
+		 case KCD_s: mappedKey = 's'; break;
+		 case KCD_t: mappedKey = 't'; break;
+		 case KCD_u: mappedKey = 'u'; break;
+		 case KCD_v: mappedKey = 'v'; break;
+		 case KCD_w: mappedKey = 'w'; break;
+		 case KCD_x: mappedKey = 'x'; break;
+		 case KCD_y: mappedKey = 'y'; break;
+		 case KCD_z: mappedKey = 'z'; break;
+	 */
+		case KCD_A: mappedKey = 'A'; break;
+		case KCD_B: mappedKey = 'B'; break;
+		case KCD_C: mappedKey = 'C'; break;
+		case KCD_D: mappedKey = 'D'; break;
+		case KCD_E: mappedKey = 'E'; break;
+		case KCD_F: mappedKey = 'F'; break;
+		case KCD_G: mappedKey = 'G'; break;
+		case KCD_H: mappedKey = 'H'; break;
+		case KCD_I: mappedKey = 'I'; break;
+		case KCD_J: mappedKey = 'J'; break;
+		case KCD_K: mappedKey = 'K'; break;
+		case KCD_L: mappedKey = 'L'; break;
+		case KCD_M: mappedKey = 'M'; break;
+		case KCD_N: mappedKey = 'N'; break;
+		case KCD_O: mappedKey = 'O'; break;
+		case KCD_P: mappedKey = 'P'; break;
+		case KCD_Q: mappedKey = 'Q'; break;
+		case KCD_R: mappedKey = 'R'; break;
+		case KCD_S: mappedKey = 'S'; break;
+		case KCD_T: mappedKey = 'T'; break;
+		case KCD_U: mappedKey = 'U'; break;
+		case KCD_V: mappedKey = 'V'; break;
+		case KCD_W: mappedKey = 'W'; break;
+		case KCD_X: mappedKey = 'X'; break;
+		case KCD_Y: mappedKey = 'Y'; break;
+		case KCD_Z: mappedKey = 'Z'; break;
+		case KCD_SPACE: mappedKey = ' '; break;
+		case KCD_BACKSPACE: mappedKey = '\b'; break;
 	}
 #endif
 
@@ -208,34 +208,34 @@ void manager_handleKey(int key)
 	if (focus != NULL) {
 		DataObjectField *field;
 		field = dataobject_getValue(focus, "type");
-		if (field != NULL && field->type == DOF_STRING &&
-				strcmp(field->field.string, "entry") == 0) {
+		if (field != NULL && field->type == DOF_STRING && strcmp(field->field.string, "entry") == 0) {
 			if (entryWidget_handleKey(focus, key, appManager->style))
 				return;
 		}
 	}
 
+	emo_printf("manager_handleKey() key - %d (%c)", key, mappedKey);
+
 	/* access key */
-	((unsigned char *)keyStr)[0] = (unsigned char)key;
+	((unsigned char *)keyStr)[0] = (unsigned char)mappedKey;
 	keyStr[1] = 0;
-	accessKey = widget_findStringField(appManager->rootApplicationWindow,
-			"accesskey", keyStr);
+	accessKey = widget_findStringField(appManager->rootApplicationWindow, "accesskey", keyStr);
 	if (accessKey != NULL) {
 		script_event(accessKey, "onreturn");
 		return;
 	}
-	emo_printf("manager_handleKey() key - %d", key);
+
 	switch (key) {
 		case KCD_NAV_CENTER:
 			script_event(focus != NULL ? focus : appManager->rootApplicationWindow, "onreturn");
 			break;
 		case KCD_UP: // up on scroll
-		/*case 103:*/ /* GLUT a */
+			/*case 103:*/ /* GLUT a */
 			widget_focusPrev(appManager->rootApplicationWindow,
 					appManager->style);
 			break;
 		case KCD_DOWN: // down on scroll
-		/*case 104:*/ /* GLUT z */
+			/*case 104:*/ /* GLUT z */
 			widget_focusNext(appManager->rootApplicationWindow,
 					appManager->style);
 			break;
