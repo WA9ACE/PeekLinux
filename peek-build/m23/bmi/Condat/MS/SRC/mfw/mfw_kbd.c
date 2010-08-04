@@ -491,7 +491,7 @@ void kbdSignal (char make, char key)
 	{
 		#ifdef EMO_DEBUG 
 		/* For debugging map lock key to screen capture */
-	        screenCaptureKey=41;
+	        screenCaptureKey=KCD_SHIFT_L;
 		#endif
                 if(key== screenCaptureKey && make==1)
                 {

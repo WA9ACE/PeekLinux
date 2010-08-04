@@ -144,7 +144,7 @@ typedef enum                            /* AVAILABLE ICONS BATTERY  */
         iconBatteryCharge24,                      /* icon Battery 15-24%      */
         iconBatteryCharge49,                      /* icon Battery 25-49%      */
         iconBatteryCharge100,                     /* icon Battery 50-100%     */
-        iconBattChargeMax,                  /* icon Battery ?           */
+        iconBattChargeMax 	                 /* icon Battery ?           */
 }IconBattChargeId;
 
 typedef enum                            /* AVAILABLE ICONS SIGNAL */

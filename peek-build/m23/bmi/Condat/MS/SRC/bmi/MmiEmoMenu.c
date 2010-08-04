@@ -513,7 +513,7 @@ static int emoMenuKbdCB( MfwEvt e, MfwKbd *k )
 		}
         break;
         
-        case KCD_VOLUP:
+        case KCD_LOCK:
 		{	
 		
 			/*

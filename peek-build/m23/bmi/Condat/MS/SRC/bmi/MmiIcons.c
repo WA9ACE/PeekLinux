@@ -144,11 +144,6 @@
 #include "MmiResources.h"
 #include "mmiColours.h"
 
-#include "cicons/controlpanel.c"
-#include "cicons/history.c"
-#include "cicons/calendar.c"
-#include "cicons/emostatus.c"
-#include "cicons/aimicon.c"
 #include "cicons/batt0.c"
 #include "cicons/batt1.c"
 #include "cicons/batt2.c"
@@ -168,6 +163,14 @@
 #include "cicons/signal2.c"
 #include "cicons/signal3.c"
 #include "cicons/signal4.c"
+
+#include "cicons/emostatus.c"
+#include "cicons/lock.c"
+#include "cicons/chat.c"
+#include "cicons/calendar.c"
+#include "cicons/mail.c"
+#include "cicons/maps.c"
+#include "cicons/calc.c"
 
 #include "IcnDefs.h"
 
@@ -1562,7 +1565,7 @@ const MfwIcnAttr idl_Attr [idlIdMax] =  		        /* all our icon attributes  */
     /* Jun 09, 2006 REF:OMAPS00079650  a0393213 (R.Prabakar)
 	Roaming icon is made to overlap with voice mail indication icon since there's no space in the first row of the screen*/
     { { ICON_POS_X_VMAIL, ICON_POS_Y, ICON_SX, ICON_SY }, 	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) RoamingIcon  },   /* Roaming Indication            */
-    { { ICON_POS_X_KLK, ICON_POS_Y, ICON_SX, ICON_SY }, 	1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) I_klkColour  },   /* keypad locked            */
+    { { ICON_POS_X_KLK, ICON_POS_Y, 25, 25}, 	1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) screenlock.pixel_data },   /* keypad locked            */
     { { ICON_POS_EMO, ICON_POS_Y, 25, 25 }, 	1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) emostatus.pixel_data },		/* Ciphering       */    
     { { ICON_POS_EMO, ICON_POS_Y, 25, 25 }, 	1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) emostatus.pixel_data },		/* Ciphering       */    
     { {  0,  0,  0,  0 }, 1, COLOUR_ICON_XX, ICON_TYPE_1BIT_UNPACKED,  0 },					/*ringer icon*/
@@ -1856,7 +1859,7 @@ MfwIcnAttr mainIconRecentCalls        =
 #ifdef USE_110X110
 	{ 0, 12, 110, 110 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) recentcalls110x110_bmp
 #else
-	{ 0, 12, 96, 96 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) recentcalls96x96_bmp
+	{ 0, 12, 128, 128 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) calcicon.pixel_data
 #endif
 
 #endif
@@ -1869,7 +1872,7 @@ MfwIcnAttr mainIconCallDivert        =
 #ifdef USE_110X110
 	{ 0, 12, 110, 110 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) networkservices110x110_bmp
 #else
-	{ 0, 12, 128, 128}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) aimicon.pixel_data
+	{ 0, 12, 128, 128}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) chaticon.pixel_data
 #endif
 	
 #endif
@@ -1894,7 +1897,7 @@ MfwIcnAttr mainIconMessages        =
 #ifdef USE_110X110
 	{ 0, 12, 110, 110 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) messages110x110_bmp
 #else
-	{ 0, 12, 128, 128 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) controlpanel.pixel_data
+	{ 0, 12, 128, 128 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) mapsicon.pixel_data
 #endif
 #endif
 };
@@ -1907,7 +1910,7 @@ MfwIcnAttr mainIconPhonebook        =
 #ifdef USE_110X110
 	{ 0, 12, 110, 110 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) phonebook110x110_bmp
 #else
-	{ 0, 12, 128, 128 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) history.pixel_data
+	{ 0, 12, 128, 128 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) mailicon.pixel_data
 #endif
 #endif
 };

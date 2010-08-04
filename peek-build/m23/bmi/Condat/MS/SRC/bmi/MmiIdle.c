@@ -4934,7 +4934,7 @@ static int idle_dialling_kbd_long_cb (MfwEvt e, MfwKbd *k)
 /*********************************************************************
 **********************************************************************
 
-					KEYPAD LOCKED EVENT WINDOW. IMPLEMENTATION
+KEYPAD LOCKED EVENT WINDOW. IMPLEMENTATION
 
 *********************************************************************
 **********************************************************************/
@@ -5110,10 +5110,10 @@ void idle_key_pad_locked (T_MFW_HND win, USHORT event, SHORT value, void * param
 			else
 			{
 				data->menuPressed = TRUE;
-				data->win_info = idle_information_start(win,2000,showPressMenuStar,(T_VOID_FUNC)idle_info_destroy_cb);
+				//data->win_info = idle_information_start(win,2000,showPressMenuStar,(T_VOID_FUNC)idle_info_destroy_cb);
 			}
 		break;
-		case KCD_VOLUP:
+		case KCD_LOCK:
 			if (data->menuPressed)
 			{
                 		TRACE_EVENT ("dactivate the KEYpad");
@@ -5136,7 +5136,7 @@ void idle_key_pad_locked (T_MFW_HND win, USHORT event, SHORT value, void * param
 			    memset(data->keyPadLockBuf,'\0',KEYPADLOCK_BUF_SIZE);
 				memset(idle_data.edt_buf,'\0',EDITOR_SIZE);
 				showKeyPadLocked = showNothing;
-				data->win_info = idle_information_start(win,2000,showPressMenuStar,(T_VOID_FUNC)idle_info_destroy_cb);
+				//data->win_info = idle_information_start(win,2000,showPressMenuStar,(T_VOID_FUNC)idle_info_destroy_cb);
 			}
 		break;
 		// Jul 23,2004 CRR:20895 xrashmic - SASKEN
@@ -5282,7 +5282,7 @@ void idle_key_pad_locked (T_MFW_HND win, USHORT event, SHORT value, void * param
 				showKeyPadLocked = showNothing;
 				pin_idle_emerg_call = FALSE;
 				//winUpdate((MfwWin*)mfwControl(win));
-				data->win_info = idle_information_start(win,2000,showPressMenuStar,(T_VOID_FUNC)idle_info_destroy_cb);
+				//data->win_info = idle_information_start(win,2000,showPressMenuStar,(T_VOID_FUNC)idle_info_destroy_cb);
 		break;
 	}
 	break;
