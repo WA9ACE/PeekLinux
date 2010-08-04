@@ -32,52 +32,48 @@
 
 extern unsigned char *screenBuf;
 extern unsigned char pwr_PowerOffMobile   (void);
+extern U8* get_LCD_bitmap(void);
 
+void emo_BitBltPartial(Rectangle *rect, U8 *bmp)
+{
+	U8 *dbmp = get_LCD_bitmap();
+	int yy, offset;
+	
+	for (yy = rect->y; yy < rect->y + rect->height; ++yy)
+	{
+		offset = (BWIDTH * yy + rect->x) * 2;
+		memcpy(dbmp + offset, bmp + offset, rect->width * 2);
+	}
+}
+
+void emo_BitBltFull(U8* bmp)
+{
+	U8 *dbmp = get_LCD_bitmap();
+	memcpy(dbmp, bmp, BWIDTH * BHEIGHT * 2);
+}
 
 void updateScreen(void) {
 #ifndef SIMULATOR
-#if 0
-		static DCC dc;
-        static BalDispBitmapT Bmp;
-        Bmp.Width = BWIDTH;
-        Bmp.Height = BHEIGHT;
-        Bmp.BitCount = BAL_DISP_BIT_COUNT_16;
-        Bmp.DataBuf = (unsigned char *)screenBuf;
-        if (screenBuf == NULL) {
-                emo_printf("RYAN screenbuf is NULL here" NL);
-                return;
-        }
-#endif
-        /*tweetDrawScreen();*/
-        int index, upper;
-        manager_drawScreen();
+	int index, upper;
+	manager_drawScreen();
 
 	dspl_Enable(0);
-        if (!lgui_is_dirty())
-            return;
+	if (!lgui_is_dirty())
+		return;
 
-        upper = lgui_index_count();
-        if (upper == 0) {
-            emo_printf("Flipping entire screen" NL);
-						dspl_BitBlt2(0, 0, BWIDTH, BHEIGHT, screenBuf, 0, BMP_FORMAT_16BIT_LCD_COMPRESSED_COLOUR);
-#if 0
-            dc.BitBlt(0,0,BWIDTH,BHEIGHT,Bmp,0,0);
-            dc.UpdateDisplay();
-#endif
-        } else {
-            Rectangle *rect;
-            for (index = 0; index < upper; ++index) {
-                rect = lgui_get_region(index);
-		    emo_printf("Flipping partial screen: %d" NL, index);
-
-						dspl_BitBlt2(rect->x, rect->y, rect->width, rect->height, screenBuf, 0, BMP_FORMAT_16BIT_LCD_COMPRESSED_COLOUR);
-#if 0
-                dc.BitBlt(rect->x, rect->y, rect->width, rect->height, Bmp,
-                        rect->x, rect->y);
-                dc.UpdateDisplay();
-#endif
-            }
-        }
+	upper = lgui_index_count();
+	if (upper == 0) {
+		emo_printf("Flipping entire screen" NL);
+		emo_BitBltFull(screenBuf);
+	} else {
+		Rectangle *rect;
+		int i;
+		for (index = 0; index < upper; ++index) {
+			rect = lgui_get_region(index);
+			emo_printf("Flipping partial screen: %d, %d %d %d %d" NL, index, rect->x, rect->y, rect->width, rect->height);
+			emo_BitBltPartial(rect, screenBuf);
+		}
+	}
 	//dspl_Enable(1);
 	lgui_blit_done();
 #endif
