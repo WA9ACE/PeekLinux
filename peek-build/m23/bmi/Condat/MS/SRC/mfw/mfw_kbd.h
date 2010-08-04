@@ -288,7 +288,7 @@
 #define KCD_LONG        30
 #define KCD_MAKE        31
 
-#define KCD_MAX         51 /* Max key ID */
+#define KCD_MAX         52 /* Max key ID */
 
 #ifdef MMI_EM_ENABLED
 #ifndef NEPTUNE_BOARD

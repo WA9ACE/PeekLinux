@@ -727,6 +727,8 @@ void mainInit (UBYTE InitCause)
       if(FFS_flashData.refresh==1)
 	  	timStart(times);
 #endif
+
+    globalBatteryPicNumber = 5;
     startExec(PhoneInit,0);		 /* get it rolling	    */
 
 }
@@ -1664,7 +1666,7 @@ int globalBatteryUpdate (U8 value)
     break;
 
     default:
-	  globalBatteryPicNumber = 2;
+	  globalBatteryPicNumber = 5;
     break;
   }
 
@@ -1735,7 +1737,7 @@ void globalFlashBattery (void)
 
     globalBatteryPicNumber++;
 
-    if(globalBatteryPicNumber > 4)
+    if(globalBatteryPicNumber > 5)
 	globalBatteryPicNumber = 0;
    
   idleEvent(IdleUpdate);

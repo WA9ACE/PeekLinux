@@ -155,6 +155,7 @@
 #include "cicons/batt3.c"
 #include "cicons/batt4.c"
 
+#include "cicons/battunknown.c"
 #include "cicons/battcharge0.c"
 #include "cicons/battcharge1.c"
 #include "cicons/battcharge2.c"
@@ -1616,10 +1617,11 @@ const MfwIcnAttr batt_Attr [iconBattMax] =  	        /* all batt icon attributes
     { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batt1.pixel_data },        /* battery status 5-14%   */
     { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batt2.pixel_data },        /* battery status 15-24%   */
     { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batt3.pixel_data },        /* battery status 25-49%   */
-    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batt4.pixel_data }	    /* battery status 50-100%   */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) batt4.pixel_data },	       /* battery status 50-100%   */
+    { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) battunknown.pixel_data }   /* battery status ? */
 };	
 
-const MfwIcnAttr battcharge_Attr [iconBattMax] =              /* all batt icon attributes */
+const MfwIcnAttr battcharge_Attr [iconBattChargeMax] =              /* all batt icon attributes */
 {
     { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) battcharge0.pixel_data },        /* battery charge status 0-4%     */
     { { ICON_POS_X_BATT, ICON_POS_Y, 25, 25}, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) battcharge1.pixel_data },        /* battery charge status 5-14%    */
@@ -2009,7 +2011,7 @@ typedef struct iconStateTag             /* state icons              */
 
 static IconState state[ idlIdMax ];
 static IconState battstate[ iconBattMax ];
-static IconState battchargestate[ iconBattMax ];
+static IconState battchargestate[ iconBattChargeMax ];
 static IconState signalstate[ iconSignalMax ];
 
 
@@ -2153,14 +2155,16 @@ void iconsInit()
 	/* Battery icons
 	*/
 	for (i = 0; i < iconBattMax; i++)
-    {
-        battstate[i].state = ICON_INVISIBLE;
-        battstate[i].h = icnCreate( 0, (MfwIcnAttr *)&batt_Attr[i], E_ICN_VISIBLE, (MfwCb) iconsBattEvent );
-        battchargestate[i].state = ICON_INVISIBLE;
-        battchargestate[i].h = icnCreate( 0, (MfwIcnAttr *)&battcharge_Attr[i], E_ICN_VISIBLE, (MfwCb) iconsBattEvent );
+    	{
+        	battstate[i].state = ICON_INVISIBLE;
+        	battstate[i].h = icnCreate( 0, (MfwIcnAttr *)&batt_Attr[i], E_ICN_VISIBLE, (MfwCb) iconsBattEvent );
+    	}
 
-    }
-
+        for (i = 0; i < iconBattChargeMax; i++)
+	{
+        	battchargestate[i].state = ICON_INVISIBLE;
+        	battchargestate[i].h = icnCreate( 0, (MfwIcnAttr *)&battcharge_Attr[i], E_ICN_VISIBLE, (MfwCb) iconsBattEvent );
+	}
 	/* Signal icons
 	*/
 	for (i = 0; i < iconSignalMax; i++)
@@ -2198,7 +2202,7 @@ void iconsExit( void )
     for ( i = 0; i < iconBattMax; i++ )
         icnDelete( battstate[i].h );
 
-    for ( i = 0; i < iconBattMax; i++ )
+    for ( i = 0; i < iconBattChargeMax; i++ )
         icnDelete( battchargestate[i].h );
 
     for ( i = 0; i < iconSignalMax; i++ )
@@ -2492,7 +2496,7 @@ int BattChargeEventTim( MfwEvt e, MfwTim *tc )
         icon_ctr = 0;
 
 	TRACE_EVENT_P1("icon_ctr:%d", icon_ctr);
-	for( i = 0; i < iconBattMax; i++ )
+	for( i = 0; i < iconBattChargeMax; i++ )
        {
          battchargestate[ i ].state = ICON_INVISIBLE;
 	  icnHide(battchargestate[ i].h );

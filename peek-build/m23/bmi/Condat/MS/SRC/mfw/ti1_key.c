@@ -221,7 +221,8 @@ char drvGetKeyIndex( char key)
             return (i);
         }
     }
-#endif
+#endif 
+    emo_printf("Couldn't find key in map key - %d - i - %d", key, i);
     return (char)(0xFE); //No match./*a0393213 warnings removal - -1 changed to 0xFE*/
 
 

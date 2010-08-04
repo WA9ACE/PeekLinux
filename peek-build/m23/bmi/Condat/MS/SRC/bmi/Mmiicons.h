@@ -133,8 +133,19 @@ typedef enum                            /* AVAILABLE ICONS BATTERY  */
 	iconBattery24,                      /* icon Battery 15-24%      */
 	iconBattery49,                      /* icon Battery 25-49%      */
 	iconBattery100,                     /* icon Battery 50-100%     */
+	iconBatteryUnknown,		    /* icon Battery ? 		*/
 	iconBattMax                         /* number of batterie icon  */
 }IconBattId;
+
+typedef enum                            /* AVAILABLE ICONS BATTERY  */
+{
+        iconBatteryCharge4 = 0,                   /* icon Battery 0-4%        */
+        iconBatteryCharge14,                      /* icon Battery 5-14%       */
+        iconBatteryCharge24,                      /* icon Battery 15-24%      */
+        iconBatteryCharge49,                      /* icon Battery 25-49%      */
+        iconBatteryCharge100,                     /* icon Battery 50-100%     */
+        iconBattChargeMax,                  /* icon Battery ?           */
+}IconBattChargeId;
 
 typedef enum                            /* AVAILABLE ICONS SIGNAL */
 {

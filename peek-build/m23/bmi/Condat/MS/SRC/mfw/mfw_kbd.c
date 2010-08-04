@@ -624,6 +624,9 @@ static int toLong (U32 t, void *h)
 // in in Kpd pressed state and sets the long key bit.
    UBYTE state;
 
+   if(curKey == 51 || curKey == 52)   
+        return 0; 
+
    kpd_retrieve_key_status(kpd_key, KPD_DEFAULT_MODE, &state);
    TRACE_EVENT_P2("toLong() state = %d CurKey = %d", state, curKey);
    if(!state)
@@ -711,6 +714,7 @@ int kbd_putMakeAndKey( char make, char key)
 	keyPressDetails localKP;
 	SHORT retVal;
 
+	emo_printf("kbd_putMakeAndKey() key - %d make - %d", key, make);
 	localKP.make = make;
 	localKP.key = key;
 
@@ -750,7 +754,7 @@ int kbd_getMakeAndKey( char* make, char* key)
 
 	*make = !(localKP.make);
 	*key =   drvGetKeyIndex(localKP.key);
-	TRACE_FUNCTION_P1("mfw_kbd: drvGetKeyIndex %d", *key);
+	TRACE_FUNCTION_P1("mfw_kbd: drvGetKeyIndex %d - num_elements %d", *key, mfw_cbuf_num_elements(mfw_kbd_kpress_buf_id));
 	return (mfw_cbuf_num_elements(mfw_kbd_kpress_buf_id));
 }
 
