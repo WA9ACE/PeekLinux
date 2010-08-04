@@ -260,14 +260,12 @@ static int kbdEmobiixCB(MfwEvt e, MfwKbd *k)
 
 	switch (k->code)
 	{
-		case KCD_RIGHT:
-		case KCD_HUP:
+		case KCD_CANCLE:
 			menuEmobiixDestroy(tEmoMenuItem->win);
 			free(tEmoMenuItem);
 			break;
 
 		case KCD_MNUSELECT:
-		case KCD_LEFT:
 			manager_handleKey(13);
 			updateScreen();
 			break;
