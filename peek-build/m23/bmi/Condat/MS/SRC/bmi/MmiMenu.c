@@ -279,6 +279,10 @@ static int kbdEmobiixCB(MfwEvt e, MfwKbd *k)
 			manager_handleKey(KCD_MNUDOWN);
 			updateScreen();
 			break;
+	    default:
+		manager_handleKey(k->code);
+		updateScreen();
+		break;
 	}
 
 	return MFW_EVENT_CONSUMED;
