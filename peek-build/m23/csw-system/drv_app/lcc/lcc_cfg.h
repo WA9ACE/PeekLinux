@@ -22,7 +22,12 @@
 #define LCC_TASK_PRIORITY (220)
 #endif
 
+#ifndef EMO_PROD
 #define TRACE_WANTED 1
+#else 
+#define TRACE_WANTED 0
+#endif
+
 #define USE_PWL_AS_MODULATOR 1
 #define TEST_PWR_MMI_INTERFACE 0
 #if (ANLG_FAM==11)

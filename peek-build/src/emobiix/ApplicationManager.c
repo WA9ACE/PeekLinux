@@ -100,9 +100,10 @@ void manager_drawScreen(void)
 void manager_drawScreenPartial(void)
 {
 	DataObject *view;
+        emo_printf("manager_drawScreenPartial()0");
 
 	view = application_getCurrentScreen(appManager->rootApplication);
-	
+	emo_printf("manager_drawScreenPartial()1");
 	if (view != NULL) {
 		style_renderWidgetTree(appManager->style, view);
 	} else {

@@ -86,9 +86,10 @@ void build_name(const char *ch_pre, char *cfg_id , UINT8 index, const char * ch_
 effs_t ffs_stat(const char *name, struct stat_s *stat);
 int ffs_fread(const char *name, void *addr, int size);
 
+#ifndef EMO_PROD
 void ttr(unsigned trmask, char *format, ...);
 void str(unsigned mask, char *string);
-
+#endif
 void check_charger_status(void);
 uint8 pwr_charge_start_check(void);
 

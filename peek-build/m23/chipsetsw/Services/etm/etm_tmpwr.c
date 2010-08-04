@@ -22,7 +22,9 @@
 
 
 #include "rv/rv_defined_swe.h"
+#ifndef EMO_PROD
 #define TRACE_WANTED 1
+#endif
 #include "lcc/lcc_api.h"
 #include "lcc/lcc_cfg_i.h"
 #include "lcc/lcc.h"

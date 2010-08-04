@@ -2704,11 +2704,11 @@ extern int menuEmobiixItemCallback5(MfwMnu* m, MfwMnuItem* i);
 /* Main system menu, keep this here until we get the real one implemented
 */
 BEGIN_ICON_MENU( menuMainMenu )
-    MENU_ICON_ITEM( &mainIconWAP, TxtEmobiixApps,  menuEmobiixItemCallback,     item_flag_none ),
-    MENU_ICON_ITEM( &mainIconMessages, TxtEmobiixApps,  menuEmobiixItemCallback2,     item_flag_none ),
-    MENU_ICON_ITEM( &mainIconPhonebook, TxtEmobiixApps,  menuEmobiixItemCallback3,     item_flag_none ),
-    MENU_ICON_ITEM( &mainIconRecentCalls, TxtEmobiixApps,  menuEmobiixItemCallback4,     item_flag_none ),
-    MENU_ICON_ITEM( &mainIconCallDivert, TxtEmobiixApps,  menuEmobiixItemCallback5,     item_flag_none ),
+    MENU_ICON_ITEM( &mainIconWAP, TxtWAP,  menuEmobiixItemCallback,     item_flag_none ),
+    MENU_ICON_ITEM( &mainIconMessages, TxtMessages,  menuEmobiixItemCallback2,     item_flag_none ),
+    MENU_ICON_ITEM( &mainIconPhonebook, TxtPhonebook,  menuEmobiixItemCallback3,     item_flag_none ),
+    MENU_ICON_ITEM( &mainIconRecentCalls, TxtRecentCalls,  menuEmobiixItemCallback4,     item_flag_none ),
+    MENU_ICON_ITEM( &mainIconCallDivert, TxtNetworkServices,  menuEmobiixItemCallback5,     item_flag_none ),
     //SUB_ICON_MENU ( &mainIconMessages,TxtMessages,    menuMsg,  				item_flag_none ),
     //SUB_ICON_MENU ( &mainIconPhonebook,TxtPhonebook,   menuPhbk,                item_flag_none ),
     //SUB_ICON_MENU ( &mainIconRecentCalls,TxtRecentCalls, menuRecent,        item_flag_none ),

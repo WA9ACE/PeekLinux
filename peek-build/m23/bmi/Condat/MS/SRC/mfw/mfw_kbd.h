@@ -165,7 +165,7 @@
 
 #define KEY_DIGITS      0x000003ff
 #define KEY_ALL         0x0fffffff
-#define KEY_FLAGS       0xE0000000
+#define KEY_FLAGS       0xF0000000
 
 /* KEYCODE DEFINITION       */
 /* KCD_MUX = 0 */

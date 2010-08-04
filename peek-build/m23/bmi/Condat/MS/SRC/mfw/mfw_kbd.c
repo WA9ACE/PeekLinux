@@ -306,6 +306,11 @@ MfwRes kbdDelete (MfwHnd h)
     return res;
 }
 
+int getMuxKey(int key) {
+	key &= ~KEY_MUX;
+
+	return key+26;
+}
 
 /*
 +--------------------------------------------------------------------+

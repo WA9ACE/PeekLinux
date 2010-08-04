@@ -35,6 +35,8 @@ int pwr_tr_query(int mask);
     #define str pwr_str
 #else
     #define ttw(contents)
+    #define ttr
+    #define str
 #endif
 
 #define tlw(contents)

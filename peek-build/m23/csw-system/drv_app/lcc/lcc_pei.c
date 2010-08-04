@@ -94,9 +94,10 @@ T_PWR_CTRL_BLOCK *pwr_ctrl = NULL;
 /* Define a pointer to the PWR configuration block */
 T_PWR_CFG_BLOCK  *pwr_cfg  = NULL;
 
-
+#ifndef EMO_PROD
 void ttr(unsigned trmask, char *format, ...);
 void str(unsigned mask, char *string);
+#endif
 
 
 T_RVM_RETURN pwr_task_init (void);

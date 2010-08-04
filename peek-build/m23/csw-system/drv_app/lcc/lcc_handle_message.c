@@ -43,8 +43,10 @@
  * Function prototypes
  ******************************************************************************/
 
+#ifndef EMO_PROD
 void ttr(unsigned trmask, char *format, ...);
 void str(unsigned mask, char *string);
+#endif
 
 void *pwr_malloc(int size);
 
@@ -587,6 +589,9 @@ void update_duty_cycle(void){
 	*  In CCv satate,
 	*		Checks for the charge stop conditions.
 	****************************************************************************/
+
+static int boot_time = 0;
+
 	T_RV_RET process_adc_indication (T_PWR_REQ *request)
 {
     struct pwr_adc_ind_s *ind = 0;
@@ -677,6 +682,13 @@ void update_duty_cycle(void){
         temp = pwr_temp_lookup(pwr_cfg->data.Tbat_avg, 0x01);
         ttw(ttr(TTrAll,"temp=%d" NL, temp));
 
+        if (pwr_ctrl->flag_mmi_registered == 1 && (!boot_time) && (pwr_cfg->data.Vbat_avg_mV > 0))
+        {
+		boot_time = 1;
+        	pwr_ctrl->mmi_ptr->header.msg_id = MMI_BAT_SUPERVISION_INFO_IND;
+		pwr_ctrl->mmi_ptr->Vbat = pwr_cfg->data.Vbat_avg_mV;
+                mmi_send_msg(pwr_ctrl->mmi_ptr);
+	}
 	if(pwr_ctrl->state > SUP)
 	{
 		pwr_cfg->data.Ichg = ind->data[Ichg];

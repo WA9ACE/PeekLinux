@@ -67,7 +67,7 @@ DataObject *LockApplication(void)
 	root = widget_newTypeIdName("view", NULL, "mainview", output);
 	widget_setPacking(root, WP_VERTICAL);
 
-	dobj1 = dobjFromFile("street64.png", root);
+	dobj1 = dobjFromFile("background.png", root);
 	widget_setPacking(dobj1, WP_VERTICAL);
 	/*
 	setw = widget_newTypeIdName("label", "biglabelw", NULL, dobj1);

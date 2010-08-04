@@ -356,10 +356,11 @@ static int emoMenuWindowCB( MfwEvt e, MfwWin *w )
 		{
 			dspl_ClearAll();	// sbh - clear screen before update
 			mnu = (MfwMnu *) mfwControl( data->menu );
-
+			
 			/*
 			**Check whether the data is valid, if not use 'sensible' default values
 			*/
+			/*
 			if (mnu)
 			{
 				if (mnu->curAttr)
@@ -370,6 +371,7 @@ static int emoMenuWindowCB( MfwEvt e, MfwWin *w )
 			}
 			else
 				softKeys_displayId( TxtSoftSelect, TxtSoftBack, 0, COLOUR_LIST_SUBMENU);
+			*/
 		}
 		break;
 

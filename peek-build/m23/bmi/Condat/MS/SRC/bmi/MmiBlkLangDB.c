@@ -458,7 +458,7 @@ static const tPointerStructure LanguageIndex_1[LEN_LANGUAGE1+1] = {
     { TxtHelp, "Help" },
     { TxtSoftContacts, "Contacts" },
     { TxtPlay, "Play" },
-    { TxtMessages, "Messages" },
+    { TxtMessages, "Where Am i?" },
     { TxtAlarm, "Alarm" },
     { TxtSettings, "Settings" },
     { TxtExtra, "Extra" },
@@ -523,7 +523,7 @@ static const tPointerStructure LanguageIndex_1[LEN_LANGUAGE1+1] = {
     { TxtNetworkSel, "Network Sel." },
     { TxtSendID, "Hide ID" },
     { TxtChargeTimers, "Charge/Timers" },
-    { TxtCallDivert, "Divert" },
+    { TxtCallDivert, "Chat" },
     { TxtCallWaiting, "Call Waiting" },
     { TxtIfBusy, "If Busy" },
     { TxtIfNoAnswer, "If No Answer" },
@@ -734,8 +734,8 @@ static const tPointerStructure LanguageIndex_1[LEN_LANGUAGE1+1] = {
     { TxtCOLP, "COLP" },
     { TxtCOLR, "COLR" },
     { TxtSimToolkit, "SIM Toolkit" },
-    { TxtPhonebook, "PhoneBook" },
-    { TxtRecentCalls, "Recent Calls" },
+    { TxtPhonebook, "Mail" },
+    { TxtRecentCalls, "Calendar" },
     { TxtNames, "Names" },
     { TxtInterCalls,"Internat.Calls" },
     { TxtInterHome,"Internat.but Home" },
@@ -871,7 +871,7 @@ static const tPointerStructure LanguageIndex_1[LEN_LANGUAGE1+1] = {
    	{ TxtTemporary, "Temporary" },
    	{ TxtContinuous, "Continuous" },
 /* SPR#2324 - SH - Removed some strings */
-    { TxtWAP, "WAP" },
+    { TxtWAP, "Calculator" },
     { TxtExit, "Exit" },
     { TxtReload, "Reload" },
     { TxtStored, "Stored"},
@@ -958,7 +958,7 @@ static const tPointerStructure LanguageIndex_1[LEN_LANGUAGE1+1] = {
     { TxtTempError, "Temp. Error" }, // Marcus: Issue 1170: 07/10/2002
 	{ TxtUnknownCode,"Code Unknown"},/*MC SPR 1111*/
     { TxtPhoneSettings, "Phone Settings" }, //SPR#1113 - DS - Added text id for renamed main menu item "Phone Settings"
-    { TxtNetworkServices, "Netw. Services" }, //SPR#1113 - DS - Added text id for new main menu item "Netw. Services"
+    { TxtNetworkServices, "Chat" }, //SPR#1113 - DS - Added text id for new main menu item "Netw. Services"
     { TxtCallDeflection, "Call Deflect." },  //SPR#1113 - DS - Added text id for new menu item "Call Deflection" (CD)
     { TxtCallBack,  "Call Back" }, //SPR#1113 - DS - Added text id for new menu item "Call Back" (CCBS)
     { TxtMobileInfo,  "Mobile Info"},   /*MC, SPR1209*/
@@ -2176,7 +2176,7 @@ static const tPointerStructure LanguageIndex_2[LEN_LANGUAGE2+1] = {
    	{ TxtTemporary, "voruebergehend" },
    	{ TxtContinuous, "Fortlaufend" },
    	/* SPR#2324 - SH - Removed some strings */
-    { TxtWAP, "WAP" },
+    { TxtWAP, "Calculator" },
     { TxtExit, "Exit" },
     { TxtReload, "Neuladen" },
     { TxtStored, "gespeichert"},

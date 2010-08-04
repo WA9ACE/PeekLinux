@@ -798,22 +798,14 @@ static int keyAction (MfwEvt e, MfwKbd *res)
 #if ((!defined(FF_MIDI_RINGER)) || defined(NEPTUNE_BOARD))
   UBYTE currentRinger = 0;
 #endif 
-
-
-  /* terminate the ringing in all situation (it doesnt matter where the user is */
-  if ( (e & KEY_HUP) && (e & KEY_MAKE) )
-  {
-/* Apr 05, 2005    REF: ENH 29994 xdeepadh */
-/* terminate the ringing */
-#ifndef FF_MIDI_RINGER  
-	currentRinger = getCurrentRingerSettings();
-	audio_StopSoundbyID( AUDIO_BUZZER, currentRinger );
-#endif
-
+  if(res->key | KEY_MUX)  {
+	emo_printf("getMuxKey - key %d", res->key);
+	res->key == getMuxKey(res->key);
   }
-
+	
+  emo_printf("keyAction() key %d", res->key);
   /* the power-off-key ! */
-  if ( (e & KEY_POWER) && (e & KEY_MAKE))
+  if (res->key == KCD_POWR)
   {	
     TRACE_EVENT("KEY_POWER pressed !!!!");
 

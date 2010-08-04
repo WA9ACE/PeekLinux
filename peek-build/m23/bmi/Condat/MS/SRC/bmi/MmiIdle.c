@@ -2488,7 +2488,7 @@ LimitedService = 0;//end of crr12653
 			
 			strcpy((char *)dt_str,  mfw_td_get_date_str());
 			strcpy((char *)time_str,  mfw_td_get_clock_str());
-			if(dt_str && (dt_str[0] != '0' && dt_str[1] != '0'))  { // dont draw if not set
+			//if(dt_str && (dt_str[0] != '0' && dt_str[1] != '0'))  { // dont draw if not set
 
 			/* x0045876, 14-Aug-2006 (WR - "xPos" was set but never used) */
 			/* xPos = 10; */
@@ -2507,7 +2507,7 @@ LimitedService = 0;//end of crr12653
 				dspl_TextOut( 100, yPos, 0, dt_str );
 		#endif
 			
-			}
+		//	}
 #if 0 
 
 	}
@@ -2654,7 +2654,7 @@ static int idle_kbd_cb (MfwEvt e, MfwKbd *k)
 			break;
 
 			// sbh - power key pressed in idle screen, we can shut down
-			case KCD_POWER:
+			case KCD_POWR:
 				pin_idle_emerg_call = FALSE;
 				HUPKeyOrigin = 1;
 			break;
@@ -3130,7 +3130,7 @@ static int idle_kbd_cb (MfwEvt e, MfwKbd *k)
 			break;
 
 			// sbh - power key pressed in idle screen, we can shut down
-			case KCD_POWER:
+			case KCD_POWR:
 				HUPKeyOrigin = 1;
 			break;
 

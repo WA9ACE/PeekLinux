@@ -172,6 +172,19 @@
 #include "cicons/maps.c"
 #include "cicons/calc.c"
 
+/*
+#include "cicons/frame01.c"
+#include "cicons/frame02.c"
+#include "cicons/frame03.c"
+#include "cicons/frame04.c"
+#include "cicons/frame05.c"
+#include "cicons/frame06.c"
+#include "cicons/frame07.c"
+#include "cicons/frame08.c"
+#include "cicons/frame09.c"
+#include "cicons/frame10.c"
+*/
+
 #include "IcnDefs.h"
 
 // Oct 28, 2004    REF: CRR 25886 xnkulkar
@@ -1719,7 +1732,19 @@ const MfwIcnAttr welcome_Attr [animwelcome] =
     { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+4, 56, 36 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe6 }, 		
     { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+1, 56, 42 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe7 },	    
     { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y+1, 56, 42 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *) animframe8 }	    
+
 /*
+    { { 0, 0, 320, 240 }, 1, COLOUR_STATUS_WELCOME, BMP_FORMAT_32BIT_COLOUR,  (char *) frame01.pixel_data },
+    { { 0, 0, 320, 240 }, 1, COLOUR_STATUS_WELCOME, BMP_FORMAT_32BIT_COLOUR,  (char *) frame02.pixel_data },
+    { { 0, 0, 320, 240 }, 1, COLOUR_STATUS_WELCOME, BMP_FORMAT_32BIT_COLOUR,  (char *) frame03.pixel_data },
+    { { 0, 0, 320, 240 }, 1, COLOUR_STATUS_WELCOME, BMP_FORMAT_32BIT_COLOUR,  (char *) frame04.pixel_data },
+    { { 0, 0, 320, 240 }, 1, COLOUR_STATUS_WELCOME, BMP_FORMAT_32BIT_COLOUR,  (char *) frame05.pixel_data },
+    { { 0, 0, 320, 240 }, 1, COLOUR_STATUS_WELCOME, BMP_FORMAT_32BIT_COLOUR,  (char *) frame06.pixel_data },
+    { { 0, 0, 320, 240 }, 1, COLOUR_STATUS_WELCOME, BMP_FORMAT_32BIT_COLOUR,  (char *) frame07.pixel_data },
+    { { 0, 0, 320, 240 }, 1, COLOUR_STATUS_WELCOME, BMP_FORMAT_32BIT_COLOUR,  (char *) frame08.pixel_data },
+    { { 0, 0, 320, 240 }, 1, COLOUR_STATUS_WELCOME, BMP_FORMAT_32BIT_COLOUR,  (char *) frame09.pixel_data },
+    { { 0, 0, 320, 240 }, 1, COLOUR_STATUS_WELCOME, BMP_FORMAT_32BIT_COLOUR,  (char *) frame10.pixel_data }
+
 { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   ,  56, 38 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *)&TILogo_bw[0] },
 { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   ,  56, 38 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *)&TILogo_bw[0] },
 { { WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y   ,  56, 38 }, 1, COLOUR_STATUS_WELCOME, ICON_TYPE_1BIT_UNPACKED,  (char *)&TILogo_bw[0] },
@@ -1859,7 +1884,7 @@ MfwIcnAttr mainIconRecentCalls        =
 #ifdef USE_110X110
 	{ 0, 12, 110, 110 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) recentcalls110x110_bmp
 #else
-	{ 0, 12, 128, 128 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) calcicon.pixel_data
+	{ 0, 12, 128, 128 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) calendaricon.pixel_data
 #endif
 
 #endif
@@ -1923,7 +1948,7 @@ MfwIcnAttr mainIconWAP		        =
 #ifdef USE_110X110
 	{ 0, 12, 110, 110 }, 1, COLOUR_ICON_XX, ICON_TYPE_256_COL,  (char *) wap110x110_bmp
 #else
-	{ 0, 12, 128 , 128 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) calendaricon.pixel_data
+	{ 0, 12, 128 , 128 }, 1, COLOUR_ICON_XX, BMP_FORMAT_32BIT_COLOUR,  (char *) calcicon.pixel_data
 #endif
 #endif
 };
