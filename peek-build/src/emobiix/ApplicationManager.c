@@ -23,7 +23,8 @@
 #ifdef SIMULATOR
 #include "sim-keymap.h"
 #else
-#include "KeyMap.h"
+#include "mfw_kbd.h"
+//#include "KeyMap.h"
 #endif
 
 #include <string.h>
@@ -126,74 +127,77 @@ void manager_handleKey(int key)
 
 #ifndef SIMULATOR
 	switch (key) {
-		case KP_0_KEY: key = '0'; break;
-		case KP_1_KEY: key = '1'; break;
-		case KP_2_KEY: key = '2'; break;
-		case KP_3_KEY: key = '3'; break;
-		case KP_4_KEY: key = '4'; break;
-		case KP_5_KEY: key = '5'; break;
-		case KP_6_KEY: key = '6'; break;
-		case KP_7_KEY: key = '7'; break;
-		case KP_8_KEY: key = '8'; break;
-		case KP_9_KEY: key = '9'; break;
-		case KP_a_KEY: key = 'a'; break;
-		case KP_b_KEY: key = 'b'; break;
-		case KP_c_KEY: key = 'c'; break;
-		case KP_d_KEY: key = 'd'; break;
-		case KP_e_KEY: key = 'e'; break;
-		case KP_f_KEY: key = 'f'; break;
-		case KP_g_KEY: key = 'g'; break;
-		case KP_h_KEY: key = 'h'; break;
-		case KP_i_KEY: key = 'i'; break;
-		case KP_j_KEY: key = 'j'; break;
-		case KP_k_KEY: key = 'k'; break;
-		case KP_l_KEY: key = 'l'; break;
-		case KP_m_KEY: key = 'm'; break;
-		case KP_n_KEY: key = 'n'; break;
-		case KP_o_KEY: key = 'o'; break;
-		case KP_p_KEY: key = 'p'; break;
-		case KP_q_KEY: key = 'q'; break;
-		case KP_r_KEY: key = 'r'; break;
-		case KP_s_KEY: key = 's'; break;
-		case KP_t_KEY: key = 't'; break;
-		case KP_u_KEY: key = 'u'; break;
-		case KP_v_KEY: key = 'v'; break;
-		case KP_w_KEY: key = 'w'; break;
-		case KP_x_KEY: key = 'x'; break;
-		case KP_y_KEY: key = 'y'; break;
-		case KP_z_KEY: key = 'z'; break;
-		case KP_A_KEY: key = 'A'; break;
-		case KP_B_KEY: key = 'B'; break;
-		case KP_C_KEY: key = 'C'; break;
-		case KP_D_KEY: key = 'D'; break;
-		case KP_E_KEY: key = 'E'; break;
-		case KP_F_KEY: key = 'F'; break;
-		case KP_G_KEY: key = 'G'; break;
-		case KP_H_KEY: key = 'H'; break;
-		case KP_I_KEY: key = 'I'; break;
-		case KP_J_KEY: key = 'J'; break;
-		case KP_K_KEY: key = 'K'; break;
-		case KP_L_KEY: key = 'L'; break;
-		case KP_M_KEY: key = 'M'; break;
-		case KP_N_KEY: key = 'N'; break;
-		case KP_O_KEY: key = 'O'; break;
-		case KP_P_KEY: key = 'P'; break;
-		case KP_Q_KEY: key = 'Q'; break;
-		case KP_R_KEY: key = 'R'; break;
-		case KP_S_KEY: key = 'S'; break;
-		case KP_T_KEY: key = 'T'; break;
-		case KP_U_KEY: key = 'U'; break;
-		case KP_V_KEY: key = 'V'; break;
-		case KP_W_KEY: key = 'W'; break;
-		case KP_X_KEY: key = 'X'; break;
-		case KP_Y_KEY: key = 'Y'; break;
-		case KP_Z_KEY: key = 'Z'; break;
-		case KP_SPACE_KEY: key = ' '; break;
-		case KP_BACKSPACE_KEY: key = '\b'; break;
+                case KCD_0: key = '0'; break;
+                case KCD_1: key = '1'; break;
+                case KCD_2: key = '2'; break;
+                case KCD_3: key = '3'; break;
+                case KCD_4: key = '4'; break;
+                case KCD_5: key = '5'; break;
+                case KCD_6: key = '6'; break;
+                case KCD_7: key = '7'; break;
+                case KCD_8: key = '8'; break;
+                case KCD_9: key = '9'; break;
+		/*
+                case KCD_a: key = 'a'; break;
+                case KCD_b: key = 'b'; break;
+                case KCD_c: key = 'c'; break;
+                case KCD_d: key = 'd'; break;
+                case KCD_e: key = 'e'; break;
+                case KCD_f: key = 'f'; break;
+                case KCD_g: key = 'g'; break;
+                case KCD_h: key = 'h'; break;
+                case KCD_i: key = 'i'; break;
+                case KCD_j: key = 'j'; break;
+                case KCD_k: key = 'k'; break;
+                case KCD_l: key = 'l'; break;
+                case KCD_m: key = 'm'; break;
+                case KCD_n: key = 'n'; break;
+                case KCD_o: key = 'o'; break;
+                case KCD_p: key = 'p'; break;
+                case KCD_q: key = 'q'; break;
+                case KCD_r: key = 'r'; break;
+                case KCD_s: key = 's'; break;
+                case KCD_t: key = 't'; break;
+                case KCD_u: key = 'u'; break;
+                case KCD_v: key = 'v'; break;
+                case KCD_w: key = 'w'; break;
+                case KCD_x: key = 'x'; break;
+                case KCD_y: key = 'y'; break;
+                case KCD_z: key = 'z'; break;
+		*/
+                case KCD_A: key = 'A'; break;
+                case KCD_B: key = 'B'; break;
+                case KCD_C: key = 'C'; break;
+                case KCD_D: key = 'D'; break;
+                case KCD_E: key = 'E'; break;
+                case KCD_F: key = 'F'; break;
+                case KCD_G: key = 'G'; break;
+                case KCD_H: key = 'H'; break;
+                case KCD_I: key = 'I'; break;
+                case KCD_J: key = 'J'; break;
+                case KCD_K: key = 'K'; break;
+                case KCD_L: key = 'L'; break;
+                case KCD_M: key = 'M'; break;
+                case KCD_N: key = 'N'; break;
+                case KCD_O: key = 'O'; break;
+                case KCD_P: key = 'P'; break;
+                case KCD_Q: key = 'Q'; break;
+                case KCD_R: key = 'R'; break;
+                case KCD_S: key = 'S'; break;
+                case KCD_T: key = 'T'; break;
+                case KCD_U: key = 'U'; break;
+                case KCD_V: key = 'V'; break;
+                case KCD_W: key = 'W'; break;
+                case KCD_X: key = 'X'; break;
+                case KCD_Y: key = 'Y'; break;
+		case KCD_Z: key = 'Z'; break;
+                case KCD_SPACE: key = ' '; break;
+                case KCD_BACKSPACE: key = '\b'; break;
+
 	}
 #endif
 
-	if (key == 42) { /* lock symbol */
+	if (key == KCD_LOCK) { /* lock symbol */
 		manager_focusNextApplication();
 		return;
 	}
@@ -222,18 +226,15 @@ void manager_handleKey(int key)
 	}
 	emo_printf("manager_handleKey() key - %d", key);
 	switch (key) {
-		case KP_1_KEY:
-		case KP_2_KEY:
-		case 46: // Push down on wheel
-		case 13:
+		case KCD_NAV_CENTER:
 			script_event(focus != NULL ? focus : appManager->rootApplicationWindow, "onreturn");
 			break;
-		case 87: // up on scroll
+		case KCD_UP: // up on scroll
 		/*case 103:*/ /* GLUT a */
 			widget_focusPrev(appManager->rootApplicationWindow,
 					appManager->style);
 			break;
-		case 86: // down on scroll
+		case KCD_DOWN: // down on scroll
 		/*case 104:*/ /* GLUT z */
 			widget_focusNext(appManager->rootApplicationWindow,
 					appManager->style);

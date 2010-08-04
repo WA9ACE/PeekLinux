@@ -266,17 +266,17 @@ static int kbdEmobiixCB(MfwEvt e, MfwKbd *k)
 			break;
 
 		case KCD_MNUSELECT:
-			manager_handleKey(13);
+			manager_handleKey(KCD_MNUSELECT);
 			updateScreen();
 			break;
 
 		case KCD_MNUUP:
-			manager_handleKey(87);
+			manager_handleKey(KCD_MNUUP);
 			updateScreen();
 			break;
 		
 		case KCD_MNUDOWN:
-			manager_handleKey(86);
+			manager_handleKey(KCD_MNUDOWN);
 			updateScreen();
 			break;
 	}
