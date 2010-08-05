@@ -18,8 +18,9 @@ void manager_applications(ListIterator *iter);
 void manager_focusApplication(Application *app);
 Application *manager_getFocusedApplication(void);
 void manager_focusNextApplication(void);
-Application *manager_getBootApp(void);
-Application *manager_applicationForDataObject(DataObject *obj);
+Application *manager_appForDataObject(DataObject *dobj);
+void manager_loadApplication(DataObject *dobj);
+void manager_loadApplicationReal(DataObject *dobj);
 
 #ifdef __cplusplus
 }

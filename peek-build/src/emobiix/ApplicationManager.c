@@ -17,6 +17,8 @@
 #include "Debug.h"
 #include "EntryWidget.h"
 #include "Script.h"
+#include "Hardware.h"
+#include "Mime.h"
 
 #include "p_malloc.h"
 
@@ -31,6 +33,7 @@
 
 struct ApplicationManager_t {
 	List *applications;
+	List *allApplications;
 	Application *focus;
 	Application *rootApplication;
         Application *bootApp;
@@ -38,6 +41,8 @@ struct ApplicationManager_t {
 	DataObject *rootApplicationWindow;
 	DataObject *rootApplicationPlaceHolder;
 	Style *style;
+
+	DataObject *loadingApplication;
 };
 typedef struct ApplicationManager_t ApplicationManager;
 
@@ -64,12 +69,15 @@ void manager_init(void)
         return;
     }
 	appManager->focus = NULL;
+	appManager->loadingApplication = NULL;
 
 	appManager->style = RootStyle();
     if (appManager->style == NULL) {
         emo_printf("Failed to create root style" NL);
         return;
     }
+
+	HardwareInit();
 
 	appManager->rootApplicationObj = RootApplication();
 	appManager->rootApplication = application_load(appManager->rootApplicationObj);
@@ -83,8 +91,8 @@ void manager_init(void)
 			dataobject_findByName(appManager->rootApplicationWindow,
 			"placeholder");
 
-    /*bootApp = application_load(BootApplication());*/
-	bootApp = application_load(LockApplication());
+    bootApp = application_load(BootApplication());
+	/*bootApp = application_load(LockApplication());*/
     	manager_launchApplication(bootApp);
 
 	manager_focusApplication(bootApp);
@@ -93,6 +101,14 @@ void manager_init(void)
 
 void manager_drawScreen(void)
 {
+	DataObject *toload;
+
+	toload = appManager->loadingApplication;
+	if (toload != NULL) {
+		appManager->loadingApplication = NULL;
+		manager_loadApplicationReal(toload);
+	}
+
 	lgui_clip_identity();
 	manager_drawScreenPartial();
 }
@@ -100,12 +116,20 @@ void manager_drawScreen(void)
 void manager_drawScreenPartial(void)
 {
 	DataObject *view;
+	Style *style;
+
         emo_printf("manager_drawScreenPartial()0");
+
+	if (appManager->rootApplication == NULL)
+		return;
 
 	view = application_getCurrentScreen(appManager->rootApplication);
 	emo_printf("manager_drawScreenPartial()1");
 	if (view != NULL) {
-		style_renderWidgetTree(appManager->style, view);
+		style = application_getCurrentStyle(appManager->focus);
+		if (style == NULL)
+			style = appManager->style;
+		style_renderWidgetTree(style, view);
 	} else {
 		emo_printf("no view to draw" NL);
 	}
@@ -113,8 +137,12 @@ void manager_drawScreenPartial(void)
 
 void manager_resolveLayout(void)
 {
+	Style *style;
+	style = application_getCurrentStyle(appManager->focus);
+	if (style == NULL)
+		style = appManager->style;
 	widget_resolveLayoutRoot(appManager->rootApplicationWindow,
-			appManager->style, 0);
+			style, 0);
 }
 
 void manager_handleKey(int key)
@@ -123,6 +151,7 @@ void manager_handleKey(int key)
 	Widget *focus, *accessKey;
 	static Rectangle clip = {0, 0, 320, 240};
 	char keyStr[2];
+	Style *style;
 	int mappedKey = 0;
 
 	emo_printf("Got Key[%d]\n", key);
@@ -203,6 +232,10 @@ void manager_handleKey(int key)
 		return;
 	}
 
+	style = application_getCurrentStyle(appManager->focus);
+	if (style == NULL)
+		style = appManager->style;
+
 	focus = NULL;
 	if (appManager->rootApplicationWindow != NULL)
 		focus = widget_focusWhichOneNF(appManager->rootApplicationWindow);
@@ -210,7 +243,7 @@ void manager_handleKey(int key)
 		DataObjectField *field;
 		field = dataobject_getValue(focus, "type");
 		if (field != NULL && field->type == DOF_STRING && strcmp(field->field.string, "entry") == 0) {
-			if (entryWidget_handleKey(focus, key, appManager->style))
+			if (entryWidget_handleKey(focus, key, style))
 				return;
 		}
 	}
@@ -233,12 +266,12 @@ void manager_handleKey(int key)
 		case KCD_UP: // up on scroll
 			/*case 103:*/ /* GLUT a */
 			widget_focusPrev(appManager->rootApplicationWindow,
-					appManager->style);
+					style);
 			break;
 		case KCD_DOWN: // down on scroll
 			/*case 104:*/ /* GLUT z */
 			widget_focusNext(appManager->rootApplicationWindow,
-					appManager->style);
+					style);
 			break;
 		default:
 			break;
@@ -262,8 +295,9 @@ Application *manager_getFocusedApplication(void)
 
 void manager_focusApplication(Application *app)
 {
-    DataObject *currentScreen;
-    ListIterator iter;
+    DataObject *currentScreen, *appObj;
+	Style *style;
+    /*ListIterator iter;*/
 
 	emo_printf("Focusing Application" NL);
     currentScreen = application_getCurrentScreen(app);
@@ -271,7 +305,12 @@ void manager_focusApplication(Application *app)
 		emo_printf("No current screen when focusing application" NL);
 		return;
 	}
+	appObj = application_getDataObject(app);
 
+	/*
+	 * Old non-frame code
+	 */
+#if 0
     widget_getChildren(appManager->rootApplicationPlaceHolder, &iter);
     if (listIterator_finished(&iter)) {
         /*listIterator_delete(iter);*/
@@ -281,12 +320,19 @@ void manager_focusApplication(Application *app)
     /*listIterator_delete(iter);*/
     dataobject_packStart(appManager->rootApplicationPlaceHolder,
             currentScreen);
+#endif
+
+	widget_setDataObject(appManager->rootApplicationPlaceHolder, appObj);
+
+	style = application_getCurrentStyle(app);
+	if (style == NULL)
+		style = appManager->style;
 
 	widget_resolveLayout(appManager->rootApplicationWindow,
-			appManager->style);
+			style);
 
 	widget_focusNone(appManager->rootApplicationWindow,
-			appManager->style);
+			style);
 
 	widget_markDirty(appManager->rootApplicationWindow);
 
@@ -322,21 +368,33 @@ void manager_focusNextApplication(void)
 	manager_focusApplication(newFocus);	
 }
 
-Application *manager_applicationForDataObject(DataObject *obj)
+Application *manager_appForDataObject(DataObject *dobj)
 {
-	ListIterator iter;
-	Application *item;
+    ListIterator iter;
+    Application *item;
 
-	list_begin(appManager->applications, &iter);
-	while (!listIterator_finished(&iter)) {
-		item = (Application *)listIterator_item(&iter);
-		if (application_getDataObject(item) == obj)
-			return item;
-		listIterator_next(&iter);
-	}
-	return NULL;
+    list_begin(appManager->applications, &iter);
+    while (!listIterator_finished(&iter)) {
+        item = (Application *)listIterator_item(&iter);
+        if (application_getDataObject(item) == dobj)
+            return item;
+        listIterator_next(&iter);
+    }
+    return NULL;
 }
 
-#ifdef __cplusplus
+
+void manager_loadApplication(DataObject *dobj)
+{
+	appManager->loadingApplication = dobj;
 }
-#endif
+
+void manager_loadApplicationReal(DataObject *dobj)
+{
+	Application *app;
+
+	mime_loadAll(dobj);
+	app = application_load(dobj);
+	manager_launchApplication(app);
+	manager_focusApplication(app);
+}
