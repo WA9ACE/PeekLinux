@@ -439,7 +439,7 @@ void dataobject_setLayoutDirtyAll(DataObject *dobj)
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(dobj);
 		if (child != NULL) {
-			app = manager_appForDataObject(child);
+			app = manager_applicationForDataObject(child);
 			if (app != NULL) {
 				child = application_getCurrentScreen(app);
 				if (child != NULL)
@@ -517,7 +517,7 @@ static void dataobject_debugPrintR(DataObject *dobj, int level)
 	if (dataobjectfield_isString(dof, "frame")) {
 		child = widget_getDataObject(dobj);
 		if (child != NULL) {
-			app = manager_appForDataObject(child);
+			app = manager_applicationForDataObject(child);
 			child = application_getCurrentScreen(app);
 			if (child != NULL)
 				dataobject_debugPrintR(child, level+1);

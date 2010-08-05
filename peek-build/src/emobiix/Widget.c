@@ -278,7 +278,7 @@ int widget_focusFirst(Widget *w, List *l)
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL) {
-			app = manager_appForDataObject(child);
+			app = manager_applicationForDataObject(child);
 			child = application_getCurrentScreen(app);
 			if (child != NULL) {
 				result = widget_focusFirst(child, l);
@@ -361,7 +361,7 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL) {
-			app = manager_appForDataObject(child);
+			app = manager_applicationForDataObject(child);
 			child = application_getCurrentScreen(app);
 			if (child != NULL) {
 				result = widget_focusNextR(child,
@@ -442,7 +442,7 @@ Widget *widget_focusPrevD(Widget *w)
 		if (dataobjectfield_isString(type, "frame")) {
 			child = widget_getDataObject(w);
 			if (child != NULL) {
-				app = manager_appForDataObject(child);
+				app = manager_applicationForDataObject(child);
 				child = application_getCurrentScreen(app);
 				if (child != NULL) {
 					iw = widget_focusPrevD(child);
@@ -537,7 +537,7 @@ static Widget *widget_focusLast(Widget *w)
 		if (dataobjectfield_isString(type, "frame")) {
 			child = widget_getDataObject(w);
 			if (child != NULL) {
-				app = manager_appForDataObject(child);
+				app = manager_applicationForDataObject(child);
 				child = application_getCurrentScreen(app);
 				if (child != NULL) {
 					child = widget_focusLast(child);
@@ -649,7 +649,7 @@ Widget *widget_focusNoneR(Widget *w)
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL) {
-			app = manager_appForDataObject(child);
+			app = manager_applicationForDataObject(child);
 			if (app != NULL) {
 				child = application_getCurrentScreen(app);
 				if (child != NULL) {
@@ -702,7 +702,7 @@ Widget *widget_focusWhichOneNF(Widget *w)
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL) {
-			app = manager_appForDataObject(child);
+			app = manager_applicationForDataObject(child);
 			if (app != NULL) {
 				child = application_getCurrentScreen(app);
 				if (child != NULL) {
@@ -746,7 +746,7 @@ Widget *widget_focusWhichOne(Widget *w)
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL) {
-			app = manager_appForDataObject(child);
+			app = manager_applicationForDataObject(child);
 			child = application_getCurrentScreen(app);
 			if (child != NULL) {
 				result = widget_focusWhichOne(child);
@@ -784,7 +784,7 @@ static void widget_markDirtyChild(Widget *w)
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL) {
-			app = manager_appForDataObject(child);
+			app = manager_applicationForDataObject(child);
 			if (app != NULL) {
 				child = application_getCurrentScreen(app);
 				if (child != NULL) {
@@ -871,7 +871,7 @@ static void widget_layoutMeasureFinal(Widget *w, Style *s)
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL) {
-			app = manager_appForDataObject(child);
+			app = manager_applicationForDataObject(child);
 			if (app != NULL) {
 				child = application_getCurrentScreen(app);
 				if (child != NULL)
@@ -955,7 +955,7 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL) {
-			app = manager_appForDataObject(child);
+			app = manager_applicationForDataObject(child);
 			if (app != NULL) {
 				child = application_getCurrentScreen(app);
 				if (child != NULL)
@@ -1035,7 +1035,7 @@ void widget_resolveMeasureRelative(Widget *w)
 		if (dataobjectfield_isString(sField, "frame")) {
 			child = widget_getDataObject(w);
 			if (child != NULL) {
-				app = manager_appForDataObject(child);
+				app = manager_applicationForDataObject(child);
 				if (app != NULL) {
 					child = application_getCurrentScreen(app);
 					if (child != NULL) {
@@ -1133,7 +1133,7 @@ void widget_resolveMargin(Widget *w, Style *s)
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL) {
-			app = manager_appForDataObject(child);
+			app = manager_applicationForDataObject(child);
 			if (app != NULL) {
 				child = application_getCurrentScreen(app);
 				if (child != NULL)
@@ -1186,7 +1186,7 @@ void widget_resolvePosition(Widget *w)
 	if (dataobjectfield_isString(field, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL) {
-			app = manager_appForDataObject(child);
+			app = manager_applicationForDataObject(child);
 			if (app != NULL) {
 				child = application_getCurrentScreen(app);
 				if (child != NULL) {

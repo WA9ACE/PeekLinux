@@ -86,7 +86,7 @@ void style_renderWidgetTree(Style *s, Widget *w)
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL) {
-			app = manager_appForDataObject(child);
+			app = manager_applicationForDataObject(child);
 			if (app != NULL) {
 				child = application_getCurrentScreen(app);
 				if (child != NULL)
