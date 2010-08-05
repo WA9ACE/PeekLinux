@@ -12,6 +12,8 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
+#include <string.h>
+
 static DataObject *contextObject;
 extern ConnectionContext *connectionContext;
 
@@ -50,11 +52,57 @@ static int __dataobject_getValue(lua_State *L)
 	if (fieldName == NULL)
 		fieldName = "data";
 	field = dataobject_getValue(dobj, fieldName);
-        if (field == NULL) {
-                lua_pushnil(L);
-        } else {
-               lua_pushstring(L, field->field.string);
-        }
+    if (field == NULL) {
+			dobj = widget_getDataObject(dobj);
+			field = dataobject_getValue(dobj, fieldName);
+			if (field != NULL)
+				lua_pushstring(L, field->field.string);
+			else
+				lua_pushnil(L);
+    } else {
+           lua_pushstring(L, field->field.string);
+    }
+
+	return 1;
+}
+
+static int __dataobject_getValueList(lua_State *L)
+{
+	DataObjectField *field;
+	DataObject *dobj;
+	MapIterator iter;
+	char *key;
+	char pkey[128];
+
+	dobj = checkDataObject(L, 1);
+	lua_newtable(L); 
+	dataobject_fieldIterator(dobj, &iter);
+	for (; !mapIterator_finished(&iter); mapIterator_next(&iter)) {
+		field = (DataObjectField *)mapIterator_item(&iter,
+				(void **)&key);
+		if (field->flags & DOFF_ARRAYSOURCE) {
+			pkey[0] = '_';
+			pkey[1] = 0;
+			strcat(pkey, key);
+			lua_pushstring(L, pkey);
+		} else {
+			lua_pushstring(L, key);
+		}
+		switch (field->type) {
+			case DOF_INT:
+				lua_pushnumber(L, field->field.integer);
+				break;
+			case DOF_UINT:
+				lua_pushnumber(L, field->field.uinteger);
+				break;
+			case DOF_STRING:
+			default:
+				lua_pushstring(L, field->field.string);
+				break;
+		}
+		lua_settable(L, -3);
+	}
+	lua_pop(L, 1);
 
 	return 1;
 }
@@ -141,15 +189,42 @@ static int __dataobject_find(lua_State *L)
 	return 1;
 }
 
+static int __dataobject_parent(lua_State *L)
+{
+	DataObject *dobj;
+
+	dobj = checkDataObject(L, 1);
+	pushDataObject(L, dataobject_parent(dobj));
+	
+	return 1;
+}
+
+static int __dataobject_children(lua_State *L)
+{
+	DataObject *dobj;
+	ListIterator iter;
+	int idx;
+
+	dobj = checkDataObject(L, 1);
+	idx = 1;
+	lua_newtable(L); 
+	for (dataobject_childIterator(dobj, &iter);
+			!listIterator_finished(&iter);
+			listIterator_next(&iter)) {
+		lua_pushnumber(L, idx);
+		pushDataObject(L, (DataObject *)listIterator_item(&iter));
+	}
+	
+	return 1;
+}
 
 
 static int __toScreen(lua_State *L)
 {
-#if 0
+	Application *app;
 	DataObject *dobj = checkDataObject(L, 1);
-	currentScreen = dobj;
-	//lua_pushnumber(L, gdImageColorAllocate(im, r, g, b));
-#endif
+	app = manager_getFocusedApplication();
+	application_setCurrentScreen(app, dobj);
 	
 	return 0;
 }
@@ -163,7 +238,10 @@ static const luaL_reg script_methods[] = {
 {"toScreen", __toScreen},
 {"find", 	     __dataobject_find},
 {"getValue",	__dataobject_getValue},
+{"getValueList",	__dataobject_getValueList},
 {"setValue",    __dataobject_setValue},
+{"parent",    __dataobject_parent},
+{"children",    __dataobject_children},
 {0,0}
 };
 
