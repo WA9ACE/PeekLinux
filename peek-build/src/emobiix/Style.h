@@ -14,7 +14,8 @@ extern "C" {
 /*Style *style_new(void);*/
 
 void style_renderWidgetTree(Style *s, Widget *w);
-Style *style_getID(Style *styleRoot, const char *type, const char *id, int isFocused);
+Style *style_getID(Style *styleRoot, const char *type, const char *id, int isFocused,
+		int *wentUp);
 DataObjectField *style_getProperty(Style *s, DataObject *dobj, const char *key);
 DataObjectField *style_getPropertyAsInt(Style *s, DataObject *dobj, const char *key);
 DataObjectField *style_getColor(Style *s, DataObject *dobj, const char *key,

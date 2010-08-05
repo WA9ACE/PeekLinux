@@ -16,26 +16,31 @@
 void style_renderWidgetTree(Style *s, Widget *w)
 {
 	ListIterator iter;
-	const char *id, *className;
+	const char *id;
 	DataObjectField *type = NULL;
 	DataObject *dobj = NULL, *singleChild = NULL, *child;
 	WidgetRenderer *wr;
 	Application *app;
-	Style *style;
-	int hasFocus;
+	Style *style = NULL, *childStyle;
+	int hasFocus, wentUp = 0;
 
 	type = dataobject_getValue(w, "type");
+	hasFocus = widget_hasFocusOrParent(w);
+	id = widget_getID(w);
+	style = style_getID(s, type == NULL ? NULL : type->field.string, id, hasFocus, &wentUp);
+
+	if (wentUp)
+		childStyle = s;
+	else {
+		if (dataobject_getChildCount(style) == 0)
+			childStyle = s;
+		else
+			childStyle = style;
+	}
 
 	if (dataobject_isDirty(w)) {
-		/* ryan disabled this, dont know what it was here for anyway */
 		dobj = widget_getDataObject(w);
-		/*dobj = w;*/
-		className = widget_getClass(w);
-		id = widget_getID(w);
-		/*if (dobj != NULL)*/
-		wr = NULL;
-		hasFocus = widget_hasFocus(w);
-		style = style_getID(s, type == NULL ? NULL : type->field.string, id, hasFocus);
+		wr = NULL;	
 		style_getRenderer(style, w, "renderer", &wr);
 		if (wr != NULL)
 			wr->render(wr, style, w, dobj);
@@ -49,7 +54,7 @@ void style_renderWidgetTree(Style *s, Widget *w)
 	if (dataobjectfield_isString(type, "set")) {
 		singleChild = setwidget_activeItem(w);
 		if (singleChild != NULL)
-			style_renderWidgetTree(s, singleChild);
+			style_renderWidgetTree(childStyle, singleChild);
 		return;
 	}
 
@@ -61,7 +66,7 @@ void style_renderWidgetTree(Style *s, Widget *w)
 				child = application_getCurrentScreen(app);
 				style = application_getCurrentStyle(app);
 				if (style == NULL)
-					style = s;
+					style = manager_getRootStyle();
 				if (child != NULL)
 					style_renderWidgetTree(style, child);
 			}
@@ -69,18 +74,20 @@ void style_renderWidgetTree(Style *s, Widget *w)
 	} else {
 		widget_getChildren(w, &iter);
 		while (!listIterator_finished(&iter)) {
-			style_renderWidgetTree(s, (Widget *)listIterator_item(&iter));
+			style_renderWidgetTree(childStyle,
+					(Widget *)listIterator_item(&iter));
 			listIterator_next(&iter);
 		}
 	}
 }
 
-Style *style_getID(Style *styleRoot, const char *otype, const char *id, int isFocused)
+Style *style_getID(Style *styleRoot, const char *otype, const char *id, int isFocused,
+		int *wentUp)
 {
 	ListIterator iter;
 	DataObjectField *type;
 	int focus;
-	DataObject *child;
+	DataObject *child, *parent;
 	Style *output;
 
 	if (id == NULL) {
@@ -96,7 +103,7 @@ Style *style_getID(Style *styleRoot, const char *otype, const char *id, int isFo
 		type = dataobject_getValue(child, "type");
 		if (!dataobjectfield_isString(type, id))
 			continue;
-		focus = widget_hasFocus(child);
+		focus = widget_hasFocusOrParent(child);
 		if (focus == isFocused)
 			return child;
 		if (output == NULL)
@@ -105,9 +112,19 @@ Style *style_getID(Style *styleRoot, const char *otype, const char *id, int isFo
 	if (output != NULL)
 		return output;
 
+	parent = dataobject_parent(styleRoot);
+	if (parent != NULL) {
+		if (wentUp != NULL)
+			*wentUp = 1;
+		return style_getID(parent, otype, id, isFocused, NULL);
+	}
+
 	output = manager_getRootStyle();
-	if (styleRoot != output)
-		return style_getID(output, otype, id, isFocused);
+	if (styleRoot != output){ 
+		if (wentUp != NULL)
+			*wentUp = 1;
+		return style_getID(output, otype, id, isFocused, NULL);
+	}
 	return styleRoot;
 }
 
