@@ -47,7 +47,7 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	data = field->field.data.bytes;
 
 	trans = TRANS_FULL;
-	field = dataobject_getValue(dobj, "transparency");
+	field = style_getProperty(s, w, "transparency");
 	if (field != NULL && field->type == DOF_STRING) {
 		if (strcmp(field->field.string, "none") == 0)
 			trans = TRANS_NONE;
@@ -65,9 +65,9 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 					0, 0, width, height, data);
 			break;
 		case A4:
-			field = dataobject_getValue(dobj, "color");
+			field = style_getProperty(s, w, "color");
 			if (field != NULL) {
-				if (field->type == DOF_UINT) {
+				if (field->type == DOF_UINT || field->type == DOF_INT) {
 					c.value = field->field.uinteger;
 				} else if (field->type == DOF_STRING) {
 					sscanf(field->field.string, "%X", &c.value);
@@ -75,7 +75,8 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 					c.value = 0xFF00FF;
 				}
 			} else {
-				c.value = (unsigned int)style_getProperty(s, NULL, "image", NULL, "color");
+				c.value = 0xFFFFFFFF;
+				style_getColor(s, w, "color", &c.value);
 			}
 			lgui_luminence_A4_blitC(box->x+margin->x, box->y+margin->y, 0, 0,
 					width, height, width, height, data, c, trans, 0);
