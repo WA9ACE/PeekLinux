@@ -104,13 +104,19 @@ Style *style_getID(Style *styleRoot, const char *otype, const char *id, int isFo
 	}
 	if (output != NULL)
 		return output;
+
+	output = manager_getRootStyle();
+	if (styleRoot != output)
+		return style_getID(output, otype, id, isFocused);
 	return styleRoot;
 }
 
-DataObjectField *style_getProperty(Style *s, DataObject *dobj, const char *key)
+DataObjectField *style_getProperty(Style *os, DataObject *dobj, const char *key)
 {
 	DataObjectField *output;
+	Style *rootStyle, *s;
 
+	s = os;
 	output = dataobject_getValue(dobj, key);
 	if (output != NULL)
 		return output;
@@ -120,13 +126,21 @@ DataObjectField *style_getProperty(Style *s, DataObject *dobj, const char *key)
 			return output;
 		s = dataobject_parent(s);
 	}
+
+	rootStyle = manager_getRootStyle();
+	if (os != rootStyle)
+		return style_getProperty(rootStyle, dobj, key);
+
 	return NULL;
 }
 
-DataObjectField *style_getPropertyAsInt(Style *s, DataObject *dobj, const char *key)
+DataObjectField *style_getPropertyAsInt(Style *os, DataObject *dobj, const char *key)
 {
 	DataObjectField *output;
+	Style *rootStyle;
+	Style *s;
 
+	s = os;
 	output = dataobject_getValueAsInt(dobj, key);
 	if (output != NULL)
 		return output;
@@ -136,6 +150,11 @@ DataObjectField *style_getPropertyAsInt(Style *s, DataObject *dobj, const char *
 			return output;
 		s = dataobject_parent(s);
 	}
+
+	rootStyle = manager_getRootStyle();
+	if (os != rootStyle)
+		return style_getPropertyAsInt(rootStyle, dobj, key);
+
 	return NULL;
 }
 
