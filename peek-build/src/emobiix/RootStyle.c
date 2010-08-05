@@ -14,7 +14,6 @@ Font *defaultFont, *hugeFont;
 Gradient *defaultGradient;
 
 Style *RootStyle(void)
-<<<<<<< .mine
 {
 	static DataObject *defaultStyle = NULL;
 	DataObject *fontObject1;
@@ -493,7 +492,7 @@ Style *RootStyle(void)
 #endif
 	return defaultStyle;
 }
-#endif=======
+
 {
 	static Gradient *greengrad2;
 	static Gradient *grad2;
@@ -750,4 +749,4 @@ Style *RootStyle(void)
 #endif
 	return defaultStyle;
 }
->>>>>>> .r556
+#endif
