@@ -13,36 +13,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#if 0
-#define KEY_LEN 128
-
-struct Style_t {
-	Map *prop;
-};
-#endif
-
-#if 0
-static void makekey(char *key, const char *className, const char *id,
-		const char *type, const char *lvalue)
-{
-	snprintf(key, KEY_LEN, "%s-%s-%s-%s",
-		"", /*className == NULL ? "" : className,*/
-		id == NULL ? "" : id,
-		type == NULL ? "" : type,
-		lvalue == NULL ? "" : lvalue);
-}
-#endif
-
-/*Style *style_new(void)
-{
-	Style *output;
-
-	output = (Style *)p_malloc(sizeof(Style));
-	output->prop = map_string();
-
-	return output;
-}*/
-
 void style_renderWidgetTree(Style *s, Widget *w)
 {
 	ListIterator iter;
@@ -89,8 +59,11 @@ void style_renderWidgetTree(Style *s, Widget *w)
 			app = manager_applicationForDataObject(child);
 			if (app != NULL) {
 				child = application_getCurrentScreen(app);
+				style = application_getCurrentStyle(app);
+				if (style == NULL)
+					style = s;
 				if (child != NULL)
-					style_renderWidgetTree(s, child);
+					style_renderWidgetTree(style, child);
 			}
 		}
 	} else {
@@ -101,34 +74,6 @@ void style_renderWidgetTree(Style *s, Widget *w)
 		}
 	}
 }
-
-#if 0
-void style_setProperty(Style *s, const char *className, const char *id,
-		const char *type, const char *lvalue, void *value)
-{
-	char key[KEY_LEN];
-	makekey(key, className, id, type, lvalue);
-	map_append(s->prop, key, value);
-#if 0
-	if (type != NULL && strcmp(type, "box") == 0) {
-		/* yeah its dirty but you like it */
-		makekey(key, className, id, "button", lvalue);
-		map_append(s->prop, key, value);
-	}
-#endif
-}
-#endif
-
-#if 0
-void *style_getProperty(Style *s, const char *className, const char *id,
-		const char *type, const char *lvalue)
-{
-	char key[KEY_LEN];
-	/*emo_printf("getStyle(%s, %s, %s, %s)" NL, className, id, type, lvalue);*/
-	makekey(key, className, id, type, lvalue);
-	return map_find(s->prop, key);
-}
-#endif
 
 Style *style_getID(Style *styleRoot, const char *otype, const char *id, int isFocused)
 {
