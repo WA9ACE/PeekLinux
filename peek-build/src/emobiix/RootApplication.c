@@ -50,9 +50,6 @@ DataObject *RootApplication(void)
 	DataObject *batterystack, *testbattery, *testcharge;
 	DataObject *testweather, *testspkr;
 
-	Gradient *gradient;
-	Color color;
-
     if (output != NULL)
         return output;
 
