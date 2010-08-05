@@ -832,24 +832,37 @@ void widget_markDirty(Widget *w)
 
 Widget *widget_findStringField(Widget *w, const char *key, const char *value)
 {
-	DataObjectField *field;
+	DataObjectField *field, *type;
+	DataObject *child;
 	ListIterator iter;
 	Widget *retval;
+	Application *app;
 
 	field = dataobject_getValue(w, key);
-	if (field != NULL) {
-		if (field->type == DOF_STRING && strcmp(field->field.string, value) == 0)
-			return w;
-	}
+	if (dataobjectfield_isString(field, value))
+		return w;
 
-	widget_getChildren(w, &iter);
-	while (!listIterator_finished(&iter)) {
-		retval = widget_findStringField((Widget *)listIterator_item(&iter), key, value);
-		if (retval != NULL) {
-			/*listIterator_delete(iter);*/
-			return retval;
+	type = dataobject_getValue(w, "type");
+	if (dataobjectfield_isString(type, "frame")) {
+		child = widget_getDataObject(w);
+		if (child != NULL) {
+			app = manager_applicationForDataObject(child);
+			if (app != NULL) {
+				child = application_getCurrentScreen(app);
+				if (child != NULL)
+					return widget_findStringField(child, key, value);
+			}
 		}
-		listIterator_next(&iter);
+	} else {
+		widget_getChildren(w, &iter);
+		while (!listIterator_finished(&iter)) {
+			retval = widget_findStringField((Widget *)listIterator_item(&iter), key, value);
+			if (retval != NULL) {
+				/*listIterator_delete(iter);*/
+				return retval;
+			}
+			listIterator_next(&iter);
+		}
 	}
 	/*listIterator_delete(iter);*/
 

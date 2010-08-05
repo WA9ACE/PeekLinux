@@ -156,7 +156,6 @@ void manager_handleKey(int key)
 	static Rectangle clip = {0, 0, 320, 240};
 	char keyStr[2];
 	Style *style;
-	int mappedKey = 0;
 
 	emo_printf("Got Key[%d]\n", key);
 
@@ -181,10 +180,8 @@ void manager_handleKey(int key)
 		}
 	}
 
-	emo_printf("manager_handleKey() key - %d (%c)", key, mappedKey);
-
 	/* access key */
-	((unsigned char *)keyStr)[0] = (unsigned char)mappedKey;
+	((unsigned char *)keyStr)[0] = (unsigned char)key;
 	keyStr[1] = 0;
 	accessKey = widget_findStringField(appManager->rootApplicationWindow, "accesskey", keyStr);
 	if (accessKey != NULL) {
