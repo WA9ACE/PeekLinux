@@ -3,6 +3,7 @@
 
 #include "Application.h"
 #include "List.h"
+#include "Style_internal.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -22,6 +23,7 @@ Application *manager_applicationForDataObject(DataObject *dobj);
 void manager_loadApplication(DataObject *dobj);
 void manager_loadApplicationReal(DataObject *dobj);
 Application *manager_getBootApp(void);
+Style *manager_getRootStyle(void);
 
 #ifdef __cplusplus
 }

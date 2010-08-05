@@ -331,3 +331,8 @@ void manager_loadApplicationReal(DataObject *dobj)
 	manager_launchApplication(app);
 	manager_focusApplication(app);
 }
+
+Style *manager_getRootStyle(void)
+{
+	return appManager->style;
+}
