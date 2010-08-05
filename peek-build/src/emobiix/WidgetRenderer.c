@@ -2,10 +2,13 @@
 #include "Debug.h"
 #include "lgui.h"
 #include "Point.h"
+#include "ArrayWidget.h"
 
 #include "p_malloc.h"
 #include <stdio.h>
 #include <string.h>
+
+extern Gradient *defaultGradient;
 
 /* zeros */
 static void zero_renderer(WidgetRenderer *wr, Style *s, Widget *w,
@@ -33,6 +36,7 @@ void widgetrenderer_zeroMargin(WidgetRenderer *wr, Style *s, Widget *w,
 	output->height = 0;
 }
 
+#if 0
 /* gradbox renderer */
 static void gradbox_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj) {
@@ -42,19 +46,6 @@ static void gradbox_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
 	g = (Gradient *)style_getProperty(s, NULL, "gradbox", "box", "gradient");
-
-	lgui_vertical_gradientG(g,
-			box->x+margin->x, box->y+margin->y, box->width, box->height);
-}
-
-static void gradboxdark_renderer(WidgetRenderer *wr, Style *s, Widget *w,
-		DataObject *dobj) {
-	Rectangle *box, *margin;
-	Gradient *g;
-
-	box = widget_getBox(w);
-	margin = widget_getMargin(w);
-	g = (Gradient *)style_getProperty(s, NULL, "gradboxdark", "box", "gradient");
 
 	lgui_vertical_gradientG(g,
 			box->x+margin->x, box->y+margin->y, box->width, box->height);
@@ -74,32 +65,21 @@ WidgetRenderer *widgetrenderer_gradbox(void)
 
 	return output;
 }
-
-WidgetRenderer *widgetrenderer_gradboxdark(void)
-{
-	static WidgetRenderer *output = NULL;
-
-	if (output != NULL)
-		return output;
-
-	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
-	output->render = gradboxdark_renderer;
-	output->measure = NULL;
-	output->margin = widgetrenderer_zeroMargin;
-
-	return output;
-}
+#endif 
 
 /* gradboxr renderer */
-static void gradboxr_renderer(WidgetRenderer *wr, Style *s, Widget *w,
+static void box_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj) {
 	Rectangle *box, *margin;
-	Gradient *g;
-	const char *id;
-	int radius;
-	Color outline;
-	DataObjectField *type;
+	Gradient *g, *freeg = NULL;
+	const char *id, *str;
+	int radius, isGradient;
+	Color outline, color;
+	DataObjectField *type, *radiusF, *fill, *rounded;
+	DataObjectField *border, *bordercorners;
 	const char *typestr = NULL;
+	unsigned int cornerFlags, borderFlags, cornerBorderFlags;
+	ListIterator iter;
 
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
@@ -107,7 +87,124 @@ static void gradboxr_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	type = dataobject_getValue(w, "type");
 	if (type != NULL && type->type == DOF_STRING)
 		typestr = type->field.string;
-	if (widget_hasFocus(w)) {
+	fill = style_getProperty(s, w, "fill");
+	isGradient = dataobjectfield_isString(fill, "gradient");
+	radiusF = style_getProperty(s, w, "radius");
+	rounded = style_getProperty(s, w, "rounded");
+	border = style_getProperty(s, w, "border");
+	bordercorners = style_getProperty(s, w, "border-corners");
+	outline.value = 0;
+	style_getColor(s, w, "border-color", &outline.value);
+
+	if (rounded == NULL || rounded->type != DOF_STRING) {
+		cornerFlags = 0;
+	} else {
+		cornerFlags = 0;
+		for (str = rounded->field.string; *str != 0; ++str) {
+			switch (*str) {
+				case '1': cornerFlags |= LGUI_CORNER_TOPLEFT; break;
+				case '2': cornerFlags |= LGUI_CORNER_TOPRIGHT; break;
+				case '3': cornerFlags |= LGUI_CORNER_BOTTOMRIGHT; break;
+				case '4': cornerFlags |= LGUI_CORNER_BOTTOMLEFT; break;
+				default: break;
+			}
+		}
+	}
+
+	if (border == NULL || border->type != DOF_STRING) {
+		borderFlags = 0;
+	} else {
+		borderFlags = 0;
+		for (str = border->field.string; *str != 0; ++str) {
+			switch (*str) {
+				case '1': borderFlags |= LGUI_TOP; break;
+				case '2': borderFlags |= LGUI_LEFT; break;
+				case '3': borderFlags |= LGUI_BOTTOM; break;
+				case '4': borderFlags |= LGUI_RIGHT; break;
+				default: break;
+			}
+		}
+	}
+	if (bordercorners == NULL || bordercorners->type != DOF_STRING) {
+		cornerBorderFlags = 0;
+	} else {
+		cornerBorderFlags = 0;
+		for (str = bordercorners->field.string; *str != 0; ++str) {
+			switch (*str) {
+				case '1': cornerBorderFlags |= LGUI_CORNER_TOPLEFT; break;
+				case '2': cornerBorderFlags |= LGUI_CORNER_TOPRIGHT; break;
+				case '3': cornerBorderFlags |= LGUI_CORNER_BOTTOMRIGHT; break;
+				case '4': cornerBorderFlags |= LGUI_CORNER_BOTTOMLEFT; break;
+				default: break;
+			}
+		}
+	}
+
+	radius = 7;
+	if (radiusF != NULL) {
+		if (radiusF->type == DOF_INT || radiusF->type == DOF_UINT)
+			radius = radiusF->field.integer;
+		else if (radiusF->type == DOF_STRING) {
+			sscanf(radiusF->field.string, "%d", &radius);
+		}
+	}
+
+	if (isGradient) {
+		dataobject_childIterator(s, &iter);
+		if (!listIterator_finished(&iter)) {
+			g = style_getGradient((Style *)listIterator_item(&iter));
+			freeg = g;
+		} else {
+			g = defaultGradient;
+		}
+
+		if (cornerFlags == 0 || radius == 0) {
+			lgui_vertical_gradientG(g,
+				box->x+margin->x, box->y+margin->y, box->width, box->height);
+			lgui_box(box->x+margin->x, box->y+margin->y, box->width, box->height, 1,
+				outline.rgba.red, outline.rgba.green, outline.rgba.blue,
+				borderFlags);
+		} else {
+			lgui_rbox_gradient(g, box->x+margin->x, box->y+margin->y,
+					box->width, box->height, radius, cornerFlags);
+			lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width, box->height, radius,
+				outline.rgba.red, outline.rgba.green, outline.rgba.blue,
+				borderFlags, cornerBorderFlags);
+		}
+	} else {
+		color.value = 0;
+		style_getColor(s, w, "background-color", &color.value);
+
+		if (cornerFlags == 0 || radius == 0) {
+			lgui_hline(box->x+margin->x, box->y+margin->y, box->width, box->height,
+				color.rgba.red, color.rgba.green, color.rgba.blue);
+			lgui_box(box->x+margin->x, box->y+margin->y, box->width, box->height, 1,
+					outline.rgba.red, outline.rgba.green, outline.rgba.blue,
+					borderFlags);
+		} else {
+			lgui_roundedbox_fill(box->x+margin->x, box->y+margin->y, box->width, box->height, radius,
+				color.rgba.red, color.rgba.green, color.rgba.blue,
+				cornerFlags);
+			lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width, box->height, radius,
+				outline.rgba.red, outline.rgba.green, outline.rgba.blue,
+				borderFlags, cornerBorderFlags);
+		}
+	}
+
+	if (freeg != NULL)
+		gradient_delete(freeg);
+
+	/* done */
+#if 0
+	lgui_hline(box->x+margin->x, box->y+margin->y, box->width, box->height, c.rgba.red, c.rgba.green, c.rgba.blue);
+
+	lgui_rbox_gradient(g, box->x+margin->x, box->y+margin->y, box->width, box->height,
+			radius, cornerFlags);
+	lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width, box->height, radius,
+			outline.rgba.red, outline.rgba.green, outline.rgba.blue,
+			borderFlags, borderCornerFlags);
+
+	/*if (widget_hasFocus(w)) {
 		g = (Gradient *)style_getProperty(s, NULL, id, typestr, "focusgradient");
 		outline.value = (unsigned int)style_getProperty(s, NULL, id, NULL, "focusoutline");
 	} else {
@@ -115,15 +212,11 @@ static void gradboxr_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		outline.value = (unsigned int)style_getProperty(s, NULL, id, typestr, "outline");
 	}
 	if (g == NULL)
-		return;
-	radius = (int)style_getProperty(s, NULL, id, "box", "radius");
-
-	lgui_rbox_gradient(g, box->x+margin->x, box->y+margin->y, box->width, box->height, radius);
-	lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width, box->height, radius,
-			outline.rgba.red, outline.rgba.green, outline.rgba.blue);
+		return;*/
+#endif
 }
 
-WidgetRenderer *widgetrenderer_gradboxr(void)
+WidgetRenderer *widgetrenderer_box(void)
 {
 	static WidgetRenderer *output = NULL;
 
@@ -131,13 +224,14 @@ WidgetRenderer *widgetrenderer_gradboxr(void)
 		return output;
 
 	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
-	output->render = gradboxr_renderer;
+	output->render = box_renderer;
 	output->measure = NULL;
 	output->margin = widgetrenderer_zeroMargin;
 
 	return output;
 }
 
+#if 0
 /* solid renderer */
 static void solid_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj) {
@@ -174,6 +268,7 @@ WidgetRenderer *widgetrenderer_solid(void)
 
 	return output;
 }
+#endif
 
 /* zero renderer */
 WidgetRenderer *widgetrenderer_zero(void)
@@ -224,10 +319,28 @@ WidgetRenderer *widgetrenderer_button(void)
 		return output;
 
 	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
-	output->render = gradboxr_renderer;
+	output->render = box_renderer;
 	output->measure = NULL;
 	output->margin = button_margin;
 
 	return output;
 }
 
+WidgetRenderer *widgetRenderer_fromString(const char *str)
+{
+	if (strcmp(str, "box") == 0)
+		return widgetrenderer_box();
+	if (strcmp(str, "button") == 0)
+		return widgetrenderer_box();
+	if (strcmp(str, "image") == 0)
+		return widgetrenderer_image();
+	if (strcmp(str, "label") == 0)
+		return widgetrenderer_string();
+	if (strcmp(str, "text") == 0)
+		return widgetrenderer_text();
+	if (strcmp(str, "entry") == 0)
+		return widgetrenderer_entry();
+	if (strcmp(str, "array") == 0)
+		return widgetrenderer_array();
+	return NULL;
+}

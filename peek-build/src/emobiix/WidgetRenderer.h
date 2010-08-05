@@ -24,16 +24,18 @@ void widgetrenderer_zeroMargin(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj, Rectangle *output);
 
 WidgetRenderer *widgetrenderer_image(void);
-WidgetRenderer *widgetrenderer_gradbox(void);
+WidgetRenderer *widgetrenderer_box(void);
+/*WidgetRenderer *widgetrenderer_gradbox(void);
 WidgetRenderer *widgetrenderer_gradboxr(void);
-WidgetRenderer *widgetrenderer_gradboxdark(void);
-WidgetRenderer *widgetrenderer_solid(void);
+WidgetRenderer *widgetrenderer_solid(void);*/
 WidgetRenderer *widgetrenderer_string(void);
 WidgetRenderer *widgetrenderer_entry(void);
 WidgetRenderer *widgetrenderer_text(void);
 WidgetRenderer *widgetrenderer_button(void);
 WidgetRenderer *widgetrenderer_zero(void);
 WidgetRenderer *widgetrenderer_full(void);
+
+WidgetRenderer *widgetRenderer_fromString(const char *str);
 
 #ifdef __cplusplus
 }
