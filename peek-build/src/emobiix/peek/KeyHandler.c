@@ -2,8 +2,7 @@
 #include "general.h"
 #include "typedefs.h"
 #include "KeyMap.h"
-//#include "Debug.h"
-#include "ballightapi.h"
+#include "Debug.h"
 #include "Sounds.h"
 #include "tweet.h"
 #endif
@@ -156,47 +155,5 @@ void main_test(void)
                 }
 	        updateScreen();*/
 	}
-}
-#endif
-
-#ifndef SIMULATOR
-
-static void UiHandleKeyEvents(RegIdT RegId, uint32 MsgId, void *MsgBufferP)
-{
-        BalLightLevelT lcdstatus;
-        BalLightLevelT kpdstatus;
-        UiKeypadKeyIdT UiKeyId = (UiKeypadKeyIdT)*((SysKeyIdT*) MsgBufferP);
-#ifdef EMO_SIM
-        emo_printf("UiHandleKeyEvents MsgId=%d,UiKeyId=%d" NL, MsgId, UiKeyId);
-#endif
-	if(UiKeyId == KP_PWR_KEY) {
-		emo_printf("Starting power off\n");
-		pwr_PowerOffMobile();
-
-	}
-        if (MsgId == 1) {
-     //           SetSettingValue(SET_UI_RINGTONE, 2);
-   //             SetSettingValue(SET_UI_VOLUME, 5);
- //               Sounds_PlayMidi();
-       //         flash_led();
-                //main_test();
-		/*tweetKey(UiKeyId);*/
-        manager_handleKey(MapKeyToInternal(UiKeyId));
-		updateScreen();
-        }
-#ifndef EMO_SIM
-        //BalGetLightStatus(BAL_LIGHT_LCD,&lcdstatus,0);
-        //BalGetLightStatus(BAL_LIGHT_KEYPAD,&kpdstatus,0);
-#endif
-}
-void KeyPad_Init(void) {
-
-     /*
-     if(BalKeypadRegister(UiHandleKeyEvents) == -1) {
-	emo_printf("BalKeypadRegister() Failed to register handler" NL);
-	return;
-     }
-     emo_printf("BalKeypadRegister() registered" NL);
-     */
 }
 #endif

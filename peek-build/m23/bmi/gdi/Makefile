@@ -31,7 +31,6 @@ SRC += power.c
 SRC += keypad.c
 SRC += rtc.c
 SRC += rx.c
-SRC += temp_stub.c
 
 OBJO += light.o
 
