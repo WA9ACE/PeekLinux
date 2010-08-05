@@ -305,7 +305,7 @@ void manager_focusNextApplication(void)
 	manager_focusApplication(newFocus);	
 }
 
-Application *manager_appForDataObject(DataObject *dobj)
+Application *manager_applicationForDataObject(DataObject *dobj)
 {
     ListIterator iter;
     Application *item;

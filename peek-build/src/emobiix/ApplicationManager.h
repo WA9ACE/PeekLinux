@@ -18,7 +18,7 @@ void manager_applications(ListIterator *iter);
 void manager_focusApplication(Application *app);
 Application *manager_getFocusedApplication(void);
 void manager_focusNextApplication(void);
-Application *manager_appForDataObject(DataObject *dobj);
+Application *manager_applicationForDataObject(DataObject *dobj);
 void manager_loadApplication(DataObject *dobj);
 void manager_loadApplicationReal(DataObject *dobj);
 Application *manager_getBootApp(void);
