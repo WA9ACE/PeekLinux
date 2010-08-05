@@ -90,10 +90,24 @@ void main_test(void)
 	Transport *transport;
 	ConnectionContext *ctx;
 	int hasPrinted;
-	//char buf[256];
+	char buf[256];
+	FILE *input;
+	int i;
 
 	dataobject_platformInit();
-	url = url_parse("tcp://69.114.111.9:12345/dataobject", URL_ALL);
+	input = fopen("home-server.ini", "rb");
+	if (input != NULL) {
+		fgets(buf, 256, input);
+		fclose(input);
+		i = strlen(buf)-1;
+		while (i > 0 && !isprint(buf[i])) {
+			buf[i] = 0;
+			--i;
+		}
+		url = url_parse(buf, URL_ALL);
+	} else {
+		url = url_parse("tcp://69.114.111.9:12345/dataobject", URL_ALL);
+	}
 
 	transport = transport_get(url->scheme);
 	if (transport == NULL) {
