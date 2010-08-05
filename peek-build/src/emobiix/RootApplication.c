@@ -11,6 +11,14 @@
 
 #include <stdio.h>
 
+#ifdef SIMULATOR
+#define BARHEIGHT "16"
+#define CONTENTHEIGHT "224"
+#else
+#define BARHEIGHT "25"
+#define CONTENTHEIGHT "215"
+#endif
+
 DataObject *dobjFromFile(const char *filename, DataObject *root)
 {
 	DataObject *dobj1;
@@ -19,7 +27,7 @@ DataObject *dobjFromFile(const char *filename, DataObject *root)
 	void *mimedata;
 
 	mimefile = file_openRead(filename);
-	dobj1 = widget_newTypeIdName("image", "image", NULL, root);
+	dobj1 = widget_newTypeIdName("image", NULL, NULL, root);
 	if (mimefile != NULL) {
 		mimedata_size = file_size(mimefile);
 		mimedata = (char *)p_malloc(mimedata_size);
@@ -36,7 +44,7 @@ DataObject *dobjFromFile(const char *filename, DataObject *root)
 DataObject *RootApplication(void)
 {
     static DataObject *output = NULL;
-	DataObject *dobj1, *root, *dobj2;
+	DataObject *dobj1, *root, *dobj2, *frame;
 	DataObject *setw, *setiw, *setc, *testvalue;
 	DataObject *signalstack, *testgprs;
 	DataObject *batterystack, *testbattery, *testcharge;
@@ -63,31 +71,32 @@ DataObject *RootApplication(void)
 
 	dobj1 = widget_newTypeIdName("box", "gradboxdark", NULL, root);
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("320"));
-	dataobject_setValue(dobj1, "height", dataobjectfield_string("25"));
+	dataobject_setValue(dobj1, "height", dataobjectfield_string(BARHEIGHT));
 	widget_setPacking(dobj1, WP_HORIZONTAL);
 
-#if 0
-	testvalue = dataobject_new();
-	dataobject_setValue(testvalue, "data", dataobjectfield_string("5"));
+#ifdef SIMULATOR
+	testvalue = dataobject_locateStr("system://local/signal");
+	/*dataobject_setValue(testvalue, "data", dataobjectfield_string("5"));*/
 
-	testgprs = dataobject_new();
-	dataobject_setValue(testgprs, "data", dataobjectfield_string("1"));
+	testgprs = dataobject_locateStr("system://local/signal");
+	/*dataobject_setValue(testgprs, "data", dataobjectfield_string("1"));*/
 
-	testbattery = dataobject_new();
-	dataobject_setValue(testbattery, "data", dataobjectfield_string("4"));
-	testcharge = dataobject_new();
-	dataobject_setValue(testcharge, "data", dataobjectfield_string("1"));
+	testbattery = dataobject_locateStr("system://local/battery");
+	/*dataobject_setValue(testbattery, "data", dataobjectfield_string("4"));*/
+	testcharge = dataobject_locateStr("system://local/battery");
+	/*dataobject_setValue(testcharge, "data", dataobjectfield_string("1"));*/
 
 	testweather = dataobject_new();
 	dataobject_setValue(testweather, "data", dataobjectfield_string("1"));
 
 	testspkr = dataobject_new();
 	dataobject_setValue(testspkr, "data", dataobjectfield_string("1"));
-
+#endif
+#ifdef SIMULATOR
 	signalstack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
 	/* GPRS set */
 	setw = widget_newTypeIdName("set", NULL, NULL, signalstack);
-	dataobject_setValue(setw, "fieldname", dataobjectfield_string("data"));
+	dataobject_setValue(setw, "fieldname", dataobjectfield_string("GPRS"));
 	dataobject_setValue(setw, "margintop", dataobjectfield_string("3"));
 	dataobject_setValue(setw, "marginleft", dataobjectfield_string("3"));
 	widget_setDataObject(setw, testgprs);
@@ -102,7 +111,7 @@ DataObject *RootApplication(void)
 	
 	/* Signal set */
 	setw = widget_newTypeIdName("set", NULL, NULL, signalstack);
-	dataobject_setValue(setw, "fieldname", dataobjectfield_string("data"));
+	dataobject_setValue(setw, "fieldname", dataobjectfield_string("level"));
 	dataobject_setValue(setw, "margintop", dataobjectfield_string("3"));
 	dataobject_setValue(setw, "marginleft", dataobjectfield_string("3"));
 	widget_setDataObject(setw, testvalue);
@@ -180,7 +189,7 @@ DataObject *RootApplication(void)
 	setc = dobjFromFile("wi-sun.png", setiw);
 	dataobject_setValue(setc, "color", dataobjectfield_string("00000000"));
 
-	setw = widget_newTypeIdName("label", "label", NULL, dobj1);
+	setw = widget_newTypeIdName("label", NULL, NULL, dobj1);
 	dataobject_setValue(setw, "data", dataobjectfield_string("73F"));
 	dataobject_setValue(setw, "margintop", dataobjectfield_string("1"));
 
@@ -205,9 +214,10 @@ DataObject *RootApplication(void)
 	batterystack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
 	setc = dobjFromFile("batterycase.png", batterystack);
 	dataobject_setValue(setc, "margintop", dataobjectfield_string("3"));
+	dataobject_setValue(setc, "color", dataobjectfield_int(0));
 
 	setw = widget_newTypeIdName("set", NULL, NULL, batterystack);
-	dataobject_setValue(setw, "fieldname", dataobjectfield_string("data"));
+	dataobject_setValue(setw, "fieldname", dataobjectfield_string("level"));
 	dataobject_setValue(setw, "margintop", dataobjectfield_string("3"));
 	widget_setDataObject(setw, testbattery);
 
@@ -246,7 +256,7 @@ DataObject *RootApplication(void)
 	setiw = widget_newTypeIdName("box", NULL, NULL, setw);
 
 	setw = widget_newTypeIdName("set", NULL, NULL, batterystack);
-	dataobject_setValue(setw, "fieldname", dataobjectfield_string("data"));
+	dataobject_setValue(setw, "fieldname", dataobjectfield_string("charging"));
 	dataobject_setValue(setw, "margintop", dataobjectfield_string("3"));
 	widget_setDataObject(setw, testcharge);
 
@@ -259,15 +269,19 @@ DataObject *RootApplication(void)
 	/* application box */
 	dobj1 = widget_newTypeIdName("box", NULL, NULL, root);
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("320"));
-	dataobject_setValue(dobj1, "height", dataobjectfield_string("215"));
+	dataobject_setValue(dobj1, "height", dataobjectfield_string(CONTENTHEIGHT));
 	widget_setPacking(dobj1, WP_VERTICAL);
 
-	dobj2 = widget_newTypeIdName("stack", NULL, "placeholder", dobj1);
+	dobj2 = widget_newTypeIdName("stack", NULL, NULL, dobj1);
 	dataobject_setValue(dobj2, "width", dataobjectfield_string("320"));
-	dataobject_setValue(dobj2, "height", dataobjectfield_string("215"));
+	dataobject_setValue(dobj2, "height", dataobjectfield_string(CONTENTHEIGHT));
 	widget_setPacking(dobj2, WP_VERTICAL);
 
-	widget_newTypeIdName("box", NULL, NULL, dobj2);
+	frame = widget_newTypeIdName("frame", NULL, "placeholder", dobj2);
+	dataobject_setValue(frame, "width", dataobjectfield_string("320"));
+	dataobject_setValue(frame, "height", dataobjectfield_string(CONTENTHEIGHT));
+	widget_setPacking(frame, WP_VERTICAL);
+
 
     return output;
 }
