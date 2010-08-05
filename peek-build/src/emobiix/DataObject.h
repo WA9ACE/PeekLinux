@@ -15,6 +15,9 @@ DataObjectField *dataobjectfield_string(const char *str);
 DataObjectField *dataobjectfield_data(void *data, int bytes);
 DataObjectField *dataobjectfield_int(int val);
 DataObjectField *dataobjectfield_uint(unsigned int val);
+int dataobjectfield_isTrue(DataObjectField *field);
+int dataobjectfield_isString(DataObjectField *field, const char *str);
+void dataobjectfield_setString(DataObjectField *field, const char *str);
 
 typedef enum {DOS_INIT, DOS_SYNC, DOS_OK, DOS_ERROR} DataObjectState;
 typedef enum {DOOP_CHANGE, DOOP_DESTROY} DataObjectOperation;
@@ -76,6 +79,7 @@ void dataobject_platformInit(void);
 DataObject *dataobject_locateStr(const char *str);
 DataObject *dataobject_locate(URL *url);
 DataObject *dataobject_construct(URL *url, int isLocal);
+void dataobject_exportGlobal(DataObject *output, URL *url, int isLocal);
 void dataobject_resolveReferences(DataObject *dobj);
 
 #ifdef __cplusplus
