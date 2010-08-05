@@ -177,7 +177,7 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 	void *key;
 	SyncRequest *sreq;
 
-#ifndef SIMULATOR
+#ifdef SIMULATOR
 	transport = endpoint_getTransport(ctx->endpoint);
 
 	/*emo_printf("Loop iteration...");*/
