@@ -207,8 +207,9 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 		emo_printf("Not doing outgoing sync because we are not authorized" NL);
 		return 0;
 	}
-
-	emo_printf("Outgoing sync");
+#ifndef SIMULATOR
+	emo_printf("Outgoing sync" NL);
+#endif
 
 	/* perform any outgoing sync requests */
 	map_begin(ctx->syncRequests, &iter);
@@ -225,7 +226,9 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 		return 1;
 	}
 
-	emo_printf("Outgoing sync complete");
+#ifndef SIMULATOR
+	emo_printf("Outgoing sync complete" NL);
+#endif
 
 	return 0;
 }
