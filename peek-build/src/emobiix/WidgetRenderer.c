@@ -161,59 +161,35 @@ static void box_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		if (cornerFlags == 0 || radius == 0) {
 			lgui_vertical_gradientG(g,
 				box->x+margin->x, box->y+margin->y, box->width, box->height);
-			lgui_box(box->x+margin->x, box->y+margin->y, box->width, box->height, 1,
-				outline.rgba.red, outline.rgba.green, outline.rgba.blue,
-				borderFlags);
 		} else {
 			lgui_rbox_gradient(g, box->x+margin->x, box->y+margin->y,
 					box->width, box->height, radius, cornerFlags);
-			lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width, box->height, radius,
-				outline.rgba.red, outline.rgba.green, outline.rgba.blue,
-				borderFlags, cornerBorderFlags);
 		}
-	} else {
+	} else if (dataobjectfield_isString(fill, "solid")) {
 		color.value = 0;
 		style_getColor(s, w, "background-color", &color.value);
 
 		if (cornerFlags == 0 || radius == 0) {
 			lgui_hline(box->x+margin->x, box->y+margin->y, box->width, box->height,
 				color.rgba.red, color.rgba.green, color.rgba.blue);
-			lgui_box(box->x+margin->x, box->y+margin->y, box->width, box->height, 1,
-					outline.rgba.red, outline.rgba.green, outline.rgba.blue,
-					borderFlags);
 		} else {
 			lgui_roundedbox_fill(box->x+margin->x, box->y+margin->y, box->width, box->height, radius,
 				color.rgba.red, color.rgba.green, color.rgba.blue,
 				cornerFlags);
-			lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width, box->height, radius,
-				outline.rgba.red, outline.rgba.green, outline.rgba.blue,
-				borderFlags, cornerBorderFlags);
 		}
+	}
+	if (cornerFlags == 0 || radius == 0) {
+		lgui_box(box->x+margin->x, box->y+margin->y, box->width, box->height, 1,
+				outline.rgba.red, outline.rgba.green, outline.rgba.blue,
+				borderFlags);
+	} else {
+		lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width, box->height, radius,
+			outline.rgba.red, outline.rgba.green, outline.rgba.blue,
+			borderFlags, cornerBorderFlags);
 	}
 
 	if (freeg != NULL)
 		gradient_delete(freeg);
-
-	/* done */
-#if 0
-	lgui_hline(box->x+margin->x, box->y+margin->y, box->width, box->height, c.rgba.red, c.rgba.green, c.rgba.blue);
-
-	lgui_rbox_gradient(g, box->x+margin->x, box->y+margin->y, box->width, box->height,
-			radius, cornerFlags);
-	lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width, box->height, radius,
-			outline.rgba.red, outline.rgba.green, outline.rgba.blue,
-			borderFlags, borderCornerFlags);
-
-	/*if (widget_hasFocus(w)) {
-		g = (Gradient *)style_getProperty(s, NULL, id, typestr, "focusgradient");
-		outline.value = (unsigned int)style_getProperty(s, NULL, id, NULL, "focusoutline");
-	} else {
-		g = (Gradient *)style_getProperty(s, NULL, id, typestr, "gradient");
-		outline.value = (unsigned int)style_getProperty(s, NULL, id, typestr, "outline");
-	}
-	if (g == NULL)
-		return;*/
-#endif
 }
 
 WidgetRenderer *widgetrenderer_box(void)
@@ -230,45 +206,6 @@ WidgetRenderer *widgetrenderer_box(void)
 
 	return output;
 }
-
-#if 0
-/* solid renderer */
-static void solid_renderer(WidgetRenderer *wr, Style *s, Widget *w,
-		DataObject *dobj) {
-	Rectangle *box, *margin;
-	Color c;
-	DataObjectField *field;
-
-	box = widget_getBox(w);
-	margin = widget_getMargin(w);
-	c.value = (unsigned int)style_getProperty(s, NULL, "solid", "box", "color");
-	field = dataobject_getValue(w, "color");
-	if (field != NULL) {
-		if (field->type == DOF_UINT) {
-			c.value = field->field.uinteger;
-		} else if (field->type == DOF_STRING) {
-			sscanf(field->field.string, "%x", &c.value);
-		}
-	}
-
-	lgui_hline(box->x+margin->x, box->y+margin->y, box->width, box->height, c.rgba.red, c.rgba.green, c.rgba.blue);
-}
-
-WidgetRenderer *widgetrenderer_solid(void)
-{
-	static WidgetRenderer *output = NULL;
-
-	if (output != NULL)
-		return output;
-
-	output = (WidgetRenderer *)p_malloc(sizeof(WidgetRenderer));
-	output->render = solid_renderer;
-	output->measure = NULL;
-	output->margin = widgetrenderer_zeroMargin;
-
-	return output;
-}
-#endif
 
 /* zero renderer */
 WidgetRenderer *widgetrenderer_zero(void)
