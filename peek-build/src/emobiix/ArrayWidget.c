@@ -21,7 +21,7 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	int sfHeight, sfStartY, recordCount;
 	int startidx, focusidx, endidx, idx, canFocus;
 
-	boxwr = widgetrenderer_gradboxr();
+	boxwr = widgetrenderer_box();
 	boxwr->render(boxwr, s, w, dobj);
 
 	box = widget_getBox(w);
@@ -44,8 +44,8 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	}
 	focusidx = focusindex->field.integer;
 
-	emo_printf("start: %d, focus: %d" NL, startindex->field.integer,
-			focusindex->field.integer);
+	/*emo_printf("start: %d, focus: %d" NL, startindex->field.integer,
+			focusindex->field.integer);*/
 
 	dataobject_childIterator(w, &iter);
 	wchild = listIterator_item(&iter);
