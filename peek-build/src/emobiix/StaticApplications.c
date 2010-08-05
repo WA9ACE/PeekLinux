@@ -49,7 +49,7 @@ DataObject *LoadingApplication(void)
 DataObject *LockApplication(void)
 {
 	static DataObject *output = NULL;
-	DataObject *dobj1, *root, *setw;
+	DataObject *dobj1, *root;
 
 	if (output != NULL)
         return output;
