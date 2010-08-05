@@ -13,17 +13,17 @@ extern "C" {
 #endif
 
 #ifdef SIMULATOR
+void script_emo_printf(const char *fmt, ...);
+#ifdef WIN32
+#define NL "\r\n"
+#else
 #define NL "\n"
+#endif
 #else
 #define NL
 #endif
 
-
-#ifndef SIMULATOR
 void emo_printf(const char *fmt, ...);
-#else
-#define emo_printf printf
-#endif
 
 #ifdef __cplusplus
 }
