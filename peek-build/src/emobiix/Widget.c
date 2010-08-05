@@ -208,6 +208,21 @@ int widget_hasFocus(Widget *w)
 	return field->field.integer;
 }
 
+int widget_hasFocusOrParent(Widget *w)
+{
+	int hasFocus;
+
+	hasFocus = widget_hasFocus(w);
+	if (!hasFocus) {
+		w = w->parent;
+		if (w == NULL)
+			return 0;
+		return widget_hasFocusOrParent(w);
+	}
+
+	return 1;
+}
+
 void widget_setFocus(Widget *w, int isFocus)
 {
 	DataObjectField *field;
@@ -849,14 +864,22 @@ static void widget_layoutMeasureFinal(Widget *w, Style *s)
 	ListIterator iter;
 	IPoint p;
 	Application *app;
-	Style *style;
+	Style *style, *childStyle;
+	int wentUp = 0;
 
 	/* get style default */
 	dobj = widget_getDataObject(w);
 	className = widget_getClass(w);
 	id = widget_getID(w);
 	type = dataobject_getValue(w, "type");
-	style = style_getID(s, type == NULL ? NULL : type->field.string, id, widget_hasFocus(w));
+	style = style_getID(s, type == NULL ? NULL : type->field.string, id,
+			widget_hasFocus(w), &wentUp);
+
+	if (wentUp)
+		childStyle = s;
+	else
+		childStyle = style;
+
 	wr = NULL;
 	style_getRenderer(style, w, "renderer", &wr);
 	if (wr != NULL && wr->measure != NULL && strcmp(type->field.string, "text") == 0) {
@@ -874,14 +897,17 @@ static void widget_layoutMeasureFinal(Widget *w, Style *s)
 			app = manager_applicationForDataObject(child);
 			if (app != NULL) {
 				child = application_getCurrentScreen(app);
+				style = application_getCurrentStyle(app);
+				if (style == NULL)
+					style = manager_getRootStyle();
 				if (child != NULL)
-					widget_layoutMeasureFinal(child, s);
+					widget_layoutMeasureFinal(child, style);
 			}
 		}
 	} else {
 		list_begin(w->children, &iter);
 		while (!listIterator_finished(&iter)) {
-			widget_layoutMeasureFinal(listIterator_item(&iter), s);
+			widget_layoutMeasureFinal(listIterator_item(&iter), childStyle);
 			listIterator_next(&iter);
 		}
 	}
@@ -896,15 +922,22 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 	const char *className, *id;
 	ListIterator iter;
 	IPoint p;
-	int slen, tmpint;
-	Style *style;
+	int slen, tmpint, wentUp = 0;
+	Style *style, *childStyle;
 
 	/* get style default */
 	dobj = widget_getDataObject(w);
 	className = widget_getClass(w);
 	id = widget_getID(w);
 	type = dataobject_getValue(w, "type");
-	style = style_getID(s, type == NULL ? NULL : type->field.string, id, widget_hasFocus(w));
+	style = style_getID(s, type == NULL ? NULL : type->field.string, id,
+			widget_hasFocus(w), &wentUp);
+
+	if (wentUp)
+		childStyle = s;
+	else
+		childStyle = style;
+
 	wr = NULL;
 	style_getRenderer(style, w, "renderer", &wr);
 	if (wr != NULL && wr->measure != NULL && strcmp(type->field.string, "text") != 0) {
@@ -958,14 +991,17 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 			app = manager_applicationForDataObject(child);
 			if (app != NULL) {
 				child = application_getCurrentScreen(app);
+				style = application_getCurrentStyle(app);
+				if (style == NULL)
+					style = manager_getRootStyle();
 				if (child != NULL)
-					widget_layoutMeasureAbsolute(child, s);
+					widget_layoutMeasureAbsolute(child, style);
 			}
 		}
 	} else {
 		list_begin(w->children, &iter);
 		while (!listIterator_finished(&iter)) {
-			widget_layoutMeasureAbsolute(listIterator_item(&iter), s);
+			widget_layoutMeasureAbsolute(listIterator_item(&iter), childStyle);
 			listIterator_next(&iter);
 		}
 	}
@@ -1091,14 +1127,22 @@ void widget_resolveMargin(Widget *w, Style *s)
 	const char *className, *id;
 	DataObject *dobj, *child;
 	Application *app;
-	Style *style;
+	Style *style, *childStyle;
+	int wentUp;
 
 	/* Apply margin from style */
 	dobj = widget_getDataObject(w);
 	className = widget_getClass(w);
 	id = widget_getID(w);
 	type = dataobject_getValue(w, "type");
-	style = style_getID(s, type == NULL ? NULL : type->field.string, id, widget_hasFocus(w));
+	style = style_getID(s, type == NULL ? NULL : type->field.string, id,
+			widget_hasFocus(w), &wentUp);
+
+	if (wentUp)
+		childStyle = s;
+	else
+		childStyle = style;
+
 	wr = NULL;
 	style_getRenderer(style, w, "renderer", &wr);
 	if (wr != NULL)
@@ -1136,8 +1180,11 @@ void widget_resolveMargin(Widget *w, Style *s)
 			app = manager_applicationForDataObject(child);
 			if (app != NULL) {
 				child = application_getCurrentScreen(app);
+				style = application_getCurrentStyle(app);
+				if (style == NULL)
+					style = manager_getRootStyle();
 				if (child != NULL)
-					widget_resolveMargin(child, s);
+					widget_resolveMargin(child, style);
 			}
 		}
 	} else {

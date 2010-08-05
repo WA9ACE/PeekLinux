@@ -29,6 +29,7 @@ const char *widget_getID(Widget *w);
 int widget_canFocus(Widget *w);
 void widget_setCanFocus(Widget *w, int canFocus);
 int widget_hasFocus(Widget *w);
+int widget_hasFocusOrParent(Widget *w);
 void widget_setFocus(Widget *w, int isFocus);
 WidgetAlignment widget_getAlignment(Widget *w);
 void widget_setAlignment(Widget *w, WidgetAlignment a);
