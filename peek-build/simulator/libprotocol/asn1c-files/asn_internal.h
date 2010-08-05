@@ -23,10 +23,12 @@ extern "C" {
 #define	ASN1C_ENVIRONMENT_VERSION	922	/* Compile-time version */
 int get_asn1c_environment_version(void);	/* Run-time version */
 
-#define	CALLOC(nmemb, size)	calloc(nmemb, size)
-#define	MALLOC(size)		malloc(size)
-#define	REALLOC(oldptr, size)	realloc(oldptr, size)
-#define	FREEMEM(ptr)		free(ptr)
+#include "p_malloc.h"
+
+#define	CALLOC(nmemb, size)	p_calloc(nmemb, size)
+#define	MALLOC(size)		p_malloc(size)
+#define	REALLOC(oldptr, size)	p_realloc(oldptr, size)
+#define	FREEMEM(ptr)		p_free(ptr)
 
 /*
  * A macro for debugging the ASN.1 internals.
