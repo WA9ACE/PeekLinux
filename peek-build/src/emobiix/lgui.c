@@ -179,12 +179,18 @@ void lgui_vline(int x, int y, int len, int width, unsigned char red, unsigned ch
 	}
 }
 
-void lgui_box(int x, int y, int width, int height, int linewidth, unsigned char red, unsigned char green, unsigned char blue)
+void lgui_box(int x, int y, int width, int height, int linewidth,
+			  unsigned char red, unsigned char green, unsigned char blue,
+			  unsigned int borderFlags)
 {
-	lgui_hline(x, y, width, linewidth, red, green, blue);
-	lgui_hline(x, y+height-linewidth, width, linewidth, red, green, blue);
-	lgui_vline(x, y, height, linewidth, red, green, blue);
-	lgui_vline(x+width-linewidth, y, height, linewidth, red, green, blue);
+	if (borderFlags & LGUI_TOP)
+		lgui_hline(x, y, width, linewidth, red, green, blue);
+	if (borderFlags & LGUI_BOTTOM)
+		lgui_hline(x, y+height-linewidth, width, linewidth, red, green, blue);
+	if (borderFlags & LGUI_LEFT)
+		lgui_vline(x, y, height, linewidth, red, green, blue);
+	if (borderFlags & LGUI_RIGHT)
+		lgui_vline(x+width-linewidth, y, height, linewidth, red, green, blue);
 }
 
 // FIXME - needs clipping
@@ -541,7 +547,7 @@ static void putpixelAlpha(int x, int y, unsigned char red, unsigned char green, 
         dnew = D[R*R-y*y];
         if( dnew < d ) x--;
 		/* lower half or circle */
-		if (arcs & LGUI_BOTTOMRIGHT) {
+		if (arcs & LGUI_CORNER_BOTTOMRIGHT) {
 		/* / upper */
         putpixelAlpha(x-1,y,   red, green, blue, dnew);
         putpixelAlpha(x,  y,   red, green, blue, (I-dnew));
@@ -550,7 +556,7 @@ static void putpixelAlpha(int x, int y, unsigned char red, unsigned char green, 
         putpixelAlpha(y,   x,   red, green, blue, (I-dnew));
 		}
 
-		if (arcs & LGUI_BOTTOMLEFT) {
+		if (arcs & LGUI_CORNER_BOTTOMLEFT) {
 		/* \ upper */
         putpixelAlpha(-(x-1),y,   red, green, blue, dnew);
         putpixelAlpha(-x,  y,   red, green, blue, (I-dnew));
@@ -560,7 +566,7 @@ static void putpixelAlpha(int x, int y, unsigned char red, unsigned char green, 
 		}
 
 		/* upper half or circle */
-		if (arcs & LGUI_TOPRIGHT) {
+		if (arcs & LGUI_CORNER_TOPRIGHT) {
 		/* \ upper */
 		putpixelAlpha(x-1,-y,   red, green, blue, dnew);
         putpixelAlpha(x,  -y,   red, green, blue, (I-dnew));
@@ -569,7 +575,7 @@ static void putpixelAlpha(int x, int y, unsigned char red, unsigned char green, 
         putpixelAlpha(y,   -x,   red, green, blue, (I-dnew));
 		}
 
-		if (arcs & LGUI_TOPLEFT) {
+		if (arcs & LGUI_CORNER_TOPLEFT) {
 		/* / upper */
         putpixelAlpha(-(x-1),-y,   red, green, blue, dnew);
         putpixelAlpha(-x,  -y,   red, green, blue, (I-dnew));
@@ -591,34 +597,97 @@ static void putpixelAlpha(int x, int y, unsigned char red, unsigned char green, 
  }
 
  void lgui_roundedbox_line(int x, int y, int width, int height, int radius,
-						  unsigned char red, unsigned char green, unsigned char blue)
+						  unsigned char red, unsigned char green, unsigned char blue,
+						  unsigned int borderFlags, unsigned int borderCornerFlags)
  {
-	lgui_aacircle(x+radius, y+radius, radius, LGUI_TOPLEFT, red, green, blue);
-	lgui_aacircle(x+width-radius, y+radius, radius, LGUI_TOPRIGHT, red, green, blue);
-	lgui_aacircle(x+radius, y+height-radius, radius, LGUI_BOTTOMLEFT, red, green, blue);
-	lgui_aacircle(x+width-radius, y+height-radius, radius, LGUI_BOTTOMRIGHT, red, green, blue);
+	int radAdd;
+	if (borderCornerFlags & LGUI_CORNER_TOPLEFT)
+		lgui_aacircle(x+radius, y+radius, radius, LGUI_CORNER_TOPLEFT, red, green, blue);
+	if (borderCornerFlags & LGUI_CORNER_TOPRIGHT)
+		lgui_aacircle(x+width-radius, y+radius, radius, LGUI_CORNER_TOPRIGHT, red, green, blue);
+	if (borderCornerFlags & LGUI_CORNER_BOTTOMLEFT)
+		lgui_aacircle(x+radius, y+height-radius, radius, LGUI_CORNER_BOTTOMLEFT, red, green, blue);
+	if (borderCornerFlags & LGUI_CORNER_BOTTOMRIGHT)
+		lgui_aacircle(x+width-radius, y+height-radius, radius, LGUI_CORNER_BOTTOMRIGHT, red, green, blue);
 
-	lgui_hline(x+radius, y, width-radius*2, 1, red, green, blue);
-	lgui_hline(x+radius, y+height, width-radius*2, 1, red, green, blue);
+	if (borderFlags & LGUI_TOP) {
+		radAdd = 0;
+		if (borderCornerFlags & LGUI_CORNER_TOPLEFT)
+			radAdd += radius;
+		if (borderCornerFlags & LGUI_CORNER_TOPRIGHT)
+			radAdd += radius;
+		lgui_hline(x+ ((borderCornerFlags & LGUI_CORNER_TOPLEFT) ? radius : 0),
+			y, width-radAdd, 1, red, green, blue);
+	}
 
-	lgui_vline(x, y+radius, height-radius*2, 1, red, green, blue);
-	lgui_vline(x+width, y+radius, height-radius*2, 1, red, green, blue);
+	if (borderFlags & LGUI_BOTTOM) {
+		radAdd = 0;
+		if (borderCornerFlags & LGUI_CORNER_BOTTOMLEFT)
+			radAdd += radius;
+		if (borderCornerFlags & LGUI_CORNER_BOTTOMRIGHT)
+			radAdd += radius;
+		lgui_hline(x+ ((borderCornerFlags & LGUI_CORNER_BOTTOMLEFT) ? radius : 0),
+			y+height, width-radAdd, 1, red, green, blue);
+	}
+
+	if (borderFlags & LGUI_LEFT) {
+		radAdd = 0;
+		if (borderCornerFlags & LGUI_CORNER_TOPLEFT)
+			radAdd += radius;
+		if (borderCornerFlags & LGUI_CORNER_BOTTOMLEFT)
+			radAdd += radius;
+		lgui_vline(x,
+			y+((borderCornerFlags & LGUI_CORNER_TOPLEFT) ? radius : 0),
+			height-radAdd, 1, red, green, blue);
+	}
+
+	if (borderFlags & LGUI_RIGHT) {
+		radAdd = 0;
+		if (borderCornerFlags & LGUI_CORNER_TOPRIGHT)
+			radAdd += radius;
+		if (borderCornerFlags & LGUI_CORNER_BOTTOMRIGHT)
+			radAdd += radius;
+		lgui_vline(x+width,
+			y+((borderCornerFlags & LGUI_CORNER_TOPRIGHT) ? radius : 0),
+			height-radAdd, 1, red, green, blue);
+	}
  }
 
  void lgui_roundedbox_fill(int x, int y, int width, int height, int radius,
-						  unsigned char red, unsigned char green, unsigned char blue)
+						  unsigned char red, unsigned char green, unsigned char blue,
+						  unsigned int cornerFlags)
  {
-	lgui_circlefill(x+radius, y+radius, radius, red, green, blue);
-	lgui_circlefill(x+width-radius, y+radius, radius, red, green, blue);
-	lgui_circlefill(x+radius, y+height-radius, radius, red, green, blue);
-	lgui_circlefill(x+width-radius, y+height-radius, radius, red, green, blue);
+	int radAdd;
+	if (cornerFlags & LGUI_CORNER_TOPLEFT)
+		lgui_circlefill(x+radius, y+radius, radius, red, green, blue);
+	if (cornerFlags & LGUI_CORNER_TOPRIGHT)
+		lgui_circlefill(x+width-radius, y+radius, radius, red, green, blue);
+	if (cornerFlags & LGUI_CORNER_BOTTOMLEFT)
+		lgui_circlefill(x+radius, y+height-radius, radius, red, green, blue);
+	if (cornerFlags & LGUI_CORNER_BOTTOMRIGHT)
+		lgui_circlefill(x+width-radius, y+height-radius, radius, red, green, blue);
 
-	lgui_hline(x+radius, y, width-radius*2, height, red, green, blue);
-	lgui_hline(x, y+radius, radius*2, height-radius*2, red, green, blue);
-	lgui_hline(x+width-radius*2, y+radius, radius*2, height-radius*2, red, green, blue);
+	radAdd = 0;
+	if (cornerFlags & LGUI_CORNER_TOPLEFT)
+		radAdd += radius;
+	if (cornerFlags & LGUI_CORNER_TOPRIGHT)
+		radAdd += radius;
+	lgui_hline(x+((cornerFlags & LGUI_CORNER_TOPLEFT) ? radius : 0), y,
+		width-radAdd, radius, red, green, blue);
+	
+	lgui_hline(x, y+radius, width, height-radius*2, red, green, blue);
+
+	radAdd = 0;
+	if (cornerFlags & LGUI_CORNER_BOTTOMLEFT)
+		radAdd += radius;
+	if (cornerFlags & LGUI_CORNER_BOTTOMRIGHT)
+		radAdd += radius;
+	lgui_hline(x+((cornerFlags & LGUI_CORNER_BOTTOMLEFT) ? radius : 0),
+		y+height-radius, width-radAdd, radius, red, green, blue);
  }
 
-void lgui_rbox_gradient(Gradient *g, int x, int y, int width, int height, int radius)
+void lgui_rbox_gradient(Gradient *g, int x, int y, int width, int height, int radius,
+						unsigned int cornerFlags)
 {
 	int hstart, hend;
 	int stop, maxStop;
@@ -630,7 +699,7 @@ void lgui_rbox_gradient(Gradient *g, int x, int y, int width, int height, int ra
 	unsigned int blue;
 	int line, ypos, i;
 	unsigned short *buf, pixel;
-	int iheight, iwidth, imod;
+	int iheight, iwidth, imod, imodl, imodr;
 	int cline, cheight;
 	int startx, cstartx, cendx;
 	int istart;
@@ -677,14 +746,24 @@ void lgui_rbox_gradient(Gradient *g, int x, int y, int width, int height, int ra
 
 				pixel = RGB_TO_565(red, green, blue);
 
+				imodl = 0;
+				imodr = 0;
 				if (ypos-y < radius) {
 					imod = radius-(ypos-y);
 					cr = (float)cos((float)imod/(float)(radius)*M_PI/2.0f);
 					imod = radius - (int)(cr*(float)radius);
+					if (cornerFlags & LGUI_CORNER_TOPLEFT)
+						imodl = imod;
+					if (cornerFlags & LGUI_CORNER_TOPRIGHT)
+						imodr = imod;
 				} else if (ypos-y > height-radius) {
 					imod = (height+y)-ypos;
 					cr = (float)cos((radius-imod)/(float)radius*M_PI/2.0f);
 					imod = radius - (int)(cr*(float)radius);
+					if (cornerFlags & LGUI_CORNER_BOTTOMLEFT)
+						imodl = imod;
+					if (cornerFlags & LGUI_CORNER_BOTTOMRIGHT)
+						imodr = imod;
 				} else {
 					imod = 0;
 				}
@@ -693,17 +772,17 @@ void lgui_rbox_gradient(Gradient *g, int x, int y, int width, int height, int ra
 				buf += imod;
 				istart = 0;
 
-				if (cstartx > imod) {
-					buf += cstartx-imod;
+				if (cstartx > imodl) {
+					buf += cstartx-imodl;
 					istart = cstartx;
 				} else {
-					istart = imod;
+					istart = imodl;
 				}
 
-				if (width-imod+1 > cendx) {
+				if (width-imodr+1 > cendx) {
 					iwidth = cendx;
 				} else {
-					iwidth = width - imod + 1;
+					iwidth = width - imodr + 1;
 				}
 
 				for (i = istart; i < iwidth; ++i) {
@@ -971,8 +1050,13 @@ more_escape_end:
 		p += adv;
 	}
 
-	*windowPercent = innercount*100 / (innercount + endcount + startindex);
-	*windowOffset = startindex*100 / (innercount + endcount + startindex);
+	if (innercount + endcount + startindex == 0) {
+		*windowPercent = 100;
+		*windowOffset = 0;
+	} else {
+		*windowPercent = innercount*100 / (innercount + endcount + startindex);
+		*windowOffset = startindex*100 / (innercount + endcount + startindex);
+	}
 }
 
 void lgui_measure_font(const char *utf8, Font *f, int isBold, IPoint *output)
