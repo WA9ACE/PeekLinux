@@ -36,7 +36,7 @@ int main(/*@unused@*/ int argc, /*@unused@*/ char **argv)
 
 	durl = url_parse("system://localhost/dataobject", URL_ALL);
 	dobj = dataobject_construct(durl, 1);
-#if 0
+#if 1
 	dataobject_setValue(dobj, "test1", dataobjectfield_string("Hi, Test"));
 	dataobject_setValue(dobj, "test2", dataobjectfield_data((void *)"12345", 5));
 

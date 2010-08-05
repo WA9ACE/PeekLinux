@@ -1,7 +1,5 @@
-
 #include "lgui.h"
 //#include "tweet.h"
-#include "buikeymap.h"
 #include "Platform.h"
 #include "ConnectionContext.h"
 #include "ApplicationManager.h"
@@ -9,8 +7,11 @@
 #include <GL/glut.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 
 #define GL_UNSIGNED_SHORT_5_6_5           0x8363
+
+/*#define DRAW_REGIONS*/
 
 extern "C" {
 unsigned char screenBuf[320*240*2];
@@ -22,6 +23,7 @@ void recv_sms(void)
 }
 
 void processKeys(unsigned char key, int x, int y) {
+	fprintf(stderr, "glut key '%c'\n", key);
 #if 0
 	if (key == 'a') {
 		tweetKey(KP_WHEEL_UP);
@@ -51,6 +53,8 @@ void processKeys(unsigned char key, int x, int y) {
 #ifdef USE_TWEET
 		tweetKey(key);
 #else
+		if (key == '`') /* lock key */
+			key = 42;
 		manager_handleKey(key);
 #endif
 
@@ -138,12 +142,40 @@ display(void)
 		}
 	}
 
-show_prev_screen:
 	glPixelStorei(GL_UNPACK_ALIGNMENT,1);
 	glPixelZoom(1.0f, -1.0f);
 	glRasterPos2i(-1, 1);
 	glDrawPixels(320, 240, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glBuffer);
+
+#ifdef DRAW_REGIONS
+	/* show redraw regions */
+	glColor3ub(255, 0, 0);
+	if (lgui_is_dirty()) {
+		upper = lgui_index_count();
+		if (upper == 0) {
+			glBegin(GL_LINE_LOOP);
+				glVertex2f(-1.0+0.01, -1.0+0.01);
+				glVertex2f(1.0-0.01, -1.0+0.01);
+				glVertex2f(1.0-0.01, 1.0-0.01);
+				glVertex2f(-1.0+0.01, 1.0-0.01);
+			glEnd();
+		} else {
+			Rectangle *rect;
+			for (index = 0; index < upper; ++index) {
+				rect = lgui_get_region(index);
+				glBegin(GL_LINE_LOOP);
+					glVertex2f(rect->x/320.0*2.0-1.0, -(rect->y/240.0*2.0-1.0));
+					glVertex2f((rect->x+rect->width)/320.0*2.0-1.0, -(rect->y/240.0*2.0-1.0));
+					glVertex2f((rect->x+rect->width)/320.0*2.0-1.0, -((rect->y+rect->height)/240.0*2.0-1.0));
+					glVertex2f(rect->x/320.0*2.0-1.0, -((rect->y+rect->height)/240.0*2.0-1.0));
+				glEnd();
+			}
+		}
+	}
+#endif
+
 	glutSwapBuffers();
+show_prev_screen:
 	lgui_blit_done();
 }
 
@@ -190,3 +222,22 @@ main(int argc, char **argv)
   return 0;            
 }
 
+
+
+extern "C" void emo_printf(const char *fmt, ...)
+{
+	va_list ap;
+
+	va_start(ap, fmt);
+    vprintf(fmt, ap);
+    va_end(ap);
+}
+
+extern "C" void script_emo_printf(const char *fmt, ...)
+{
+	va_list ap;
+
+	va_start(ap, fmt);
+    vprintf(fmt, ap);
+    va_end(ap);
+}

@@ -1,0 +1,20 @@
+<application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview" style="mystyle">
+<style name="mystyle">
+	<background renderer="box" background-color="7F3F0000" packing="vertical" fill="solid"/>
+	<tab renderer="box" background-color="FF7F0000" packing="vertical" fill="solid" rounded="12" border-corners="12" border="124" border-color="00000000" marginright="5"/>
+	<tabb renderer="box" background-color="DF5F0000" packing="vertical" fill="solid" rounded="12" border-corners="12" border="124" border-color="00000000" marginright="5"/>
+	<foreground renderer="box" background-color="FF7F0000" packing="vertical" fill="solid"/>
+	<label renderer="label" font-color="FFFFFFFF"/>
+</style>
+<view name="mainview" width="320" height="220" packing="vertical">
+	<box id="background" width="100%">
+		<box packing="horizontal" margintop="10">
+			<box id="tab"><label>Category 1</label></box>
+			<box id="tabb"><label>Category 2</label></box>
+		</box>
+	</box>
+	<box id="foreground" width="100%" height="90%">
+		<label>content</label>
+	</box>
+</view>
+</application>

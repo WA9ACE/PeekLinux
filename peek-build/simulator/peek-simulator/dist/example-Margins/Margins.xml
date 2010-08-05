@@ -1,0 +1,10 @@
+<application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
+<view name="mainview" width="320" height="220">
+	<box background-color="FFFFFFFF" id="solid" width="100%" height="100%" packing="vertical">
+		<box background-color="FF000000" id="solid" width="30" height="30" margin="0"/>
+		<box background-color="FF000000" id="solid" width="30" height="30" margintop="10" marginleft="20"/>
+		<box background-color="FF000000" id="solid" width="30" height="30" marginleft="5" margintop="2"/>
+		<box background-color="FF000000" id="solid" width="30" height="30" marginleft="30" margintop="2"/>
+	</box>
+</view>
+</application>

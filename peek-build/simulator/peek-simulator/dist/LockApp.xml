@@ -1,0 +1,9 @@
+<application name="LockScreen" description="Basic Lock screen" icon="app-icon" startupview="mainview">
+<view name="mainview" width="320" height="220">
+	<image id="image" src="street64.png" mime-type="png" packing="vertical">
+		<label marginleft="20" margintop="15" weight="bold" font-color="FFFFFFFF">1:15p</label>
+		<text marginleft="20" margintop="4" width="90%" font-color="FFFFFFFF">Friday, &lt;cFF000000&gt;Dec&lt;/c&gt; 17 2009</text>
+		<frame width="20" height="20" reference="xml://local/test.xml"/>
+	</image>
+</view>
+</application>

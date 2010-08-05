@@ -1124,13 +1124,15 @@ SEQUENCE_decode_uper(asn_codec_ctx_t *opt_codec_ctx, asn_TYPE_descriptor_t *td,
 		if(rv.code != RC_OK) {
 			ASN_DEBUG("Failed decode %s in %s",
 				elm->name, td->name);
-			FREEMEM(opres);
+			if (opres != NULL)
+				FREEMEM(opres);
 			return rv;
 		}
 	}
 
 	/* Optionality map is not needed anymore */
-	FREEMEM(opres);
+	if (opres != NULL)
+		FREEMEM(opres);
 
 	/*
 	 * Deal with extensions.

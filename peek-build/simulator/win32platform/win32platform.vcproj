@@ -21,6 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
+			UseOfMFC="1"
 			CharacterSet="1"
 			>
 			<Tool
@@ -41,11 +42,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\emobiix&quot;"
+				AdditionalIncludeDirectories="..\..\src\emobiix"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;SIMULATOR;_CRT_SECURE_NO_WARNINGS;NOGDI"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
@@ -83,6 +84,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
+			UseOfMFC="1"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -105,8 +107,9 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="..\..\src\emobiix"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;SIMULATOR;_CRT_SECURE_NO_WARNINGS;NOGDI"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -149,6 +152,10 @@
 			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
+			<File
+				RelativePath="..\peek-simulator\p_malloc.cpp"
+				>
+			</File>
 			<File
 				RelativePath=".\platform.c"
 				>

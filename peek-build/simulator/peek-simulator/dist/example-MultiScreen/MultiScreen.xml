@@ -1,0 +1,29 @@
+<application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
+<view name="mainview" width="320" height="220">
+	<box background-color="FFFFFFFF" id="solid" width="100%" height="100%" packing="vertical">
+		<box alignment="center" id="solid" width="60" height="30" margin="5" background-color="FF00FF00"/>
+		<box alignment="center" id="gradbox" width="60" height="30" margin="5"/>
+		<box alignment="center" id="gradboxr" width="60" height="30" margin="5"/>
+		<box alignment="center" renderer="box" width="60" height="30" margin="5" rounded="13" background-color="FFFF0000" border="1234" border-corners="13" border-color="00000000"/>
+		<button alignment="center" canfocus="1" onreturn="
+			dobj = DataObject.find(&quot;view2&quot;)
+			dobj:toScreen()
+			"><label>View2</label></button>
+	</box>
+</view>
+<view name="view2" width="320" height="220">
+	<box background-color="AFAFAFFF" id="solid" width="100%" height="100%" packing="vertical">
+		<entry alignment="center" reference="mydata" canfocus="1" name="entry1" width="50%"/>
+		<button alignment="center" canfocus="1" onreturn="
+			e1 = DataObject.find(&quot;entry1&quot;)
+			e2 = DataObject.find(&quot;entry2&quot;)
+			e2:setValue(e1:getValue())
+			"><label>Copy</label></button>
+		<entry alignment="center" canfocus="1" name="entry2" width="50%">More</entry>
+		<button alignment="center" canfocus="1" onreturn="
+			dobj = DataObject.find(&quot;mainview&quot;)
+			dobj:toScreen()
+			"><label>MainView</label></button>
+	</box>
+</view>
+</application>

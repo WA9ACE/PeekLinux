@@ -1,0 +1,11 @@
+<application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
+<image src="example-Images/letter.png" mime-type="png" name="letter"/>
+<view name="mainview" width="320" height="220">
+	<box id="gradbox" width="100%" height="100%" packing="vertical">
+		<image alignment="center" reference="letter" margin="10" color="AAAA0000"/>
+		<image alignment="center" reference="letter" transparency="full" margin="10"/>
+		<image alignment="center" reference="letter" transparency="stencil" margin="10"/>
+		<image alignment="center" reference="letter" transparency="none" margin="10"/>
+	</box>
+</view>
+</application>

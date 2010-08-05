@@ -1,0 +1,19 @@
+<application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
+<data name="mydata">3</data>
+<view name="mainview" width="320" height="220">
+	<box background-color="AFAFAFFF" id="solid" width="100%" height="100%" packing="horizontal">
+		<stack margin="20">
+			<image src="example-StackAndSet/facebook-48.png" mime-type="png"/>
+			<set reference="mydata" fieldname="data">
+				<setitem fieldvalue="0">
+				</setitem>
+				<setitem>
+					<box rounded="1234" border="1234" border-corners="1234" renderer="box" marginleft="38" background-color="AF000000" border-color="FFFFFFFF">
+						<label weight="bold" reference="mydata" font-color="FFFFFFFF"/>
+					</box>
+				</setitem>
+			</set>
+		</stack>
+	</box>
+</view>
+</application>

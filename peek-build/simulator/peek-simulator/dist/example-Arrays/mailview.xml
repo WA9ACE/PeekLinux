@@ -1,0 +1,14 @@
+<application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
+<view name="mainview" width="320" height="220">
+	<box background-color="FFFFFFFF" id="solid" width="100%" height="100%" packing="vertical">
+		<array alignment="center" width="94%" height="70%" reference="xml://local/example-Arrays/mail.xml" canfocus="1" packing="vertical">
+      <box id="selbox" alignment="left" packing="horizontal" canfocus="1" width="100%" height="17">
+        <image src="letter.png" onreturn="" script="" name="envelope" margin="5" />
+        <box width="50%"><label alignment="left" datafield="from" arraysource="1" width="100" height="17">from</label></box>
+        <box width="40%"><label alignment="left" datafield="subject" arraysource="1" width="55%" height="17">subject</label></box>
+      </box>
+    </array>
+		
+	</box>
+</view>
+</application>

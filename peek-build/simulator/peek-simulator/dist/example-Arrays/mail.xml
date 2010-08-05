@@ -1,0 +1,15 @@
+<array>
+<element status="N" from="santa@npole.com" subject="damn kids" />
+<element status="R" from="mrsclaus@npole.com" subject="need milk..." />
+<element status="N" from="santa@npole.com" subject="we need to talk" />
+<element status="N" from="mrsclaus@npole.com" subject="its over" />
+<element status="N" from="santa@npole.com" subject="rudolph and i" />
+<element status="N" from="mrsclaus@npole.com" subject="strange letter" />
+<element status="N" from="andrey@npole.com" subject="hello world!" />
+<element status="N" from="chris@npole.com" subject="interesting letter" />
+<element status="N" from="ryan@npole.com" subject="awesome power letter" />
+<element status="N" from="mrsclaus@npole.com" subject="strange letter" />
+<element status="N" from="mrsclaus@npole.com" subject="strange letter" />
+<element status="N" from="mrsclaus@npole.com" subject="strange letter" />
+</array>
+

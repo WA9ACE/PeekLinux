@@ -10,6 +10,7 @@
 #endif
 #include <stdio.h>
 #include <sys/stat.h>
+#include <malloc.h>
 
 const char *cacheBaseDir = "./";
 
@@ -21,13 +22,13 @@ Semaphore *semaphore_create(int initialValue)
 {
 	Semaphore *output;
 
-	output = (Semaphore *)p_malloc(sizeof(Semaphore));
+	output = (Semaphore *)malloc(sizeof(Semaphore));
 	if (output == NULL)
 		return NULL;
 
 	output->sem = CreateSemaphore(NULL, initialValue, 255, NULL);
 	if (output->sem == NULL) {
-		p_free(output);
+		free(output);
 		return NULL;
 	}
 

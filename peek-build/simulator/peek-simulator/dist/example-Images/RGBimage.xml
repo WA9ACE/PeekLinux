@@ -1,0 +1,11 @@
+<application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
+<image src="example-Images/plasma.png" mime-type="png" name="plasma"/>
+<view name="mainview" width="320" height="220">
+	<box id="gradbox" width="100%" height="100%" packing="vertical">
+		<image alignment="center" reference="plasma" margin="10"/>
+		<image alignment="center" reference="plasma" transparency="full" margin="10"/>
+		<image alignment="center" reference="plasma" transparency="stencil" margin="10"/>
+		<image alignment="center" reference="plasma" transparency="none" margin="10"/>
+	</box>
+</view>
+</application>

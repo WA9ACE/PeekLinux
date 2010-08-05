@@ -1,0 +1,10 @@
+<application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
+<view name="mainview" width="320" height="220">
+	<box background-color="AFAFAFFF" id="solid" width="100%" height="100%" packing="vertical">
+		<stack>
+			<image src="plasma.png" mime-type="png"/>
+			<image src="letter.png" mime-type="png"/>
+		</stack>
+	</box>
+</view>
+</application>

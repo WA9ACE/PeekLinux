@@ -21,6 +21,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
+			UseOfMFC="1"
 			CharacterSet="1"
 			>
 			<Tool
@@ -41,11 +42,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\freetype2\include\&quot;"
+				AdditionalIncludeDirectories="..\..\src\freetype2\include\"
 				PreprocessorDefinitions="WIN32;FT2_BUILD_LIBRARY;SIMULATOR;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
@@ -83,6 +84,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
+			UseOfMFC="1"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
 			>
@@ -105,9 +107,9 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;Z:\Documents\emobiix\repo\trunk\peek-build\src\freetype2\include\freetype&quot;"
+				AdditionalIncludeDirectories="..\..\src\freetype2\include\"
 				PreprocessorDefinitions="WIN32;FT2_BUILD_LIBRARY;SIMULATOR;_CRT_SECURE_NO_WARNINGS"
-				RuntimeLibrary="2"
+				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
