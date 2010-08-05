@@ -21,6 +21,7 @@ void manager_focusNextApplication(void);
 Application *manager_appForDataObject(DataObject *dobj);
 void manager_loadApplication(DataObject *dobj);
 void manager_loadApplicationReal(DataObject *dobj);
+Application *manager_getBootApp(void);
 
 #ifdef __cplusplus
 }
