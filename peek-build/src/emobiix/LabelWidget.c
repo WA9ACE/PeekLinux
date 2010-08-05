@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <string.h>
 
+extern Font *defaultFont;
+
 /* string renderer */
 static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj) {
@@ -23,16 +25,17 @@ static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	margin = widget_getMargin(w);
 	dtype = (const char *)dataobject_getValue(w, "type")->field.string;
 	ltype = widget_getID(w);
-	f = (Font *)style_getProperty(s, NULL, ltype, dtype, "font");
-	c.value = (unsigned int)style_getProperty(s, NULL, ltype, dtype, "color");
-	field = dataobject_getValue(w, "color");
+	f = (Font *)defaultFont;/*style_getProperty(s, NULL, ltype, dtype, "font");*/
+	style_getColor(s, w, "font-color", &c.value);
+	/*c.value = (unsigned int)style_getProperty(s, NULL, ltype, dtype, "color");
+	field = dataobject_getValue(w, "font-color");
 	if (field != NULL) {
 		if (field->type == DOF_UINT) {
 			c.value = field->field.uinteger;
 		} else if (field->type == DOF_STRING) {
 			sscanf(field->field.string, "%x", &c.value);
 		}
-	}
+	}*/
 	sourceField = dataobject_getValue(w, "datafield");
 	if (sourceField != NULL && sourceField->type == DOF_STRING)
 		field = dataobject_getValue(dobj, sourceField->field.string);
@@ -66,7 +69,7 @@ static void string_measure(WidgetRenderer *wr, Style *s, Widget *w,
 
 	dtype = (const char *)dataobject_getValue(w, "type")->field.string;
 	ltype = widget_getID(w);
-	f = (Font *)style_getProperty(s, NULL, ltype, dtype, "font");
+	f = (Font *)defaultFont;/*style_getProperty(s, NULL, ltype, dtype, "font");*/
 	
 	sourceField = dataobject_getValue(w, "datafield");
 	if (sourceField != NULL && sourceField->type == DOF_STRING)
