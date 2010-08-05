@@ -36,6 +36,7 @@ DataObject *setwidget_activeItem(DataObject *w)
 		itemobj = (DataObject *)listIterator_item(&iter);
 		itemvalue = dataobject_getValue(itemobj, "fieldvalue");
 		if (itemvalue != NULL && itemvalue->type == DOF_STRING &&
+				fieldvalue != NULL && fieldvalue->type == DOF_STRING &&
 				strcmp(itemvalue->field.string, fieldvalue->field.string) == 0) {
 			widget_getChildren(itemobj, &iter);
 			if (listIterator_finished(&iter))
