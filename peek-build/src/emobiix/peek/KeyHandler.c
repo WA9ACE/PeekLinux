@@ -15,6 +15,7 @@
 #include "Debug.h"
 #include "ApplicationManager.h"
 #include "lgui.h"
+#include "KeyMappings.h"
 
 #include "p_malloc.h"
 
@@ -180,7 +181,7 @@ static void UiHandleKeyEvents(RegIdT RegId, uint32 MsgId, void *MsgBufferP)
        //         flash_led();
                 //main_test();
 		/*tweetKey(UiKeyId);*/
-        manager_handleKey(UiKeyId);
+        manager_handleKey(MapKeyToInternal(UiKeyId));
 		updateScreen();
         }
 #ifndef EMO_SIM
