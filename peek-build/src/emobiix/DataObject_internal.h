@@ -9,6 +9,10 @@ struct DataObject_t;
 typedef struct DataObject_t DataObject;
 typedef enum {DOF_STRING, DOF_DATA, DOF_INT, DOF_UINT} DOFType;
 
+#define DOFF_NONE           0x00
+#define DOFF_ARRAYSOURCE    0x01
+#define DOFF_READONLY	    0x02
+
 struct DataObjectField_t {
 	DOFType type;
 	union field_t {
@@ -20,6 +24,7 @@ struct DataObjectField_t {
 		int integer;
 		unsigned int uinteger;
 	} field;
+    int flags;
 };
 typedef struct DataObjectField_t DataObjectField;
 
