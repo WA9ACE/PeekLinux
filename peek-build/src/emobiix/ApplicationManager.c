@@ -40,7 +40,7 @@ struct ApplicationManager_t {
 	List *allApplications;
 	Application *focus;
 	Application *rootApplication;
-        Application *bootApp;
+	Application *bootApp;
 	DataObject *rootApplicationObj;
 	DataObject *rootApplicationWindow;
 	DataObject *rootApplicationPlaceHolder;
@@ -120,7 +120,6 @@ void manager_drawScreen(void)
 void manager_drawScreenPartial(void)
 {
 	DataObject *view;
-	Style *style;
 
 #ifndef SIMULATOR
     emo_printf("manager_drawScreenPartial()0");
@@ -134,10 +133,7 @@ void manager_drawScreenPartial(void)
 	emo_printf("manager_drawScreenPartial()1");
 #endif
 	if (view != NULL) {
-		style = application_getCurrentStyle(appManager->focus);
-		if (style == NULL)
-			style = appManager->style;
-		style_renderWidgetTree(style, view);
+		style_renderWidgetTree(appManager->style, view);
 	} else {
 		emo_printf("no view to draw" NL);
 	}
