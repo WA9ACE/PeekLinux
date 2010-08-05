@@ -11,6 +11,7 @@ struct Gradient_t;
 typedef struct Gradient_t Gradient;
 
 Gradient *gradient_new(void);
+void gradient_delete(Gradient *g);
 void gradient_addStop(Gradient *g, int position, Color color);
 int gradient_stops(Gradient *g);
 Color gradient_getStop(Gradient *g, int id, int *height);

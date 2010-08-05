@@ -19,9 +19,14 @@ Gradient *gradient_new(void)
 {
 	Gradient *output;
 	output = (Gradient *)p_malloc(sizeof(Gradient));
-	output->stops = array_new_with_size(sizeof(GradientStop), 4);
+	output->stops = array_new_with_size(sizeof(GradientStop), 6);
 
 	return output;
+}
+
+void gradient_delete(Gradient *g)
+{
+	/* FIXME: should do something */
 }
 
 void gradient_addStop(Gradient *g, int position, Color color)
