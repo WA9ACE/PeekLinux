@@ -6,7 +6,6 @@
 
 unsigned int mfwMmeDrvFlag;
 
-#ifndef SIMULATOR
 void emo_printf( const char* fmt, ...) {
 #ifndef EMO_PROD
         char buf[10000];
@@ -27,4 +26,3 @@ void emo_printf( const char* fmt, ...) {
         TCCE_Task_Sleep(2);
 #endif
 }
-#endif
