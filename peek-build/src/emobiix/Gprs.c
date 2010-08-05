@@ -1,8 +1,6 @@
 #include "Gprs.h"
 #include "Debug.h"
 #include "exeapi.h"
-#include "bal_os.h"
-#include "balapi.h"
 #include "msg.h"
 
 #include "DataObject.h"

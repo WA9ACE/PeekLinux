@@ -3,9 +3,6 @@
 
 #include "Task.h"
 
-#include "ballightapi.h"
-#include "exeapi.h"
-
 extern Task UITask_s;
 
 #define UI_MAX_MAILBOXES      2

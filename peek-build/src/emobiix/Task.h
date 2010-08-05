@@ -19,9 +19,4 @@ void task_threadFunction(Task *t);
 }
 #endif
 
-#ifndef SIMULATOR
-#include "sysdefs.h"
-#include "bal_os.h"
-#endif
-
 #endif /* _TASK_H_ */

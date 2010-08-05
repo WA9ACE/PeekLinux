@@ -1,9 +1,8 @@
 #include "general.h"
-#include "bal_os.h"
-#include "bal_socket_api_ti.h"
 #include "msg.h"
 #include "TCPTransport.h"
 #include "p_malloc.h"
+#include "typedefs.h"
 #include "vsi.h"
 #include "p_sim.h"
 
@@ -16,10 +15,17 @@
 #define SOCK_STREAM    0
 #define IPPROTO_TCP    0
 
+#define APP "APP"
 // XXX verify constants!
 #define MSG_PEEK 0
 #define EAGAIN 11
 
+
+#ifdef TI_PS_HCOMM_CHANGE
+#define PSENDX(A,B) PSEND(_hComm##A,B)
+#else
+#define PSENDX(A,B) PSEND(hComm##A,B)
+#endif 
 Endpoint *TCPSocket(void);
 int TCPConnect(Endpoint *ep, URL *destination);
 int TCPListen(Endpoint *ep, int backlog);

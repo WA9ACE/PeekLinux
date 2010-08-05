@@ -796,6 +796,10 @@ void nm_activate (U8 result)
 
 }
 
+int nm_reregistration(void) {
+    emo_printf("------------ NM_REREGISTRATION ----------------\n");
+    return 0;
+}
 
 /*
 +--------------------------------------------------------------------+

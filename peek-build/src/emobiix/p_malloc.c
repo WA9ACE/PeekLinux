@@ -1,7 +1,4 @@
 #include "p_malloc.h"
-#ifndef SIMULATOR
-#include "bget.h"
-#endif
 #include <string.h>
 #include <stdio.h>
 

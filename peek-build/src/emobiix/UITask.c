@@ -2,7 +2,6 @@
 #include "typedefs.h"
 #include "Task.h"
 #include "UITask.h"
-#include "LcdControl.h"
 #include "mfw_mfw.h"
 #include "mfw_mme.h"
 #include "Debug.h"
