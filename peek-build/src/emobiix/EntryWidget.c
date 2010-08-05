@@ -8,8 +8,7 @@
 
 #include "p_malloc.h"
 
-#include "typedefs.h"
-#include "mfw_kbd.h"
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -23,7 +22,7 @@ int entryWidget_handleKey(Widget *w, int key, Style *s)
 	char *newstring;
 	Rectangle rect;
 
-	if ((key >= KCD_AT) && (key <= KCD_DOWN))
+	if (!isprint(key) && key != '\b')
 		return 0;
 
 	dobj = widget_getDataObject(w);
