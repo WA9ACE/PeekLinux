@@ -18,6 +18,7 @@ struct Thread_t;
 typedef struct Thread_t Thread;
 
 Thread *thread_run(void (*)(void *), void *d);
+void thread_kill(Thread *t);
 
 /* Cache folder */
 extern const char *cacheBaseDir;
