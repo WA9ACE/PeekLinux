@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <string.h>
 
+extern Font *defaultFont;
+
 /* text renderer */
 static void text_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj) {
@@ -28,8 +30,9 @@ static void text_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	margin = widget_getMargin(w);
 	dtype = (const char *)dataobject_getValue(dobj, "type")->field.string;
 	ltype = widget_getID(w);
-	f = (Font *)style_getProperty(s, NULL, ltype, dtype, "font");
-	c.value = (unsigned int)style_getProperty(s, NULL, ltype, dtype, "color");
+	f = (Font *)defaultFont;/*style_getProperty(s, NULL, ltype, dtype, "font");*/
+	c.value = 0;
+	style_getColor(s, w, "font-color", &c.value);
 	text = widget_getDataObject(w);
 	field = dataobject_getValue(text, "data");
 	if (field != NULL) {
@@ -52,7 +55,7 @@ static void text_measure(WidgetRenderer *wr, Style *s, Widget *w,
 
 	dtype = (const char *)dataobject_getValue(dobj, "type")->field.string;
 	ltype = widget_getID(w);
-	f = (Font *)style_getProperty(s, NULL, ltype, dtype, "font");
+	f = (Font *)defaultFont;/*style_getProperty(s, NULL, ltype, dtype, "font");*/
 	str = (const char *)dataobject_getValue(dobj, "data")->field.data.bytes;
 
 	lgui_measure_font_complex(str, f, p);
