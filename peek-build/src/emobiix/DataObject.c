@@ -5,6 +5,8 @@
 #include "List.h"
 #include "Debug.h"
 #include "ConnectionContext.h"
+#include "Application.h"
+#include "ApplicationManager.h"
 
 #include "p_malloc.h"
 
@@ -17,10 +19,12 @@ void dataobjectfield_free(DataObjectField *f)
 {
 	switch (f->type) {
 		case DOF_STRING:
+			if (f->field.string != NULL)
 			p_free(f->field.string);
 			break;
 		case DOF_DATA:
-			p_free(f->field.data.bytes);
+			if (f->field.data.bytes != NULL)
+				p_free(f->field.data.bytes);
 			break;
 		default:
 			break;
@@ -101,18 +105,29 @@ void dataobject_setValue(DataObject *dobj, const char *key, DataObjectField *v)
 	old = (DataObjectField *)map_find(dobj->data, key);
 	if (old != NULL) {
 		map_remove(dobj->data, key);
-		dataobjectfield_free(old);;
+		dataobjectfield_free(old);
+	}
+	if (key != NULL && key[0] == '_') {
+		v->flags |= DOFF_ARRAYSOURCE;
+		++key;	
 	}
 	map_append(dobj->data, key, v);
 }
 
 DataObjectField *dataobject_getValue(DataObject *dobj, const char *key)
 {
-	void *output;
+	DataObjectField *output;
+	DataObject *child;
 
-	output = map_find(dobj->data, key);
+	output = (DataObjectField *)map_find(dobj->data, key);
+	if (output != NULL && output->type == DOF_STRING) {
+		if (output->flags & DOFF_ARRAYSOURCE) {
+			child = widget_getDataObject(dobj);
+			output = dataobject_getValue(child, output->field.string);
+		}
+	}
 
-	return (DataObjectField *)output;
+	return output;
 }
 
 DataObjectField *dataobject_getValueAsInt(DataObject *dobj, const char *key)
@@ -124,7 +139,7 @@ DataObjectField *dataobject_getValueAsInt(DataObject *dobj, const char *key)
 	if (output == NULL)
 		return output;
 
-	if (output->type == DOF_INT)
+	if (output->type == DOF_INT || output->type == DOF_UINT)
 		return output;
 
 	if (output->type == DOF_STRING) {
@@ -310,7 +325,7 @@ int dataobject_treeIndex(DataObject *dobj)
 	DataObject *superparent;
 	int index;
 
-	dataobject_debugPrint(dobj);
+	/*dataobject_debugPrint(dobj);*/
 
 	superparent = dobj;
 	while (superparent->parent != NULL) {
@@ -413,17 +428,32 @@ void dataobject_setLayoutDirty(DataObject *dobj, unsigned int wh)
 void dataobject_setLayoutDirtyAll(DataObject *dobj)
 {
 	ListIterator iter;
+	DataObjectField *type;
+	DataObject *child;
+	Application *app;
 
 	dobj->flags1 |= DO_FLAG_LAYOUT_DIRTY_WIDTH;
 	dobj->flags1 |= DO_FLAG_LAYOUT_DIRTY_HEIGHT;
 
-	list_begin(dobj->children, &iter);
-	while (!listIterator_finished(&iter)) {
-		dataobject_setLayoutDirtyAll(
-				(DataObject *)listIterator_item(&iter));
-		listIterator_next(&iter);
+	type = dataobject_getValue(dobj, "type");
+	if (dataobjectfield_isString(type, "frame")) {
+		child = widget_getDataObject(dobj);
+		if (child != NULL) {
+			app = manager_appForDataObject(child);
+			if (app != NULL) {
+				child = application_getCurrentScreen(app);
+				if (child != NULL)
+					dataobject_setLayoutDirtyAll(child);
+			}
+		}
+	} else {
+		list_begin(dobj->children, &iter);
+		while (!listIterator_finished(&iter)) {
+			dataobject_setLayoutDirtyAll(
+					(DataObject *)listIterator_item(&iter));
+			listIterator_next(&iter);
+		}
 	}
-	/*listIterator_delete(iter);*/
 }
 
 void dataobject_setLayoutClean(DataObject *dobj, unsigned int wh)
@@ -439,6 +469,8 @@ static void dataobject_debugPrintR(DataObject *dobj, int level)
 	DataObjectField *dof;
 	const char *key;
 	int i;
+	DataObject *child;
+	Application *app;
 	
 	for (i = 0; i < level; ++i)
 		emo_printf("    ");
@@ -481,10 +513,21 @@ static void dataobject_debugPrintR(DataObject *dobj, int level)
 	}
 	emo_printf(">" NL);
 
-	list_begin(dobj->children, &citer);
-	while (!listIterator_finished(&citer)) {
-		dataobject_debugPrintR((DataObject *)listIterator_item(&citer), level+1);
-		listIterator_next(&citer);
+	dof = dataobject_getValue(dobj, "type");
+	if (dataobjectfield_isString(dof, "frame")) {
+		child = widget_getDataObject(dobj);
+		if (child != NULL) {
+			app = manager_appForDataObject(child);
+			child = application_getCurrentScreen(app);
+			if (child != NULL)
+				dataobject_debugPrintR(child, level+1);
+		}
+	} else {
+		list_begin(dobj->children, &citer);
+		while (!listIterator_finished(&citer)) {
+			dataobject_debugPrintR((DataObject *)listIterator_item(&citer), level+1);
+			listIterator_next(&citer);
+		}
 	}
 	/*listIterator_delete(citer);*/
 }
@@ -574,13 +617,19 @@ DataObject *dataobject_construct(URL *url, int isLocal)
 	output = dataobject_new();
 	if (output == NULL)
 		return NULL;
+
+	dataobject_exportGlobal(output, url, isLocal);
+
+	return output;
+}
+
+void dataobject_exportGlobal(DataObject *output, URL *url, int isLocal)
+{
 	output->isLocal = isLocal;
 	if (isLocal)
 		hashtable_append(globalDObjs, url->path, output);
 	else
 		hashtable_append(globalDObjs, url->all, output);
-
-	return output;
 }
 
 DataObjectField *dataobjectfield_string(const char *str)
@@ -590,6 +639,7 @@ DataObjectField *dataobjectfield_string(const char *str)
 	output = (DataObjectField *)p_malloc(sizeof(DataObjectField));
 	output->type = DOF_STRING;
 	output->field.string = p_strdup(str);
+    output->flags = 0;
 
 	return output;
 }
@@ -602,6 +652,7 @@ DataObjectField *dataobjectfield_data(void *data, int size)
 	output->type = DOF_DATA;
 	output->field.data.bytes = data;
 	output->field.data.size = size;
+    output->flags = 0;
 
 	return output;
 }
@@ -613,6 +664,7 @@ DataObjectField *dataobjectfield_int(int val)
 	output = (DataObjectField *)p_malloc(sizeof(DataObjectField));
 	output->type = DOF_INT;
 	output->field.integer = val;
+    output->flags = 0;
 
 	return output;
 }
@@ -624,8 +676,32 @@ DataObjectField *dataobjectfield_uint(unsigned int val)
 	output = (DataObjectField *)p_malloc(sizeof(DataObjectField));
 	output->type = DOF_UINT;
 	output->field.uinteger = val;
+    output->flags = 0;
 
 	return output;
+}
+
+int dataobjectfield_isTrue(DataObjectField *field)
+{
+    if (field != NULL) {
+        if (field->type == DOF_STRING &&
+                (strcmp(field->field.string, "true") == 0 ||
+                strcmp(field->field.string, "1") == 0))
+            return 1;
+        if (field->type == DOF_INT)
+            return field->field.integer;
+        if (field->type == DOF_UINT)
+            return field->field.uinteger;
+    }
+    return 0;
+}
+
+int dataobjectfield_isString(DataObjectField *field, const char *str)
+{
+    if (field != NULL && field->type == DOF_STRING &&
+            strcmp(field->field.string, str) == 0)
+        return 1;
+    return 0;
 }
 
 extern ConnectionContext *connectionContext;
