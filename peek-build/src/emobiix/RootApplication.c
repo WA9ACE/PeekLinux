@@ -69,7 +69,7 @@ DataObject *RootApplication(void)
 	root = widget_newTypeIdName("view", NULL, "rootview", output);
 	widget_setPacking(root, WP_VERTICAL);
 
-	dobj1 = widget_newTypeIdName("box", "gradboxdark", NULL, root);
+	dobj1 = widget_newTypeIdName("box", "gradbox", NULL, root);
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("320"));
 	dataobject_setValue(dobj1, "height", dataobjectfield_string(BARHEIGHT));
 	widget_setPacking(dobj1, WP_HORIZONTAL);
