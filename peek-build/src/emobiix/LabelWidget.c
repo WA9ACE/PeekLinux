@@ -46,7 +46,7 @@ static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	str = (const char *)field->field.string;
 	/*emo_printf("Rendering %s" NL, str);*/
 
-    boldField = dataobject_getValue(w, "weight");
+    boldField = style_getProperty(s, w, "weight");
     if (boldField != NULL && boldField->type == DOF_STRING) {
         if (strcmp(boldField->field.string, "bold") == 0)
             isBold = 1;
