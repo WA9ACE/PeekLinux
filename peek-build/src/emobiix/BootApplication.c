@@ -58,8 +58,8 @@ DataObject *BootApplication(void)
 "end"));
 
     view = widget_newTypeIdName("view", NULL, "mainview", output);
-	/*dataobject_setValue(view, "width", dataobjectfield_string("320"));
-	dataobject_setValue(view, "height", dataobjectfield_string("220"));*/
+	dataobject_setValue(view, "width", dataobjectfield_string("320"));
+	dataobject_setValue(view, "height", dataobjectfield_string("220"));
     widget_setPacking(view, WP_VERTICAL);
 
     root = widget_newTypeIdName("box", "gradbox", NULL, view);
@@ -67,7 +67,7 @@ DataObject *BootApplication(void)
 	dataobject_setValue(root, "height", dataobjectfield_string("100%"));
     widget_setPacking(root, WP_VERTICAL);
 
-    dobj1 = widget_newTypeIdName("string", "biglabel", NULL, root);
+    dobj1 = widget_newTypeIdName("label", NULL, NULL, root);
     dataobject_setValue(dobj1, "data", dataobjectfield_string("emobiix"));
 	dataobject_setValue(dobj1, "weight", dataobjectfield_string("bold"));
     widget_setAlignment(dobj1, WA_CENTER);
@@ -80,7 +80,7 @@ DataObject *BootApplication(void)
 	widget_setPacking(box, WP_HORIZONTAL);
 	widget_setAlignment(box, WA_CENTER);
 
-	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
+	dobj1 = widget_newTypeIdName("button", NULL, NULL, box);
 
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
 			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/helloworld\"); dobj:toScreen();"));
@@ -92,7 +92,7 @@ DataObject *BootApplication(void)
     dataobject_setValue(dobj2, "data", dataobjectfield_string("Hello World"));
     widget_setAlignment(dobj2, WA_CENTER);
 
-	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
+	dobj1 = widget_newTypeIdName("button", NULL, NULL, box);
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
 			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/calc\"); dobj:toScreen();"));
     widget_setAlignment(dobj1, WA_CENTER);
@@ -109,7 +109,7 @@ DataObject *BootApplication(void)
 	dataobject_setValue(dobj1, "lat", dataobjectfield_string("-74.015794"));
 #endif
 
-	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
+	dobj1 = widget_newTypeIdName("button", NULL, NULL, box);
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
 			"gps = DataObject.locate(\"system://local/gps\");\n"
 			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/whereami?\" .. gps:getValue(\"long\") .. \",\" .. gps:getValue(\"lat\"));\n"
@@ -122,7 +122,7 @@ DataObject *BootApplication(void)
     widget_setAlignment(dobj2, WA_CENTER);
 
 
-	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
+	dobj1 = widget_newTypeIdName("button", NULL, NULL, box);
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
 			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/mail\"); dobj:toScreen();"));
     widget_setAlignment(dobj1, WA_CENTER);
@@ -137,18 +137,18 @@ DataObject *BootApplication(void)
 	widget_setAlignment(box, WA_CENTER);
 
 	dobj1 = widget_newTypeIdName("entry", NULL, "lat", box);
-	dataobject_setValue(dobj1, "width", dataobjectfield_string("30%"));
+	dataobject_setValue(dobj1, "width", dataobjectfield_string("40%"));
 	dataobject_setValue(dobj1, "data", dataobjectfield_string("40.702147"));
 	widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 
 	dobj1 = widget_newTypeIdName("entry", NULL, "long", box);
-	dataobject_setValue(dobj1, "width", dataobjectfield_string("30%"));
+	dataobject_setValue(dobj1, "width", dataobjectfield_string("40%"));
 	dataobject_setValue(dobj1, "data", dataobjectfield_string("-74.015794"));
 	widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 
-	dobj1 = widget_newTypeIdName("button", "gradboxr", NULL, box);
+	dobj1 = widget_newTypeIdName("button", NULL, NULL, box);
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
 			"Llat = DataObject.find(\"lat\");\n"
 			"Llong = DataObject.find(\"long\");\n"
@@ -172,7 +172,7 @@ DataObject *BootApplication(void)
 	/*widget_setPacking(dobj1, WP_VERTICAL);*/
 #endif
 
-#ifdef SIMULATOR
+#if 0
 	/* png test */
 	mimefile = fopen("letter.png", "rb");
 	fseek(mimefile, 0, SEEK_END);
