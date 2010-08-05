@@ -177,7 +177,7 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 	void *key;
 	SyncRequest *sreq;
 
-#if 0
+#ifndef SIMULATOR
 	transport = endpoint_getTransport(ctx->endpoint);
 
 	/*emo_printf("Loop iteration...");*/
@@ -189,9 +189,9 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 		/* error state, or no data */
 	} else if (response > 0) {
 		response = transport->read(ctx->endpoint, ctx->buffer+ctx->bufferBytes, CCTX_BUFLEN-ctx->bufferBytes);
-		emo_printf("ANDREY::Read %d bytes" NL, response);
+		emo_printf("Read %d bytes" NL, response);
 		if (response < 0) {
-			emo_printf("ANDREY::read got error state" NL);
+			emo_printf("read got error state" NL);
 			/* error state */
 		} else if (response > 0) {
 			ctx->bufferBytes += response;
@@ -257,10 +257,21 @@ void connectionContext_requestAuth(ConnectionContext *ctx)
 	connectionContext_packetSend(ctx, &packet);
 }
 
+#ifdef SIMULATOR
+extern void xmlLoadObject(URL *url);
+#endif
+
 int connectionContext_syncRequest(ConnectionContext *ctx, URL *url)
 {
 	SyncRequest *sreq;
 	char mapKey[64];
+
+#ifdef SIMULATOR
+	if (strcmp(url->scheme, "xml") == 0) {
+		xmlLoadObject(url);
+		return 1;
+	}
+#endif
 
 	if (ctx == NULL) {
 		emo_printf("ConnectionContext is NULL.." NL);
@@ -271,7 +282,7 @@ int connectionContext_syncRequest(ConnectionContext *ctx, URL *url)
 	sreq->hasStarted = 0;
 	sreq->sequenceID = endpoint_getTransport(ctx->endpoint)->sequenceID(ctx->endpoint);
 	snprintf(mapKey, 64, "%p,%d", ctx->endpoint, sreq->sequenceID);
-	emo_printf("@New Sync Request mapKey: %s" NL, mapKey);
+	/*emo_printf("@New Sync Request mapKey: %s" NL, mapKey);*/
 	map_append(ctx->syncRequests, mapKey, sreq);
 
 	return 1;
@@ -307,7 +318,7 @@ int connectionContext_consumePacket(ConnectionContext *ctx)
 					ctx->bufferBytes - consumed);
 			ctx->bufferBytes -= consumed;
 			emo_printf("connectionContext_consumePacket() RC_OK finished");
-			protocolFreeFRIPacketP(packet);
+			/*protocolFreeFRIPacketP(packet);*/
 			return consumed;
 		case RC_WMORE:
 			emo_printf("Needs more data for a complete packet" NL);
@@ -384,7 +395,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 	SyncRequest *sreq;
 	const char *mapKey;
 	DataObjectField *field;
-	Application *app;
+	/*Application *app;*/
 
 	emo_printf("Got packet : %d" NL, packet->packetTypeP.present);
 
@@ -414,7 +425,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 		case packetTypeP_PR_dataObjectSyncFinishP:
 			emo_printf( "DataObjectSyncFinish packet" NL);
 			mapKey = generate_mapKey(ctx->endpoint, packet->packetTypeP.choice.dataObjectSyncFinishP.syncSequenceIDP);
-			emo_printf("Map Key: %s" NL, mapKey);
+			/*emo_printf("Map Key: %s" NL, mapKey);*/
 			sreq = map_find(ctx->syncRequests, mapKey);
 			if (sreq == NULL) {
 				emo_printf("recvd sync finished for request not in progress: %d" NL, 
@@ -428,17 +439,16 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 				dataobject_setState(sreq->dobj, DOS_OK);
 				/*widget_resolveLayout(sreq->dobj, currentStyle);*/
 				widget_markDirty(sreq->dobj);
-				mime_loadAll(sreq->dobj);
-				//dataobject_debugPrint(sreq->dobj);
 				field = dataobject_getValue(sreq->dobj, "type");
 				if (field != NULL && field->type == DOF_STRING)
 					emo_printf("Finished Type: %s" NL, field->field.string); 
 				if (field != NULL && field->type == DOF_STRING &&
 						strcmp(field->field.string, "application") == 0) {
-					app = application_load(sreq->dobj);
+					manager_loadApplication(sreq->dobj);
+					/*app = application_load(sreq->dobj);
 					manager_launchApplication(app);
-					manager_focusApplication(app);
-					//dataobject_debugPrint(sreq->dobj);
+					manager_focusApplication(app);*/
+					/*dataobject_debugPrint(sreq->dobj);*/
 				} else {
 					/* shouldnt refocus, should force a reloayout and draw instead */
 					manager_focusApplication(manager_getFocusedApplication());
@@ -698,7 +708,7 @@ static void connectionContext_processSyncOperand(ConnectionContext *ctx,
 	DataObject *cobj;
 
 	fieldName = (char *)syncOp->fieldNameP.buf;
-	emo_printf("Field is '%s'" NL, fieldName);
+	/*emo_printf("Field is '%s'" NL, fieldName);*/
 	if (syncOp->syncP.present == syncP_PR_syncSetP) {
 		dof = dataobjectfield_string((const char *)syncOp->syncP.choice.syncSetP.buf);
 		dataobject_setValue(sobj, fieldName, dof);
@@ -725,15 +735,15 @@ static void connectionContext_processSyncOperand(ConnectionContext *ctx,
 				dataobject_pack(sobj, cobj);
 				sobj = cobj;
 				sreq->objectIndex = dataobject_treeIndex(sobj);
-				emo_printf("#### Add child - new index: %d" NL, sreq->objectIndex);
-				//dataobject_debugPrint(sreq->dobj);
+				/*emo_printf("#### Add child - new index: %d" NL, sreq->objectIndex);*/
+				/*dataobject_debugPrint(sreq->dobj);*/
 			} else {
 				emo_printf("Unsuported node add type" NL);
 			}
 		} else if (syncOp->syncP.choice.nodeOperationP.present == nodeOperationP_PR_nodeGotoTreeP) {
 			sreq->objectIndex = syncOp->syncP.choice.nodeOperationP.choice.nodeGotoTreeP;
 			sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
-			emo_printf("#### GoTo index: %d" NL, sreq->objectIndex);
+			/*emo_printf("#### GoTo index: %d" NL, sreq->objectIndex);*/
 			/*dataobject_debugPrint(sreq->dobj);*/
 			if (sobj == NULL) {
 				emo_printf("Going to invalid index" NL);
