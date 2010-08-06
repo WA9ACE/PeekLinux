@@ -32,7 +32,7 @@ void *style_getProperty(Style *s, const char *className, const char *id,
 /* dont make sense here but ok for now Focus.h ? */
 void widget_focusNext(Widget *w, Style *s);
 void widget_focusPrev(Widget *w, Style *s);
-void widget_focusNone(Widget *w, Style *s);
+void widget_focusNone(Widget *w, Style *s, int doRender);
 Widget * widget_focusWhichOne(Widget *w);
 
 #ifdef __cplusplus

@@ -408,7 +408,7 @@ void widget_forceFocus(Widget *tree, Widget *node, Style *s)
 {
 	Rectangle rect;
 
-	widget_focusNone(tree, s);
+	widget_focusNone(tree, s, 1);
 	
 	widget_setFocus(node, 1);
 	widget_markDirtyChild(node);
@@ -707,14 +707,14 @@ Widget *widget_focusNoneR(Widget *w)
 	return NULL;
 }
 
-void widget_focusNone(Widget *w, Style *s)
+void widget_focusNone(Widget *w, Style *s, int doRender)
 {
 	Widget *dw;
 	Rectangle rect;
 
 	dw = widget_focusNoneR(w);
 
-	if (dw != NULL) {
+	if (dw != NULL && doRender) {
 		lgui_clip_identity();
 		widget_getClipRectangle(dw, &rect);
 		lgui_clip_set(&rect);
@@ -976,7 +976,7 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 
 	wr = NULL;
 	style_getRenderer(style, w, "renderer", &wr);
-	if (wr != NULL && wr->measure != NULL && strcmp(type->field.string, "text") != 0) {
+	if (wr != NULL && wr->measure != NULL && !dataobjectfield_isString(type, "text")) {
 		wr->measure(wr, s, w, dobj, &p);
 		w->box.width = p.x;
 		w->box.height = p.y;

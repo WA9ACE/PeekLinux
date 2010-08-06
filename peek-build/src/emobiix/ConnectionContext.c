@@ -5,7 +5,6 @@
 #include "List.h"
 #include "Widget.h"
 #include "Debug.h"
-#include "Mime.h"
 #include "Protocol.h"
 #include "ProtocolUtils.h"
 #include "Application.h"
@@ -312,7 +311,9 @@ int connectionContext_consumePacket(ConnectionContext *ctx)
 	retval = uper_decode_complete(&ctx->decodeContext, &asn_DEF_FRIPacketP,
 			(void **)&packet, ctx->buffer, ctx->bufferBytes);
 
-	emo_printf("connectionContext_consumePacket(): uper_decode_complete returned %d", retval.code);
+#ifndef SIMULATOR
+	emo_printf("connectionContext_consumePacket(): uper_decode_complete returned %d" NL, retval.code);
+#endif
 	switch (retval.code) {
 		case RC_OK:
 			consumed = retval.consumed;
@@ -320,7 +321,9 @@ int connectionContext_consumePacket(ConnectionContext *ctx)
 			memmove(ctx->buffer, ctx->buffer + consumed,
 					ctx->bufferBytes - consumed);
 			ctx->bufferBytes -= consumed;
-			emo_printf("connectionContext_consumePacket() RC_OK finished");
+#ifndef SIMULATOR
+			emo_printf("connectionContext_consumePacket() RC_OK finished" NL);
+#endif
 			/*protocolFreeFRIPacketP(packet);*/
 			return consumed;
 		case RC_WMORE:
@@ -447,7 +450,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 					emo_printf("Finished Type: %s" NL, field->field.string); 
 				if (field != NULL && field->type == DOF_STRING &&
 						strcmp(field->field.string, "application") == 0) {
-					manager_loadApplication(sreq->dobj);
+					manager_loadApplication(sreq->dobj, 1);
 					/*app = application_load(sreq->dobj);
 					manager_launchApplication(app);
 					manager_focusApplication(app);*/

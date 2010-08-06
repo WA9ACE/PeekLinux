@@ -47,6 +47,7 @@ struct ApplicationManager_t {
 	Style *style;
 
 	DataObject *loadingApplication;
+	int loadingApplicationFocus;
 };
 typedef struct ApplicationManager_t ApplicationManager;
 
@@ -109,8 +110,9 @@ void manager_drawScreen(void)
 
 	toload = appManager->loadingApplication;
 	if (toload != NULL) {
+		/*dataobject_debugPrint(toload);*/
 		appManager->loadingApplication = NULL;
-		manager_loadApplicationReal(toload);
+		manager_loadApplicationReal(toload, appManager->loadingApplicationFocus);
 	}
 
 	lgui_clip_identity();
@@ -263,7 +265,7 @@ void manager_focusApplication(Application *app)
 			style);
 
 	widget_focusNone(appManager->rootApplicationWindow,
-			style);
+			style, 0);
 
 	widget_markDirty(appManager->rootApplicationWindow);
 
@@ -315,19 +317,21 @@ Application *manager_applicationForDataObject(DataObject *dobj)
 }
 
 
-void manager_loadApplication(DataObject *dobj)
+void manager_loadApplication(DataObject *dobj, int focus)
 {
 	appManager->loadingApplication = dobj;
+	appManager->loadingApplicationFocus = focus;
 }
 
-void manager_loadApplicationReal(DataObject *dobj)
+void manager_loadApplicationReal(DataObject *dobj, int focus)
 {
 	Application *app;
 
 	mime_loadAll(dobj);
 	app = application_load(dobj);
 	manager_launchApplication(app);
-	manager_focusApplication(app);
+	if (focus)
+		manager_focusApplication(app);
 }
 
 Style *manager_getRootStyle(void)

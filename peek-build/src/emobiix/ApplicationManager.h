@@ -20,8 +20,8 @@ void manager_focusApplication(Application *app);
 Application *manager_getFocusedApplication(void);
 void manager_focusNextApplication(void);
 Application *manager_applicationForDataObject(DataObject *dobj);
-void manager_loadApplication(DataObject *dobj);
-void manager_loadApplicationReal(DataObject *dobj);
+void manager_loadApplication(DataObject *dobj, int focus);
+void manager_loadApplicationReal(DataObject *dobj, int focus);
 Application *manager_getBootApp(void);
 Style *manager_getRootStyle(void);
 
