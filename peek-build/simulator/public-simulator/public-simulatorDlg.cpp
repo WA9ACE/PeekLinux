@@ -14,6 +14,7 @@
 #include "ApplicationManager.h"
 #include "DataObject.h"
 #include "Mime.h"
+#include "KeyMappings.h"
 
 #include "p_malloc.h"
 
@@ -276,11 +277,11 @@ BOOL CpublicsimulatorDlg::PreTranslateMessage(MSG* pMsg)
 			case VK_RETURN: key = 13; break;
 			case 106: key = 42; break;
 			case 40:
-				manager_handleKey(86);
+				manager_handleKey(EKEY_FOCUSNEXT);
 				DrawScreen();
 				return CDialog::PreTranslateMessage(pMsg);
 			case 38:
-				manager_handleKey(87);
+				manager_handleKey(EKEY_FOCUSPREV);
 				DrawScreen();
 				return CDialog::PreTranslateMessage(pMsg);
 			default:
@@ -316,9 +317,9 @@ BOOL CpublicsimulatorDlg::PreTranslateMessage(MSG* pMsg)
 	} else
 	if (pMsg->message == WM_MOUSEWHEEL) {
 		if (GET_WHEEL_DELTA_WPARAM(pMsg->wParam) > 0)
-			manager_handleKey(87);
+			manager_handleKey(EKEY_FOCUSPREV);
 		else
-			manager_handleKey(86);
+			manager_handleKey(EKEY_FOCUSNEXT);
 	}
 
 	DrawScreen();

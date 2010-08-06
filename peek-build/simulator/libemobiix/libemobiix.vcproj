@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\zlib;..\..\src\libpng;..\..\src\lua;&quot;..\libprotocol\asn1c-files&quot;;..\..\src\emobiix\protocol;..\..\src\freetype2\include;..\..\src\emobiix\thirdparty;..\..\src\emobiix;.."
+				AdditionalIncludeDirectories="..\..\src\emobiix\simulator;..\..\src\zlib;..\..\src\libpng;..\..\src\lua;&quot;..\libprotocol\asn1c-files&quot;;..\..\src\emobiix\protocol;..\..\src\freetype2\include;..\..\src\emobiix\thirdparty;..\..\src\emobiix;.."
 				PreprocessorDefinitions="SIMULATOR;WIN32;_CRT_SECURE_NO_WARNINGS;NOGDI"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"

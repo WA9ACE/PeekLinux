@@ -73,6 +73,11 @@ Thread *thread_run(void (*proc)(void *), void *param)
 	return output;
 }
 
+void thread_kill(Thread *t)
+{
+	SuspendThread(t->thread);
+}
+
 struct File_t {
 	FILE *f;
 };
