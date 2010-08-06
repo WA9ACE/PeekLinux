@@ -13,6 +13,9 @@
 	</style>
 <view name="calculator" width="320" height="224">
 	<box id="calcbox" packing="vertical" width="100%" height="100%" script="
+lastnumber = 0
+lastOperation = &quot;&quot;;
+deleteOnKey = true
 function calculator(op) 
   out = DataObject.find(&quot;output&quot;);
   outVal = out:getValue();
