@@ -190,14 +190,14 @@ int UIInit(void)
 		if(!screenBuf)
 			emo_printf("Failed to allocate screenBuf\n");
 
+		dataobject_platformInit();
+
 		lgui_attach(screenBuf);
 		manager_init();
 		initd = 1;
 
 		manager_drawScreen();
 		updateScreen();
-
-		dataobject_platformInit();
 	}
 
 	return 1;
