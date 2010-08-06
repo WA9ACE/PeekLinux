@@ -581,7 +581,9 @@ DataObject *LoadObject(DOMNode *node)
 						);
 			res[total_chars] = '\0';
 
-			dataobject_setValue(output, "data", dataobjectfield_string((const char *)res));
+			if (res[0] != 0)
+				dataobject_setValue(output, "data", dataobjectfield_string((const char *)res));
+			delete res;
 		} else {
 			child = LoadObject(childNode);
 			dataobject_pack(output, child);
@@ -655,17 +657,16 @@ void CpublicsimulatorDlg::OnFileLoadapplication()
     }
 
 	DataObject *dobj;
-	Application *app;
 	DataObjectField *type;
     dobj = LoadObject(static_cast<DOMNode *>(xmlDoc->getDocumentElement()));
 	if (dobj != NULL) {
-		mime_loadAll(dobj);
 		type = dataobject_getValue(dobj, "type");
 		if (dataobjectfield_isString(type, "application")) {
-			app = application_load(dobj);
-			manager_launchApplication(app);
-			if (xmlLoadFilename.empty())
-				manager_focusApplication(app);
+			manager_loadApplication(dobj, xmlLoadFilename.empty());
+			/*app = application_load(dobj);
+			manager_launchApplication(app);*/
+		} else {
+			mime_loadAll(dobj);
 		}
 	}
 
@@ -796,8 +797,8 @@ void CpublicsimulatorDlg::OnOK()
 {
 	SaveSettings();
 	thread_kill(netThread);
-	exit(0);
 	CDialog::OnOK();
+	exit(0);
 }
 
 void CpublicsimulatorDlg::OnCancel()
