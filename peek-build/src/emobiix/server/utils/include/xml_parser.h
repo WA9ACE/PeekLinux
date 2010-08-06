@@ -5,6 +5,7 @@
 
 #include <xercesc/dom/DOM.hpp>
 #include <xercesc/parsers/XercesDOMParser.hpp>
+#include <xercesc/util/TransService.hpp>
 
 XERCES_CPP_NAMESPACE_USE
 
@@ -20,6 +21,7 @@ public:
 	DOMDocument *getDocument();
 
 public:
+	static std::string XMLToUTF8String(const XMLCh *xszValue);
 	static std::string XMLToString(const XMLCh *xszValue);
 	static std::string GetAttribute(DOMNode* pElem, const char* szAttr);
 

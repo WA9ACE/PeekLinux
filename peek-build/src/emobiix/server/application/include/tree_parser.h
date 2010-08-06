@@ -30,6 +30,7 @@ private:
 	bool createEntry(DOMNode *node, std::vector<FRIPacketP *>& packets);
 	bool createImage(DOMNode *node, std::vector<FRIPacketP *>& packets);
 	bool createArray(DOMNode *node, std::vector<FRIPacketP *>& packets);
+	bool createGeneric(DOMNode *node, std::vector<FRIPacketP *>& packets);
 	
 	void setCommonAttributes(FRIPacketP *packet, DOMNode *node);
 
