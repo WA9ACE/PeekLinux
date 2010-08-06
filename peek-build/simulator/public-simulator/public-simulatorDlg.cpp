@@ -113,7 +113,7 @@ extern "C" void appProtocolStatus(int n)
 }
 
 extern "C" void NetworkTask(void);
-
+Thread *netThread;
 extern "C" {
 void net_thread(void *d)
 {
@@ -160,7 +160,7 @@ BOOL CpublicsimulatorDlg::OnInitDialog()
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
 	
-	thread_run(net_thread, NULL);
+	netThread = thread_run(net_thread, NULL);
 
 	manager_init();
 	lgui_attach(screenBuf);
@@ -410,6 +410,7 @@ show_prev_screen:
 #include <xercesc/parsers/XercesDOMParser.hpp>
 #include <xercesc/util/XMLUni.hpp>
 #include <xercesc/util/PlatformUtils.hpp>
+#include <xercesc/util/TransService.hpp>
 #include <xercesc/sax2/DefaultHandler.hpp>
 
 XERCES_CPP_NAMESPACE_USE
@@ -469,6 +470,8 @@ public:
     bool isFatal;
 };
 
+static XMLCh* UTF8_ENCODING = NULL; 
+static XMLTranscoder* UTF8_TRANSCODER  = NULL;
 
 DataObject *LoadObject(DOMNode *node)
 {
@@ -482,6 +485,18 @@ DataObject *LoadObject(DOMNode *node)
     //fprintf(stderr, "LoadObject(%p)\n", node);
 
     std::string o_id, o_class, o_typefunc, o_constructor;
+
+	if (UTF8_TRANSCODER == NULL) {
+		XMLTransService::Codes failReason;
+		XMLPlatformUtils::Initialize();
+		UTF8_ENCODING = XMLString::transcode("UTF-8");
+		UTF8_TRANSCODER =
+		  XMLPlatformUtils::fgTransService->makeNewTranscoderFor(UTF8_ENCODING,
+																 failReason,
+																 1024);
+		/*if (!UTF8_TRANSCODER)
+			::MessageBo("Failed to allocate utf8 transcoder" NL);*/
+	}
 
 	output = dataobject_new();
 
@@ -551,7 +566,21 @@ DataObject *LoadObject(DOMNode *node)
 		if (strcmp(iastr, "#text") == 0) {
 			ixstr = childNode->getNodeValue();
 			iastr = XMLString::transcode(ixstr);
-			dataobject_setValue(output, "data", dataobjectfield_string(iastr));
+
+			unsigned int charsEaten = 0;
+			int length  = XMLString::stringLen(ixstr);
+			XMLByte* res = new XMLByte[length * 8+1];
+			unsigned int total_chars =
+					UTF8_TRANSCODER->transcodeTo((const XMLCh*)ixstr,
+						(unsigned int) length,
+						(XMLByte*) res,
+						(unsigned int) length*8,
+						charsEaten,
+						XMLTranscoder::UnRep_Throw
+						);
+			res[total_chars] = '\0';
+
+			dataobject_setValue(output, "data", dataobjectfield_string((const char *)res));
 		} else {
 			child = LoadObject(childNode);
 			dataobject_pack(output, child);
@@ -765,6 +794,8 @@ void CpublicsimulatorDlg::SaveSettings()
 void CpublicsimulatorDlg::OnOK()
 {
 	SaveSettings();
+	thread_kill(netThread);
+	exit(0);
 	CDialog::OnOK();
 }
 
