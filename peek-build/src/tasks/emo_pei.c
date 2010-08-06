@@ -16,11 +16,8 @@
 #include "rvm/rvm_priorities.h"
 #include "rvm/rvm_use_id_list.h"
 
-#include "exeapi.h"
-#include "exepowr.h"
-#include "bal_os.h"
 #include "emopei.h"
-#include "exedefs.h"
+
 //#include "Lcd_manager.h"
 
 #define         NU_VARIABLE_SIZE                13
@@ -40,7 +37,7 @@ extern void EmoTask(void);
 T_HANDLE EMO_handle;
 
 LOCAL BOOL first_access = TRUE;
-static uint32 EmoIsReady = 0;
+static UINT32 EmoIsReady = 0;
 
 /*===========================Function Definition================================*/
 /*
@@ -154,7 +151,7 @@ LOCAL SHORT pei_primitive (void * primptr)
    return PEI_OK;
 }/* End pei_primitive(..) */
 
-uint32 EmoStatusGet(void)
+UINT32 EmoStatusGet(void)
 {
         return EmoIsReady;
 }
@@ -239,8 +236,8 @@ LOCAL SHORT pei_exit (void)
 /*
 NU_MEMORY_POOL ExeSystemMemory;
 
-uint32 ExeIntStack[20];
-uint32 *ExeIntStackP;
+UINT32 ExeIntStack[20];
+UINT32 *ExeIntStackP;
 
 extern ExeTaskCbT *ExeTaskCb[];
 

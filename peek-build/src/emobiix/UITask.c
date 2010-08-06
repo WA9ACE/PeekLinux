@@ -5,10 +5,10 @@
 #include "mfw_mfw.h"
 #include "mfw_mme.h"
 #include "Debug.h"
-#include "Gprs.h"
 #include "lgui.h"
 #include "tweet.h"
-#include "msg.h"
+
+typedef char CHAR;
 
 #include "Transport.h"
 #include "ConnectionContext.h"
@@ -64,7 +64,6 @@ void uiAppConn(void *connData)
 	transport = transport_get(url->scheme);
 	if (transport == NULL) {
 		emo_printf("No 'tcp' transport available");
-		NU_Sleep(100);
 		return;
 	}
 
@@ -210,7 +209,7 @@ static int UIIteration(void)
 
 int UIWaitForActivity(void)
 {
-	NU_Sleep(100);
+	TCCE_Task_Sleep(100);
 #if 0
 	Endpoint *ep, *remote;
 	URL *url, *durl;

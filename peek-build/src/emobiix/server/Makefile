@@ -11,6 +11,8 @@ INCLUDE += application/include
 INCLUDE += soaprpc
 
 DEFINE  = WITH_OPENSSL
+DEFINE += WITH_CDATA 
+DEFINE += DEBUG
 DEFINE += WITH_GZIP
 
 OBJ = $(patsubst %.cpp,%.o,$(wildcard *.cpp))

@@ -87,7 +87,7 @@ FsiResultT FsiFileOpen(FsiHandleT *FileP, const char *FileNameP, FsiFileOpenMode
 	return (FsiResultT)0;
 }
 
-FsiResultT FsiFileRead(void *BufferP, uint32 ItemSize, uint32 *ItemNumP,
+FsiResultT FsiFileRead(void *BufferP, UINT32 ItemSize, UINT32 *ItemNumP,
                        FsiHandleT File) 
 {
 	int ffsRret;
@@ -101,7 +101,7 @@ FsiResultT FsiFileRead(void *BufferP, uint32 ItemSize, uint32 *ItemNumP,
 	return (FsiResultT)0;
 }
 
-FsiResultT FsiFileWrite(void *BufferP, uint32 ItemSize, uint32 *ItemNumP,
+FsiResultT FsiFileWrite(void *BufferP, UINT32 ItemSize, UINT32 *ItemNumP,
                         FsiHandleT File)
 {
 	int ffsWret;
@@ -125,7 +125,7 @@ FsiResultT FsiRemove(const char *NameP)
 	return ffsErrorMap(ffsRem);
 }
 
-FsiResultT FsiGetFileLength(const char *NameP, uint32 *FileLengthP)
+FsiResultT FsiGetFileLength(const char *NameP, UINT32 *FileLengthP)
 {
 	uint32 ffsSret;
 	struct stat_s ffsStat;
@@ -171,7 +171,7 @@ FsiResultT FsiSeek(FsiHandleT File, FsiFileSeekTypeT SeekFrom, int32 MoveDistanc
 	return (FsiResultT)0;
 }
 
-FsiResultT FsiTell(FsiHandleT File, uint32 *PosP) 
+FsiResultT FsiTell(FsiHandleT File, UINT32 *PosP) 
 {
 	int ffsSret;
 

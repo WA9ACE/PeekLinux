@@ -6,7 +6,6 @@
 #include "mfw_mfw.h"
 #include "mfw_mme.h"
 #include "Debug.h"
-#include "Gprs.h"
 
 #ifdef DAR_HALT
 #include "File.h"

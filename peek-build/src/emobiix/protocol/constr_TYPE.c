@@ -5,7 +5,7 @@
 #include <asn_internal.h>
 #include <constr_TYPE.h>
 #include <errno.h>
-#include "ostype.h"
+//#include "ostype.h"
 
 
 /*

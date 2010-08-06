@@ -1,6 +1,6 @@
 #ifndef _KEYMAP_H_
 #define _KEYMAP_H_
-
+#if 0
 #include "syskeydef.h"
 
 typedef enum
@@ -167,5 +167,6 @@ typedef enum
   KP_SHIFT_SPACE_KEY =  SYS_SHIFT_SPACE_KEY
 } UiKeypadKeyIdT;
 
+#endif
 #endif
 

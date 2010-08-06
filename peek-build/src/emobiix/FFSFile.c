@@ -66,7 +66,7 @@ File *file_openAppend(const char *filename)
 
 int file_read(File *f, int bytes, void *buffer)
 {
-    uint32 readbytes;
+    UINT32 readbytes;
     FsiResultT result;
 
     readbytes = bytes;
@@ -78,7 +78,7 @@ int file_read(File *f, int bytes, void *buffer)
 
 int file_write(File *f, int bytes, void *buffer)
 {
-    uint32 writebytes;
+    UINT32 writebytes;
     FsiResultT result;
 
     writebytes = bytes;
@@ -102,7 +102,7 @@ int file_seek(File *f, int offset, FilePosition pos)
 
 int file_pos(File *f)
 {
-    uint32 pos;
+    UINT32 pos;
     FsiResultT result;
     
     result = FsiTell(f->handle, &pos);
@@ -119,7 +119,7 @@ int file_eof(File *f)
 int file_size(File *f)
 {
     FsiResultT result;
-    uint32 length;
+    UINT32 length;
 
     result = FsiGetFileLength(f->filename, &length);
     if (result == 0)

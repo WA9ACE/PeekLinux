@@ -10,6 +10,7 @@ INCLUDE += ./include
 INCLUDE += $(GSOAPINC)
 
 DEFINE  = WITH_GZIP
+DEFINE += WITH_NOCDATA
 DEFINE += WITH_OPENSSL
 
 OBJ = emobiix.o soap_request.o emobiix_rpc_Client.o emobiix_rpc_C.o

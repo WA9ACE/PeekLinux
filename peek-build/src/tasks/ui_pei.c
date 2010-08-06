@@ -22,11 +22,7 @@
 #include "rvm/rvm_priorities.h"
 #include "rvm/rvm_use_id_list.h"
 
-#include "exeapi.h"
-#include "exepowr.h"
-#include "bal_os.h"
 #include "emopei.h"
-#include "exedefs.h"
 
 #include "p_sim.h"
 #include "gprs.h"
@@ -51,7 +47,7 @@ T_HANDLE UI_handle;
 #define hCommAPP        _ENTITY_PREFIXED(hCommAPP)
 
 LOCAL BOOL first_access = TRUE;
-static uint32 uiIsReady = 0;
+static UINT32 uiIsReady = 0;
 
 T_HANDLE hCommAPP = VSI_ERROR;
 
@@ -169,7 +165,7 @@ LOCAL SHORT pei_primitive (void * primptr)
    return PEI_OK;
 }/* End pei_primitive(..) */
 
-uint32 uiStatusGet(void) 
+UINT32 uiStatusGet(void) 
 {
 	return uiIsReady;
 }

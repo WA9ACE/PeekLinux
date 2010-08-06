@@ -2,9 +2,30 @@
 #define FSIAPI_H
 /*****************************************************************************
 *****************************************************************************/
-#include "sysdefs.h"
-#include "fsmapi.h"
-#include "fsmdataitem.h"
+#include "nucleus.h"
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include "typedefs.h"
+
+#define MAX_FILE_NAME_LEN       	256
+#define FSM_FILE_ATTRIB_DIR            0x10
+#define FSM_FILE_ATTRIB_FILE           0x20
+#define FSM_FILE_TYPE_MASK             0x30
+#define MAX_VOLUME_NAME_LEN            16
+
+/* Seek mode */
+#define FSM_FILE_BEGIN                  1
+#define FSM_FILE_END                    2
+#define FSM_FILE_CURRENT                3
+
+#define FSM_FILE_ATTRIB_NORMAL         0x00
+#define FSM_FILE_ATTRIB_READONLY       0x01
+#define FSM_FILE_ATTRIB_HIDDEN         0x02
+#define FSM_FILE_ATTRIB_SYSTEM         0x04
+#define FSM_FILE_ATTRIB_ARCHIVE        0x08
+#define FSM_FILE_ATTRIB_MASK           0x0F
 
 /*max full path file name length, doesn't include end char "0" */
 #define    FSI_MAX_PATH_NAME_LENGTH    MAX_PATH_LENGTH
@@ -25,8 +46,8 @@
 
 #define FSI_FILE_NAME_DOT '.'
 
-typedef    HFSMFILE       FsiHandleT;
-typedef    HENUM          FsiFindHandle;	/*file search handle*/
+typedef    UINT32       FsiHandleT;
+typedef    void *       FsiFindHandle;	/*file search handle*/
 
 enum
 {
@@ -53,9 +74,9 @@ enum
 
 typedef struct 
 {
-	uint16        Attrib;
-	uint32        CreateTime;  /*Include date and time of day.*/
-	uint32        Size;
+	UINT16        Attrib;
+	UINT32        CreateTime;  /*Include date and time of day.*/
+	UINT32        Size;
 } FsiFileAttribT;
 
 typedef struct 
@@ -66,9 +87,9 @@ typedef struct
 
 typedef struct 
 {
-	uint16    ItemId;
-	uint16    ItemType;
-	uint32    ItemLength;
+	UINT16    ItemId;
+	UINT16    ItemType;
+	UINT32    ItemLength;
 } FsiDataItemInfoT;
 
 /*Open modes for file open, All write mode permit read operation:
@@ -128,23 +149,23 @@ typedef enum
 extern "C" {
 #endif
 
-FsiResultT FsiGetSpaceInfo(const char *VolumeNameP, uint32 *TotalSpaceP,
-                           uint32 *FreeSpaceP);
+FsiResultT FsiGetSpaceInfo(const char *VolumeNameP, UINT32 *TotalSpaceP,
+                           UINT32 *FreeSpaceP);
 
 FsiResultT FsiFileOpen(FsiHandleT *FileP, const char *FileNameP,
                        FsiFileOpenModeT Mode);
 
 FsiResultT FsiFileClose(FsiHandleT File);
 
-FsiResultT FsiFileRead(void *BufferP, uint32 ItemSize, uint32 *ItemNumP,
+FsiResultT FsiFileRead(void *BufferP, UINT32 ItemSize, UINT32 *ItemNumP,
                        FsiHandleT File);
 
-FsiResultT FsiFileWrite(void *BufferP, uint32 ItemSize, uint32 *ItemNumP,
+FsiResultT FsiFileWrite(void *BufferP, UINT32 ItemSize, UINT32 *ItemNumP,
                         FsiHandleT File);
 
 FsiResultT FsiFlush(FsiHandleT File);
 
-FsiResultT FsiGetFileLength(const char *NameP, uint32 *FileLengthP);
+FsiResultT FsiGetFileLength(const char *NameP, UINT32 *FileLengthP);
 
 FsiResultT FsiGetFileHandleAttrib(FsiHandleT File,
                                   FsiFileAttribT *FileAttribP);
@@ -152,16 +173,16 @@ FsiResultT FsiGetFileHandleAttrib(FsiHandleT File,
 FsiResultT FsiGetFileAttrib(const char *FileNameP,
                             FsiFileAttribT *FileAttribP);
 
-FsiResultT FsiSetFileAttrib(const char *FileNameP, uint16 Attrib);
+FsiResultT FsiSetFileAttrib(const char *FileNameP, UINT16 Attrib);
 
 FsiResultT FsiSeek(FsiHandleT File, FsiFileSeekTypeT SeekFrom,
-                   int32 MoveDistance);
+                   int MoveDistance);
 
-FsiResultT FsiTell(FsiHandleT File, uint32 *PosP);
+FsiResultT FsiTell(FsiHandleT File, UINT32 *PosP);
 
 FsiResultT FsiRename(const char *OldNameP, const char *NewNameP);
 
-FsiResultT FsiFileTruncate(FsiHandleT File, uint32 NewSize);
+FsiResultT FsiFileTruncate(FsiHandleT File, UINT32 NewSize);
 
 FsiResultT FsiRemove(const char *NameP);
 

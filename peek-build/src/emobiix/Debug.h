@@ -1,10 +1,6 @@
 #ifndef _DEBUG_H_
 #define _DEBUG_H_
 
-#ifndef SIMULATOR
-#include "balapi.h"
-#endif
-
 #define EMO_DEBUG_UI  (0)
 #define EMO_DLVL_WARN (1)
 
