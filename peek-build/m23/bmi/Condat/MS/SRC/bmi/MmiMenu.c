@@ -369,9 +369,7 @@ int menuEmobiixItemCB(URL *purl, MfwMnu* m, MfwMnuItem* i)
         dobj = dataobject_locate(purl);
         if (dobj == NULL)
         {
-		App = application_load(LoadingApplication());
-		manager_launchApplication(App);
-		manager_focusApplication(App);
+		manager_loadApplicationReal(LoadingApplication(), 1, 1);
 	        lgui_set_dirty();
 		updateScreen();
         	dspl_Enable(1);

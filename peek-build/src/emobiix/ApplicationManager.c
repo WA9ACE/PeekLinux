@@ -329,7 +329,8 @@ void manager_loadApplicationReal(DataObject *dobj, int launch, int focus)
 
 	mime_loadAll(dobj);
 	app = application_load(dobj);
-	manager_launchApplication(app);
+	if (launch)
+		manager_launchApplication(app);
 	if (focus)
 		manager_focusApplication(app);
 }
