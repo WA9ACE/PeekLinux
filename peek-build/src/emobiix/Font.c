@@ -185,71 +185,50 @@ void *font_getGlyph(Font *f, unsigned int utf32, int isBold,
     return data;            
 }
 
-int get_length(unsigned char ch)
-{
-  int l;
-  unsigned char c = ch;
-  c >>= 3;
+static const char trailingBytesForUTF8[256] = {
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+	0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+    1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+    2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,4,4,4,4,5,5,5,5
+};
+static const unsigned int offsetsFromUTF8[6] = { 0x00000000UL, 0x00003080UL, 0x000E2080UL, 
+		     0x03C82080UL, 0xFA082080UL, 0x82082080UL };
+#define UNI_SUR_HIGH_START  (unsigned int)0xD800
+#define UNI_SUR_HIGH_END    (unsigned int)0xDBFF
+#define UNI_SUR_LOW_START   (unsigned int)0xDC00
+#define UNI_SUR_LOW_END     (unsigned int)0xDFFF
+#define UNI_REPLACEMENT_CHAR  (unsigned int)0x0000FFFD 
 
-  if (c == 0x1e)
-    {
-      l = 4;
-    }
-      else {
-c >>= 1;
-if (c == 0xe)
-  {
-    l = 3;
-  }
-else {
-  c >>= 1;
-  if (c == 0x6)
-    {
-      l = 2;
-    }
-  else {
-    l = 1;
-  }
-}
-      }
-  return l;
-}
-
-unsigned int UTF8toUTF32(const char *utf8, int *advance)
+unsigned int UTF8toUTF32(const char *isource, int *advance)
 {
-	const unsigned char *p = (const unsigned char *)utf8;
+	const unsigned char *source;
+	unsigned short extraBytesToRead;
 	unsigned int ch;
-	int l;
-	int y;
-  
-	l = get_length(*p);
-	*advance = l;
 
-	switch (l) {
-		case 4:
-			ch = (*p ^ 0xf0);
-			break;
-		case 3:
-			ch = (*p ^ 0xe0);
-			break;
-		case 2:
-			ch = (*p ^ 0xc0);
-			break;
-		case 1:
-			ch = *p;
-			break;
-		default:
-			break;
+	source = (const unsigned char *)isource;
+
+	ch = 0;
+	extraBytesToRead = trailingBytesForUTF8[*source];
+	*advance = extraBytesToRead+1;
+
+	switch (extraBytesToRead) {
+	    case 5: ch += *source++; ch <<= 6;
+	    case 4: ch += *source++; ch <<= 6;
+	    case 3: ch += *source++; ch <<= 6;
+	    case 2: ch += *source++; ch <<= 6;
+	    case 1: ch += *source++; ch <<= 6;
+	    case 0: ch += *source++;
 	}
-    ++p;
+	ch -= offsetsFromUTF8[extraBytesToRead];
+
+    if (ch >= UNI_SUR_HIGH_START && ch <= UNI_SUR_LOW_END)
+	    ch = UNI_REPLACEMENT_CHAR;
     
-	for (y = l; y > 1; y--) {
-		ch <<= 6;
-		ch |= (*p ^ 0x80);
-		++p;
-	}
-
-	return ch;
+    return ch;
 }
 
 static int fsi_new_FT_Stream(const char *filename, FT_Stream output)

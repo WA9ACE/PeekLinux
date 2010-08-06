@@ -1084,7 +1084,7 @@ void lgui_measure_font(const char *utf8, Font *f, int isBold, IPoint *output)
 		data = (unsigned char *)font_getGlyph(f, val, isBold, A4, &width,
                 &height, &xadvance, &yadvance, &baselinedy);
 		if (data == NULL) {
-			emo_printf("lgui_measure_font() Glyph missing: %s", utf8);
+			emo_printf("lgui_measure_font() Glyph missing: %s" NL, utf8);
 		} else {
 			output->x += xadvance;
 		}
