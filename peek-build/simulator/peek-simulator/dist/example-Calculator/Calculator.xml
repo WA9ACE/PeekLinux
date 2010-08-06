@@ -1,7 +1,18 @@
-<application name="Calcumobiix" description="emobiix calculator demo application" icon="app-icon" startupview="calculator">
-<image id="image" src="star.png" onreturn="" script="" name="app-icon" />
-<view name="calculator" width="320" height="220">
-	<box alignment="center" packing="vertical" id="solid" script="
+<application name="Calcumobiix" description="emobiix calculator demo application" startupview="calculator" style="calcstyle">
+	<style name="calcstyle">
+		<calcbox background-color="31233100" renderer="box" fill="solid"/>
+		<calcbutton background-color="31233100" border-color="ad966300" fill="solid" border="1234"/>
+		<label font-color="dfa93300" renderer="label"/>
+		<cframe renderer="box" fill="none" border-color="ad966300" border="1234" margin="4"/>
+		<button margin="4">
+			<label font-color="ad966300" renderer="label" weight="bold"/>
+		</button>
+		<button hasfocus="1" background-color="dfa93300" font-color="31233100" renderer="box" fill="solid" margin="4">
+			<label hasfocus="1" font-color="31233100" renderer="label" weight="bold"/>
+		</button>
+	</style>
+<view name="calculator" width="320" height="224">
+	<box id="calcbox" packing="vertical" width="100%" height="100%" script="
 function calculator(op) 
   out = DataObject.find(&quot;output&quot;);
   outVal = out:getValue();
@@ -22,6 +33,10 @@ function calculator(op)
 	 out:setValue(tostring(1/number));
   elseif op == &quot;x^2&quot; then
 	 out:setValue(tostring(number*number));
+  elseif op == &quot;x^3&quot; then
+	 out:setValue(tostring(number*number*number));
+  elseif op == &quot;pi&quot; then
+	 out:setValue(tostring(3.141592654));
   elseif op == &quot;sqr&quot; then
 	 out:setValue(tostring(math.sqrt(number)));
   elseif op == &quot;/&quot; or op == &quot;*&quot; or op == &quot;-&quot; or op == &quot;+&quot; or op == &quot;=&quot; then
@@ -61,81 +76,195 @@ function press(n)
     calculator(n);
 end;
 ">
-		<box alignment="center" width="90%"  height="30" packing="vertical" id="gradboxr">
-    	<label alignment="right" id="biglabel" name=""> Calcumobiix </label>
+	<box id="cframe" packing="vertical" border-corners="1234" rounded="1234">
+    	<label alignment="center" weight="bold">Calcumobiix</label>
+	<box width="300" id="cframe">
+		<box width="100%" id="calcbox" background-color="d1ebb300" margin="4" packing="vertical">
+			<label alignment="right" name="output" font-color="000F0000">0</label>
 		</box>
-		<box alignment="center" width="300" height="30" packing="vertical" id="gradboxr">
-     	<label alignment="right" id="biglabel" name="output">0</label>
-		</box>
-		<box alignment="center" width="300" height="170" packing="horizontal" id="gradbox" canfocus="0">
-			<box width="140" height="50" packing="vertical" id="selbox" canfocus="0">
-				<box width="280" height="50" packing="horizontal" id="selbox" canfocus="0">
-					<button accesskey="1" width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;1&quot;);">
-						<label alignment="center" id="biglabel"> 1 </label>
+	</box>
+		<box packing="horizontal">
+			<box	packing="vertical">
+				<box packing="horizontal" >
+					<box id="cframe">
+					<button accesskey="7" width="25" height="25" packing="vertical" canfocus="1" onreturn="press(&quot;7&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >7</label>
+						</box>
 					</button>
-					<button accesskey="2" width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;2&quot;);">
-						<label alignment="center" id="biglabel"> 2 </label>
+					</box>
+					<box id="cframe">
+					<button accesskey="8" width="25" height="25" packing="vertical" canfocus="1" onreturn="press(&quot;8&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >8</label>
+						</box>
 					</button>
-					<button accesskey="3" width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;3&quot;)">
-						<label alignment="center" id="biglabel"> 3 </label>
+					</box>
+					<box id="cframe">
+					<button accesskey="9" width="25" height="25" packing="vertical" canfocus="1" onreturn="press(&quot;9&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >9</label>
+						</box>
 					</button>
+					</box>
 				</box>
-				<box width="280" height="50" packing="horizontal" id="selbox" canfocus="0">
-					<button accesskey="4" width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;4&quot;)">
-						<label alignment="center" id="biglabel"> 4 </label>
+				<box packing="horizontal">
+					<box id="cframe">
+					<button accesskey="4" width="25" height="25" packing="vertical" canfocus="1" onreturn="press(&quot;4&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >4</label>
+						</box>
 					</button>
-					<button accesskey="5" width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;5&quot;)">
-						<label alignment="center" id="biglabel"> 5 </label>
+					</box>
+					<box id="cframe">
+					<button accesskey="5" width="25" height="25" packing="vertical" canfocus="1" onreturn="press(&quot;5&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >5</label>
+						</box>
 					</button>
-					<button accesskey="6" width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;6&quot;)">
-						<label alignment="center" id="biglabel"> 6 </label>
+					</box>
+					<box id="cframe">
+					<button accesskey="6" width="25" height="25" packing="vertical" canfocus="1" onreturn="press(&quot;6&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >6</label>
+						</box>
 					</button>
+					</box>
 				</box>
-				<box width="280" height="50" packing="horizontal" id="selbox" canfocus="0">
-					<button accesskey="7" width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;7&quot;)">
-						<label alignment="center" id="biglabel"> 7 </label>
+				<box packing="horizontal">
+					<box id="cframe">
+					<button accesskey="1" width="25" height="25" packing="vertical" canfocus="1" onreturn="press(&quot;1&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >1</label>
+						</box>
 					</button>
-					<button accesskey="8" width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;8&quot;)">
-						<label alignment="center" id="biglabel"> 8 </label>
+					</box>
+					<box id="cframe">
+					<button accesskey="2" width="25" height="25" packing="vertical" canfocus="1" onreturn="press(&quot;2&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >2</label>
+						</box>
 					</button>
-					<button accesskey="9" width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="press(&quot;9&quot;)">
-						<label alignment="center" id="biglabel"> 9 </label>
+					</box>
+					<box id="cframe">
+					<button accesskey="3" width="25" height="25" packing="vertical" canfocus="1" onreturn="press(&quot;3&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >3</label>
+						</box>
 					</button>
+					</box>
+				</box>
+				<box packing="horizontal">
+					<box id="cframe">
+					<button accesskey="0" width="25" height="25" packing="vertical" canfocus="1" onreturn="press(&quot;0&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >0</label>
+						</box>
+					</button>
+					</box>
+					<box id="cframe">
+					<button accesskey="." width="25" height="25" packing="vertical" canfocus="1" onreturn="press(&quot;.&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >.</label>
+						</box>
+					</button>
+					</box>
+					<box id="cframe">
+					<button accesskey="=" width="25" height="25" packing="vertical" canfocus="1" onreturn="press(&quot;=&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >=</label>
+						</box>
+					</button>
+					</box>
 				</box>
 			</box>
-			<box width="120" height="50" packing="vertical" id="selbox" canfocus="0">
-				<box width="130" height="50" packing="horizontal" id="selbox" canfocus="0">
-					<button accesskey="+" width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="calculator(&quot;+&quot;)">
-						<label alignment="center" id="biglabel"> + </label>
+			<box marginleft="20" packing="vertical">
+				<box packing="horizontal">
+					<box id="cframe">
+					<button accesskey="+" width="25" height="25" packing="vertical" canfocus="1" onreturn="calculator(&quot;+&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >+</label>
+						</box>
 					</button>
-					<button accesskey="-" width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="calculator(&quot;-&quot;)">
-						<label alignment="center" id="biglabel"> - </label>
+					</box>
+					<box id="cframe">
+					<button accesskey="-" width="25" height="25" packing="vertical" canfocus="1" onreturn="calculator(&quot;-&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >-</label>
+						</box>
 					</button>
-					<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="calculator(&quot;x^2&quot;)">
-						<label alignment="center" id="biglabel"> x^2 </label>
+					</box>
+					<box id="cframe">
+					<button accesskey="*" width="25" height="25" packing="vertical" canfocus="1" onreturn="calculator(&quot;*&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center">&#215;</label>
+						</box>
 					</button>
+					</box>
+					<box id="cframe">
+						<button accesskey="/" width="25" height="25" packing="vertical" canfocus="1" onreturn="calculator(&quot;/&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center">&#247;</label>
+						</box>
+					</button>
+					</box>
 				</box>
-				<box width="130" height="50" packing="horizontal" id="selbox" canfocus="0">
-					<button accesskey="*" width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="calculator(&quot;*&quot;)">
-						<label alignment="center" id="biglabel"> X </label>
+				<box packing="horizontal">
+					<box id="cframe">
+					<button accesskey="^" width="25" height="25" packing="vertical" canfocus="1" onreturn="calculator(&quot;x^2&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >x&#178;</label>
+						</box>
 					</button>
-					<button accesskey="/" width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="calculator(&quot;/&quot;)">
-						<label alignment="center" id="biglabel"> / </label>
+					</box>
+					<box id="cframe">
+					<button width="25" height="25" packing="vertical" canfocus="1" onreturn="calculator(&quot;x^3&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >x&#179;</label>
+						</box>
 					</button>
-					<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="calculator(&quot;1/x&quot;)">
-						<label alignment="center" id="biglabel"> 1/x </label>
+					</box>
+					<box id="cframe">
+						<button width="25" height="25" packing="vertical" canfocus="1" onreturn="calculator(&quot;1/x&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >1/x</label>
+						</box>
 					</button>
+					</box>
+					<box id="cframe">
+						<button accesskey="r" width="25" height="25" packing="vertical" canfocus="1" onreturn="calculator(&quot;sqr&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >&#8730;</label>
+						</box>
+					</button>
+					</box>
 				</box>
-				<box width="130" height="50" packing="horizontal" id="selbox" canfocus="0">
-					<button width="40" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="calculator(&quot;C&quot;)">
-						<label alignment="center" id="biglabel"> C </label>
+				<box packing="horizontal">
+					<box id="cframe">
+						<button accesskey="p" width="25" height="25" packing="vertical" canfocus="1" onreturn="calculator(&quot;pi&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >&#960;</label>
+						</box>
 					</button>
-					<button width="82" height="40" packing="horizontal" id="gradboxr" canfocus="1" onreturn="calculator(&quot;=&quot;)">
-						<label accesskey="=" type="string" alignment="center" id="biglabel"> = </label>
+					</box>
+					<box id="cframe">
+						<button accesskey="c" width="25" height="25" packing="vertical" canfocus="1" onreturn="calculator(&quot;C&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >C</label>
+						</box>
 					</button>
+					</box>
+					<box id="cframe">
+						<button accesskey="=" width="65" height="25" packing="vertical" canfocus="1" onreturn="calculator(&quot;=&quot;);" alignment="center">
+						<box alignment="center" packing="horizontal" height="100%">
+							<label alignment="center" >&#61;</label>
+						</box>
+					</button>
+					</box>
 				</box>
 			</box>
 		</box>
+	</box>
 	</box>
 </view>
 </application>
