@@ -31,13 +31,13 @@ DataObject *LoadingApplication(void)
 				root = widget_newTypeIdName("view", NULL, "mainview", output);
 				widget_setPacking(root, WP_VERTICAL);
 
-				dobj1 = widget_newTypeIdName("box", "gradboxdark", NULL, root);
+				dobj1 = widget_newTypeIdName("box", "gradbox", NULL, root);
 				dataobject_setValue(dobj1, "width", dataobjectfield_string("320"));
 				dataobject_setValue(dobj1, "height", dataobjectfield_string("240"));
 				dataobject_setValue(dobj1, "alignment", dataobjectfield_string("center"));
 				widget_setPacking(dobj1, WP_VERTICAL);
 
-				setw = widget_newTypeIdName("label", "biglabelw", NULL, dobj1);
+				setw = widget_newTypeIdName("label", NULL, NULL, dobj1);
 				dataobject_setValue(setw, "data", dataobjectfield_string("Downloading Application"));
 				dataobject_setValue(setw, "alignment", dataobjectfield_string("center"));
 				//        dobj1 = dobjFromFile("loading.png", root);
