@@ -112,7 +112,7 @@ void manager_drawScreen(void)
 	if (toload != NULL) {
 		/*dataobject_debugPrint(toload);*/
 		appManager->loadingApplication = NULL;
-		manager_loadApplicationReal(toload, appManager->loadingApplicationFocus);
+		manager_loadApplicationReal(toload, 1, appManager->loadingApplicationFocus);
 	}
 
 	lgui_clip_identity();
@@ -323,7 +323,7 @@ void manager_loadApplication(DataObject *dobj, int focus)
 	appManager->loadingApplicationFocus = focus;
 }
 
-void manager_loadApplicationReal(DataObject *dobj, int focus)
+void manager_loadApplicationReal(DataObject *dobj, int launch, int focus)
 {
 	Application *app;
 
