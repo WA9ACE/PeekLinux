@@ -566,7 +566,6 @@ DataObject *LoadObject(DOMNode *node)
 
 		if (strcmp(iastr, "#text") == 0) {
 			ixstr = childNode->getNodeValue();
-			iastr = XMLString::transcode(ixstr);
 
 			unsigned int charsEaten = 0;
 			int length  = XMLString::stringLen(ixstr);
