@@ -353,7 +353,7 @@ char* mfw_td_get_date_str()
 {	TRACE_EVENT("mfw_td_get_date_str");
 	/*SPR 2639, use global var, don't need to update time as it's already updated every minute*/
 	//rtc_get_time_date(&current_date, &current_time);
-	sprintf(date_string, "%02d/%02d/%04d", current_date.day, current_date.month, current_date.year);
+	sprintf(date_string, "%02d/%02d/%04d", current_date.month, current_date.day, current_date.year);
 	return date_string;
 }
 

@@ -1052,7 +1052,7 @@ void setUserSettings2Default (void)
 	resetIncomingCallsDuration();
 	resetOutgoingCallsDuration();
 	//set clock format to twenty-four hour
-	setClockFormat(MFW_TIME_FORMAT_24HOUR);/*SPR 1725, changed macro*/
+	setClockFormat(MFW_TIME_FORMAT_12HOUR);/*SPR 1725, changed macro*/
 
 	// API/GW - On factory reset save the original colours to the flash.
 	resetFactoryColour();

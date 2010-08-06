@@ -715,7 +715,8 @@ void mainInit (UBYTE InitCause)
 
      /*OMAPS00098881 (removing power variant) a0393213(R.Prabakar)
 	  Removed #ifndef FF_POWER_MANAGEMENT flag*/
-		time_date_init();
+	time_date_init();
+        setClockFormat(MFW_TIME_FORMAT_12HOUR);
 
     deregis = FALSE;
 

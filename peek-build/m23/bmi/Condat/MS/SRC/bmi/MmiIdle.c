@@ -2495,8 +2495,8 @@ LimitedService = 0;//end of crr12653
 			
 				yPos = 40;//Mmi_layout_line_height()*7;
 
-				dspl_Clear(10, yPos, mmiScrX,mmiScrY);
-				dspl_TextOut (10, yPos, 0, time_str);
+				dspl_Clear(160, 4, mmiScrX,mmiScrY);
+				dspl_TextOut (160, 4, 0, time_str);
 
 				dspl_Clear(125, yPos, mmiScrX,mmiScrY);		
 				//x0pleela 09 Nov, 2006 ER: OMAPS00099966
