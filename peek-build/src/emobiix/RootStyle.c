@@ -64,6 +64,7 @@ Style *RootStyle(void)
 	dataobject_setValue(solidbox, "border-corners", dataobjectfield_string("1234"));
 	dataobject_setValue(solidbox, "border-color", dataobjectfield_uint(0x696969FF));
 	dataobject_setValue(solidbox, "border", dataobjectfield_string("1234"));
+	dataobject_setValue(solidbox, "fill", dataobjectfield_string("solid"));
 
 	/* Entry - focused */
 	solidbox = widget_newTypeIdName("entry", NULL, NULL, defaultStyle);
@@ -78,6 +79,7 @@ Style *RootStyle(void)
 	dataobject_setValue(solidbox, "border-corners", dataobjectfield_string("1234"));
 	dataobject_setValue(solidbox, "border-color", dataobjectfield_uint(0x696969FF));
 	dataobject_setValue(solidbox, "border", dataobjectfield_string("1234"));
+	dataobject_setValue(solidbox, "fill", dataobjectfield_string("solid"));
 
 	/* label */
 	solidbox = widget_newTypeIdName("label", NULL, NULL, defaultStyle);
