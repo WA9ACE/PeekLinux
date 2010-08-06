@@ -22,6 +22,7 @@
 #include "DataObject_private.h"
 
 static void widget_layoutMeasureFinal(Widget *w, Style *s);
+static void widget_markDirtyChild(Widget *w);
 
 /*#define CLIP_DEBUG*/
 
@@ -403,6 +404,21 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 	return 0;
 }
 
+void widget_forceFocus(Widget *tree, Widget *node, Style *s)
+{
+	Rectangle rect;
+
+	widget_focusNone(tree, s);
+	
+	widget_setFocus(node, 1);
+	widget_markDirtyChild(node);
+	lgui_clip_identity();
+	widget_getClipRectangle(node, &rect);
+	lgui_clip_set(&rect);
+	lgui_push_region();
+	style_renderWidgetTree(s, tree);
+}
+
 void widget_focusNext(Widget *tree, Style *s)
 {
 	List *redrawlist;
@@ -694,11 +710,18 @@ Widget *widget_focusNoneR(Widget *w)
 void widget_focusNone(Widget *w, Style *s)
 {
 	Widget *dw;
+	Rectangle rect;
 
 	dw = widget_focusNoneR(w);
 
-	if (dw != NULL)
-		style_renderWidgetTree(s, dw);
+	if (dw != NULL) {
+		lgui_clip_identity();
+		widget_getClipRectangle(dw, &rect);
+		lgui_clip_set(&rect);
+		lgui_push_region();
+		widget_markDirtyChild(dw);
+		style_renderWidgetTree(s, w);
+	}
 }
 
 Widget *widget_focusWhichOneNF(Widget *w)

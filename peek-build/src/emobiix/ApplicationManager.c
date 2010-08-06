@@ -185,6 +185,7 @@ void manager_handleKey(int key)
 	keyStr[1] = 0;
 	accessKey = widget_findStringField(appManager->rootApplicationWindow, "accesskey", keyStr);
 	if (accessKey != NULL) {
+		widget_forceFocus(appManager->rootApplicationWindow, accessKey, style);
 		script_event(accessKey, "onreturn");
 		return;
 	}

@@ -34,6 +34,7 @@ void widget_setFocus(Widget *w, int isFocus);
 WidgetAlignment widget_getAlignment(Widget *w);
 void widget_setAlignment(Widget *w, WidgetAlignment a);
 int widget_isParent(Widget *wParent, Widget *w);
+void widget_forceFocus(Widget *tree, Widget *node, Style *s);
 Widget *widget_focusWhichOne(Widget *w);
 Widget *widget_focusWhichOneNF(Widget *w);
 void widget_markDirty(Widget *w);
