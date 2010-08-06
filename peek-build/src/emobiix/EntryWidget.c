@@ -22,7 +22,7 @@ int entryWidget_handleKey(Widget *w, int key, Style *s)
 	char *newstring;
 	Rectangle rect;
 
-	if (!isprint(key) && key != '\b')
+	if (key > 0xFFFFFF00 || !isprint(key) && key != '\b')
 		return 0;
 
 	dobj = widget_getDataObject(w);
