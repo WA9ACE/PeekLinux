@@ -16,9 +16,9 @@
 #define MAX_VOLUME_NAME_LEN            16
 
 /* Seek mode */
-#define FSM_FILE_BEGIN                  1
+#define FSM_FILE_BEGIN                  0 
+#define FSM_FILE_CURRENT                1
 #define FSM_FILE_END                    2
-#define FSM_FILE_CURRENT                3
 
 #define FSM_FILE_ATTRIB_NORMAL         0x00
 #define FSM_FILE_ATTRIB_READONLY       0x01
