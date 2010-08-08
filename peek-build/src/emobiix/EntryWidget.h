@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-int entryWidget_handleKey(Widget *w, int key, Style *s);
+int entryWidget_handleKey(Widget *w, unsigned int key, Style *s);
 
 						   
 #ifdef __cplusplus

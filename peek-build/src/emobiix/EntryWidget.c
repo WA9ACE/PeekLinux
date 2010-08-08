@@ -14,7 +14,7 @@
 
 /* TODO, handle UTF8 instead of just ascii */
 
-int entryWidget_handleKey(Widget *w, int key, Style *s)
+int entryWidget_handleKey(Widget *w, unsigned int key, Style *s)
 {
 	DataObject *dobj;
 	DataObjectField *field, *cursorfield;
