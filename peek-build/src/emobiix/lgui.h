@@ -80,7 +80,8 @@ void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f,
 void lgui_measure_font(const char *utf8, Font *f, int isBold, IPoint *output);
 
 void lgui_complex_draw_font(int x, int y, int maxw, int mahx, const char *utf8,
-		Font *f, Color c, int cursorindex, int startindex, int *windowPercent, int *windowOffset, int useEscapeSeqs);
+		Font *f, Color c, int cursorindex, int startindex, int *windowPercent,
+		int *windowOffset, int useEscapeSeqs, Rectangle *cursorBox);
 void lgui_measure_font_complex(const char *utf8, Font *f, IPoint *output);
 
 void lgui_clip_set(Rectangle *rect);

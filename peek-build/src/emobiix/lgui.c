@@ -947,7 +947,7 @@ another_escape:
 
 void lgui_complex_draw_font(int _x, int y, int maxw, int maxh, const char *utf8,
 		Font *f, Color c, int cursorindex, int startindex, int *windowPercent,
-		int *windowOffset, int useEscapeSeqs)
+		int *windowOffset, int useEscapeSeqs, Rectangle *cursorBox)
 {
 	const char *p, *startp;
 	unsigned int val;
@@ -1022,7 +1022,14 @@ more_escape:
 							state.currentColor.rgba.red, state.currentColor.rgba.green,
 							state.currentColor.rgba.blue);
 			}
+			if (i == cursorindex && cursorBox != NULL) {
+				cursorBox->x = x;
+				cursorBox->y = y+2;
+				cursorBox->width = 2;
+				cursorBox->height = fontHeight;
+			}
 		}
+		++i;
 		x += xadvance;
 		y += yadvance;
 		if (x > maxw)
@@ -1048,6 +1055,12 @@ more_escape_end:
 		}
 		UTF8toUTF32(p, &adv);
 		p += adv;
+	}
+	if (i == cursorindex && cursorBox != NULL) {
+		cursorBox->x = x;
+		cursorBox->y = y+2;
+		cursorBox->width = 2;
+		cursorBox->height = fontHeight;
 	}
 
 	if (innercount + endcount + startindex == 0) {

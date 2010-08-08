@@ -17,9 +17,11 @@
 int entryWidget_handleKey(Widget *w, int key, Style *s)
 {
 	DataObject *dobj;
-	DataObjectField *field;
+	DataObjectField *field, *cursorfield;
 	int slen;
-	char *newstring;
+	int keylen;
+	int cursorindex, cursorbytes, i, adv;
+	char *newstring, *pos, *lastpos;
 	Rectangle rect;
 
 	if (key > 0xFFFFFF00 || !isprint(key) && key != '\b')
@@ -32,19 +34,49 @@ int entryWidget_handleKey(Widget *w, int key, Style *s)
 		dataobject_setValue(dobj, "data", field);
 	}
 
+	cursorfield = dataobject_getValueAsInt(w, "cursor");
+	cursorindex = cursorfield->field.integer;
+	cursorbytes = 0;
+	pos = field->field.string;
+	for (i = 0; i < cursorindex; ++i) {
+		lastpos = pos;
+		if (UTF8toUTF32(pos, &adv) == 0)
+			return 1;
+		pos += adv;
+		cursorbytes += adv;
+	}
+
 	slen = strlen(field->field.string);
 
+	keylen = 1;
+	if (key & 0xFF00)
+		keylen = 2;
+	if (key & 0xFF0000)
+		keylen = 3;
+	if (key & 0xFF000000)
+		keylen = 4;
+
 	if (key == '\b') {
-		if (slen > 0) {
-			field->field.string[slen-1] = 0;
+		if (slen > 0 && cursorindex > 0) {
+			memmove(lastpos, lastpos+adv, strlen(lastpos+adv)+1);
+			cursorfield->field.integer;
+			--cursorfield->field.integer;
 		}
 	} else {
-		newstring = p_malloc(slen+2);
-		strcpy(newstring, field->field.string);
-		newstring[slen] = key;
-		newstring[slen+1] = 0;
+		newstring = p_malloc(slen+keylen+1);
+		memcpy(newstring, field->field.string, cursorbytes);
+		newstring[cursorbytes] = key & 0xFF;
+		if (keylen >= 2)
+			newstring[cursorbytes+1] = (key >> 8) & 0xFF;
+		if (keylen >= 3)
+			newstring[cursorbytes+2] = (key >> 16) & 0xFF;
+		if (keylen >= 4)
+			newstring[cursorbytes+3] = (key >> 24) & 0xFF;
+		memcpy(newstring+cursorbytes+keylen, field->field.string+cursorbytes, slen-cursorbytes);
+		newstring[slen+keylen] = 0;
 		p_free(field->field.string);
 		field->field.string = newstring;
+		++cursorfield->field.integer;
 	}
 	lgui_clip_identity();
 	widget_getClipRectangle(w, &rect);
@@ -60,12 +92,12 @@ extern Font *defaultFont;
 /* entry renderer */
 static void entry_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj) {
-	Rectangle *box, *margin;
+	Rectangle *box, *margin, cursorBox;
 	DataObject *text;
 	DataObjectField *field, *cursor, *startindex, *multiline;
 	/*Style *style;*/
 	Font *f;
-	Color c;/*, background, line;*/
+	Color c, cursorColor;/*, background, line;*/
 	/*const char *dtype;
 	const char *ltype;*/
 	const char *str;
@@ -141,12 +173,18 @@ static void entry_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 			line.rgba.red, line.rgba.green, line.rgba.blue);*/
 
 	lgui_complex_draw_font(box->x+4+margin->x, box->y+margin->y, box->width-9, box->height, str,
-			f, c, cursor->field.integer, startindex->field.integer, &percent, &offset, 0);
+			f, c, cursor->field.integer, startindex->field.integer, &percent, &offset, 0,
+			&cursorBox);
 
 	if (dataobjectfield_isTrue(multiline)) {
 		lgui_vline(box->x+margin->x+box->width-8, box->y+margin->y+1, box->height-1, 4, 0x44, 0x44, 0xFF);
 		lgui_vline(box->x+margin->x+box->width-8, box->y+margin->y+1+offset*(box->height-1)/100,
 				percent*(box->height-1)/100, 4, 0xCC, 0xCC, 0xFF);
+	}
+
+	if (style_getColor(s, w, "cursor-color", &cursorColor.value) != NULL) {
+		lgui_hline(cursorBox.x, cursorBox.y, cursorBox.width, cursorBox.height,
+				cursorColor.rgba.red, cursorColor.rgba.green, cursorColor.rgba.blue);
 	}
 }
 

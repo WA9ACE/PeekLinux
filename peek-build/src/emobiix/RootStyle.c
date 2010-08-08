@@ -80,6 +80,7 @@ Style *RootStyle(void)
 	dataobject_setValue(solidbox, "border-color", dataobjectfield_uint(0x696969FF));
 	dataobject_setValue(solidbox, "border", dataobjectfield_string("1234"));
 	dataobject_setValue(solidbox, "fill", dataobjectfield_string("solid"));
+	dataobject_setValue(solidbox, "cursor-color", dataobjectfield_int(0x0000FF00));
 
 	/* label */
 	solidbox = widget_newTypeIdName("label", NULL, NULL, defaultStyle);

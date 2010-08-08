@@ -42,7 +42,7 @@ static void text_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	}
 
 	lgui_complex_draw_font(box->x+4+margin->x, box->y+margin->y, box->width-9, box->height, str,
-			f, c, 0, 0, &percent, &offset, 1);
+			f, c, 0, 0, &percent, &offset, 1, NULL);
 }
 
 static void text_measure(WidgetRenderer *wr, Style *s, Widget *w,
