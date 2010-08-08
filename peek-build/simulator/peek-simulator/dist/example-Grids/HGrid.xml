@@ -1,0 +1,18 @@
+<application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
+<view name="mainview" width="320" height="220">
+	<box background-color="FFFFFFFF" id="solid" width="100%" height="100%" packing="vertical">
+		<box alignment="center" renderer="box" width="80%" border-color="FF000000" border="1234" packing="hgrid">
+			<box background-color="FF000000" id="solid" width="30" height="30" margin="5"><label>1</label></box>
+			<box background-color="FF000000" id="solid" width="30" height="30" margin="5"><label>2</label></box>
+			<box background-color="FF000000" id="solid" width="30" height="30" margin="5"><label>3</label></box>
+			<box background-color="FF000000" id="solid" width="30" height="30" margin="5"><label>4</label></box>
+			<box background-color="FF000000" id="solid" width="30" height="30" margin="5"><label>5</label></box>
+			<box background-color="FF000000" id="solid" width="30" height="30" margin="5"><label>6</label></box>
+			<box background-color="FF000000" id="solid" width="30" height="30" margin="5"><label>7</label></box>
+			<box background-color="FF000000" id="solid" width="30" height="30" margin="5"><label>8</label></box>
+			<box background-color="FF000000" id="solid" width="30" height="30" margin="5"><label>9</label></box>
+			<box background-color="FF000000" id="solid" width="30" height="30" margin="5"><label>10</label></box>
+		</box>
+	</box>
+</view>
+</application>
