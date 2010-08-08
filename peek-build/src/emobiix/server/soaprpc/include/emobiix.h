@@ -28,11 +28,21 @@ public:
 	int stampMinor;
 };
 
+class ns__KeyValue
+{
+public:
+	ns__KeyValue();
+	ns__KeyValue(xsd__string key, xsd__string value);
+	xsd__string key;
+	xsd__string value;
+};
+
 //gsoap ns service method-documentation: AuthenticationRequest Returns whether the given deviceId, userName, password combination is authenticated
 int ns__AuthenticationRequest(
 	xsd__string deviceId,
 	xsd__string userName, 
 	xsd__string password, 
+	std::vector<ns__KeyValue>* requestParam,
 	bool &isAuthenticated
 );
 
@@ -41,6 +51,7 @@ int ns__BlockDataObjectRequest(
 	xsd__string deviceId,
 	xsd__string dataObjectURI, 
 	ns__Timestamp timeStamp, 
+	std::vector<ns__KeyValue>* requestParam,
 	xsd__base64Binary &binaryData
 );
 
@@ -49,6 +60,7 @@ int ns__TreeDataObjectRequest(
 	xsd__string deviceId, 
 	xsd__string dataObjectURI, 
 	ns__Timestamp timeStamp, 
+	std::vector<ns__KeyValue>* requestParam,
 	xsd__base64Binary &treeData
 );
 
@@ -57,6 +69,7 @@ int ns__RecordDataObjectRequest(
 	xsd__string deviceId, 
 	xsd__string dataObjectURI, 
 	ns__Timestamp timestamp, 
+	std::vector<ns__KeyValue>* requestParam,
 	xsd__base64Binary &recordData
 );
 
@@ -65,6 +78,7 @@ int ns__TextDataObjectRequest(
 	xsd__string deviceId, 
 	xsd__string dataObjectURI, 
 	ns__Timestamp timestamp, 
+	std::vector<ns__KeyValue>* requestParam,
 	xsd__base64Binary &textData
 );
 

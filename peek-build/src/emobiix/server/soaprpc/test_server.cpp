@@ -27,7 +27,7 @@ xsd__base64Binary base64BinaryFromString(struct soap* soap, const char *str)
 	return raw;
 }
 
-int ns__AuthenticationRequest(struct soap* soap, std::string deviceId, std::string userName, std::string password, bool &isAuthenticated)
+int ns__AuthenticationRequest(struct soap* soap, std::string deviceId, std::string userName, std::string password, std::vector<ns__KeyValue>* requestParam, bool &isAuthenticated)
 {
 	cerr << "Authentication request for [" << deviceId << "], [" << userName << "], [" << password << "]" << endl;
 
@@ -113,7 +113,7 @@ bool curl_get_file(const std::string& filename, const char *szUrl)
 	return true;
 }  
 
-int ns__BlockDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, xsd__base64Binary &binaryData)
+int ns__BlockDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, std::vector<ns__KeyValue>* requestParam, xsd__base64Binary &binaryData)
 {
 	cerr << "Received block data request: " << deviceId << " " << dataObjectURI	<< endl;
 
@@ -150,7 +150,7 @@ int ns__BlockDataObjectRequest(struct soap* soap, std::string deviceId, std::str
 	return SOAP_OK;
 }
 
-int ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, xsd__base64Binary& recordData)
+int ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::vector<ns__KeyValue>* requestParam, xsd__base64Binary& recordData)
 {
 	cerr << "Received record request: " << deviceId << " " << dataObjectURI << endl;
 	
@@ -181,13 +181,13 @@ int ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::st
 	return SOAP_OK;
 }
 
-int ns__TextDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, xsd__base64Binary& textData)
+int ns__TextDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::vector<ns__KeyValue>* requestParam, xsd__base64Binary& textData)
 {
 	textData = base64BinaryFromString(soap, "some text string");
 	return SOAP_OK;
 }
 
-int ns__TreeDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, xsd__base64Binary& treeData)
+int ns__TreeDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, std::vector<ns__KeyValue>* requestParam, xsd__base64Binary& treeData)
 {
 	char path[2048] = "";
 	sprintf(path, "%s.xml", dataObjectURI.c_str());

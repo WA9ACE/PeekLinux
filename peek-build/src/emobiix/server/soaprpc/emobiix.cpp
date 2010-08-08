@@ -31,3 +31,14 @@ ns__Timestamp::ns__Timestamp(int ma, int mi)
 : stampMajor(ma), stampMinor(mi)
 {
 }
+
+ns__KeyValue::ns__KeyValue()
+ : key(""), value("")
+{ 
+}
+
+ns__KeyValue::ns__KeyValue(xsd__string akey, xsd__string avalue)
+ : key(akey), value(avalue)
+{
+}
+

@@ -11,12 +11,22 @@ namespace emobiix
 namespace soap_request
 {
 
-bool GetAuthentication(const std::string& URL, const std::string& deviceId, const std::string& userName, const std::string& password) 
+static void ParamMapToVector(const std::map<std::string, std::string>& paramMap, std::vector<ns__KeyValue>& paramVector)
+{
+	for (std::map<std::string, std::string>::const_iterator it = paramMap.begin(), end = paramMap.end(); it != end; ++it)
+		paramVector.push_back(ns__KeyValue(it->first, it->second));
+}
+
+bool GetAuthentication(const std::string& URL, const std::string& deviceId, const std::string& userName, const std::string& password, const std::map<std::string, std::string>& params) 
 { 
 	struct soap *s = soap_new();
 
 	bool isAuthenticated = false;
-	int ret = soap_call_ns__AuthenticationRequest(s, URL.c_str(), NULL, deviceId, userName, password, isAuthenticated);
+	
+	std::vector<ns__KeyValue> requestParams;
+	ParamMapToVector(params, requestParams);
+
+	int ret = soap_call_ns__AuthenticationRequest(s, URL.c_str(), NULL, deviceId, userName, password, &requestParams, isAuthenticated);
 
  	soap_end(s);
 	soap_free(s); 
@@ -24,7 +34,7 @@ bool GetAuthentication(const std::string& URL, const std::string& deviceId, cons
 	return isAuthenticated;
 }
 
-int GetBlockDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, std::string& mime, vector<pair<size_t, unsigned char *> >& blockData)
+int GetBlockDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, const std::map<std::string, std::string>& params, std::string& mime, vector<pair<size_t, unsigned char *> >& blockData)
 {
 	struct soap *s = soap_new();
 
@@ -32,7 +42,11 @@ int GetBlockDataObject(const std::string& URL, const std::string& deviceId, cons
 
 	ns__Timestamp ts(1, 5);
 	xsd__base64Binary raw;
-	int ret = soap_call_ns__BlockDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, raw);
+
+	std::vector<ns__KeyValue> requestParams;
+	ParamMapToVector(params, requestParams);
+
+	int ret = soap_call_ns__BlockDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, &requestParams, raw);
 
 	const int BLOCK = 3 * 1024;
 	size_t rawSize = raw.getSize();
@@ -61,13 +75,17 @@ int GetBlockDataObject(const std::string& URL, const std::string& deviceId, cons
 	return ret == SOAP_OK;
 }
 
-int GetRecordDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, std::string& recordData)
+int GetRecordDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, const std::map<std::string, std::string>& params, std::string& recordData)
 {
 	struct soap *s = soap_new();
 
 	ns__Timestamp ts(1, 5);
 	xsd__base64Binary raw;
-	int ret = soap_call_ns__RecordDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, raw);
+
+	std::vector<ns__KeyValue> requestParams;
+	ParamMapToVector(params, requestParams);
+
+	int ret = soap_call_ns__RecordDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, &requestParams, raw);
 
 	recordData = (char *)raw.getPtr();
 
@@ -77,13 +95,17 @@ int GetRecordDataObject(const std::string& URL, const std::string& deviceId, con
 	return ret == SOAP_OK;
 }
 
-int GetTextDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, std::string& textData)
+int GetTextDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, const std::map<std::string, std::string>& params, std::string& textData)
 {
 	struct soap *s = soap_new();
 
 	ns__Timestamp ts(1, 5);
 	xsd__base64Binary raw;
-	int ret = soap_call_ns__TextDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, raw);
+
+	std::vector<ns__KeyValue> requestParams;
+	ParamMapToVector(params, requestParams);
+
+	int ret = soap_call_ns__TextDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, &requestParams, raw);
 
 	textData = (char *)raw.getPtr();
 
@@ -93,13 +115,17 @@ int GetTextDataObject(const std::string& URL, const std::string& deviceId, const
 	return ret == SOAP_OK;
 }
 
-int GetTreeDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, std::string& treeData)
+int GetTreeDataObject(const std::string& URL, const std::string& deviceId, const std::string& dataObjectURI, const std::map<std::string, std::string>& params, std::string& treeData)
 {
 	struct soap *s = soap_new();
 
 	ns__Timestamp ts(1, 5);
 	xsd__base64Binary raw;
-	int ret = soap_call_ns__TreeDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, raw);
+
+	std::vector<ns__KeyValue> requestParams;
+	ParamMapToVector(params, requestParams);
+
+	int ret = soap_call_ns__TreeDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, &requestParams, raw);
 
 	treeData = (char *)raw.getPtr();
 

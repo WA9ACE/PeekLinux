@@ -166,7 +166,8 @@ bool tree_parser::createImage(DOMNode *node, std::vector<FRIPacketP *>& packets)
 {
 	std::string mime;
 	vector<pair<size_t, unsigned char *> > blocks;
-	soap_request::GetBlockDataObject(m_appPath, m_connectionToken, xml_parser::GetAttribute(node, "src"), mime, blocks);
+	map<string, string> params;
+	soap_request::GetBlockDataObject(m_appPath, m_connectionToken, xml_parser::GetAttribute(node, "src"), params, mime, blocks);
 
 	FRIPacketP *image = NULL;
 	size_t offset = 0;

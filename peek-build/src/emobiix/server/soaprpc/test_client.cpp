@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <map>
 
 using namespace std;
 
@@ -18,19 +19,21 @@ int main(int argc, char **argv)
 	
 	cerr << "Will use URL: " << url << " for soap requests" << endl;
 
+	map<string, string> param;
+	param["key"] = "value";
 	/*
 	cerr << "Using \"peek\" pass \"peek123\" for authentication..." << endl;
-	if (emobiix::soap_request::GetAuthentication(url, "1234567", "peek", "peek123"))
+	if (emobiix::soap_request::GetAuthentication(url, "1234567", "peek", "peek123", param))
 		cerr << "Authentication successful!" << endl;
 	*/
 	string tree;
-	if (emobiix::soap_request::GetTreeDataObject(url, "1234567", "dataobject", tree))
+	if (emobiix::soap_request::GetTreeDataObject(url, "1234567", "dataobject", param, tree))
 		cerr << "Tree data request successful: " << endl << tree << endl;
 
 	return 0;
 	string mime;
 	vector<pair<size_t, unsigned char *> > blocks;
-	if (emobiix::soap_request::GetBlockDataObject(url, "1234567", "image.jpg", mime, blocks))
+	if (emobiix::soap_request::GetBlockDataObject(url, "1234567", "image.jpg", param, mime, blocks))
 		cerr << "Block data request successful, got data of type " << mime << " of size " << blocks.size() << " blocks of data" << endl;
 
 	for (size_t i = 0; i < blocks.size(); ++i)

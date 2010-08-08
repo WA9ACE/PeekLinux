@@ -252,7 +252,7 @@ void connection::handle_authUserPass(FRIPacketP* packet, reply& rep)
 		ERRORLOG("Required field IMEI missing from authentication");
 		authResponse->packetTypeP.choice.authResponseP = RequestResponseP_responseErrorP;
 	}
-	else if (soap_request::GetAuthentication(app_path_, IMEI->second.c_str(), user.c_str(), pass.c_str()))
+	else if (soap_request::GetAuthentication(app_path_, IMEI->second.c_str(), user.c_str(), pass.c_str(), extraFields))
 	{
 		INFOLOG("Authentication successful");
 
@@ -337,7 +337,8 @@ void connection::start_arraySync(reply& rep)
 	rep.packets.push_back(dataobject_factory::recordSyncListP(m_currentSyncId));
 
 	string recordData;
-	if (!soap_request::GetRecordDataObject(app_path_, connection_token_, url_request_, recordData))
+	map<string, string> param;
+	if (!soap_request::GetRecordDataObject(app_path_, connection_token_, url_request_, param, recordData))
 	{
 		ERRORLOG("NO record data...");
 		return;
@@ -358,7 +359,8 @@ void connection::start_serverSync(reply& rep)
 	rep.packets.push_back(dataobject_factory::blockSyncListP(m_currentSyncId));
 
 	string treeData;
-	if (!soap_request::GetTreeDataObject(app_path_, connection_token_, url_request_, treeData))
+	map<string, string> param;
+	if (!soap_request::GetTreeDataObject(app_path_, connection_token_, url_request_, param, treeData))
 	{
 		ERRORLOG("NO tree data...");
 		return;
