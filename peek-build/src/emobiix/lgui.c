@@ -936,7 +936,7 @@ another_escape:
 		font_getGlyph(f, val, state.isBold, A4, &width, &height,
 				&xadvance, &yadvance, &baselinedy);
 		x += xadvance;
-		if (x+xadvance*4 > CLIP.x + CLIP.width) {
+		if (x+xadvance > CLIP.x + CLIP.width) {
 			return lastStart;
 		}
 		if (p[-1] == ' ')

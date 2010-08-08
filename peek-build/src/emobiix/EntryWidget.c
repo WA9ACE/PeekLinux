@@ -113,29 +113,6 @@ static void entry_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	style_getRenderer(s, w, "box-renderer", &iwr);
 	if (iwr != NULL)
 		iwr->render(wr, s, w, dobj);
-#if 0
-	hasFocus = widget_hasFocus(w);
-	style = style_getID(s, ltype, hasFocus);
-	f = (Font *)defaultFont;/*style_getProperty(s, NULL, ltype, dtype, "font");*/
-	/*c.value = (unsigned int)style_getProperty(s, NULL, ltype, dtype, "color");*/
-	c.value = 0;
-	style_getColor(s, w, "color", &c.value);
-	/*background.value = (unsigned int)style_getProperty(s, NULL, ltype, dtype, "background");*/
-	background.value = 0;
-	style_getColor(s, w, "background", &background.value);
-	/*line.value = (unsigned int)style_getProperty(s, NULL, ltype, dtype, "focusline");*/
-	if (hsaFocus)
-		style_getColor(s, w, "focusline", &line.value);
-	else
-		line.value = (unsigned int)style_getProperty(s, NULL, ltype, dtype, "line");
-	text = widget_getDataObject(w);
-	field = dataobject_getValue(text, "data");
-	if (field != NULL) {
-		str = field->field.string;
-	} else {
-		str = "";
-	}
-#endif
 
 	text = widget_getDataObject(w);
 	field = dataobject_getValue(text, "data");
@@ -166,11 +143,6 @@ static void entry_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		multiline = dataobjectfield_string("false");
 		dataobject_setValue(w, "multiline", multiline);
 	}
-
-	/*lgui_roundedbox_fill(box->x+margin->x, box->y+margin->y, box->width-1, box->height-1, 7,
-			background.rgba.red, background.rgba.green, background.rgba.blue);
-	lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width-1, box->height-1, 7,
-			line.rgba.red, line.rgba.green, line.rgba.blue);*/
 
 	lgui_complex_draw_font(box->x+4+margin->x, box->y+margin->y, box->width-9, box->height, str,
 			f, c, cursor->field.integer, startindex->field.integer, &percent, &offset, 0,
