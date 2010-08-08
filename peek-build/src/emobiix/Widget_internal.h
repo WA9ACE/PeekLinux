@@ -5,7 +5,7 @@
 
 typedef DataObject Widget;
 
-typedef enum {WP_HORIZONTAL, WP_VERTICAL, WP_GRID, WP_FIXED} WidgetPacking;
+typedef enum {WP_HORIZONTAL, WP_VERTICAL, WP_HGRID, WP_VGRID, WP_FIXED} WidgetPacking;
 typedef enum {WA_LEFT, WA_CENTER, WA_RIGHT} WidgetAlignment;
 
 #endif

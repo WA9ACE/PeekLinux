@@ -113,10 +113,14 @@ WidgetPacking widget_getPacking(Widget *w)
 			newField = dataobjectfield_int(WP_HORIZONTAL);
 		else if (strcmp(field->field.string, "vertical") == 0)
 			newField = dataobjectfield_int(WP_VERTICAL);
+		else if (strcmp(field->field.string, "hgrid") == 0)
+			newField = dataobjectfield_int(WP_HGRID);
+		else if (strcmp(field->field.string, "vgrid") == 0)
+			newField = dataobjectfield_int(WP_VGRID);
 		else if (strcmp(field->field.string, "fixed") == 0)
 			newField = dataobjectfield_int(WP_FIXED);
 		else
-			newField = dataobjectfield_int(WP_FIXED);
+			newField = dataobjectfield_int(WP_VERTICAL);
 
 		/*p_free(field->field.string);
 		p_free(field);*/
@@ -1070,11 +1074,13 @@ void widget_layoutForceResolveParent(Widget *w, unsigned int flag)
 void widget_resolveMeasureRelative(Widget *w)
 {
 	int sumWidth, sumHeight, sumNew;
+	int rowWidth, rowHeight;
 	DataObject *child;
 	DataObjectField *sField;
 	ListIterator iter;
 	int tmpint, slen, isset;
 	Application *app;
+	WidgetPacking pack;
 
 	/* get specified absolute values */
 #define RELATIVE_FIELD(_x, _y, _z) \
@@ -1100,10 +1106,13 @@ void widget_resolveMeasureRelative(Widget *w)
 
 	sumWidth = 0;
 	sumHeight = 0;
+	rowWidth = 0;
+	rowHeight = 0;
 	isset = 0;
 
 	sField = dataobject_getValue(w, "type");
 	if (!widget_typeNoChildRender(sField)) {
+		pack = widget_getPacking(w);
 		if (dataobjectfield_isString(sField, "frame")) {
 			child = widget_getDataObject(w);
 			if (child != NULL) {
@@ -1129,7 +1138,35 @@ void widget_resolveMeasureRelative(Widget *w)
 			}
 start_child:
 			widget_resolveMeasureRelative(child);
-			if (widget_getPacking(w) == WP_HORIZONTAL) {
+			if (pack == WP_HGRID) {
+				sumNew = child->box.width + child->margin.x + child->margin.width;
+				if (rowWidth+sumNew > w->box.width) {
+					if (rowWidth > sumWidth)
+						sumWidth = rowWidth;
+					rowWidth = 0;
+					sumHeight += rowHeight;
+					rowHeight = 0;
+				}
+				rowWidth += sumNew;
+
+				sumNew = child->box.height + child->margin.y + child->margin.height;
+				if (sumNew > rowHeight)
+					rowHeight = sumNew;
+			} else if (pack == WP_VGRID) {
+				sumNew = child->box.height + child->margin.y + child->margin.height;
+				if (rowHeight+sumNew > w->box.height) {
+					if (rowHeight > sumHeight)
+						sumHeight = rowHeight;
+					rowHeight = 0;
+					sumWidth += rowWidth;
+					rowWidth = 0;
+				}
+				rowHeight += sumNew;
+
+				sumNew = child->box.width + child->margin.x + child->margin.width;
+				if (sumNew > rowWidth)
+					rowWidth = sumNew;
+			} else if (pack == WP_HORIZONTAL) {
 				sumWidth += child->box.width + child->margin.x + child->margin.width;
 				sumNew = child->box.height + child->margin.y + child->margin.height;
 				sumHeight = sumNew > sumHeight ? sumNew : sumHeight;
@@ -1143,6 +1180,18 @@ start_child:
 			listIterator_next(&iter);
 		}
 		/*listIterator_delete(iter);*/
+	}
+
+	if (rowHeight > 0 || rowWidth > 0) {
+		if (pack == WP_HGRID) {
+			if (rowWidth > sumWidth)
+				sumWidth = rowWidth;
+			sumHeight += rowHeight;
+		} else {
+			if (rowHeight > sumHeight)
+				sumHeight = rowHeight;
+			sumWidth += rowWidth;
+		}
 	}
 
 	if (dataobject_isLayoutDirty(w, LAYOUT_DIRTY_WIDTH)) {
@@ -1237,6 +1286,7 @@ void widget_resolveMargin(Widget *w, Style *s)
 void widget_resolvePosition(Widget *w)
 {
 	int xpos, ypos, width, height;
+	int oxpos, oypos, rowMax, rowi;
 	ListIterator iter;
 	WidgetAlignment alignment;
 	WidgetPacking packing;
@@ -1247,7 +1297,10 @@ void widget_resolvePosition(Widget *w)
 	Application *app;
 
 	xpos = w->box.x+w->margin.x;
+	oxpos = xpos;
 	ypos = w->box.y+w->margin.y;
+	oypos = ypos;
+	rowMax = 0;
 	width = w->box.width;
 	height = w->box.height;
 	packing = widget_getPacking(w);
@@ -1280,8 +1333,8 @@ void widget_resolvePosition(Widget *w)
 			}
 		}
 	}
-	list_begin(w->children, &iter);
 
+	list_begin(w->children, &iter);
 	while (!listIterator_finished(&iter)) {
 		cw = (Widget *)listIterator_item(&iter);
 		if (singleChild != NULL)
@@ -1289,49 +1342,80 @@ void widget_resolvePosition(Widget *w)
 start_child:
 		alignment = widget_getAlignment(cw);
 		
-		switch (alignment) {
-			case WA_LEFT:
-			default:
-				if (packing == WP_HORIZONTAL) {
-					cw->box.x = xpos;
-					cw->box.y = ypos;/*+cw->margin.y;*/
-					if (!positionStatic)
-						xpos += cw->box.width+cw->margin.x+cw->margin.width;
-				} else {
-					cw->box.x = xpos;/*+cw->margin.x;*/
-					cw->box.y = ypos;
-					if (!positionStatic)
-						ypos += cw->box.height+cw->margin.y+cw->margin.height;
-				}
-				break;
-			case WA_RIGHT:
-				if (packing == WP_HORIZONTAL) {
-					cw->box.x = xpos;
-					cw->box.y = ypos + height-cw->box.height-cw->margin.y;
-					if (!positionStatic)
-						xpos += cw->box.width+cw->margin.x+cw->margin.width;
-				} else {
-					cw->box.x = xpos + width-cw->box.width-cw->margin.width;
-					cw->box.y = ypos;
-					if (!positionStatic)
-						ypos += cw->box.height+cw->margin.y+cw->margin.height;
-				}
-				break;
-			case WA_CENTER:
-				if (packing == WP_HORIZONTAL) {
-					cw->box.x = xpos;
-					cw->box.y = ypos + (height-cw->box.height-cw->margin.y-cw->margin.height)/2;
-					if (!positionStatic)	
-						xpos += cw->box.width+cw->margin.x+cw->margin.width;
-				} else {
-					cw->box.x = xpos + (width-cw->box.width-cw->margin.x-cw->margin.width)/2;
-					cw->box.y = ypos;
-					if (!positionStatic)	
-						ypos += cw->box.height+cw->margin.y+cw->margin.height;
-				}
-				break;
-		}
+		if (packing == WP_HGRID) {
+			if (xpos + cw->box.width + cw->margin.x + cw->margin.width - w->box.x > width) {
+				xpos = oxpos;
+				ypos += rowMax;
+				rowMax = 0;
+			}
 
+			cw->box.x = xpos;
+			cw->box.y = ypos;
+
+			xpos += cw->box.width + cw->margin.x + cw->margin.width;
+
+			rowi = cw->box.height + cw->margin.y + cw->margin.height;
+			if (rowi > rowMax)
+				rowMax = rowi;
+		} else if (packing == WP_VGRID) {
+			if (ypos + cw->box.height + cw->margin.y + cw->margin.height - w->box.y > height) {
+				ypos = oypos;
+				xpos += rowMax;
+				rowMax = 0;
+			}
+
+			cw->box.x = xpos;
+			cw->box.y = ypos;
+
+			ypos += cw->box.height + cw->margin.y + cw->margin.height;
+
+			rowi = cw->box.width + cw->margin.x + cw->margin.width;
+			if (rowi > rowMax)
+				rowMax = rowi;
+		} else {
+			switch (alignment) {
+				case WA_LEFT:
+				default:
+					if (packing == WP_HORIZONTAL) {
+						cw->box.x = xpos;
+						cw->box.y = ypos;/*+cw->margin.y;*/
+						if (!positionStatic)
+							xpos += cw->box.width+cw->margin.x+cw->margin.width;
+					} else {
+						cw->box.x = xpos;/*+cw->margin.x;*/
+						cw->box.y = ypos;
+						if (!positionStatic)
+							ypos += cw->box.height+cw->margin.y+cw->margin.height;
+					}
+					break;
+				case WA_RIGHT:
+					if (packing == WP_HORIZONTAL) {
+						cw->box.x = xpos;
+						cw->box.y = ypos + height-cw->box.height-cw->margin.y;
+						if (!positionStatic)
+							xpos += cw->box.width+cw->margin.x+cw->margin.width;
+					} else {
+						cw->box.x = xpos + width-cw->box.width-cw->margin.width;
+						cw->box.y = ypos;
+						if (!positionStatic)
+							ypos += cw->box.height+cw->margin.y+cw->margin.height;
+					}
+					break;
+				case WA_CENTER:
+					if (packing == WP_HORIZONTAL) {
+						cw->box.x = xpos;
+						cw->box.y = ypos + (height-cw->box.height-cw->margin.y-cw->margin.height)/2;
+						if (!positionStatic)	
+							xpos += cw->box.width+cw->margin.x+cw->margin.width;
+					} else {
+						cw->box.x = xpos + (width-cw->box.width-cw->margin.x-cw->margin.width)/2;
+						cw->box.y = ypos;
+						if (!positionStatic)	
+							ypos += cw->box.height+cw->margin.y+cw->margin.height;
+					}
+					break;
+			}
+		}
 		widget_resolvePosition(cw);
 
 		if (singleChild != NULL)
