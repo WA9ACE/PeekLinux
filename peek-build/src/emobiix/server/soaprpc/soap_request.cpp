@@ -31,7 +31,6 @@ int GetBlockDataObject(const std::string& URL, const std::string& deviceId, cons
 	vector<char *> blocks;
 
 	ns__Timestamp ts(1, 5);
-
 	xsd__base64Binary raw;
 	int ret = soap_call_ns__BlockDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, raw);
 
@@ -67,7 +66,10 @@ int GetRecordDataObject(const std::string& URL, const std::string& deviceId, con
 	struct soap *s = soap_new();
 
 	ns__Timestamp ts(1, 5);
-	int ret = soap_call_ns__RecordDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, recordData);
+	xsd__base64Binary raw;
+	int ret = soap_call_ns__RecordDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, raw);
+
+	recordData = (char *)raw.getPtr();
 
  	soap_end(s);
 	soap_free(s); 
@@ -80,7 +82,10 @@ int GetTextDataObject(const std::string& URL, const std::string& deviceId, const
 	struct soap *s = soap_new();
 
 	ns__Timestamp ts(1, 5);
-	int ret = soap_call_ns__TextDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, textData);
+	xsd__base64Binary raw;
+	int ret = soap_call_ns__TextDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, raw);
+
+	textData = (char *)raw.getPtr();
 
  	soap_end(s);
 	soap_free(s); 
@@ -93,7 +98,10 @@ int GetTreeDataObject(const std::string& URL, const std::string& deviceId, const
 	struct soap *s = soap_new();
 
 	ns__Timestamp ts(1, 5);
-	int ret = soap_call_ns__TreeDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, treeData);
+	xsd__base64Binary raw;
+	int ret = soap_call_ns__TreeDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, raw);
+
+	treeData = (char *)raw.getPtr();
 
  	soap_end(s);
 	soap_free(s); 

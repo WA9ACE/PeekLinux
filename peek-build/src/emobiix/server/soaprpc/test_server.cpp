@@ -19,6 +19,14 @@ int main()
    return c.serve(); // calls soap_serve to serve as CGI application (using stdin/out)
 }
 
+xsd__base64Binary base64BinaryFromString(struct soap* soap, const char *str)
+{
+	xsd__base64Binary raw;
+	raw = xsd__base64Binary(soap, strlen(str) + 1, "text");
+	strcpy((char *)raw.getPtr(), str);
+	return raw;
+}
+
 int ns__AuthenticationRequest(struct soap* soap, std::string deviceId, std::string userName, std::string password, bool &isAuthenticated)
 {
 	cerr << "Authentication request for [" << deviceId << "], [" << userName << "], [" << password << "]" << endl;
@@ -142,7 +150,7 @@ int ns__BlockDataObjectRequest(struct soap* soap, std::string deviceId, std::str
 	return SOAP_OK;
 }
 
-int ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::string& m__recordData)
+int ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, xsd__base64Binary& recordData)
 {
 	cerr << "Received record request: " << deviceId << " " << dataObjectURI << endl;
 	
@@ -152,32 +160,34 @@ int ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::st
 	struct stat st;
 	if (stat(path, &st) != 0)
 	{
-		m__recordData = "<array></array>";
+		recordData = base64BinaryFromString(soap, "<array></array>");
 		return SOAP_OK;
 	}
 
 	ifstream file(path, ios::in);
 	if (!file)
 	{
-		m__recordData = "<array></array>";
+		recordData = base64BinaryFromString(soap, "<array></array>");
 		return SOAP_OK;
 	}
 
-	std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-	m__recordData = str;
+	recordData = xsd__base64Binary(soap, st.st_size + 1, "text");
 
-	cerr << "Will send back: " << m__recordData << endl;
+	file.read((char *)recordData.getPtr(), recordData.getSize());
+	recordData.getPtr()[recordData.getSize()] = 0;
+
+	cerr << "Will send back: " << recordData.getPtr() << endl;
 
 	return SOAP_OK;
 }
 
-int ns__TextDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::string &textData)
+int ns__TextDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, xsd__base64Binary& textData)
 {
-	textData = "some textual data";
+	textData = base64BinaryFromString(soap, "some text string");
 	return SOAP_OK;
 }
 
-int ns__TreeDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, std::string &m__treeData)
+int ns__TreeDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, xsd__base64Binary& treeData)
 {
 	char path[2048] = "";
 	sprintf(path, "%s.xml", dataObjectURI.c_str());
@@ -185,20 +195,21 @@ int ns__TreeDataObjectRequest(struct soap* soap, std::string deviceId, std::stri
 	struct stat st;
 	if (stat(path, &st) != 0)
 	{
-		m__treeData = "<emobiix-gui></emobiix-gui>";
+		treeData = base64BinaryFromString(soap, "<emobiix-gui></emobiix-gui>");
 		return SOAP_OK;
 	}
 
 	ifstream file(path, ios::in);
 	if (!file)
 	{
-		m__treeData = "<emobiix-gui></emobiix-gui>";
+		treeData = base64BinaryFromString(soap, "<emobiix-gui></emobiix-gui>");
 		return SOAP_OK;
 	}
 
-	std::string str((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-	m__treeData = str;
+	treeData = xsd__base64Binary(soap, st.st_size + 1, "xml");
+	file.read((char *)treeData.getPtr(), treeData.getSize());
 
+	treeData.getPtr()[treeData.getSize()] = 0;
 	return SOAP_OK;
 }
 

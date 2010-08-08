@@ -4,7 +4,6 @@
 
 #import "stl.h"
 
-typedef std::string XML;
 typedef std::string xsd__string; 
 
 class xsd__base64Binary
@@ -50,7 +49,7 @@ int ns__TreeDataObjectRequest(
 	xsd__string deviceId, 
 	xsd__string dataObjectURI, 
 	ns__Timestamp timeStamp, 
-	XML& m__treeData
+	xsd__base64Binary &treeData
 );
 
 //gsoap ns service method-documentation: RecordDataObjectRequest Returns the record array for a given deviceId, dataObjectURI, and timeStamp combination
@@ -58,7 +57,7 @@ int ns__RecordDataObjectRequest(
 	xsd__string deviceId, 
 	xsd__string dataObjectURI, 
 	ns__Timestamp timestamp, 
-	XML& m__recordData
+	xsd__base64Binary &recordData
 );
 
 //gsoap ns service method-documentation: TextDataObjectRequest Returns the pure textual data for a given deviceId, dataObjectURI, and timeStamp combination
@@ -66,7 +65,7 @@ int ns__TextDataObjectRequest(
 	xsd__string deviceId, 
 	xsd__string dataObjectURI, 
 	ns__Timestamp timestamp, 
-	xsd__string& textData
+	xsd__base64Binary &textData
 );
 
 //gsoap ns service method-documentation: DataObjectPushRequest Returns whether the deviceId, dataObjectURI push request has been delivered
