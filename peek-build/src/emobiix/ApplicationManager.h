@@ -13,7 +13,7 @@ void manager_init(void);
 void manager_drawScreen(void);
 void manager_drawScreenPartial(void);
 void manager_resolveLayout(void);
-void manager_handleKey(int key);
+void manager_handleKey(unsigned int key);
 void manager_launchApplication(Application *app);
 void manager_applications(ListIterator *iter);
 void manager_focusApplication(Application *app);

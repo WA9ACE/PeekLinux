@@ -151,7 +151,7 @@ void manager_resolveLayout(void)
 			style, 0);
 }
 
-void manager_handleKey(int key)
+void manager_handleKey(unsigned int key)
 {
 	int isDirty = 0;
 	Widget *focus, *accessKey;
