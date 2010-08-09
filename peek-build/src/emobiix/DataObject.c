@@ -696,6 +696,18 @@ int dataobjectfield_isTrue(DataObjectField *field)
     return 0;
 }
 
+void dataobjectfield_setBoolean(DataObjectField *field, int bval)
+{
+    if (field != NULL) {
+		if (field->type == DOF_STRING) {
+			p_free(field->field.string);
+			field->field.string = p_strdup(bval ? "1" : "0");
+		} else if (field->type == DOF_INT || field->type == DOF_UINT) {
+			field->field.integer = bval;
+		}
+    }
+}
+
 int dataobjectfield_isString(DataObjectField *field, const char *str)
 {
     if (field != NULL && field->type == DOF_STRING &&
