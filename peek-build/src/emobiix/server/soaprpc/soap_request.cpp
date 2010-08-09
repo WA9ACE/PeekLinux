@@ -87,7 +87,7 @@ int GetRecordDataObject(const std::string& URL, const std::string& deviceId, con
 
 	int ret = soap_call_ns__RecordDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, &requestParams, raw);
 
-	recordData = (char *)raw.getPtr();
+	recordData = string((char *)raw.getPtr(), raw.getSize());
 
  	soap_end(s);
 	soap_free(s); 
@@ -107,7 +107,7 @@ int GetTextDataObject(const std::string& URL, const std::string& deviceId, const
 
 	int ret = soap_call_ns__TextDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, &requestParams, raw);
 
-	textData = (char *)raw.getPtr();
+	textData = string((char *)raw.getPtr(), raw.getSize());
 
  	soap_end(s);
 	soap_free(s); 
@@ -127,7 +127,7 @@ int GetTreeDataObject(const std::string& URL, const std::string& deviceId, const
 
 	int ret = soap_call_ns__TreeDataObjectRequest(s, URL.c_str(), NULL, deviceId, dataObjectURI, ts, &requestParams, raw);
 
-	treeData = (char *)raw.getPtr();
+	treeData = string((char *)raw.getPtr(), raw.getSize());
 
  	soap_end(s);
 	soap_free(s); 
