@@ -8,7 +8,7 @@ extern "C" {
 #define EKEY_ACTIVATE		13
 #define EKEY_FOCUSPREV		87
 #define EKEY_FOCUSNEXT		86
-#define EKEY_ALTTAB		42
+#define EKEY_ALTTAB			42
 
 int MapKeyToInternal(int key);
 
