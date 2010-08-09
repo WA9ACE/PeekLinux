@@ -1,7 +1,6 @@
 <application name="Calcumobiix" description="emobiix calculator demo application" startupview="calculator" style="calcstyle">
 	<style name="calcstyle">
 		<calcbox background-color="31233100" renderer="box" fill="solid"/>
-		<calcbutton background-color="31233100" border-color="ad966300" fill="solid" border="1234"/>
 		<label font-color="dfa93300" renderer="label"/>
 		<cframe renderer="box" fill="none" border-color="ad966300" border="1234" margin="4"/>
 		<button margin="4">
