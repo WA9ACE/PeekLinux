@@ -24,7 +24,7 @@ static void PrintString(const TString* ts)
 {
  const char* s=getstr(ts);
  size_t i,n=ts->tsv.len;
- putchar('"');
+ printf('"');
  for (i=0; i<n; i++)
  {
   int c=s[i];
@@ -40,12 +40,12 @@ static void PrintString(const TString* ts)
    case '\t': printf("\\t"); break;
    case '\v': printf("\\v"); break;
    default:	if (isprint((unsigned char)c))
-   			putchar(c);
+   			prints("%s", c);
 		else
 			printf("\\%03u",(unsigned char)c);
   }
  }
- putchar('"');
+ printf('"');
 }
 
 static void PrintConstant(const Proto* f, int i)
