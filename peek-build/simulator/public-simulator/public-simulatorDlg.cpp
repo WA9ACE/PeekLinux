@@ -272,8 +272,9 @@ BOOL CpublicsimulatorDlg::PreTranslateMessage(MSG* pMsg)
 		int key = pMsg->wParam;
 		switch (key) {
 			case VK_OEM_MINUS: key = '.'; break;
-			case VK_OEM_PLUS: key = '+'; break;
+			case VK_OEM_PLUS: key = '='; break;
 			case VK_OEM_COMMA: key = ','; break;
+			case VK_OEM_PERIOD: key = '.'; break;
 			case VK_RETURN: key = 13; break;
 			case 106: key = 42; break;
 			case 40:
@@ -306,7 +307,7 @@ BOOL CpublicsimulatorDlg::PreTranslateMessage(MSG* pMsg)
 				case '7': key = '&'; break;
 				case '8': key = '*'; break;
 				case '9': key = '('; break;
-				case '+': key = '='; break;
+				case '=': key = '+'; break;
 				case '-': key = '_'; break;
 				default: break;
 			}
