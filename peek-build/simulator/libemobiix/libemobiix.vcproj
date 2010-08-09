@@ -180,6 +180,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\CheckBoxWidget.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\Circle.h"
 				>
 			</File>
@@ -429,6 +433,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\emobiix\Cache.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\CheckBoxWidget.c"
 				>
 			</File>
 			<File
