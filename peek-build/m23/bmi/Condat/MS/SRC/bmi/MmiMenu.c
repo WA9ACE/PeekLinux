@@ -213,7 +213,7 @@ int menuSimItemCallback( MfwMnu* m, MfwMnuItem* i)
 
 void updateScreen(void);
 void lgui_set_dirty(void);
-void manager_handleKey(int key);
+void manager_handleKey(unsigned int key);
 
 
 static void menuEmobiixDestroy(MfwHnd own_window)
