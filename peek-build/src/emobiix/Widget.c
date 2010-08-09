@@ -85,9 +85,9 @@ void widget_setDataObjectArray(Widget *w, DataObject *dobj)
 
 DataObject *widget_getDataObject(Widget *w)
 {
-	if (w->widgetData == NULL)
-		return w;
-	return w->widgetData;
+	while (w->widgetData != NULL)
+		w = w->widgetData;
+	return w;
 }
 
 void widget_setPacking(Widget *w, WidgetPacking p)
@@ -415,7 +415,7 @@ void widget_forceFocus(Widget *tree, Widget *node, Style *s)
 	widget_focusNone(tree, s, 1);
 	
 	widget_setFocus(node, 1);
-	widget_markDirtyChild(node);
+	widget_markDirty(node);
 	lgui_clip_identity();
 	widget_getClipRectangle(node, &rect);
 	lgui_clip_set(&rect);
@@ -723,7 +723,7 @@ void widget_focusNone(Widget *w, Style *s, int doRender)
 		widget_getClipRectangle(dw, &rect);
 		lgui_clip_set(&rect);
 		lgui_push_region();
-		widget_markDirtyChild(dw);
+		widget_markDirty(dw);
 		style_renderWidgetTree(s, w);
 	}
 }
