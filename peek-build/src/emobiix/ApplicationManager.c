@@ -16,6 +16,7 @@
 #include "RootStyle.h"
 #include "Debug.h"
 #include "EntryWidget.h"
+#include "CheckBoxWidget.h"
 #include "Script.h"
 #include "Hardware.h"
 #include "Mime.h"
@@ -176,8 +177,11 @@ void manager_handleKey(unsigned int key)
 	if (focus != NULL) {
 		DataObjectField *field;
 		field = dataobject_getValue(focus, "type");
-		if (field != NULL && field->type == DOF_STRING && strcmp(field->field.string, "entry") == 0) {
+		if (dataobjectfield_isString(field, "entry")) {
 			if (entryWidget_handleKey(focus, key, style))
+				return;
+		} else if (dataobjectfield_isString(field, "checkbox")) {
+			if (checkboxWidget_handleKey(focus, key, style))
 				return;
 		}
 	}

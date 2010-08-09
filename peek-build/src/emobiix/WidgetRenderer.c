@@ -279,5 +279,7 @@ WidgetRenderer *widgetRenderer_fromString(const char *str)
 		return widgetrenderer_entry();
 	if (strcmp(str, "array") == 0)
 		return widgetrenderer_array();
+	if (strcmp(str, "checkbox") == 0)
+		return widgetrenderer_checkbox();
 	return NULL;
 }

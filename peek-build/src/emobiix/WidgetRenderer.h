@@ -25,6 +25,7 @@ void widgetrenderer_zeroMargin(WidgetRenderer *wr, Style *s, Widget *w,
 
 WidgetRenderer *widgetrenderer_image(void);
 WidgetRenderer *widgetrenderer_box(void);
+WidgetRenderer *widgetrenderer_checkbox(void);
 /*WidgetRenderer *widgetrenderer_gradbox(void);
 WidgetRenderer *widgetrenderer_gradboxr(void);
 WidgetRenderer *widgetrenderer_solid(void);*/
