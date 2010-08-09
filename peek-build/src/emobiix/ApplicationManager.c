@@ -1,7 +1,3 @@
-#ifndef SIMULATOR
-#include "general.h"
-#include "typedefs.h"
-#endif
 #include "ApplicationManager.h"
 
 #include "Application.h"
