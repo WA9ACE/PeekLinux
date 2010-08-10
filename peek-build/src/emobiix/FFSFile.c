@@ -1,139 +1,103 @@
 #include "File.h"
-#include "ffsapi.h"
+#include "ffs.h"
 
 struct File_t
 {
-    FsiHandleT handle;
-    char *filename;
+	T_FFS_FD handle;
+	char *filename;
 };
 
-/*typedef enum {FP_START, FP_END, FP_CURRENT} FilePosition;*/
+File *file_open(const char *filename, uint32 mode)
+{
+	int ffsOret;
+	File *output; 
+
+	ffsOret = ffs_open(filename, mode);
+	if (ffsOret < 0)
+		return NULL;
+
+	output = (File *)p_malloc(sizeof(File));
+	if (!output)
+		return NULL;
+
+	output->handle = ffsOret;
+	output->filename = (char *)p_strdup(filename);
+	return output;
+}
 
 File *file_openRead(const char *filename)
 {
-    File *output;
-    FsiResultT result;
-
-    output = (File *)p_malloc(sizeof(File));
-    if (output == NULL)
-        return NULL;
-    result = FsiFileOpen(&output->handle, filename, FSI_FILE_OPEN_READ_EXIST);
-    if (result != FSI_SUCCESS) {
-        emo_printf("Failed to open %s reason %d\n", filename, result);
-        p_free(output);
-        return NULL;
-    }
-    output->filename = (char *)p_strdup(filename);
-    return output;
+	return file_open(filename, FFS_O_RDONLY);
 }
 
 File *file_openWrite(const char *filename)
 {
-    File *output;
-    FsiResultT result;
-
-    output = (File *)p_malloc(sizeof(File));
-    if (output == NULL)
-        return NULL;
-    result = FsiFileOpen(&output->handle, filename, FSI_FILE_OPEN_WRITE_ALWAYS);
-    if (result != FSI_SUCCESS) {
-        emo_printf("Failed to open %s reason %d\n", filename, result);
-        p_free(output);
-        return NULL;
-    }
-    output->filename = (char *)p_strdup(filename);
-    return output;
+	return file_open(filename, FFS_O_CREATE | FFS_O_WRONLY);
 }
 
 File *file_openAppend(const char *filename)
 {
-    File *output;
-    FsiResultT result;
-
-    output = (File *)p_malloc(sizeof(File));
-    if (output == NULL)
-        return NULL;
-    result = FsiFileOpen(&output->handle, filename, FSI_FILE_OPEN_WRITE_EXIST);
-    if (result != FSI_SUCCESS) {
-        emo_printf("Failed to open %s reason %d\n", filename, result);
-        p_free(output);
-        return NULL;
-    }
-    output->filename = (char *)p_strdup(filename);
-    file_seek(output, 0, FP_END);
-    return output;
+	return file_open(filename, FFS_O_APPEND);
 }
 
 int file_read(File *f, int bytes, void *buffer)
 {
-    UINT32 readbytes;
-    FsiResultT result;
-
-    readbytes = bytes;
-    result = FsiFileRead(buffer, 1, &readbytes, f->handle);
-    if (result == 0)
-        return (int)readbytes;
-    return -1;
+	return ffs_read(f->handle, buffer, bytes);
 }
 
 int file_write(File *f, int bytes, void *buffer)
 {
-    UINT32 writebytes;
-    FsiResultT result;
-
-    writebytes = bytes;
-    result = FsiFileRead(buffer, 1, &writebytes, f->handle);
-    if (result == 0)
-        return (int)writebytes;
-    return -1;
+	return ffs_write(f->handle, buffer, bytes);
 }
 
 int file_seek(File *f, int offset, FilePosition pos)
 {
-    FsiFileSeekTypeT from;
-    switch (pos) {
-        case FP_START: from = FSI_FILE_SEEK_START; break;
-        case FP_END: from = FSI_FILE_SEEK_END; break;
-        case FP_CURRENT:
-        default: from = FSI_FILE_SEEK_CURRENT; break;
-    }
-    return FsiSeek(f->handle, from, offset);
+	uint32 whence;
+
+	switch (pos) {
+		case FP_START:
+			whence = FFS_SEEK_SET;
+			break;
+		case FP_END:
+			whence = FFS_SEEK_END;
+			break;
+		case FP_CURRENT:
+		default:
+			whence = FFS_SEEK_CUR;
+	}
+
+	return ffs_seek(f->handle, offset, whence);
 }
 
 int file_pos(File *f)
 {
-    UINT32 pos;
-    FsiResultT result;
-    
-    result = FsiTell(f->handle, &pos);
-    if (result == 0)
-        return (int)pos;
-    return -1;
+	return ffs_seek(f->handle, 0, FFS_SEEK_CUR);
 }
 
 int file_eof(File *f)
 {
-    return -1;
+	return -1;
 }
 
 int file_size(File *f)
 {
-    FsiResultT result;
-    UINT32 length;
+	uint32 ffsSret;
+	struct stat_s ffsStat;
 
-    result = FsiGetFileLength(f->filename, &length);
-    if (result == 0)
-        return (int)length;
-    return -1;
+	ffsSret = ffs_stat(f->filename, &ffsStat);
+	if (ffsSret < 0)
+		return ffsSret;
+
+	return ffsStat.size;
 }
 
 int file_close(File *f)
 {
-    FsiResultT result;
+	uint32 ffsCret;
 
-    result = FsiFileClose(f->handle);
-    p_free(f->filename);
-    p_free(f);
+	ffsCret = ffs_close(f->handle);
+	p_free(f->filename);
+	p_free(f);
 
-    return result;
+	return ffsCret;
 }

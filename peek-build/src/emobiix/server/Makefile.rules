@@ -3,7 +3,7 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 DEBUG = -g
-OPTIMIZE = -O3
+OPTIMIZE = #-O3
 WARN = #-Wall
 
 CXXFLAGS := $(addprefix -D,$(DEFINE)) \

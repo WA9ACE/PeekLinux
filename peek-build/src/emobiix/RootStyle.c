@@ -28,6 +28,12 @@ Style *RootStyle(void)
 	dataobject_setValue(fontObject1, "type", dataobjectfield_string("font"));
 	dataobject_setValue(fontObject1, "data", dataobjectfield_string("DroidSans.ttf"));
 
+	file_openRead("test0");
+	file_openRead("test1");
+	file_openRead("test2");
+	file_openRead("test3");
+	file_openRead("test4");
+
 	defaultFont = font_load(fontObject1);
 	if (defaultFont != NULL)
 		font_setHeight(defaultFont, 12);
