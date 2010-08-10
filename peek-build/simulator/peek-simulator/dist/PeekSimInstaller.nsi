@@ -180,6 +180,7 @@ CreateDirectory "$INSTDIR\example-VerticalPacking"
 SetOutPath "$INSTDIR\example-VerticalPacking"
 File "example-VerticalPacking\VerticalPacking.xml"
 
+SetOutPath "$INSTDIR"
   ;Store installation folder
   WriteRegStr HKCU "Software\Emobiix" "" $INSTDIR
   
