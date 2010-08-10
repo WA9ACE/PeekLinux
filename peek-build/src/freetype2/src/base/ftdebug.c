@@ -52,7 +52,7 @@
 #ifdef FT_DEBUG_LEVEL_ERROR
 
   /* documentation is in ftdebug.h */
-
+/*
   FT_BASE_DEF( void )
   FT_Message( const char*  fmt, ... )
   {
@@ -64,8 +64,6 @@
     va_end( ap );
   }
 
-
-  /* documentation is in ftdebug.h */
 
   FT_BASE_DEF( void )
   FT_Panic( const char*  fmt, ... )
@@ -79,7 +77,7 @@
 
     exit( EXIT_FAILURE );
   }
-
+*/
 #endif /* FT_DEBUG_LEVEL_ERROR */
 
 

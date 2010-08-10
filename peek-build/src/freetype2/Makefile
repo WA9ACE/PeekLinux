@@ -1,5 +1,7 @@
 DEFINE += FT2_BUILD_LIBRARY
 DEFINE += FT_CONFIG_MODULES_H="<ftmodule.h>"
+DEFINE += FT_Message=emo_printf
+DEFINE += FT_Panic=emo_printf
 
 INCLUDE += $(M23DIR)/csw-system/drv_core
 INCLUDE += $(M23DIR)/g23m/condat/ms/src/aci
