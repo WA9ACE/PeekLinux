@@ -14,6 +14,8 @@
   Name "Emobiix Peek Simulator"
   OutFile "PeekSimInstaller.exe"
 
+  RequestExecutionLevel admin
+
   ;Default installation folder
   InstallDir "$PROGRAMFILES\Emobiix"
   
@@ -72,15 +74,13 @@ File "battery5.png"
 File "battery6.png"
 File "batterycase.png"
 File "batterycharge.png"
-File "calc.xml"
 File "DroidSans.ttf"
 File "glut32.dll"
 File "gprs.png"
 File "home-server.ini"
 File "letter.png"
-File "LockApp.xml"
 File "opengl32.dll"
-File "peek-simulator.exe"
+File "..\Release\peek-simulator.exe"
 File "plasma.png"
 File "signal0.png"
 File "signal1.png"
@@ -99,6 +99,86 @@ File "wi-snow.png"
 File "wi-storm.png"
 File "wi-sun.png"
 File "xerces-c_2_2_0.dll"
+
+CreateDirectory "$INSTDIR\example-Arrays"
+SetOutPath "$INSTDIR\example-Arrays"
+File "example-Arrays\mail.xml"
+File "example-Arrays\mailview.xml"
+
+CreateDirectory "$INSTDIR\example-Boxes"
+SetOutPath "$INSTDIR\example-Boxes"
+File "example-Boxes\Boxes.xml"
+
+CreateDirectory "$INSTDIR\example-Calculator"
+SetOutPath "$INSTDIR\example-Calculator"
+File "example-Calculator\Calculator.xml"
+
+CreateDirectory "$INSTDIR\example-Centering"
+SetOutPath "$INSTDIR\example-Centering"
+File "example-Centering\Centering.xml"
+
+CreateDirectory "$INSTDIR\example-CheckBox"
+SetOutPath "$INSTDIR\example-CheckBox"
+File "example-CheckBox\CheckBox.xml"
+
+CreateDirectory "$INSTDIR\example-CircularReferences"
+SetOutPath "$INSTDIR\example-CircularReferences"
+File "example-CircularReferences\CircularReferences.xml"
+
+CreateDirectory "$INSTDIR\example-Frame"
+SetOutPath "$INSTDIR\example-Frame"
+File "example-Frame\Frame.xml"
+
+CreateDirectory "$INSTDIR\example-Grids"
+SetOutPath "$INSTDIR\example-Grids"
+File "example-Grids\HGrid.xml"
+File "example-Grids\VGrid.xml"
+
+CreateDirectory "$INSTDIR\example-HorizontalPacking"
+SetOutPath "$INSTDIR\example-HorizontalPacking"
+File "example-HorizontalPacking\HorizontalPacking.xml"
+File "example-Grids\VGrid.xml"
+
+CreateDirectory "$INSTDIR\example-Images"
+SetOutPath "$INSTDIR\example-Images"
+File "example-Images\GreyscaleImage.xml"
+File "example-Images\RGBAimage.xml"
+File "example-Images\RGBimage.xml"
+File "example-Images\letter.png"
+File "example-Images\plasma.png"
+File "example-Images\star.png"
+File "example-Grids\VGrid.xml"
+
+CreateDirectory "$INSTDIR\example-Input-Buttons"
+SetOutPath "$INSTDIR\example-Input-Buttons"
+File "example-Input-Buttons\InputButtons.xml"
+
+CreateDirectory "$INSTDIR\example-Margins"
+SetOutPath "$INSTDIR\example-Margins"
+File "example-Margins\Margins.xml"
+
+CreateDirectory "$INSTDIR\example-MultiScreen"
+SetOutPath "$INSTDIR\example-MultiScreen"
+File "example-MultiScreen\MultiScreen.xml"
+
+CreateDirectory "$INSTDIR\example-StackAndSet"
+SetOutPath "$INSTDIR\example-StackAndSet"
+File "example-StackAndSet\CombinedSetStack.xml"
+File "example-StackAndSet\facebook-48.png"
+File "example-StackAndSet\Set.xml"
+File "example-StackAndSet\Stack.xml"
+
+CreateDirectory "$INSTDIR\example-Style"
+SetOutPath "$INSTDIR\example-Style"
+File "example-Style\Style.xml"
+
+CreateDirectory "$INSTDIR\example-Text"
+SetOutPath "$INSTDIR\example-Text"
+File "example-Text\Text.xml"
+
+CreateDirectory "$INSTDIR\example-VerticalPacking"
+SetOutPath "$INSTDIR\example-VerticalPacking"
+File "example-VerticalPacking\VerticalPacking.xml"
 
   ;Store installation folder
   WriteRegStr HKCU "Software\Emobiix" "" $INSTDIR
@@ -121,7 +201,7 @@ SectionEnd
 ;Descriptions
 
   ;Language strings
-  LangString DESC_SecDummy ${LANG_ENGLISH} "A test section."
+  LangString DESC_SecDummy ${LANG_ENGLISH} "Simulator Binaries."
 
   ;Assign language strings to sections
   !insertmacro MUI_FUNCTION_DESCRIPTION_BEGIN
