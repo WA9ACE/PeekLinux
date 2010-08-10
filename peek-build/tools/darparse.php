@@ -1,6 +1,16 @@
 #!/usr/bin/php
 <?php
+
 /* Seriously don't laugh */
+
+Function hexstr($hexstr) {
+  $hexstr = str_replace(' ', '', $hexstr);
+  $retstr = @pack('H*', $hexstr);
+  $retstr= preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $retstr); 
+
+  return $retstr;
+}
+
 function symbol_find($addr, $symbol_data) {
 	$count = 1000;
 	for($i=1; $i < count($symbol_data);$i++) {
@@ -19,6 +29,8 @@ function symbol_find($addr, $symbol_data) {
 	}
 	if(isset($found)) {
         	echo "Symbol: $found - Address: $foundaddr";
+	} else {
+		echo hexstr($addr); 
 	}
 }
 
