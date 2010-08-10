@@ -6,7 +6,6 @@
 #include "mfw_mme.h"
 #include "Debug.h"
 #include "lgui.h"
-#include "tweet.h"
 
 typedef char CHAR;
 
