@@ -20,12 +20,14 @@ int entryWidget_handleKey(Widget *w, unsigned int key, Style *s)
 	DataObject *dobj;
 	DataObjectField *field, *cursorfield;
 	int slen;
-	int keylen;
+	int keylen, mappedKey;
 	int cursorindex, cursorbytes, i, adv;
 	char *newstring, *pos, *lastpos;
 	Rectangle rect;
 
-	if (key > 0xFFFFFF00 || !isprint(MapKeyToInternal(key)) && key != '\b')
+	mappedKey = MapKeyToInternal(key);
+
+	if (mappedKey > 0xFFFFFF00 || !isprint(mappedKey) && mappedKey != '\b')
 		return 0;
 
 	dobj = widget_getDataObject(w);
@@ -50,14 +52,14 @@ int entryWidget_handleKey(Widget *w, unsigned int key, Style *s)
 	slen = strlen(field->field.string);
 
 	keylen = 1;
-	if (key & 0xFF00)
+	if (mappedKey & 0xFF00)
 		keylen = 2;
-	if (key & 0xFF0000)
+	if (mappedKey & 0xFF0000)
 		keylen = 3;
-	if (key & 0xFF000000)
+	if (mappedKey & 0xFF000000)
 		keylen = 4;
 
-	if (key == '\b') {
+	if (mappedKey == '\b') {
 		if (slen > 0 && cursorindex > 0) {
 			memmove(lastpos, lastpos+adv, strlen(lastpos+adv)+1);
 			cursorfield->field.integer;
@@ -66,13 +68,13 @@ int entryWidget_handleKey(Widget *w, unsigned int key, Style *s)
 	} else {
 		newstring = p_malloc(slen+keylen+1);
 		memcpy(newstring, field->field.string, cursorbytes);
-		newstring[cursorbytes] = key & 0xFF;
+		newstring[cursorbytes] = mappedKey & 0xFF;
 		if (keylen >= 2)
-			newstring[cursorbytes+1] = (key >> 8) & 0xFF;
+			newstring[cursorbytes+1] = (mappedKey >> 8) & 0xFF;
 		if (keylen >= 3)
-			newstring[cursorbytes+2] = (key >> 16) & 0xFF;
+			newstring[cursorbytes+2] = (mappedKey >> 16) & 0xFF;
 		if (keylen >= 4)
-			newstring[cursorbytes+3] = (key >> 24) & 0xFF;
+			newstring[cursorbytes+3] = (mappedKey >> 24) & 0xFF;
 		memcpy(newstring+cursorbytes+keylen, field->field.string+cursorbytes, slen-cursorbytes);
 		newstring[slen+keylen] = 0;
 		p_free(field->field.string);
