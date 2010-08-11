@@ -34,6 +34,8 @@ bool tree_parser::create(DOMNode *node, std::vector<FRIPacketP *>& packets)
     return createLabel(node, packets);
   else if (nodeName == "entry")
     return createEntry(node, packets);
+  else if (nodeName == "script")
+    return createScript(node, packets);
   else if (nodeName == "image")
     return createImage(node, packets);
   else if (nodeName == "array")
@@ -159,6 +161,28 @@ bool tree_parser::createEntry(DOMNode *node, std::vector<FRIPacketP *>& packets)
 		dataobject_factory::addStringAttribute(entry, "data", "");
 
 	packets.push_back(entry);
+	return true;
+}
+
+bool tree_parser::createScript(DOMNode *node, std::vector<FRIPacketP *>& packets)
+{
+	FRIPacketP *script = dataobject_factory::blockSyncListP(m_currentSyncId);
+	setCommonAttributes(script, node);
+
+	if (node->getFirstChild())
+	{
+		string scriptString("");
+		DOMNode *child = node->getFirstChild();
+		while (child)
+		{
+			scriptString += xml_parser::XMLToUTF8String(child->getNodeValue());
+			child = child->getNextSibling();
+		}
+	
+		dataobject_factory::addStringAttribute(script, "script", scriptString.c_str());
+	}
+
+	packets.push_back(script);
 	return true;
 }
 

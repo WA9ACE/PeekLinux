@@ -27,8 +27,7 @@ BOOSTDIR = /home/andrey/dev/boost/install
 BOOSTINC = $(BOOSTDIR)/include
 BOOSTLIB = $(BOOSTDIR)/lib
 
-#GSOAPDIR =  /home/andrey/dev/gsoap2/install
-GSOAPDIR = /tmp/gsoap/
+GSOAPDIR =  /home/andrey/dev/gsoap2/install
 GSOAPINC = $(GSOAPDIR)/include
 GSOAPLIB = $(GSOAPDIR)/lib
 GSOAPGEN = $(GSOAPDIR)/bin/soapcpp2

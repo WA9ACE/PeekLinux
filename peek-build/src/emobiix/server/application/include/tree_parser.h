@@ -28,6 +28,7 @@ private:
 	bool createButton(DOMNode *node, std::vector<FRIPacketP *>& packets);
 	bool createLabel(DOMNode *node, std::vector<FRIPacketP *>& packets);
 	bool createEntry(DOMNode *node, std::vector<FRIPacketP *>& packets);
+	bool createScript(DOMNode *node, std::vector<FRIPacketP *>& packets);
 	bool createImage(DOMNode *node, std::vector<FRIPacketP *>& packets);
 	bool createArray(DOMNode *node, std::vector<FRIPacketP *>& packets);
 	bool createGeneric(DOMNode *node, std::vector<FRIPacketP *>& packets);
