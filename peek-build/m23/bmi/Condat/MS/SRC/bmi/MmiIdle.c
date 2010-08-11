@@ -2538,8 +2538,10 @@ LimitedService = 0;//end of crr12653
 		}
 #endif //FF_PHONE_LOCK		
 #endif
+#ifndef EMO_PROD
 	memmap();
 	mfwCheckMemoryLeft();
+#endif
 	dspl_Enable(1);
 	TRACE_FUNCTION("end of idle_draw_main_idle()");
 }
