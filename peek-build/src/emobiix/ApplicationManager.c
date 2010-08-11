@@ -41,6 +41,8 @@ struct ApplicationManager_t {
 	DataObject *rootApplicationObj;
 	DataObject *rootApplicationWindow;
 	DataObject *rootApplicationPlaceHolder;
+	DataObject *rootApplicationMenuHolder;
+	DataObject *rootApplicationDialogHolder;
 	Style *style;
 
 	DataObject *loadingApplication;
@@ -92,6 +94,12 @@ void manager_init(void)
 	appManager->rootApplicationPlaceHolder =
 			dataobject_findByName(appManager->rootApplicationWindow,
 			"placeholder");
+	appManager->rootApplicationMenuHolder =
+			dataobject_findByName(appManager->rootApplicationWindow,
+			"menuholder");
+	appManager->rootApplicationDialogHolder =
+			dataobject_findByName(appManager->rootApplicationWindow,
+			"dialogholder");
 
     bootApp = application_load(BootApplication());
 	/*bootApp = application_load(LockApplication());*/
@@ -338,4 +346,19 @@ void manager_loadApplicationReal(DataObject *dobj, int launch, int focus)
 Style *manager_getRootStyle(void)
 {
 	return appManager->style;
+}
+
+void manager_showDialog(DataObject *dobj)
+{
+	dataobject_pack(appManager->rootApplicationDialogHolder, dobj);
+
+	widget_resolveLayout(appManager->rootApplicationWindow,
+			appManager->style);
+
+	widget_markDirty(appManager->rootApplicationWindow);
+}
+
+void manager_showMenu(DataObject *dobj)
+{
+
 }

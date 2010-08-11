@@ -60,6 +60,51 @@ DataObject *dataobject_new(void)
 	return output;
 }
 
+DataObject *dataobject_copy(DataObject *dobj)
+{
+	DataObject *output;
+	DataObjectField *field;
+	char *key;
+	MapIterator iter;
+
+	output = dataobject_new();
+	output->box = dobj->box;
+	output->flags1 = dobj->flags1;
+	output->isLocal = dobj->isLocal;
+	output->margin = dobj->margin;
+	output->packing = dobj->packing;
+	output->position = dobj->position;
+	output->scriptContext = dobj->scriptContext;
+	output->stampMajor = dobj->stampMajor;
+	output->stampMinor = dobj->stampMinor;
+	output->state = dobj->state;
+	output->widgetData = dobj->widgetData;
+
+	for (map_begin(dobj->data, &iter); !mapIterator_finished(&iter);
+			mapIterator_next(&iter)) {
+		field = dataobjectfield_copy((DataObjectField *)mapIterator_item(&iter, &key));
+		dataobject_setValue(dobj, key, field);
+	}
+
+	return output;
+}
+
+DataObject *dataobject_copyTree(DataObject *dobj)
+{
+	DataObject *output;
+	ListIterator iter;
+
+	output = dataobject_copy(dobj);
+
+	for (list_begin(dobj->children, &iter); !listIterator_finished(&iter);
+			listIterator_next(&iter)) {
+		list_append(output->children,
+				dataobject_copy((DataObject *)listIterator_item(&iter)));
+	}
+
+	return output;
+}
+
 void dataobject_delete(DataObject *dobj)
 {
 	MapIterator iter;
@@ -714,6 +759,34 @@ int dataobjectfield_isString(DataObjectField *field, const char *str)
             strcmp(field->field.string, str) == 0)
         return 1;
     return 0;
+}
+
+DataObjectField *dataobjectfield_copy(DataObjectField *field)
+{
+	DataObjectField *output;
+	void *data;
+
+	switch (field->type) {
+		case DOF_INT:
+			output = dataobjectfield_int(field->field.integer);
+			break;
+		case DOF_UINT:
+			output = dataobjectfield_uint(field->field.uinteger);
+			break;	
+		case DOF_DATA:
+			data = p_malloc(field->field.data.size);
+			memcpy(data, field->field.data.bytes, field->field.data.size);
+			output = dataobjectfield_data(data, field->field.data.size);
+			break;
+		case DOF_STRING:
+			output = dataobjectfield_string(field->field.string);
+			break;
+		default:
+			emo_printf("unknown field type" NL);
+			return NULL;
+	}
+	output->flags = field->flags;
+	return output;
 }
 
 extern ConnectionContext *connectionContext;

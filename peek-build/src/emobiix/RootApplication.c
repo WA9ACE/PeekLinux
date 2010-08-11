@@ -34,7 +34,7 @@ DataObject *dobjFromFile(const char *filename, DataObject *root)
 		file_read(mimefile, mimedata_size, mimedata);
 		file_close(mimefile);
 		dataobject_setValue(dobj1, "mime-type", dataobjectfield_string("png"));
-		dataobject_setValue(dobj1, "src", dataobjectfield_data(mimedata, mimedata_size));
+		dataobject_setValue(dobj1, "data", dataobjectfield_data(mimedata, mimedata_size));
 		mime_load(dobj1);
 	}
 
@@ -279,6 +279,15 @@ DataObject *RootApplication(void)
 	dataobject_setValue(frame, "height", dataobjectfield_string(CONTENTHEIGHT));
 	widget_setPacking(frame, WP_VERTICAL);
 
+	frame = widget_newTypeIdName("box", NULL, "menuholder", dobj2);
+	dataobject_setValue(frame, "width", dataobjectfield_string("320"));
+	dataobject_setValue(frame, "height", dataobjectfield_string(CONTENTHEIGHT));
+	widget_setPacking(frame, WP_VERTICAL);
+
+	frame = widget_newTypeIdName("box", NULL, "dialogholder", dobj2);
+	dataobject_setValue(frame, "width", dataobjectfield_string("320"));
+	dataobject_setValue(frame, "height", dataobjectfield_string(CONTENTHEIGHT));
+	widget_setPacking(frame, WP_VERTICAL);
 
     return output;
 }

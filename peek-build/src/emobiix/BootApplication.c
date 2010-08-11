@@ -183,7 +183,7 @@ DataObject *BootApplication(void)
 	fclose(mimefile);
 	dobj1 = widget_newTypeIdName("image", "image", NULL, root);
 	dataobject_setValue(dobj1, "mime-type", dataobjectfield_string("png"));
-	dataobject_setValue(dobj1, "src", dataobjectfield_data(mimedata, mimedata_size));
+	dataobject_setValue(dobj1, "data", dataobjectfield_data(mimedata, mimedata_size));
 	dataobject_setValue(dobj1, "transparency", dataobjectfield_string("stencil"));
 	dataobject_setValue(dobj1, "color", dataobjectfield_string("FF00FF00"));
 	mime_load(dobj1);

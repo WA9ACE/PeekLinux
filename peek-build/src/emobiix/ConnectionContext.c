@@ -727,12 +727,19 @@ static void connectionContext_processSyncOperand(ConnectionContext *ctx,
 			dof = dataobjectfield_data(data, syncOp->syncP.choice.syncSetP.size);
 			dataobject_setValue(sobj, fieldName, dof);
 		} else {
-			/* we assume they are always doing an append atm */
-			dof->field.data.bytes = (unsigned char *)p_realloc(dof->field.data.bytes,
-					dof->field.data.size+syncOp->syncP.choice.syncSetP.size);
-			memcpy(dof->field.data.bytes+dof->field.data.size, syncOp->syncP.choice.syncSetP.buf,
-					syncOp->syncP.choice.syncSetP.size);
-			dof->field.data.size += syncOp->syncP.choice.syncSetP.size;
+			if (dof->type == DOF_DATA) {
+				/* we assume they are always doing an append atm */
+				dof->field.data.bytes = (unsigned char *)p_realloc(dof->field.data.bytes,
+						dof->field.data.size+syncOp->syncP.choice.syncSetP.size);
+				memcpy(dof->field.data.bytes+dof->field.data.size, syncOp->syncP.choice.syncSetP.buf,
+						syncOp->syncP.choice.syncSetP.size);
+				dof->field.data.size += syncOp->syncP.choice.syncSetP.size;
+			} else {
+				emo_printf("Trying to append data to a non-data field" NL);
+#ifdef SIMULATOR
+				abort();
+#endif
+			}
 		}
 	} else if (syncOp->syncP.present == syncP_PR_nodeOperationP) {
 		if (syncOp->syncP.choice.nodeOperationP.present == nodeOperationP_PR_nodeAddP) {

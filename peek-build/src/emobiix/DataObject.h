@@ -15,6 +15,7 @@ DataObjectField *dataobjectfield_string(const char *str);
 DataObjectField *dataobjectfield_data(void *data, int bytes);
 DataObjectField *dataobjectfield_int(int val);
 DataObjectField *dataobjectfield_uint(unsigned int val);
+DataObjectField *dataobjectfield_copy(DataObjectField *field);
 int dataobjectfield_isTrue(DataObjectField *field);
 int dataobjectfield_isString(DataObjectField *field, const char *str);
 void dataobjectfield_setString(DataObjectField *field, const char *str);
@@ -27,6 +28,8 @@ typedef void (*DataObjectSubscriptionCallback)(DataObject *dobj,
 		DataObjectOperation doop, void *pararm);
 
 DataObject *dataobject_new(void);
+DataObject *dataobject_copy(DataObject *dobj);
+DataObject *dataobject_copyTree(DataObject *dobj);
 void dataobject_delete(DataObject *dobj);
 DataObject *dataobject_newMap(DataObject *src, DataObjectMap *dmap);
 void dataobject_setValue(DataObject *dobj, const char *key, DataObjectField *v);

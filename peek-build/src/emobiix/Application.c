@@ -13,7 +13,7 @@
 
 struct Application_t {
 	DataObject *dobj;
-	DataObject *currentScreen;
+	DataObject *currentScreen, *activeDialog, *activeMenu;
 	Style *currentStyle;
     int flags;
 };
@@ -28,6 +28,8 @@ Application *application_load(DataObject *dobj)
         return NULL;
 	output->dobj = dobj;
 	output->currentScreen = NULL;
+	output->activeDialog = NULL;
+	output->activeMenu = NULL;
     output->flags = 0;
 	dataobject_resolveReferences(dobj);
 	
@@ -83,4 +85,26 @@ int application_isIconified(Application *app)
 DataObject *application_getDataObject(Application *app)
 {
         return app->dobj;
+}
+
+void application_showDialog(Application *app, DataObject *dobj)
+{
+	app->activeDialog = dataobject_copyTree(dobj);
+	if (app == manager_getFocusedApplication())
+		manager_showDialog(app->activeDialog);
+}
+
+void application_finishDialog(Application *app)
+{
+
+}
+
+void application_showMenu(Application *app, DataObject *dobj)
+{
+
+}
+
+void application_finishMenu(Application *app)
+{
+
 }
