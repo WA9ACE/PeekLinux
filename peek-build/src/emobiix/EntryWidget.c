@@ -7,6 +7,7 @@
 #include "WidgetRenderer.h"
 
 #include "p_malloc.h"
+#include "KeyMappings.h"
 
 #include <ctype.h>
 #include <stdio.h>
@@ -24,7 +25,7 @@ int entryWidget_handleKey(Widget *w, unsigned int key, Style *s)
 	char *newstring, *pos, *lastpos;
 	Rectangle rect;
 
-	if (key > 0xFFFFFF00 || !isprint(key) && key != '\b')
+	if (key > 0xFFFFFF00 || !isprint(MapKeyToInternal(key)) && key != '\b')
 		return 0;
 
 	dobj = widget_getDataObject(w);

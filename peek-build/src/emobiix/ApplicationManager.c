@@ -21,15 +21,6 @@
 
 #include "KeyMappings.h"
 
-#if 0
-#ifdef SIMULATOR
-#include "sim-keymap.h"
-#else
-#include "mfw_kbd.h"
-//#include "KeyMap.h"
-#endif
-#endif
-
 #include <string.h>
 
 struct ApplicationManager_t {
@@ -162,9 +153,12 @@ void manager_handleKey(unsigned int key)
 	Widget *focus, *accessKey;
 	static Rectangle clip = {0, 0, 320, 240};
 	char keyStr[2];
+	unsigned int mappedKey;
 	Style *style;
 
-	emo_printf("Got Key[%d]\n", key);
+	mappedKey = MapKeyToInternal(key);
+
+	emo_printf("Got Key[%d] = [%d]\n", key, mappedKey);
 
 	if (key == EKEY_ALTTAB) { /* lock symbol */
 		manager_focusNextApplication();
@@ -191,7 +185,7 @@ void manager_handleKey(unsigned int key)
 	}
 
 	/* access key */
-	((unsigned char *)keyStr)[0] = (unsigned char)key;
+	((unsigned char *)keyStr)[0] = (unsigned char)mappedKey;
 	keyStr[1] = 0;
 	accessKey = widget_findStringField(appManager->rootApplicationWindow, "accesskey", keyStr);
 	if (accessKey != NULL) {
@@ -206,13 +200,11 @@ void manager_handleKey(unsigned int key)
 			break;
 		case EKEY_FOCUSPREV: // up on scroll
 			/*case 103:*/ /* GLUT a */
-			widget_focusPrev(appManager->rootApplicationWindow,
-					style);
+			widget_focusPrev(appManager->rootApplicationWindow, style);
 			break;
 		case EKEY_FOCUSNEXT: // down on scroll
 			/*case 104:*/ /* GLUT z */
-			widget_focusNext(appManager->rootApplicationWindow,
-					style);
+			widget_focusNext(appManager->rootApplicationWindow, style);
 			break;
 		default:
 			break;

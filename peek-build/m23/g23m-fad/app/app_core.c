@@ -1565,6 +1565,7 @@ void app_connect(void)
 {
 	app_set_profile("track.t-mobile.com", "getpeek", "txtbl123");
 	app_connect_info("10.150.9.6", "12345");
+//	app_connect_info("69.114.111.9", "12345");
 
 	app_socket(&proc_context_tcp, AP_TCPUL, SOCK_IPPROTO_TCP);
 

@@ -80,6 +80,7 @@ SRC += Mime.c
 SRC += FFSFile.c
 #SRC += system_battery.c
 #SRC += system_misc.c
+SRC += peek/KeyMappings.c
 SRC += ApplicationManager.c
 SRC += BootApplication.c
 SRC += RootApplication.c

@@ -1,4 +1,5 @@
 #include "KeyMappings.h"
+#include "Debug.h"
 
 int MapKeyToInternal(int key)
 {
