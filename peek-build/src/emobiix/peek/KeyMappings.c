@@ -3,7 +3,7 @@
 
 int MapKeyToInternal(int key)
 {
-	int mappedKey;
+	int mappedKey = 0;
 
 	switch (key) {
 		case KCD_0: mappedKey = '0'; break;
@@ -73,9 +73,9 @@ int MapKeyToInternal(int key)
 		case KCD_SPACE: mappedKey = ' '; break;
 		case KCD_BACKSPACE: mappedKey = '\b'; break;
 		default:
-			mappedKey = key;
 			emo_printf("Unmapped key %d" NL, key);
 			break;
 	}
+
 	return mappedKey;
 }
