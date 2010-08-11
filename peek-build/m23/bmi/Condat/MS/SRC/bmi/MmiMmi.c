@@ -215,6 +215,9 @@ typedef struct
 
 GLOBAL BOOL bootup_response_cb (ULONG opc, void * data);
 #endif
+
+extern BOOL powered_on;
+
 /* End - OMAPS00084167 */
 
 

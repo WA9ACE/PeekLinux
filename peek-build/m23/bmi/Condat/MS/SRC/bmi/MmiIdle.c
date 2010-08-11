@@ -2538,6 +2538,8 @@ LimitedService = 0;//end of crr12653
 		}
 #endif //FF_PHONE_LOCK		
 #endif
+	memmap();
+	mfwCheckMemoryLeft();
 	dspl_Enable(1);
 	TRACE_FUNCTION("end of idle_draw_main_idle()");
 }
@@ -5969,8 +5971,8 @@ void appProtocolStatus(int status) {
 		iconsDeleteState(iconIdAppProtoDeActiv);
 	} else {
 		emo_printf("appProtocolStatus() Disconnected");
+		iconsSetState(iconIdAppProtoDeActiv);
                 iconsDeleteState(iconIdAppProtoActiv);
-		iconsDeleteState(iconIdAppProtoDeActiv);
 	}
 
 	idle_data.protoStatus = status;

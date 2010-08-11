@@ -376,7 +376,7 @@ int menuEmobiixItemCB(URL *purl, MfwMnu* m, MfwMnuItem* i)
 
 		emo_printf("menuEmobiixItemCB() calling connectionContext_syncRequest()");
                 connectionContext_syncRequest(connectionContext, purl);
-                dobj = dataobject_locate(purl);
+                //dobj = dataobject_locate(purl);
         } else {
 		App = manager_applicationForDataObject(dobj);
 		manager_focusApplication(App);

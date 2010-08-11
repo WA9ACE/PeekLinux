@@ -775,50 +775,20 @@ static int keyAction (MfwEvt e, MfwKbd *res)
 {
   /* this function "keyAction" is called 4*times from MFW per each keypress */
   /* twice for keypress and twice for keyrelease */
-  /* the variable "toggle" is using to avoid to play the keypadtone twice ! */
-    static UBYTE toggle = TRUE;
 
-	/* OMAPS00151698, x0056422 */
-	#ifdef FF_MMI_A2DP_AVRCP
-	if(tGlobalBmiBtStruct.bConnected == BMI_BT_CONNECTED && tGlobalBmiBtStruct.tCmdSrc == BMI_BT_HEADSET_COMMAND)
-	{}
-	else
-	{
-	#endif
-
-#ifdef NEPTUNE_BOARD    /*  OMAPS00033660   */
-    static unsigned char cKeySound = 0;
-#endif
-
-  /* this mask is use to filter the keyevent "e" */
-  /* want to use KEY_0, KEY_1,......  KEY_HASH */
-  USHORT  mask = 0x0FFF;
-	
-	/* Initialize - RAVI - 23-12-2005 */
-	/*a0393213 warnings removal-variable conditionally removed*/
-#if ((!defined(FF_MIDI_RINGER)) || defined(NEPTUNE_BOARD))
-  UBYTE currentRinger = 0;
-#endif 
-  if(res->key | KEY_MUX)  {
-	emo_printf("getMuxKey - key %d", res->key);
-	res->key == getMuxKey(res->key);
-  }
-	
   emo_printf("keyAction() key %d", res->key);
   /* the power-off-key ! */
   if (res->key == KCD_POWR)
   {	
     TRACE_EVENT("KEY_POWER pressed !!!!");
 
-	if (pinsIsFocussed() EQ FOCUSSED_PINS)
+    if (pinsIsFocussed() EQ FOCUSSED_PINS)
     {
     	pin_exit();
     	HUPKeyOrigin=1;
-    }
-    else if (idleIsFocussed())
-	{
+    } else if (idleIsFocussed()) {
     	HUPKeyOrigin=1;
-	}
+    }
     
     if ((HUPKeyOrigin==1) && (off_switch == 0))
 	{
@@ -826,7 +796,7 @@ static int keyAction (MfwEvt e, MfwKbd *res)
 		** Only pass through this once, off_switch must be 0 because Key_Action is called twice
 		** for each key press.
 		*/
-		TRACE_EVENT("In idle window.");
+	    TRACE_EVENT("In idle window.");
 	    showGoodBye ( idle_get_window () ); 
 	    times_switchoff = timCreate(0,THREE_SECS,(MfwCb)goodbye_cb);
 	    timStart(times_switchoff);
@@ -836,213 +806,6 @@ static int keyAction (MfwEvt e, MfwKbd *res)
   }
 
   HUPKeyOrigin = 0;
-
-
-  /* every other calls */
-  if(toggle)
-  {
-#ifdef SIM_TOOLKIT
-       /*SPR#2121 - DS - Only download event to SAT if the event has been registered
-        * by the SAT Setup Event List command
-        */
-      if (satEvtRegistered(SatEvtUserActionActivated) == TRUE)
-      {
-        satEvtDownload(SatEvtUserAction);
-      }
-#endif
-
-/* Stop Playing ring tone - RAVI - 23-12-2005 */
- #ifdef NEPTUNE_BOARD    
-	if(idle_data.new_sms == TRUE)
-	{
-		currentRinger = getcurrentSMSTone();
-		audio_StopSoundbyID( AUDIO_BUZZER, currentRinger );
-
-		/* Till this audio is stopped and next is played. */
-		vsi_t_sleep( 0, 10 );
-	}
-
-	cKeySound = 1;  /*  OMAPS00033660   */
-	if( idle_data.edt_buf[0] != '\0' )
-	{
-		if( idle_data.edt_buf[0] == '*'  ||  idle_data.edt_buf[0] == '#' )
-      		{
-      			cKeySound = 0;
-		}
-	}
-	else
-	{
-		if ( (e & KEY_HASH) || ( e & KEY_STAR ) )
-		{
-			cKeySound = 0;
-		}
-	}
-
-	if( cKeySound == 1 )
-	{
-      
- #endif   /*  OMAPS00033660   */
- /* END RAVI - 23-12-2005 */
-
-    if ((FFS_flashData.settings_status & SettingsKeypadClick) && (e & KEY_MAKE))  
-    {
-      TRACE_EVENT ("Keypad Click activ");
-/* Start Playing key tones on key press - RAVI 23-12-2005 */
-#ifndef NEPTUNE_BOARD
-     audio_PlaySoundID(0, TONES_KEYBEEP, 200, AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */ 
-#else
-        /* RAVI - 20-1-2006 */
-	/* Silent Implementation */
-       /* Changed 0 to getCurrentVolumeSetting () */
-    audio_PlaySoundID(0, (TONES_KEYBEEP), getCurrentVoulmeSettings(),
-                                     AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#endif
-/* END RAVI */
-    }
-    else if ((FFS_flashData.settings_status & SettingsKeypadDTMF) && (e & KEY_MAKE))
-    {
-#ifdef FF_CPHS
-      TRACE_EVENT ("Keypad DTMF activ");
-      switch (e &= mask)
-	{
-	case KEY_0:
-/* RAVI - 20-1-2006 */		
-#ifdef NEPTUNE_BOARD
-       audio_PlaySoundID(0, (TONES_DTMF_0), getCurrentVoulmeSettings(), AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#else
-	  audio_PlaySoundID(0, (TONES_DTMF_0), 0, AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#endif
-/* END RAVI */
-	break;
-	case KEY_1:
-/* RAVI - 20-1-2006 */		
-#ifdef NEPTUNE_BOARD
-       audio_PlaySoundID(0, (TONES_DTMF_1), getCurrentVoulmeSettings(), AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#else
-	  audio_PlaySoundID(0, TONES_DTMF_1, 0, AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#endif
-/* END RAVI */
-	break;
-	case KEY_2:
-/* RAVI - 20-1-2006 */		
-#ifdef NEPTUNE_BOARD
-       audio_PlaySoundID(0, (TONES_DTMF_2), getCurrentVoulmeSettings(), AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#else		
-	  audio_PlaySoundID(0, TONES_DTMF_2, 0, AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#endif
-/* END RAVI */
-	break;
-	case KEY_3:
-/* RAVI - 20-1-2006 */		
-#ifdef NEPTUNE_BOARD
-       audio_PlaySoundID(0, (TONES_DTMF_3), getCurrentVoulmeSettings(), AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#else				
-	  audio_PlaySoundID(0, TONES_DTMF_3, 0, AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#endif
-/* END RAVI */
-	break;
-	case KEY_4:
-/* RAVI - 20-1-2006 */		
-#ifdef NEPTUNE_BOARD
-       audio_PlaySoundID(0, (TONES_DTMF_4), getCurrentVoulmeSettings(), AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#else						
-	  audio_PlaySoundID(0, TONES_DTMF_4, 0, AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#endif
-/* END RAVI */
-	break;
-	case KEY_5:
-/* RAVI - 20-1-2006 */		
-#ifdef NEPTUNE_BOARD
-       audio_PlaySoundID(0, (TONES_DTMF_5), getCurrentVoulmeSettings(), AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#else						
-	  audio_PlaySoundID(0, TONES_DTMF_5, 0, AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#endif
-/* END RAVI */
-	break;
-	case KEY_6:
-/* RAVI - 20-1-2006 */		
-#ifdef NEPTUNE_BOARD
-       audio_PlaySoundID(0, (TONES_DTMF_6), getCurrentVoulmeSettings(), AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#else						
-	  audio_PlaySoundID(0, TONES_DTMF_6, 0, AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#endif
-/* END RAVI */
-	break;
-	case KEY_7:
-/* RAVI - 20-1-2006 */		
-#ifdef NEPTUNE_BOARD
-       audio_PlaySoundID(0, (TONES_DTMF_7), getCurrentVoulmeSettings(), AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#else						
-	  audio_PlaySoundID(0, TONES_DTMF_7, 0, AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#endif
-/* END RAVI */
-	break;
-	case KEY_8:
-/* RAVI - 20-1-2006 */		
-#ifdef NEPTUNE_BOARD
-       audio_PlaySoundID(0, (TONES_DTMF_8), getCurrentVoulmeSettings(), AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#else						
-	  audio_PlaySoundID(0, TONES_DTMF_8, 0, AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#endif
-/* END RAVI */
-	break;
-	case KEY_9:
-/* RAVI - 20-1-2006 */		
-#ifdef NEPTUNE_BOARD
-       audio_PlaySoundID(0, (TONES_DTMF_9), getCurrentVoulmeSettings(), AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
- #else				
-	  audio_PlaySoundID(0, TONES_DTMF_9, 0,AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#endif
-/* END RAVI */
-	break;
-	case KEY_STAR:
-/* RAVI  - 20-1-2006 */		
-#ifdef NEPTUNE_BOARD
-       audio_PlaySoundID(0, (TONES_DTMF_STAR), getCurrentVoulmeSettings(), AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#else						
-	  audio_PlaySoundID(0, TONES_DTMF_STAR, 0, AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#endif
-/* END RAVI */
-	break;
-	case KEY_HASH:
-/* RAVI - 20-1-2006 */		
-#ifdef NEPTUNE_BOARD
-       audio_PlaySoundID(0, (TONES_DTMF_HASH), getCurrentVoulmeSettings(), AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#else						
-	  audio_PlaySoundID(0, TONES_DTMF_HASH, 0, AUDIO_PLAY_ONCE ); /* GW#2355 /CQ11341 */
-#endif
-/* END RAVI */
-	break;
-	default:
-	  break;
-
-      }
-#endif /* FF_CPHS */
-    }
-
-#ifdef NEPTUNE_BOARD
-      	}
- #endif
-
-  }
-
-	/* OMAPS00151698, x0056422 */
-	#ifdef FF_MMI_A2DP_AVRCP
-	}
-	#endif
-
-
-
-  /* toggle the variable */
-  if(toggle)
-  {
-    toggle = FALSE;
-  }
-  else
-  {
-    toggle = TRUE;
-  }
-
 
   return 0;
 }
