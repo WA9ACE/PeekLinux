@@ -20,6 +20,7 @@ int dataobjectfield_isTrue(DataObjectField *field);
 int dataobjectfield_isString(DataObjectField *field, const char *str);
 void dataobjectfield_setString(DataObjectField *field, const char *str);
 void dataobjectfield_setBoolean(DataObjectField *field, int bval);
+void dataobjectfield_setIsDerived(DataObjectField *field, int isderrived);
 
 typedef enum {DOS_INIT, DOS_SYNC, DOS_OK, DOS_ERROR} DataObjectState;
 typedef enum {DOOP_CHANGE, DOOP_DESTROY} DataObjectOperation;

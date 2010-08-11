@@ -12,6 +12,7 @@ typedef enum {DOF_STRING, DOF_DATA, DOF_INT, DOF_UINT} DOFType;
 #define DOFF_NONE           0x00
 #define DOFF_ARRAYSOURCE    0x01
 #define DOFF_READONLY	    0x02
+#define DOFF_DERIVED	    0x04
 
 struct DataObjectField_t {
 	DOFType type;

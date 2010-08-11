@@ -32,6 +32,14 @@ void dataobjectfield_free(DataObjectField *f)
 	p_free(f);
 }
 
+void dataobjectfield_setIsDerived(DataObjectField *field, int isderived)
+{
+	if (isderived)
+		field->flags |= DOFF_DERIVED;
+	else
+		field->flags &= ~DOFF_DERIVED;
+}
+
 DataObject *dataobject_new(void)
 {
 	DataObject *output;

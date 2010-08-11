@@ -228,11 +228,13 @@ static int load_png(DataObject *dobj)
 			&outSize);
 	p_free(output);
 
-	dataobject_setValue(dobj, "data", dataobjectfield_data(convertedOutput, outSize));
-
 	/*p_free(data->field.data.bytes);
 	data->field.data.bytes = NULL;
 	data->field.data.size = 0;*/
+
+	data = dataobjectfield_data(convertedOutput, outSize);
+	dataobjectfield_setIsDerived(data, 1);
+	dataobject_setValue(dobj, "data", data);
 
 	return 1;
 }
