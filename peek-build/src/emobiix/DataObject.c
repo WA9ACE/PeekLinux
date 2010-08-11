@@ -82,7 +82,7 @@ DataObject *dataobject_copy(DataObject *dobj)
 
 	for (map_begin(dobj->data, &iter); !mapIterator_finished(&iter);
 			mapIterator_next(&iter)) {
-		field = dataobjectfield_copy((DataObjectField *)mapIterator_item(&iter, &key));
+		field = dataobjectfield_copy((DataObjectField *)mapIterator_item(&iter, (void **)&key));
 		dataobject_setValue(dobj, key, field);
 	}
 

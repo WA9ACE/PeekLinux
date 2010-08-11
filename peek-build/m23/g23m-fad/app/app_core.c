@@ -1445,7 +1445,7 @@ static void app_comm_recv(PROC_CONTEXT_T *pcont)
 
   TRACE_FUNCTION("app_comm_recv()") ;
 
-  TRACE_EVENT_P1("app_comm_recv(): recv %d bytes, total %d", recv_ind->data_length);
+  TRACE_EVENT_P1("app_comm_recv(): recv %d bytes", recv_ind->data_length);
 
   //trace_dump_data((U8 *) recv_ind->data_buffer,
   //                MIN(APP_DATA_DUMP_LENGTH, recv_ind->data_length)) ;

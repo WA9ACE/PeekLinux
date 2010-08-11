@@ -22,8 +22,8 @@ int main()
 xsd__base64Binary base64BinaryFromString(struct soap* soap, const char *str)
 {
 	xsd__base64Binary raw;
-	raw = xsd__base64Binary(soap, strlen(str) + 1, "text");
-	strcpy((char *)raw.getPtr(), str);
+	raw = xsd__base64Binary(soap, strlen(str), "text");
+	memcpy((char *)raw.getPtr(), str, raw.getSize());
 	return raw;
 }
 
@@ -171,12 +171,9 @@ int ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::st
 		return SOAP_OK;
 	}
 
-	recordData = xsd__base64Binary(soap, st.st_size + 1, "text");
+	recordData = xsd__base64Binary(soap, st.st_size, "text");
 
 	file.read((char *)recordData.getPtr(), recordData.getSize());
-	recordData.getPtr()[recordData.getSize()] = 0;
-
-	cerr << "Will send back: " << recordData.getPtr() << endl;
 
 	return SOAP_OK;
 }
@@ -206,10 +203,9 @@ int ns__TreeDataObjectRequest(struct soap* soap, std::string deviceId, std::stri
 		return SOAP_OK;
 	}
 
-	treeData = xsd__base64Binary(soap, st.st_size + 1, "xml");
+	treeData = xsd__base64Binary(soap, st.st_size, "xml");
 	file.read((char *)treeData.getPtr(), treeData.getSize());
 
-	treeData.getPtr()[treeData.getSize()] = 0;
 	return SOAP_OK;
 }
 

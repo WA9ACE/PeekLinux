@@ -176,7 +176,7 @@ bool tree_parser::createImage(DOMNode *node, std::vector<FRIPacketP *>& packets)
 		image = dataobject_factory::blockSyncListP(m_currentSyncId);
 		setCommonAttributes(image, node);
 		dataobject_factory::addStringAttribute(image, "mime-type", mime.c_str());
-		dataobject_factory::addDataAttribute(image, "src", blocks[i].second, blocks[i].first, offset);
+		dataobject_factory::addDataAttribute(image, "data", blocks[i].second, blocks[i].first, offset);
 
 		TRACELOG("Adding data chunk " << i << " of size " << blocks[i].first << " at offset " << offset);
 
