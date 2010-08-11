@@ -542,12 +542,11 @@ DataObject *LoadObject(DOMNode *node)
 			data = p_malloc(filesize);
 			fread(data, 1, filesize, input);
 			fclose(input);
-			dataobject_setValue(output, attrName.c_str(),
+			dataobject_setValue(output, "data",
 					dataobjectfield_data(data, filesize));
-		} else {
-			dataobject_setValue(output, attrName.c_str(),
-					dataobjectfield_string(attrValue.c_str()));
 		}
+		dataobject_setValue(output, attrName.c_str(),
+				dataobjectfield_string(attrValue.c_str()));
 	}
 
 	DOMNode *childNode;
