@@ -356,7 +356,7 @@ lua_State *script_getContext(DataObject *dobj, int *isTemporary)
 			if (script->type == DOF_STRING) {
 					luaL_dostring(output, script->field.string);
 			} else if (script->type == DOF_DATA) {
-					luaL_loadbuffer(output, script->field.data.bytes,
+					luaL_loadbuffer(output, (const char *)script->field.data.bytes,
 							script->field.data.size, "script");
 					lua_pcall(output, 0, LUA_MULTRET, 0);
 			} else {
