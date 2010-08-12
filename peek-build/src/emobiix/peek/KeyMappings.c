@@ -72,6 +72,11 @@ int MapKeyToInternal(int key)
 		case KCD_Z: mappedKey = 'Z'; break;
 		case KCD_SPACE: mappedKey = ' '; break;
 		case KCD_BACKSPACE: mappedKey = '\b'; break;
+		case KCD_MNUSELECT:
+		case KCD_MNUUP:
+		case KCD_MNUDOWN:
+			mappedKey = key;
+			break;
 		default:
 			emo_printf("Unmapped key %d" NL, key);
 			break;

@@ -153,12 +153,7 @@ void manager_handleKey(unsigned int key)
 	Widget *focus, *accessKey;
 	static Rectangle clip = {0, 0, 320, 240};
 	char keyStr[2];
-	unsigned int mappedKey;
 	Style *style;
-
-	mappedKey = MapKeyToInternal(key);
-
-	emo_printf("Got Key[%d] = [%d]\n", key, mappedKey);
 
 	if (key == EKEY_ALTTAB) { /* lock symbol */
 		manager_focusNextApplication();
@@ -185,7 +180,7 @@ void manager_handleKey(unsigned int key)
 	}
 
 	/* access key */
-	((unsigned char *)keyStr)[0] = (unsigned char)mappedKey;
+	((unsigned char *)keyStr)[0] = (unsigned char)key;
 	keyStr[1] = 0;
 	accessKey = widget_findStringField(appManager->rootApplicationWindow, "accesskey", keyStr);
 	if (accessKey != NULL) {

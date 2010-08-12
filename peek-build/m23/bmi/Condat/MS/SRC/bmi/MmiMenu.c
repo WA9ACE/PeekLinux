@@ -214,7 +214,7 @@ int menuSimItemCallback( MfwMnu* m, MfwMnuItem* i)
 void updateScreen(void);
 void lgui_set_dirty(void);
 void manager_handleKey(unsigned int key);
-
+unsigned int MapKeyToInternal(unsigned int);
 
 static void menuEmobiixDestroy(MfwHnd own_window)
 {
@@ -264,7 +264,7 @@ static int kbdEmobiixCB(MfwEvt e, MfwKbd *k)
 			menuEmobiixDestroy(tEmoMenuItem->win);
 			free(tEmoMenuItem);
 			break;
-
+#if 0
 		case KCD_MNUSELECT:
 			manager_handleKey(KCD_MNUSELECT);
 			updateScreen();
@@ -279,8 +279,9 @@ static int kbdEmobiixCB(MfwEvt e, MfwKbd *k)
 			manager_handleKey(KCD_MNUDOWN);
 			updateScreen();
 			break;
+#endif
 	    default:
-		manager_handleKey(k->code);
+		manager_handleKey(MapKeyToInternal(k->code));
 		updateScreen();
 		break;
 	}
