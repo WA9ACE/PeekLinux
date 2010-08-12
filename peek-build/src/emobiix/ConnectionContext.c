@@ -465,7 +465,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 				}
 				/* call onsyncfinish handlers */
 				if (!sreq->newObject) {
-					dataobject_debugPrint(sreq->dobj);
+					/*dataobject_debugPrint(sreq->dobj);*/
 					dataobject_onsyncfinished(sreq->dobj);
 				}
 			}
