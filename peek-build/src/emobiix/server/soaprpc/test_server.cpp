@@ -189,6 +189,12 @@ int ns__TreeDataObjectRequest(struct soap* soap, std::string deviceId, std::stri
 	char path[2048] = "";
 	sprintf(path, "%s.xml", dataObjectURI.c_str());
 
+	if (dataObjectURI == "synctest" && requestParam && requestParam->size() > 0)
+	{
+		treeData = base64BinaryFromString(soap, "<data f3=\"hi ryan\"/>");
+		return SOAP_OK;
+	}
+
 	struct stat st;
 	if (stat(path, &st) != 0)
 	{

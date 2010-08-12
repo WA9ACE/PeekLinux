@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <map>
 #include <utility>
 
 #include <boost/asio.hpp>
@@ -99,6 +100,8 @@ private:
   reply reply_;
 
 	int m_currentSyncId;
+
+	std::map<std::string, std::string> m_currentSyncParams;
 };
 
 typedef boost::shared_ptr<connection> connection_ptr;

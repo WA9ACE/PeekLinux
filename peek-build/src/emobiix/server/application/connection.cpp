@@ -312,9 +312,99 @@ void connection::handle_dataObjectSyncStart(FRIPacketP* packet, reply& rep)
 	free(packet);
 }
 
-void connection::handle_dataObjectSync(FRIPacketP*, reply& rep)
+void connection::handle_dataObjectSync(FRIPacketP* packet, reply& rep)
 {
+	DEBUGLOG("Client data object sync");
 
+	DataObjectSyncP &sync = packet->packetTypeP.choice.dataObjectSyncP;
+	switch (sync.syncListP.present)
+	{
+		case SyncListP_PR_blockSyncListP:
+		{
+			TRACELOG("Got blockSyncList of " << sync.syncListP.choice.blockSyncListP.list.count << " elements");
+			for (size_t i = 0; i < sync.syncListP.choice.blockSyncListP.list.count; ++i)
+			{
+				SyncOperandP_t *syncOp = sync.syncListP.choice.blockSyncListP.list.array[i];
+				string operand((const char *)syncOp->fieldNameP.buf, syncOp->fieldNameP.size);
+
+				TRACELOG("Got syncOperand: " << operand);
+
+				switch (syncOp->syncP.present)
+				{
+					case syncP_PR_syncSetP:
+					{
+						string value((const char *)syncOp->syncP.choice.syncSetP.buf, syncOp->syncP.choice.syncSetP.size);
+						TRACELOG("Got operand syncSet: " << value);
+
+						DEBUGLOG("Sync param " << operand << " = " << value);
+						m_currentSyncParams[operand] = value;
+					}
+					break;
+
+					case syncP_PR_syncModifyP:
+					{
+						TRACELOG("Got operand syncModify");
+					}
+					break;
+
+					case syncP_PR_syncRemoveP:
+					{
+						TRACELOG("Got operand syncRemove");
+					}
+					break;
+
+					case syncP_PR_nodeOperationP:
+					{
+						TRACELOG("Got operand nodeOperation");
+						
+						switch (syncOp->syncP.choice.nodeOperationP.present)
+						{
+							case nodeOperationP_PR_nodeGotoTreeP:
+							{
+								TRACELOG("Got operation nodeGotoTree: " << syncOp->syncP.choice.nodeOperationP.choice.nodeGotoTreeP);
+							}
+							break;
+
+							case nodeOperationP_PR_nodeAddP:
+							{
+								TRACELOG("Got operation nodeAdd");
+							}
+							break;
+
+							case nodeOperationP_PR_nodeDeleteP:
+							{
+								TRACELOG("Got operation nodeDelete");
+							}
+							break;
+
+							case nodeOperationP_PR_nodeCloseTreeP:
+							{
+								TRACELOG("Got operation nodeCloseTree");
+							}
+							break;
+
+							default:
+								ERRORLOG("Unknown nodeOperation: " << syncOp->syncP.choice.nodeOperationP.present);
+						}
+					}
+					break;
+		
+					default:
+						ERRORLOG("Unknown sync operation: " << syncOp->syncP.present);
+				}
+			}
+		}
+		break;
+	
+		case SyncListP_PR_recordSyncListP:
+		{
+			TRACELOG("Got recordSyncList");
+		}
+		break;
+
+		default:
+			ERRORLOG("Unknown sync type: " << sync.syncListP.present);
+	}
 }
 
 void connection::handle_dataObjectSyncFinish(FRIPacketP* packet, reply& rep)
@@ -328,6 +418,7 @@ void connection::handle_dataObjectSyncFinish(FRIPacketP* packet, reply& rep)
 		start_serverSync(rep);
 
 	m_currentSyncId = 0;
+	m_currentSyncParams.clear();
 }
 
 void connection::start_arraySync(reply& rep)
@@ -359,8 +450,7 @@ void connection::start_serverSync(reply& rep)
 	rep.packets.push_back(dataobject_factory::blockSyncListP(m_currentSyncId));
 
 	string treeData;
-	map<string, string> param;
-	if (!soap_request::GetTreeDataObject(app_path_, connection_token_, url_request_, param, treeData))
+	if (!soap_request::GetTreeDataObject(app_path_, connection_token_, url_request_, m_currentSyncParams, treeData))
 	{
 		ERRORLOG("NO tree data...");
 		return;
