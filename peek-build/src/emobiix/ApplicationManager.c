@@ -320,7 +320,7 @@ void manager_loadApplication(DataObject *dobj, int focus, URL *url)
 {
 	appManager->loadingApplication = dobj;
 	appManager->loadingApplicationFocus = focus;
-	appManager->loadingApplicationURL = url_parse(url->all, URL_ALL);;
+	appManager->loadingApplicationURL = url_parse(url->all, URL_ALL);
 }
 
 void manager_loadApplicationReal(DataObject *dobj, int launch, int focus, URL *url)

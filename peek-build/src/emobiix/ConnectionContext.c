@@ -464,8 +464,10 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 					manager_focusApplication(manager_getFocusedApplication());
 				}
 				/* call onsyncfinish handlers */
-				if (!sreq->newObject)
+				if (!sreq->newObject) {
+					dataobject_debugPrint(sreq->dobj);
 					dataobject_onsyncfinished(sreq->dobj);
+				}
 			}
 			break;
 		case packetTypeP_PR_NOTHING:
@@ -645,6 +647,7 @@ static void connectionContext_outgoingSyncForced(ConnectionContext *ctx,
 	p->packetTypeP.choice.dataObjectSyncP.syncSequenceIDP = sreq->sequenceID;
 
 	sobj = dataobject_getForcedObject(sreq->dobj, &sreq->objectIndex);
+	sreq->childOp = sreq->objectIndex;
 	protocol_blockSyncList(&p->packetTypeP.choice.dataObjectSyncP);
 	
 	connectionContext_syncOperand(ctx, sreq,
@@ -988,9 +991,10 @@ next_childop:
 			sreq->objectIndex = sreq->childOp;
 			sreq->childOp = -1;
 			sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
-			goto next_childop;
+			if (sreq->newObject)
+				goto next_childop;
 		}
-		return;
+		/*return;*/
 	}
 	while (!mapIterator_finished(&iter)) {
 		field = (DataObjectField *)mapIterator_item(&iter, (void **)&fieldName);
