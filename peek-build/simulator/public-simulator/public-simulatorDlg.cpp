@@ -661,7 +661,10 @@ void CpublicsimulatorDlg::OnFileLoadapplication()
 	if (dobj != NULL) {
 		type = dataobject_getValue(dobj, "type");
 		if (dataobjectfield_isString(type, "application")) {
-			manager_loadApplication(dobj, xmlLoadFilename.empty());
+			URL *url;
+			url = url_parse("xml://local/NULL", URL_ALL);
+			manager_loadApplication(dobj, xmlLoadFilename.empty(),
+					url);
 			/*app = application_load(dobj);
 			manager_launchApplication(app);*/
 		} else {
