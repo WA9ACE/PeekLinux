@@ -164,7 +164,7 @@ int bal_send (int s, const void *__buff, int __len, unsigned int __flags) {
         }
         regaddr = (void*)((unsigned int)SOCK_BASE+SOCK_WTRG);
         *(unsigned int*) regaddr = 1;
-	 NU_Sleep(100);
+	 TCCE_Task_Sleep(100);
 	regaddr = (void*)((unsigned int)SOCK_BASE+SOCK_WRET);
 
 	return *(unsigned int*) regaddr; 
@@ -182,7 +182,7 @@ int bal_recv (int s, void *__buff, int __len, unsigned int __flags) {
 	*(unsigned int*) regaddr = __len; // Set Size of read
 	regaddr = (void*)((unsigned int)SOCK_BASE+SOCK_RTRG);
 	*(unsigned int*) regaddr = 1;// Trigger Read
-	NU_Sleep(100);
+	TCCE_Task_Sleep(100);
 	regaddr = (void*)((unsigned int)SOCK_BASE+SOCK_RRET);
 	__len = *(unsigned int*) regaddr;
 
@@ -202,7 +202,7 @@ int bal_recv (int s, void *__buff, int __len, unsigned int __flags) {
 
         regaddr = (void*)((unsigned int)SOCK_BASE+SOCK_RTRANS);
         *(unsigned int*) regaddr = 1; // Free Read buffer
-	NU_Sleep(100);
+	TCCE_Task_Sleep(100);
 	regaddr = (void*)((unsigned int)SOCK_BASE+SOCK_RRET);
 	x = *(unsigned int*) regaddr;
 	emo_printf("Bal_recv returning %d\n", x);

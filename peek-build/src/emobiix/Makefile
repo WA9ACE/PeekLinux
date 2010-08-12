@@ -93,22 +93,21 @@ SRC += LabelWidget.c
 SRC += StaticApplications.c
 SRC += CheckBoxWidget.c
 
+ifneq (,$(findstring EMO_SIM,$(VARIANT_DEFINE)))
+SRC += SimDriver.c
+endif
+
 TARGET = $(CURDIR)/emobiix.a
-SOCKET_SIM = $(CURDIR)/socket_sim.a
 
 .PHONY: protocol
 
-SIM_OBJ = SimDriver.o
 OBJ   = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.c,%.o,$(SRC))))
 DEPS  = $(patsubst %.o,%.d,$(OBJ))
 
-all: $(TARGET) $(SOCKET_SIM)
+all: $(TARGET)
 
 $(TARGET): protocol $(OBJ) $(OBJ_O)
 	$(AR) $(ARFLAGS) $@ $(OBJ)
-
-$(SOCKET_SIM): $(SIM_OBJ)
-	$(AR) $(ARFLAGS) $@ $(SIM_OBJ)
 
 protocol:
 	$(MAKE) -C $@ prepare
@@ -117,10 +116,8 @@ protocol:
 clean:
 	$(RM) $(OBJ)
 	$(RM) $(TARGET)
-	$(RM) $(SOCKET_SIM)
-	$(RM) $(SIM_OBJ)
 	$(RM) $(DEPS)
-	$(RM) $(patsubst %.o,%.pp,$(OBJ) $(SIM_OBJ))
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
 	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
 	$(MAKE) -C protocol clean
 
