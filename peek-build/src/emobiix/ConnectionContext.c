@@ -450,6 +450,13 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 				/*widget_resolveLayout(sreq->dobj, currentStyle);*/
 				widget_markDirty(sreq->dobj);
 				field = dataobject_getValue(sreq->dobj, "type");
+
+				/* call onsyncfinish handlers */
+				if (!sreq->newObject) {
+					/*dataobject_debugPrint(sreq->dobj);*/
+					dataobject_onsyncfinished(sreq->dobj);
+				}
+
 				if (field != NULL && field->type == DOF_STRING)
 					emo_printf("Finished Type: %s" NL, field->field.string); 
 				if (field != NULL && field->type == DOF_STRING &&
@@ -463,11 +470,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 					/* shouldnt refocus, should force a reloayout and draw instead */
 					manager_focusApplication(manager_getFocusedApplication());
 				}
-				/* call onsyncfinish handlers */
-				if (!sreq->newObject) {
-					/*dataobject_debugPrint(sreq->dobj);*/
-					dataobject_onsyncfinished(sreq->dobj);
-				}
+				
 			}
 			break;
 		case packetTypeP_PR_NOTHING:
