@@ -315,7 +315,20 @@ lua_State *script_getContext(DataObject *dobj, int *isTemporary)
         if (sobj != NULL) {
             script = dataobject_getValue(sobj, "script");
             /*luaL_loadstring(output, script->field.string);*/
-			luaL_dostring(output, script->field.string);
+			if (script->type == DOF_STRING) {
+					luaL_dostring(output, script->field.string);
+			} else if (script->type == DOF_DATA) {
+					luaL_loadbuffer(output, script->field.data.bytes,
+							script->field.data.size, "script");
+					lua_pcall(output, 0, LUA_MULTRET, 0);
+			} else {
+				emo_printf("Script does not have a usable field type" NL);
+#ifdef SIMULATOR
+				abort();
+#endif
+				return NULL;	
+
+			}
 			
 			if (lua_isstring(output, lua_gettop(output))) {
 				errStr = lua_tostring(output, lua_gettop(output));
