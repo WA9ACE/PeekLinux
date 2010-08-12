@@ -38,6 +38,7 @@ struct ApplicationManager_t {
 
 	DataObject *loadingApplication;
 	int loadingApplicationFocus;
+	URL *loadingApplicationURL;
 };
 typedef struct ApplicationManager_t ApplicationManager;
 
@@ -108,7 +109,8 @@ void manager_drawScreen(void)
 	if (toload != NULL) {
 		/*dataobject_debugPrint(toload);*/
 		appManager->loadingApplication = NULL;
-		manager_loadApplicationReal(toload, 1, appManager->loadingApplicationFocus);
+		manager_loadApplicationReal(toload, 1, appManager->loadingApplicationFocus,
+				appManager->loadingApplicationURL);
 	}
 
 	lgui_clip_identity();
@@ -225,15 +227,17 @@ void manager_focusApplication(Application *app)
 {
     DataObject *currentScreen, *appObj;
 	Style *style;
+	DataObjectField *field;
     /*ListIterator iter;*/
 
-	emo_printf("Focusing Application" NL);
+	appObj = application_getDataObject(app);
+	field = dataobject_getValue(appObj, "name");
+	emo_printf("Focusing Application %s" NL, field->field.string);
     currentScreen = application_getCurrentScreen(app);
 	if (currentScreen == NULL) {
 		emo_printf("No current screen when focusing application" NL);
 		return;
 	}
-	appObj = application_getDataObject(app);
 
 	/*
 	 * Old non-frame code
@@ -312,18 +316,20 @@ Application *manager_applicationForDataObject(DataObject *dobj)
 }
 
 
-void manager_loadApplication(DataObject *dobj, int focus)
+void manager_loadApplication(DataObject *dobj, int focus, URL *url)
 {
 	appManager->loadingApplication = dobj;
 	appManager->loadingApplicationFocus = focus;
+	appManager->loadingApplicationURL = url_parse(url->all, URL_ALL);;
 }
 
-void manager_loadApplicationReal(DataObject *dobj, int launch, int focus)
+void manager_loadApplicationReal(DataObject *dobj, int launch, int focus, URL *url)
 {
 	Application *app;
 
 	mime_loadAll(dobj);
 	app = application_load(dobj);
+	application_setURL(app, url);
 	if (launch)
 		manager_launchApplication(app);
 	if (focus)

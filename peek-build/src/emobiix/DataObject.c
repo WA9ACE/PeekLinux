@@ -300,6 +300,30 @@ DataObject *dataobject_getTree(DataObject *dobj, int index)
 	return dataobject_getTreeR(dobj, &idx);
 }
 
+DataObject *dataobject_getForcedObject(DataObject *dobj, int *index)
+{
+	ListIterator iter;
+	DataObject *output;
+
+	/*fprintf(stderr, "GetTree - %d\n", *index);*/
+
+	if (dobj->flags1 & DO_FLAG_FORCE_SYNC)
+		return dobj;
+
+	list_begin(dobj->children, &iter);
+	while (!listIterator_finished(&iter)) {
+		*index = *index + 1;
+		output = dataobject_getForcedObject((DataObject *)listIterator_item(&iter), index);
+		if (output != NULL) {
+			/*listIterator_delete(iter);*/
+			return output;
+		}
+		listIterator_next(&iter);
+	}
+	/*listIterator_delete(iter);*/
+	return NULL;
+}
+
 int dataobject_getTreeNextOp(DataObject *dobj, int *ischild)
 {
 	ListIterator iter;
@@ -837,3 +861,28 @@ void dataobject_resolveReferences(DataObject *dobj)
 	/*listIterator_delete(iter);*/
 }
 
+
+void dataobject_forceSyncFlag(DataObject *dobj, int isFlag)
+{
+	if (isFlag)
+		dobj->flags1 |= DO_FLAG_FORCE_SYNC;
+	else
+		dobj->flags1 &= ~DO_FLAG_FORCE_SYNC;
+}
+
+#include "Script.h"
+void dataobject_onsyncfinished(DataObject *dobj)
+{
+	ListIterator iter;
+
+	if (dobj->flags1 & DO_FLAG_FORCE_SYNC) {
+		script_event(dobj, "onsyncfinished");
+		dataobject_forceSyncFlag(dobj, 0);
+	}
+
+	list_begin(dobj->children, &iter);
+	while (!listIterator_finished(&iter)) {
+		dataobject_onsyncfinished((DataObject *)listIterator_item(&iter));
+		listIterator_next(&iter);
+	}
+}

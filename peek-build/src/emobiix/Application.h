@@ -2,6 +2,7 @@
 #define _APPLICATION_H_
 
 #include "DataObject_internal.h"
+#include "URL.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,6 +14,8 @@ typedef struct Application_t Application;
 struct Style_t;
 
 Application *application_load(DataObject *dobj);
+void application_setURL(Application *app, const URL *url);
+const URL *application_getURL(Application *app);
 void application_setActive(Application *app);
 DataObject *application_getCurrentScreen(Application *app);
 void application_setCurrentScreen(Application *app, DataObject *screen);

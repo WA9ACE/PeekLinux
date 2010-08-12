@@ -20,8 +20,10 @@ static const int CCTX_BUFLEN = 4096;
 
 struct SyncRequest_t {
 	URL *url;
+	int newObject;
 	int isClient;
 	int hasStarted;
+	int hasSentLocal;
 	int hasFinished;
 	int remoteFinished;
 	int finalize;
@@ -65,6 +67,8 @@ static void connectionContext_packetSend(ConnectionContext *ctx,
 static void connectionContext_processSyncStart(ConnectionContext *ctx,
 		DataObjectSyncStartP_t *p);
 static void connectionContext_outgoingSync(ConnectionContext *ctx,
+		SyncRequest *sreq, FRIPacketP_t *p);
+static void connectionContext_outgoingSyncForced(ConnectionContext *ctx,
 		SyncRequest *sreq, FRIPacketP_t *p);
 static void connectionContext_processSync(ConnectionContext *ctx,
 		DataObjectSyncP_t *p);
@@ -450,7 +454,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 					emo_printf("Finished Type: %s" NL, field->field.string); 
 				if (field != NULL && field->type == DOF_STRING &&
 						strcmp(field->field.string, "application") == 0) {
-					manager_loadApplication(sreq->dobj, 1);
+					manager_loadApplication(sreq->dobj, 1, sreq->url);
 					/*app = application_load(sreq->dobj);
 					manager_launchApplication(app);
 					manager_focusApplication(app);*/
@@ -459,6 +463,9 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 					/* shouldnt refocus, should force a reloayout and draw instead */
 					manager_focusApplication(manager_getFocusedApplication());
 				}
+				/* call onsyncfinish handlers */
+				if (!sreq->newObject)
+					dataobject_onsyncfinished(sreq->dobj);
 			}
 			break;
 		case packetTypeP_PR_NOTHING:
@@ -488,6 +495,13 @@ static void connectionContext_processSyncRequest(ConnectionContext *ctx,
 			dataobject_setState(sreq->dobj, DOS_SYNC);
 			sreq->hasStarted = 1;
 			return;
+		}
+		if (!sreq->hasSentLocal) {
+			/* this is our first sync of this object so we dont have anything
+				to send back to the server */
+			if (!sreq->newObject)
+				connectionContext_outgoingSyncForced(ctx, sreq, &packet);
+			sreq->hasSentLocal = 1;
 		}
 		if (!sreq->hasFinished) {
 			/* for now, send a 'finished' packet since we dont send our changes */
@@ -566,6 +580,7 @@ static SyncRequest *syncRequest_new(URL *url, int isClient)
 	output->url = url;
 	output->isClient = isClient;
 	output->hasFinished = 0;
+	output->hasSentLocal = 0;
 	output->remoteFinished = 0;
 	output->finalize = 0;
 	output->objectIndex = 0;
@@ -574,8 +589,11 @@ static SyncRequest *syncRequest_new(URL *url, int isClient)
 	output->completeNodes = list_new();
 	output->dobj = dataobject_locate(url);
 	output->childOp = -2;
-	if (output->dobj == NULL)
+	output->newObject = 0;
+	if (output->dobj == NULL) {
 		output->dobj = dataobject_construct(url, !isClient);
+		output->newObject = 1;
+	}
 
 	return output;
 }
@@ -612,63 +630,27 @@ static void connectionContext_outgoingSync(ConnectionContext *ctx,
 			&p->packetTypeP.choice.dataObjectSyncP.syncListP, NULL, sobj);
 
 	connectionContext_packetSend(ctx, p);
+}
 
-#if 0
-	if (sreq->childOp >= -1) {
-		/* node operation */
-next_childop:
-		/* add child operation */
-		if (sreq->childOp == -1) {
-			syncOp = protocol_addChild();
-			asn_sequence_add(&p->packetTypeP.choice.dataObjectSyncP.syncListP.
-                    choice.blockSyncListP.list, syncOp);
-			sreq->childOp = -2;
-			citer = dataobject_childIterator(sobj);
-			while (!listIterator_finished(citer)) {
-				if (list_find(sreq->completeNodes, listIterator_item(citer), ListEqualComparitor) == NULL) {
-					sreq->objectIndex = dataobject_treeIndex((DataObject *)listIterator_item(citer));
-					break;
-				}
-				listIterator_next(citer);
-			}
-			listIterator_delete(citer);
-		} else {
-			/* go to tree operation */
-			syncOp = protocol_goToTree(sreq->childOp);
-			asn_sequence_add(&p->packetTypeP.choice.dataObjectSyncP.syncListP.
-                    choice.blockSyncListP.list, syncOp);
-			sreq->objectIndex = sreq->childOp;
-			sreq->childOp = -1;
-			sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
-			goto next_childop;
-		}
-		connectionContext_packetSend(ctx, p);
-		return;
-	}
-	while (!mapIterator_finished(iter)) {
-		field = (DataObjectField *)mapIterator_item(iter, (void **)&fieldName);
-		if (list_find(sreq->completeFields, fieldName, (ListComparitor)strcmp) == NULL) {
-			/* serialize field */
-			syncOp = protocol_serializeField(sobj, fieldName);
-			if (syncOp == NULL)
-				return;
-            /* add to packet and mark field complete */
-            asn_sequence_add(&p->packetTypeP.choice.dataObjectSyncP.syncListP.
-                    choice.blockSyncListP.list, syncOp);
-			list_append(sreq->completeFields, fieldName);
-		}
-		mapIterator_next(iter);
-	}
-	list_append(sreq->completeNodes, sobj);
-	if (sreq->completeFields != NULL) {
-		list_delete(sreq->completeFields);
-		sreq->completeFields = NULL;
-	}
-	if  (dataobject_getTreeNextOp(sobj, &childOp))
-		sreq->childOp = childOp;
-	else
-		sreq->hasFinished = 1;
-#endif
+static void connectionContext_outgoingSyncForced(ConnectionContext *ctx,
+		SyncRequest *sreq, FRIPacketP_t *p)
+{
+	DataObject *sobj;
+	
+	emo_printf( "Sending SyncForce Packet" NL);
+    p->packetTypeP.present = packetTypeP_PR_dataObjectSyncP;
+	if (sreq->completeFields == NULL)
+		sreq->completeFields = list_new();
+
+	p->packetTypeP.choice.dataObjectSyncP.syncSequenceIDP = sreq->sequenceID;
+
+	sobj = dataobject_getForcedObject(sreq->dobj, &sreq->objectIndex);
+	protocol_blockSyncList(&p->packetTypeP.choice.dataObjectSyncP);
+	
+	connectionContext_syncOperand(ctx, sreq,
+			&p->packetTypeP.choice.dataObjectSyncP.syncListP, NULL, sobj);
+
+	connectionContext_packetSend(ctx, p);
 }
 
 static void connectionContext_processSync(ConnectionContext *ctx,

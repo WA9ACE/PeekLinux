@@ -112,11 +112,19 @@ static int __dataobject_setValue(lua_State *L)
 	DataObject *dobj;/*, *parent;*/
 	DataObjectField *dstr;
 	Rectangle rectb4, rectAfter, *rect;
+	const char *fieldName;
 
 	dobj = checkDataObject(L, 1);
-	dstr = dataobjectfield_string(luaL_checkstring(L, 2));
+	
+	if (lua_isstring(L, 3)) {
+		dstr = dataobjectfield_string(luaL_checkstring(L, 3));
+		fieldName = luaL_checkstring(L, 2);
+	} else {
+		dstr = dataobjectfield_string(luaL_checkstring(L, 2));
+		fieldName = "data";
+	}
 
-    dataobject_setValue(dobj, "data", dstr);
+    dataobject_setValue(dobj, fieldName, dstr);
 	emo_printf("Set value to %s" NL, dstr->field.string);
 
 	/*parent = dataobject_superparent(dobj);*/
@@ -162,8 +170,10 @@ static int __dataobject_locate(lua_State *L)
 
 	durl = luaL_checkstring(L, 1);
 	purl = url_parse(durl, URL_ALL);
-	if (purl == NULL)
-		return 0;
+	if (purl == NULL) {
+		lua_pushnil(L);
+		return 1;
+	}
 	dobj = dataobject_locate(purl);
 	if (dobj == NULL) {
 		connectionContext_syncRequest(connectionContext, purl);
@@ -181,8 +191,10 @@ static int __dataobject_find(lua_State *L)
 	DataObject *root;
 
 	root = dataobject_superparent(contextObject);
-	if(root == NULL) 
-		return 0;
+	if(root == NULL) {
+		lua_pushnil(L);
+		return 1;
+	}
 	dobj = dataobject_findByName(root, luaL_checkstring(L, 1));
 	pushDataObject(L, dobj);
 	
@@ -218,6 +230,31 @@ static int __dataobject_children(lua_State *L)
 	return 1;
 }
 
+static int __dataobject_sync(lua_State *L)
+{
+	DataObject *dobj, *root;
+	Application *app;
+	URL *purl;
+
+	root = dataobject_superparent(contextObject);
+	if (root == NULL) {
+		lua_pushnil(L);
+		return 1;
+	}
+	app = manager_applicationForDataObject(root);
+	if (app == NULL) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	purl = (URL *)application_getURL(app);
+
+	dobj = checkDataObject(L, 1);
+	dataobject_forceSyncFlag(dobj, 1);
+	connectionContext_syncRequest(connectionContext, purl);
+	
+	return 1;
+}
 
 static int __toScreen(lua_State *L)
 {
@@ -242,6 +279,7 @@ static const luaL_reg script_methods[] = {
 {"setValue",    __dataobject_setValue},
 {"parent",    __dataobject_parent},
 {"children",    __dataobject_children},
+{"sync",    __dataobject_sync},
 {0,0}
 };
 

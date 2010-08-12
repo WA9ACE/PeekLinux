@@ -79,6 +79,12 @@ void dataobject_setLayoutDirtyAll(DataObject *dobj);
 
 void dataobject_debugPrint(DataObject *dobj);
 
+/* temporary sync methods */
+void dataobject_forceSyncFlag(DataObject *dobj, int isFlag);
+/* you must set index = 0 before calling this */
+DataObject *dataobject_getForcedObject(DataObject *dobj, int *index);
+void dataobject_onsyncfinished(DataObject *dobj);
+
 /* Global DataObject table functions */
 void dataobject_platformInit(void);
 DataObject *dataobject_locateStr(const char *str);

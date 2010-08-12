@@ -16,6 +16,7 @@ struct Application_t {
 	DataObject *currentScreen, *activeDialog, *activeMenu;
 	Style *currentStyle;
     int flags;
+	URL *url;
 };
 
 Application *application_load(DataObject *dobj)
@@ -51,6 +52,16 @@ Application *application_load(DataObject *dobj)
 		emo_printf("No startupview for applicaton" NL);
 
 	return output;
+}
+
+void application_setURL(Application *app, const URL *url)
+{
+	app->url = url_parse(url->all, URL_ALL);
+}
+
+const URL *application_getURL(Application *app)
+{
+	return app->url;
 }
 
 void application_setActive(Application *app)

@@ -28,11 +28,13 @@ Style *RootStyle(void)
 	dataobject_setValue(fontObject1, "type", dataobjectfield_string("font"));
 	dataobject_setValue(fontObject1, "data", dataobjectfield_string("DroidSans.ttf"));
 
+#ifndef SIMULATOR
 	file_openWrite("test0");
 	file_openWrite("test1");
 	file_openWrite("test2");
 	file_openWrite("test3");
 	file_openWrite("test4");
+#endif
 
 	defaultFont = font_load(fontObject1);
 	if (defaultFont != NULL)
