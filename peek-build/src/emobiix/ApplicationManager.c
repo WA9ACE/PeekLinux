@@ -157,6 +157,8 @@ void manager_handleKey(unsigned int key)
 	char keyStr[2];
 	Style *style;
 
+	emo_printf("manager_handleKey() key=%d", key);
+
 	if (key == EKEY_ALTTAB) { /* lock symbol */
 		manager_focusNextApplication();
 		return;

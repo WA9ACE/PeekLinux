@@ -9,12 +9,12 @@
 extern "C" {
 #endif
 
-#define EKEY_ACTIVATE		KCD_NAV_CENTER
-#define EKEY_FOCUSPREV		KCD_UP
-#define EKEY_FOCUSNEXT		KCD_DOWN
-#define EKEY_ALTTAB		KCD_LOCK
+#define EKEY_ACTIVATE			0xFFFFFF03
+#define EKEY_FOCUSPREV		0xFFFFFF01
+#define EKEY_FOCUSNEXT		0xFFFFFF02
+#define EKEY_ALTTAB				0xFFFFFF04
 
-int MapKeyToInternal(int key);
+unsigned int MapKeyToInternal(unsigned int key);
 
 #ifdef __cplusplus
 }

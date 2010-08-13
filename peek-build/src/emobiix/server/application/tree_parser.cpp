@@ -179,7 +179,7 @@ bool tree_parser::createScript(DOMNode *node, std::vector<FRIPacketP *>& packets
 			child = child->getNextSibling();
 		}
 	
-		dataobject_factory::addStringAttribute(script, "script", scriptString.c_str());
+		dataobject_factory::addStringAttribute(script, "data", scriptString.c_str());
 	}
 
 	packets.push_back(script);

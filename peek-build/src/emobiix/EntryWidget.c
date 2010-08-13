@@ -25,6 +25,8 @@ int entryWidget_handleKey(Widget *w, unsigned int key, Style *s)
 	char *newstring, *pos, *lastpos;
 	Rectangle rect;
 
+	emo_printf("entryWidget_handleKey() key=%d print=%d", key, isprint(key));
+
 	if (key > 0xFFFFFF00 || !isprint(key) && key != '\b')
 		return 0;
 

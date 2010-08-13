@@ -4,7 +4,8 @@
 #include "emobiix.nsmap" // get namespace bindings
 
 #include <cstdio>
-#include <string>  
+#include <string> 
+#include <map> 
 #include <iostream>
 #include <fstream>
 #include <sys/stat.h>
@@ -189,9 +190,17 @@ int ns__TreeDataObjectRequest(struct soap* soap, std::string deviceId, std::stri
 	char path[2048] = "";
 	sprintf(path, "%s.xml", dataObjectURI.c_str());
 
-	if (dataObjectURI == "synctest" && requestParam && requestParam->size() > 0)
+	if (requestParam && requestParam->size() > 0)
 	{
-		treeData = base64BinaryFromString(soap, "<data f3=\"hi ryan\"/>");
+		map<string, string> param;
+		for (size_t i = 0; i < requestParam->size(); ++i)
+			param[(*requestParam)[i].key] = (*requestParam)[i].value;
+	
+		if (param["user"] == "andrey" && param["pass"] == "hi")
+			treeData = base64BinaryFromString(soap, "<data reply=\"Login Accepted\"/>");
+		else
+			treeData = base64BinaryFromString(soap, "<data reply=\"Invalid User/Password\"/>");
+			
 		return SOAP_OK;
 	}
 

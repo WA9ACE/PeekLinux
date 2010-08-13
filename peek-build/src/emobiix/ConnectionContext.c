@@ -291,6 +291,8 @@ int connectionContext_syncRequest(ConnectionContext *ctx, URL *url)
 	/*emo_printf("@New Sync Request mapKey: %s" NL, mapKey);*/
 	map_append(ctx->syncRequests, mapKey, sreq);
 
+	// TODO Evaluate whether this is the best place for the loop iteration
+	connectionContext_loopIteration(ctx);
 	return 1;
 }
 
