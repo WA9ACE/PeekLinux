@@ -333,14 +333,24 @@ lua_getglobal(L,"screenWidth");
 lua_State *script_getContext(DataObject *dobj, int *isTemporary)
 {
     lua_State *output;
-    DataObject *sobj;
+    DataObject *sobj, *robj;
     DataObjectField *script;
 	const char *errStr;
+	ListIterator iter;
 
     *isTemporary = 0;
     output = dataobject_findScriptContext(dobj);
     if (output == NULL) {
-        sobj = dataobject_findFieldParent(dobj, "script");
+		sobj = dataobject_superparent(dobj);
+		robj = sobj;
+        for (dataobject_childIterator(sobj, &iter); !listIterator_finished(&iter);
+				listIterator_next(&iter)) {
+			sobj = (DataObject *)listIterator_item(&iter);
+			script = dataobject_getValue(sobj, "type");
+			if (dataobjectfield_isString(script, "script"))
+				break;
+			sobj = NULL;
+		}
 
         output = lua_open();
         luaopen_base(output);
@@ -351,11 +361,11 @@ lua_State *script_getContext(DataObject *dobj, int *isTemporary)
 
         script_register(output);
         if (sobj != NULL) {
-            script = dataobject_getValue(sobj, "script");
+            script = dataobject_getValue(sobj, "data");
             /*luaL_loadstring(output, script->field.string);*/
-			if (script->type == DOF_STRING) {
+			if (script != NULL && script->type == DOF_STRING) {
 					luaL_dostring(output, script->field.string);
-			} else if (script->type == DOF_DATA) {
+			} else if (script != NULL && script->type == DOF_DATA) {
 					luaL_loadbuffer(output, (const char *)script->field.data.bytes,
 							script->field.data.size, "script");
 					lua_pcall(output, 0, LUA_MULTRET, 0);
@@ -374,7 +384,7 @@ lua_State *script_getContext(DataObject *dobj, int *isTemporary)
 				emo_printf("script error: %s" NL, errStr);
 			}
 
-            dataobject_setScriptContext(sobj, output);
+            dataobject_setScriptContext(robj, output);
 			*isTemporary = 0;
         } else
             *isTemporary = 1;

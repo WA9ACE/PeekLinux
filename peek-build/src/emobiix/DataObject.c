@@ -622,16 +622,16 @@ void *dataobject_getScriptContext(DataObject *dobj)
 
 void *dataobject_findScriptContext(DataObject *dobj)
 {
-    void *ctx;
+    /*void *ctx;
 
     while (dobj->parent != NULL) {
         ctx = dataobject_getScriptContext(dobj);
         if (ctx != NULL)
             return ctx;
         dobj = dobj->parent;
-    }
+    }*/
 
-    return dataobject_getScriptContext(dobj);
+    return dataobject_getScriptContext(dataobject_superparent(dobj));
 }
 
 DataObject *dataobject_findFieldParent(DataObject *dobj, const char *str)
