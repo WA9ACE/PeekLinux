@@ -35,6 +35,7 @@ unsigned char bitmapBuf[320*240*4];
 #define GRAPH_CTRL_ID 60000
 static CpublicsimulatorDlg *GlobalDialog = NULL;
 extern "C" int p_getTotalAllocated(void);
+extern "C" void emo_printf(const char *fmt, ...);
 
 CCriticalSection guiCritical;
 
@@ -534,8 +535,10 @@ DataObject *LoadObject(DOMNode *node)
 			void *data;
 
 			input = fopen(attrValue.c_str(), "rb");
-			if (input == NULL)
+			if (input == NULL) {
+				emo_printf("Failed to load %s\n", attrValue.c_str());
 				continue;
+			}
 			fseek(input, 0, SEEK_END);
 			filesize = (int)ftell(input);
 			fseek(input, 0, SEEK_SET);
@@ -564,7 +567,7 @@ DataObject *LoadObject(DOMNode *node)
 		/*fprintf(stderr, "LoadObject(%p) - child? - '%s'\n", node,
                 iastr);*/
 
-		if (strcmp(iastr, "#text") == 0) {
+		if (strcmp(iastr, "#text") == 0 || strcmp(iastr, "#cdata-section") == 0) {
 			ixstr = childNode->getNodeValue();
 
 			unsigned int charsEaten = 0;
@@ -579,9 +582,12 @@ DataObject *LoadObject(DOMNode *node)
 						XMLTranscoder::UnRep_Throw
 						);
 			res[total_chars] = '\0';
+			if (strcmp(iastr, "#cdata-section") != 0)
+				XMLString::trim((char * const)res);
 
-			if (res[0] != 0)
-				dataobject_setValue(output, "data", dataobjectfield_string((const char *)res));
+			if (res[0] != 0) {
+					dataobject_setValue(output, "data", dataobjectfield_string((const char *)res));
+			}
 			delete res;
 		} else {
 			child = LoadObject(childNode);
@@ -659,6 +665,7 @@ void CpublicsimulatorDlg::OnFileLoadapplication()
 	DataObjectField *type;
     dobj = LoadObject(static_cast<DOMNode *>(xmlDoc->getDocumentElement()));
 	if (dobj != NULL) {
+		mime_loadAll(dobj);
 		type = dataobject_getValue(dobj, "type");
 		if (dataobjectfield_isString(type, "application")) {
 			URL *url;
@@ -667,8 +674,6 @@ void CpublicsimulatorDlg::OnFileLoadapplication()
 					url);
 			/*app = application_load(dobj);
 			manager_launchApplication(app);*/
-		} else {
-			mime_loadAll(dobj);
 		}
 	}
 
