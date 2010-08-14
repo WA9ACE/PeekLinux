@@ -83,7 +83,8 @@ DataObject *BootApplication(void)
 	dobj1 = widget_newTypeIdName("button", NULL, NULL, box);
 
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
-			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/synctest\");"));
+/*			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/synctest\");"));*/
+			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/sample\");"));
 	widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 	/*widget_setPacking(dobj1, WP_VERTICAL);*/
@@ -94,7 +95,7 @@ DataObject *BootApplication(void)
 
 	dobj1 = widget_newTypeIdName("button", NULL, NULL, box);
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
-			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/calc\"); dobj:toScreen();"));
+			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/calc\");"));
     widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 
@@ -112,8 +113,7 @@ DataObject *BootApplication(void)
 	dobj1 = widget_newTypeIdName("button", NULL, NULL, box);
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
 			"gps = DataObject.locate(\"system://local/gps\");\n"
-			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/whereami?\" .. gps:getValue(\"long\") .. \",\" .. gps:getValue(\"lat\"));\n"
-			"dobj:toScreen();"));
+			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/whereami?\" .. gps:getValue(\"long\") .. \",\" .. gps:getValue(\"lat\"));\n"));
     widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 
@@ -124,7 +124,7 @@ DataObject *BootApplication(void)
 
 	dobj1 = widget_newTypeIdName("button", NULL, NULL, box);
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
-			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/mail\"); dobj:toScreen();"));
+			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/mail\");"));
     widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 
@@ -152,8 +152,7 @@ DataObject *BootApplication(void)
     dataobject_setValue(dobj1, "onreturn", dataobjectfield_string(
 			"Llat = DataObject.find(\"lat\");\n"
 			"Llong = DataObject.find(\"long\");\n"
-			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/whereami?\" .. Llat:getValue() .. \",\" .. Llong:getValue());\n"
-			"dobj:toScreen();"));
+			"dobj = DataObject.locate(\"tcp://69.114.111.9:12345/whereami?\" .. Llat:getValue() .. \",\" .. Llong:getValue());"));
     widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 
