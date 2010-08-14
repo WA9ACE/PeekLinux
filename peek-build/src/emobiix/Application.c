@@ -78,6 +78,18 @@ DataObject *application_getCurrentScreen(Application *app)
 
 void application_setCurrentScreen(Application *app, DataObject *screen)
 {
+	DataObjectField *field;
+	const char *fieldValue;
+
+	field = dataobject_getValue(screen, "type");
+	if (!dataobjectfield_isString(field, "view")) {
+		if (field != NULL && field->type == DOF_STRING)
+			fieldValue = field->field.string;
+		else
+			fieldValue = "nil";
+		emo_printf("Can't set a %s as a current screen" NL, fieldValue);
+		return;
+	}
 	app->currentScreen = screen;
 	/*widget_markDirty(screen);*/
 	manager_focusApplication(app);

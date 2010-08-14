@@ -241,21 +241,6 @@ void manager_focusApplication(Application *app)
 		return;
 	}
 
-	/*
-	 * Old non-frame code
-	 */
-#if 0
-    widget_getChildren(appManager->rootApplicationPlaceHolder, &iter);
-    if (listIterator_finished(&iter)) {
-        /*listIterator_delete(iter);*/
-        return;
-    }
-    listIterator_remove(&iter);
-    /*listIterator_delete(iter);*/
-    dataobject_packStart(appManager->rootApplicationPlaceHolder,
-            currentScreen);
-#endif
-
 	widget_setDataObject(appManager->rootApplicationPlaceHolder, appObj);
 
 	style = application_getCurrentStyle(app);
