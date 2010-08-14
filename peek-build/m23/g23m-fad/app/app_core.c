@@ -1696,6 +1696,9 @@ BOOL app_initialize_tcpip(T_HANDLE app_handle)
   memset(&proc_context_tcp, 0, sizeof(proc_context_tcp)) ;
   memset(&proc_context_udp, 0, sizeof(proc_context_udp)) ;
 
+#ifdef EMO_SIM
+	app_connect();
+#endif
   return PEI_OK ;
 }
 
