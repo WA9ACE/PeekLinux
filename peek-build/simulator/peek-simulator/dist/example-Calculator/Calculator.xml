@@ -10,58 +10,57 @@
 			<label hasfocus="1" font-color="31233100" renderer="label" weight="bold"/>
 		</button>
 	</style>
-<view name="calculator" width="320" height="224">
-	<box id="calcbox" packing="vertical" width="100%" height="100%" script="
-lastnumber = 0
-lastOperation = &quot;&quot;;
-deleteOnKey = true
+	<script><![CDATA[
+lastnumber = 0;
+lastOperation = "";
+deleteOnKey = true;
 function calculator(op) 
-  out = DataObject.find(&quot;output&quot;);
+  out = DataObject.find("output");
   outVal = out:getValue();
   number = tonumber(outVal);
 
-  if op == &quot;C&quot; then
-	 out:setValue(&quot;0&quot;);
+  if op == "C" then
+	 out:setValue("0");
 	 lastnumber = 0
-	 lastOperation = &quot;&quot;;
+	 lastOperation = "";
 	 deleteOnKey = true
-  elseif op == &quot;sin&quot; then
+  elseif op == "sin" then
 	 out:setValue(tostring(math.sin(number)));
-  elseif op == &quot;cos&quot; then
+  elseif op == "cos" then
 	 out:setValue(tostring(math.cos(number)));
-  elseif op == &quot;tan&quot; then
+  elseif op == "tan" then
 	 out:setValue(tostring(math.tan(number)));
-  elseif op == &quot;1/x&quot; then
+  elseif op == "1/x" then
 	 out:setValue(tostring(1/number));
-  elseif op == &quot;x^2&quot; then
+  elseif op == "x^2" then
 	 out:setValue(tostring(number*number));
-  elseif op == &quot;x^3&quot; then
+  elseif op == "x^3" then
 	 out:setValue(tostring(number*number*number));
-  elseif op == &quot;pi&quot; then
+  elseif op == "pi" then
 	 out:setValue(tostring(3.141592654));
-  elseif op == &quot;sqr&quot; then
+  elseif op == "sqr" then
 	 out:setValue(tostring(math.sqrt(number)));
-  elseif op == &quot;/&quot; or op == &quot;*&quot; or op == &quot;-&quot; or op == &quot;+&quot; or op == &quot;=&quot; then
-	if lastOperation == &quot;/&quot; then
+  elseif op == "/" or op == "*" or op == "-" or op == "+" or op == "=" then
+	if lastOperation == "/" then
 		out:setValue(tostring(lastnumber / number));
-	elseif lastOperation == &quot;*&quot; then
+	elseif lastOperation == "*" then
 		out:setValue(tostring(lastnumber * number));
-	elseif lastOperation == &quot;-&quot; then
+	elseif lastOperation == "-" then
 		out:setValue(tostring(lastnumber - number));
-	elseif lastOperation == &quot;+&quot; then
+	elseif lastOperation == "+" then
 		out:setValue(tostring(lastnumber + number));
 	end
 
 	number = tonumber(out:getValue())
-	if op == &quot;=&quot; then
+	if op == "=" then
 		out:setValue(tostring(number));
-		lastOperation = &quot;&quot;;
+		lastOperation = "";
 	else
 		lastnumber = number;
 		lastOperation = op;
 	end
 	deleteOnKey = true
-  elseif op == &quot;+/-&quot; then
+  elseif op == "+/-" then
 	out:setValue(tostring(-number));
   else
 	if deleteOnKey then
@@ -77,7 +76,9 @@ end
 function press(n)
     calculator(n);
 end;
-">
+	]]></script>
+<view name="calculator" width="320" height="224">
+	<box id="calcbox" packing="vertical" width="100%" height="100%">
 	<box id="cframe" packing="vertical" border-corners="1234" rounded="1234">
     	<label alignment="center" weight="bold">Calcumobiix</label>
 	<box width="300" id="cframe">
