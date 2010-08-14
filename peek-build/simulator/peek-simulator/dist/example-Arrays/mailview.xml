@@ -1,11 +1,18 @@
-<application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
+<application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview" style="appstyle">
+	<style name="appstyle">
+		<selbox/> 
+		<selbox renderer="box" fill="solid" background-color="AAAAAAAA" rounded="1234" hasfocus="1"/>
+		<array renderer="array" fill="solid" background-color="FFFFFFFF" rounded="1234" border="1234" border-corners="1234" border-color="00000000"/>
+		<image renderer="image" color="00000000"/>
+		<image renderer="image" color="FFFFFFFF" hasfocus="1"/>
+	</style>
 <view name="mainview" width="320" height="220">
 	<box background-color="FFFFFFFF" id="solid" width="100%" height="100%" packing="vertical">
 		<array alignment="center" width="94%" height="70%" reference="xml://local/example-Arrays/mail.xml" canfocus="1" packing="vertical">
-      <box id="selbox" alignment="left" packing="horizontal" canfocus="1" width="100%" height="17">
-        <image src="letter.png" onreturn="" script="" name="envelope" margin="5" />
-        <box width="50%"><label alignment="left" datafield="from" arraysource="1" width="100" height="17">from</label></box>
-        <box width="40%"><label alignment="left" datafield="subject" arraysource="1" width="55%" height="17">subject</label></box>
+      <box id="selbox" alignment="left" packing="horizontal" canfocus="1" width="100%" height="17" margin="1">
+        <image src="letter.png" onreturn="" script="" name="envelope" margin="5" mime-type="png"/>
+        <label alignment="left" datafield="from" arraysource="1" width="50%" height="17">from</label>
+        <label alignment="left" datafield="subject" arraysource="1" height="17">subject</label>
       </box>
     </array>
 		
