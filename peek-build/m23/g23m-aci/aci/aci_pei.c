@@ -820,7 +820,7 @@ LOCAL SHORT pei_primitive (void *ptr)
   extern USHORT mfwMmeDrvFlag;
 #endif
 
-/*  TRACE_FUNCTION ("pei_primitive()");*/
+TRACE_FUNCTION ("pei_primitive()");
 #ifdef MFW
   if (mfwMmeDrvFlag)
     mmeFlagHandler();
@@ -1421,7 +1421,6 @@ LOCAL SHORT pei_init (T_HANDLE handle)
   if (_pei_init () EQ PEI_ERROR)
     return PEI_ERROR;
 #endif
-
 #ifdef ACI
   audio_Init ( NULL );
 /* rx_Init( ) is not needed at the moment for ATI only version...

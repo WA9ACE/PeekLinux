@@ -55,7 +55,6 @@ void updateScreen(void) {
 #ifndef SIMULATOR
 	int index, upper;
 	manager_drawScreen();
-
 	dspl_Enable(0);
 	if (!lgui_is_dirty())
 		return;

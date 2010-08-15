@@ -580,7 +580,7 @@ void mainInit (UBYTE InitCause)
 
     /*MC SPR 1111*/
 		/*MC check to see if  language already selected and saved to FFS*/
-
+#ifndef EMO_SIM
 //  Oct 19, 2004 REF: CRR MMI-SPR-26002 xkundadu 
 //  Issue description:  Golite booting problem.
 //  Solution: If the FFS is not formatted, dont write into the FFS.
@@ -643,6 +643,7 @@ void mainInit (UBYTE InitCause)
 		 #endif
 	}
 /*mc end*/
+#endif
 	HUPKeyOrigin = 0;  // sbh
 	off_switch=0;	/* 0 is stands for mobile is swiched on */
 	animation_complete = FALSE;
@@ -682,7 +683,7 @@ void mainInit (UBYTE InitCause)
     /*Setup when we want the backlight to come on*/
 // 	Nov 09, 2005    REF: DVT OMAPS00056873 xdeepadh
 //On Isample boards the backlight is set off, since the bright LEDS are very disturbing.
-    
+#ifndef EMO_SIM
 	for (i=0;i<BL_LAST_OPTION;i++)
 //#if (BOARD == 71)
 //	mme_setBacklightEvent(i,BL_NO_LIGHT);
@@ -709,7 +710,7 @@ void mainInit (UBYTE InitCause)
 	sms_set_cind_values(&cindSettings);
 	sms_set_cmer_values(&cmerSettings);
 	//end.
-
+#endif
 //RM test 14-07 second = 0;
    /*SPR 1725, replace FFS clock data with RTC*/
 
@@ -728,7 +729,6 @@ void mainInit (UBYTE InitCause)
       if(FFS_flashData.refresh==1)
 	  	timStart(times);
 #endif
-
     globalBatteryPicNumber = 5;
     startExec(PhoneInit,0);		 /* get it rolling	    */
 

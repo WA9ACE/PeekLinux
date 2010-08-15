@@ -3057,7 +3057,9 @@ lcd_fb_coordinates p_lcd_coord = { 0,0,LCD_COL,LCD_ROW};
 //Sept 15, 2005 REF: LOCOSTO-ENH-34257 - xpradipg
 //call the new lcd AP in place of the old for refresh
 #ifdef FF_MMI_NEW_LCD_API_MIG
+#ifndef EMO_SIM
 	lcd_display(DISPLAY_MAIN_LCD,(U16*)picture_col,&p_lcd_coord);
+#endif
 #else
  //xrashmic 22 Feb, 2006 SSL_Adaptation
 #ifdef FF_SSL_ADAPTATION //xrashmic 22 Feb, 2006 SSL_Adaptation 
@@ -3296,7 +3298,6 @@ void scrExit (void)
     xIndex = -1;
 #endif
 }
-
 
 /*
 +--------------------------------------------------------------------+
@@ -5421,14 +5422,18 @@ int	dspl_control(int state)
 #ifdef FF_MMI_NEW_LCD_API_MIG
 			status = REF_DISABLED;
 			TRACE_EVENT("calling lcd_control with disable lcd");
+#ifndef EMO_SIM
 			lcd_control(DISPLAY_MAIN_LCD,LCD_REFCONTROL, (void *)&status);
+#endif
 			return refresh_status;
 #endif			
 		case DSPL_ACCESS_ENABLE:
 #ifdef FF_MMI_NEW_LCD_API_MIG		
 			status = REF_ENABLED;
 			TRACE_EVENT("calling lcd_control with disable lcd");
+#ifndef EMO_SIM
 			lcd_control(DISPLAY_MAIN_LCD,LCD_REFCONTROL, (void *)&status);
+#endif
 #else
 			r2d_g_refresh_disabled = state;
 #endif			

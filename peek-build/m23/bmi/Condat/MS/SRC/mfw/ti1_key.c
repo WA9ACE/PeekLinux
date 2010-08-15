@@ -523,7 +523,18 @@ void keypad_cb (void* parameter)
 	return;
 
 }
+#ifdef EMO_SIM
+void simKey(int key) {
+        T_KPD_KEY_EVENT_MSG param;
 
+	emo_printf("simKey() key %d\n", key);
+        param.key_info.virtual_key_id = key;
+        param.key_info.state = KPD_KEY_PRESSED;
+        param.key_info.press_state = KPD_FIRST_PRESS;
+
+        keypad_cb((void *)&param);
+}
+#endif
 void HwdKypadRotCB(KPD_ROT_DIRECTION_T direction) {
         T_KPD_KEY_EVENT_MSG param;
 	

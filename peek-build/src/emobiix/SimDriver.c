@@ -6,6 +6,7 @@
 #include "socket_api.h"
 #include "Debug.h"
 #include <stdint.h>
+#include "mfw_kbd.h"
 
 #define SOCK_BASE 0xFFFE9800
 #define SOCK_FD     0x0
@@ -217,5 +218,65 @@ int bal_closesocket(int fd) {
     *(unsigned int*) regaddr = 0;
 
     return 0;
+}
+
+int SimReadKey(void) {
+    void *regaddr;
+    regaddr = (void*)((unsigned int)SOCK_BASE+0x38);
+    emo_printf("EMO key %d\n", *(unsigned int*) regaddr);
+
+    switch(*(unsigned int*)regaddr) {
+	case 0x1b: // Backspace
+	case 0x9b:
+		*(unsigned int*)regaddr =0;
+		return KCD_CANCLE;
+        case 0x51: // up arrow
+        case 0xd1:
+        case 0xc8: // win
+                *(unsigned int*)regaddr =0;
+                return KCD_UP;
+        case 0x53: // down arrow
+        case 0xd3:
+        case 0xd0:
+                *(unsigned int*) regaddr=0;
+                return KCD_DOWN;
+        case 0x36: // enter key
+        case 0xb6:
+        case 0x1c:
+        case 0x9c:
+                *(unsigned int*) regaddr=0;
+                return KCD_NAV_CENTER;
+        case 0x0f: // 1
+        case 0x8f:
+                break;
+        case 0x10: // 2
+        case 0x90:
+                break;
+        case 0x11: // 3
+        case 0x91:
+                break;
+        case 0x12: // 4
+        case 0x92:
+                break;
+        case 0x13: // 5
+        case 0x93:
+                break;
+        case 0x14: // 6
+        case 0x94:
+                break;
+        case 0x15: // 7
+        case 0x95:
+                break;
+        case 0x16: // 8
+        case 0x96:
+                break;
+        case 0x17: // 9
+        case 0x97:
+                break;
+      default:
+		*(unsigned int*) regaddr=0;
+                return 0;
+   }
+
 }
 #endif

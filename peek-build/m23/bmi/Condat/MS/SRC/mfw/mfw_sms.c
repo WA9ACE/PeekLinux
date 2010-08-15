@@ -4306,11 +4306,12 @@ T_MFW sms_set_val_period(T_MFW_SMS_INFO *sms_info)
    	 TRACE_EVENT_P1("first_oct is %d",sms_info->first_oct);
 	 
    //Send text mode parameters to ACI 
+#ifndef EMO_SIM
    if (sAT_PlusCSMP(CMD_SRC_LCL, sms_info->first_oct, sms_info->vp_rel,
                        NULL, NULL, ACI_NumParmNotPresent,
                        ACI_NumParmNotPresent) NEQ AT_CMPL)
       	    return MFW_SMS_FAIL;
-
+#endif
    return MFW_SMS_OK;
 }
 

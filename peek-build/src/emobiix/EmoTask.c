@@ -7,9 +7,9 @@
 #include "mfw_mme.h"
 #include "Debug.h"
 
-#ifdef DAR_HALT
-#include "File.h"
-#endif
+//#ifdef DAR_HALT
+#include "ffs.h"
+//#endif
 
 typedef struct {
         unsigned int eSndAndAlert;
@@ -40,7 +40,7 @@ int gprsAttached = 0;
 extern void mmiInit(void);
 
 void EmoTask(void) {
-	
+	int tp;
 #ifdef DAR_HALT
 	File *fp;
 #endif 
@@ -63,6 +63,20 @@ void EmoTask(void) {
     	EmoStatusSet();
 	//stCurSettingMode.eFlightMode = 0; // Set to normal mode
 	while(1) {
-		TCCE_Task_Sleep(10000);
+#ifdef EMO_SIM
+	if(uiStatusGet()) {
+        	int key = SimReadKey();
+        	int hasData = SimReadReg();
+
+        	if(key)
+                	simKey(key);
+
+        	if (hasData > 0)
+                	app_recv();
+	}
+        TCCE_Task_Sleep(1);
+#else
+        TCCE_Task_Sleep(1000);
+#endif
 	}
 }

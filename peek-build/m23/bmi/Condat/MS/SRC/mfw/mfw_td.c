@@ -135,7 +135,8 @@ void mfw_td_init()
 
 
 /*if clock not cleared*/
-#ifndef WIN32
+#if !defined (WIN32) && !defined (EMO_SIM)
+
 	if(!rtc_clock_cleared())
 	{	/*get time/date from driver and initialise these*/
 		/*
@@ -256,7 +257,7 @@ MfwRes mfw_td_set_time(T_MFW_TIME* time)
 {	int result;
 
 	TRACE_EVENT("mfw_td_set_time");
-#ifndef WIN32
+#if !defined (WIN32) && !defined (EMO_SIM)
 	result = rtc_set_time_date(&current_date, time);
 	if (result == 0)
 	{	memcpy(&current_time, time, sizeof(T_MFW_TIME));
@@ -281,7 +282,7 @@ MfwRes mfw_td_set_time(T_MFW_TIME* time)
 MfwRes mfw_td_set_date(T_MFW_DATE* date)
 {	int result;
 	TRACE_EVENT("mfw_td_set_date");
-#ifndef WIN32
+#if !defined (WIN32) && !defined (EMO_SIM)
 	result = rtc_set_time_date(date, &current_time);
 	if (result == 0)
 	{
@@ -316,10 +317,20 @@ char* mfw_td_get_clock_str()
          As a result, interface for rtc_get_time_date() has been changed. Change has been done here to be 
          consistent with the new interface.
 	*/
+	#ifndef EMO_SIM
   	#ifndef NEPTUNE_BOARD
 	rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT); 
 	#else
 	rtc_get_time_date(&current_date, &current_time); 
+	#endif
+	#else 
+	current_time.format = RTC_TIME_FORMAT_12HOUR;
+        current_time.second = 0;
+        current_time.minute = 30;
+        current_time.hour = 12;
+        current_date.year = 2010;
+        current_date.month = 8;
+        current_date.day = 12;
 	#endif
         
         // Issue Number : MMI-SPR-12159 on 07/04/04 by Rashmi C N and Deepa M D
@@ -370,7 +381,7 @@ T_MFW_DATE* mfw_td_get_date()
 { //	int result;    // RAVI
 	TRACE_EVENT("mfw_td_get_date");
 /*SPR 2639*/
-#ifndef WIN32
+#if !defined (WIN32) && !defined (EMO_SIM)
 	/*
 	Aug 02, 2006 REF:OMAPS00083404 Prabakar R (a0393213)
          Description: Removal of clone code: entity GDI
@@ -399,7 +410,7 @@ T_MFW_TIME* mfw_td_get_time()
 {
 	TRACE_EVENT("mfw_td_get_time");
 /*SPR 2639*/
-#ifndef WIN32
+#if !defined (WIN32) && !defined (EMO_SIM)
 	/*
 	Aug 02, 2006 REF:OMAPS00083404 Prabakar R (a0393213)
          Description: Removal of clone code: entity GDI
@@ -430,7 +441,7 @@ T_MFW_TIME* mfw_td_get_time()
 MfwRes mfw_td_set_alarm(T_MFW_TIME* time, T_MFW_DATE* date)
 {
 /*SPR 2639*/
-#ifndef WIN32
+#if !defined (WIN32)
 	int result;
 	T_MFW_ALARM_INFO alarmInfo;
 	
@@ -529,7 +540,7 @@ MfwRes mfw_td_set_alarm(T_MFW_TIME* time, T_MFW_DATE* date)
 MfwRes mfw_td_cancel_alarm()
 {
 /*SPR 2639*/
-#ifndef WIN32
+#if !defined (WIN32) && !defined (EMO_SIM)
 	int result;
 	T_MFW_ALARM_INFO alarmInfo;
 	/*SPR 2639*/
@@ -564,7 +575,7 @@ MfwRes mfw_td_cancel_alarm()
 MfwRes mfw_td_get_alarm(T_MFW_TIME* time, T_MFW_DATE* date)
 {
 /*SPR 2639*/
-#ifndef WIN32
+#if !defined (WIN32) && !defined (EMO_SIM)
 	int result;
 //	char debug[50];  // RAVI
 	T_MFW_ALARM_INFO alarmInfo;
@@ -609,7 +620,7 @@ MfwRes mfw_td_set_time_format(T_MFW_TIME_FORMAT format)
 
 	TRACE_EVENT("mfw_td_time_format");
 /*SPR 2639*/
-#ifndef WIN32
+#if !defined (WIN32) && !defined (EMO_SIM)
 	result = rtc_set_time_format((T_RTC_TIME_FORMAT)format);
 	if (result == 0)
 		return MfwResOk;
@@ -925,7 +936,7 @@ int mfw_timer_cb(MfwEvt e, MfwTim *t)
 {	// char debug[60]; // RAVI
 	TRACE_EVENT("mfw_timer_cb()");
 
-#ifndef WIN32
+#if !defined (WIN32) && !defined (EMO_SIM)
 	/*
 	Aug 02, 2006 REF:OMAPS00083404 Prabakar R (a0393213)
          Description: Removal of clone code: entity GDI

@@ -16,6 +16,8 @@ DEFINE += TRACE_EVENT_P7=emo_printf
 DEFINE += TRACE_FUNCTION_P1=emo_printf
 DEFINE += TRACE_FUNCTION_P2=emo_printf
 
+DEFINE += EMO_SIM
+
 INCLUDE += $(VARIANT_INCLUDE)
 INCLUDE += $(M23DIR)/g23m/condat/com/include
 INCLUDE += $(M23DIR)/csw-system/drv_app/lcd

@@ -345,7 +345,9 @@ static void startregis( void )
 #ifdef TI_PS_UICC_CHIPSET_15
 //	dspl_BitBlt2(WELCOME_ANI_POS_X, WELCOME_ANI_POS_Y,176,60,(char *)&TIlogColour[0],0,ICON_TYPE_256_COL);
 #endif
+#ifndef EMO_SIM
 	sim_activate();	
+#endif
 	
 
 
@@ -427,15 +429,18 @@ void startInit( void )
 	mmi_cphs_init();	
 */
 	/* SPR#2346 - SH - GPRS */
+#ifndef EMO_SIM
 #ifdef MMI_GPRS_ENABLED
 	GPRS_Init();
 #endif /* GPRS */
+#endif
 
 #ifndef NEPTUNE_BOARD
+#ifndef EMO_SIM
 #ifdef FF_EM_MODE
 	mmi_em_init();/*MC SPR1209 engineering mode*/
 #endif
-
+#endif
         /* SPR#2086 - SH - Startup WAP */
 #if defined (FF_WAP) && defined (FF_GPF_TCPIP)
         AUI_wap_init();
@@ -491,7 +496,9 @@ void startInit( void )
 	//During bootup, PIN, PUK, SIMP, Insert SIM stages, 
 	//Audio module, USB module needs to be initialized for
 	//Emergency call , USB enumeration respectively
+#ifndef EMO_SIM
 	mmeInit();  //fieldstrength driver
+#endif
 	/* SH - PIN screen now comes before welcome screen */
 	showwelcome(idle_get_window());
 
@@ -578,7 +585,9 @@ void startExec( int reason, MmiState next )
     {
 		case PhoneInit:
 		{
+		    #ifndef EMO_SIM
 		    sim_init();                     /* init SIM handler         */
+		    #endif
 		    nm_init();                      /* init REG handler         */
 	    	    startInit();                        /* init startup module      */
 	    	

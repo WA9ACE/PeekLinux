@@ -1776,6 +1776,8 @@ void idle_show_cb_editor_scrollbar(T_ED_DATA *e)
 void idle_draw_main_idle( void )
 {
 static int ui_init_done = 0;
+static int idle_draw_done = 0;
+
 T_CURRENT_NETWORK current_network;
 char text[20];
 int txtStrId;	//Id of text string to be displayed
@@ -2541,6 +2543,12 @@ LimitedService = 0;//end of crr12653
 #ifndef EMO_PROD
 	memmap();
 	mfwCheckMemoryLeft();
+#endif
+#ifdef EMO_SIM
+	if(!idle_draw_done) {
+		idle_draw_done = 1;
+        	uiStatusSet();
+	}
 #endif
 	dspl_Enable(1);
 	TRACE_FUNCTION("end of idle_draw_main_idle()");

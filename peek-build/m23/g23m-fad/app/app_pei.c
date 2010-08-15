@@ -242,9 +242,12 @@ static short pei_init (T_HANDLE handle)
 |                  PEI_ERROR - timeout not processed
 +------------------------------------------------------------------------------
 */
+
+extern void simKey(int key);
+extern int SimReadKey(void);
+
 static short pei_timeout (unsigned short index)
 {
-#if 0
   TRACE_FUNCTION ("pei_timeout");
 
   /* Process timeout */
@@ -257,13 +260,7 @@ static short pei_timeout (unsigned short index)
       TRACE_ERROR("Unknown Timeout");
       return PEI_ERROR;
   }
-#endif
 
-#ifdef EMO_SIM
-	int hasData = SimReadReg();
-	if (hasData > 0)
-		app_recv();
-#endif
   return PEI_OK;
 }
 
@@ -334,9 +331,9 @@ static short pei_exit (void)
 static short pei_run (T_HANDLE taskhandle, T_HANDLE comhandle )
 {
   T_QMSG message;
-  unsigned long timeout = 100; //APP_TIMEOUT;
+  unsigned long timeout = APP_TIMEOUT;
 
-  TRACE_FUNCTION ("pei_run()");
+  emo_printf("app_pei_run()");
 
   while (!exit_flag)
   {

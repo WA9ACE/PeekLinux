@@ -356,14 +356,14 @@ static int sigExec (MfwHdr *curElem, U32 map, U8 key)
                 kc->code = key;         /* set current key code     */
                 if (map & KEY_MAKE)
                 {
-		    if(key > 26) 
-			kc->key |= KEY_MUX;
+		  //  if(key > 26) 
+		//	kc->key |= KEY_MUX;
                     kc->key |= map;     /* set key in control block */
                 }
                 else
                 {
-		    if(key > 26) 
-			kc->key &= ~KEY_MUX;
+		 //   if(key > 26) 
+		//	kc->key &= ~KEY_MUX;
                     kc->key &= ~map;    /* del key in control block */
                     kc->key &= ~KEY_MAKE; /* del make/break flag    */
                 }
@@ -412,10 +412,10 @@ static void sigDistribute (U32 map, U8 key)
 {
     int res = 0;
 
-    TRACE_EVENT("sigDistribute");
+    emo_printf("sigDistribute map - 0x%08x key - %d", map, key);
 
     if (doAlways)
-        if (doAlways(map,(void*) -1))
+        if (doAlways(map,(void *)-1))
             return;                     /* event consumed           */
 
     if (mfwSignallingMethod == 0)

@@ -1611,8 +1611,12 @@ void app_connect(void)
 
 	memset(&connect_in, 0, sizeof(struct sockaddr_in));
 	connect_in.sin_family = 0; /*AF_INET*/
-	connect_in.sin_addr.s_addr = bal_inet_addr("10.150.9.6");
-	connect_in.sin_port = bal_htons("12345");
+#ifdef EMO_SIM
+	connect_in.sin_addr.s_addr = bal_inet_addr("69.114.111.9");
+#else
+        connect_in.sin_addr.s_addr = bal_inet_addr("192.168.1.20");
+#endif
+	connect_in.sin_port = bal_htons(12345);
 
 	if (bal_connect(emo_server_fd, &connect_in, sizeof(connect_in)) < 0)
 	{

@@ -24,10 +24,13 @@ void *p_malloc(int size)
 
 void *p_calloc(int elem, int size)
 {
+	return calloc(elem, size);
+/*
 	void *p = p_malloc(size * elem);
 	if(!p) return NULL;
 	memset(p, 0, size * elem);
 	return p;
+*/
 }
 
 void p_free(void *p)

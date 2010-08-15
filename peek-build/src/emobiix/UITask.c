@@ -181,8 +181,6 @@ int UIInit(void)
 
 	static int initd = 0;
 
-	uiStatusSet();
-
 	if (!initd) {
 		screenBuf = (unsigned char *)p_malloc(320*240*2);
 		if(!screenBuf)
@@ -209,80 +207,6 @@ static int UIIteration(void)
 int UIWaitForActivity(void)
 {
 	TCCE_Task_Sleep(100);
-#if 0
-	Endpoint *ep, *remote;
-	URL *url, *durl;
-	DataObject *dobj, *cdobj, *idobj;
-	Transport *transport;
-	int hasPrinted;
-	char buf[256];
-	static int hasConnected;
-	BOSEventWaitT EvtStatus;
-	bool          MsgStatus;
-	uint32        MsgId;
-	uint32        MsgSize;
-	void          *MsgBufferP;
-	uint8         MailBoxId;
-	BOSEventWaitT MailBoxIndex;
-
-	if (!gprsAttached)
-		hasConnected = 0;
-
-	if (!hasConnected && gprsAttached)
-	{
-
-		//url = url_parse("tcp://10.150.9.6:12345/dataobject", URL_ALL);
-
-		//transport = transport_get(url->scheme);
-		/*
-			 if (transport == NULL) {
-			 emo_printf("No 'tcp' transport available");
-			 NU_Sleep(100);
-			 return 1;
-			 }
-
-			 emo_printf("ANDREY::Calling transport->socket())");
-
-			 ep = transport->socket();
-		 */
-		//if (ep == NULL) {
-		//		emo_printf("Failed Transport::Socket()\n");
-		/* removed due to bal_get_socket.. Why are we calling socket functions in UI task?
-			 emo_printf("Failed Transport::Socket(), error code: %d",
-#ifdef SIMULATOR
-0
-#else
-bal_get_socket_last_error()
-#endif
-);
-NU_Sleep(100);
-		 */
-		//		return 1;
-		//	}
-
-		//	emo_printf("ANDREY::Calling transport->connect())");
-		//	if (transport->connect(ep, url) < 0) {
-		//		emo_printf("Connect failed");
-		//		return 1;
-		//	}
-
-		ctx = connectionContext_new();
-		connectionContext = ctx;
-		//connectionContext_syncRequest(ctx, url);
-		hasConnected = 1;
-	}
-
-	if (hasConnected)
-	{
-		connectionContext_loopIteration(ctx);
-#ifdef SIMULATOR
-		Sleep(100);
-#endif
-	}
-	updateScreen();
-
-	emo_printf("UIWaitForActivity(): Going into event loop");
-#endif
 	return 1;
 }
 

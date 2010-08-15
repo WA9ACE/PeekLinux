@@ -26,7 +26,7 @@
 #ifdef _WINDOWS
    #include <string.h>
 #endif
-
+#undef WIN32
 //TISH modified for MSIM
 //begin
 #include "swconfig.cfg"
