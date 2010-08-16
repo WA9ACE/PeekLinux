@@ -463,7 +463,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 					emo_printf("Finished Type: %s" NL, field->field.string); 
 				if (field != NULL && field->type == DOF_STRING &&
 						strcmp(field->field.string, "application") == 0) {
-					if (sreq->newObject) {
+					if (sreq->newObject)
 						manager_loadApplication(sreq->dobj, 1, sreq->url);
 					/*app = application_load(sreq->dobj);
 					manager_launchApplication(app);
