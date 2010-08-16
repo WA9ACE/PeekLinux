@@ -1485,6 +1485,21 @@ static void locosto_inth_sir_update(struct locosto_intr_handler_s *s, int is_fiq
     s->sir_intr[is_fiq] = sir_intr;
 }
 
+#ifdef _WIN32
+int ffs(int i)
+{
+   int c = 1;
+
+   do {
+      if (i & 1)
+         return (c);
+      i = i >> 1;
+      c++;
+   } while (i);
+   return 0;
+}
+#endif
+
 static inline void locosto_inth_update(struct locosto_intr_handler_s *s, int is_fiq)
 {
     struct locosto_intr_handler_bank_s *bank = &s->bank;
