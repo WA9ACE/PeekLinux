@@ -3167,7 +3167,9 @@ void scrInit (void)
 //	Sept 15, 2005 REF: LOCOSTO-ENH-34257 - xpradipg
 //New LCD API for initialization
 #ifdef FF_MMI_NEW_LCD_API_MIG
+#ifndef EMO_SIM
 	lcd_initialization(DISPLAY_MAIN_LCD);
+#endif
 #else 
 #ifndef FF_SSL_ADAPTATION//xrashmic 22 Feb, 2006 SSL_Adaptation 
     LCD_SetPower(); /* ES!! */

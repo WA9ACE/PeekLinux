@@ -2112,7 +2112,11 @@ LimitedService = 0;//end of crr12653
 				if (sim_status == SIM_NOT_ACTIVE)
 				{
                                 /* OMAPS00050447: a0393130, handle removal of sim card */
+				#ifndef EMO_SIM
                                 globalSignalPicNumber   =0; /* updating signal strength */
+				#else 
+				globalSignalPicNumber   =3;
+				#endif
                                 iconsShow();		               
                                 /* OMAPS00050447: a0393130, handle removal of sim card */					
                                 idle_displayData(IDLE_NETWORK_NAME,TxtNoCard,NULL);

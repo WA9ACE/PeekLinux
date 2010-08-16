@@ -75,7 +75,7 @@ void EmoTask(void) {
         	if (hasData > 0)
                 	app_recv();
 	}
-        TCCE_Task_Sleep(1);
+        TCCE_Task_Sleep(20);
 #else
         TCCE_Task_Sleep(1000);
 #endif

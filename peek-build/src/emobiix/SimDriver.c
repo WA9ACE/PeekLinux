@@ -165,7 +165,7 @@ int bal_send (int s, const void *__buff, int __len, unsigned int __flags) {
         }
         regaddr = (void*)((unsigned int)SOCK_BASE+SOCK_WTRG);
         *(unsigned int*) regaddr = 1;
-	 TCCE_Task_Sleep(100);
+	//TCCE_Task_Sleep(10);
 	regaddr = (void*)((unsigned int)SOCK_BASE+SOCK_WRET);
 
 	return *(unsigned int*) regaddr; 
@@ -183,7 +183,7 @@ int bal_recv (int s, void *__buff, int __len, unsigned int __flags) {
 	*(unsigned int*) regaddr = __len; // Set Size of read
 	regaddr = (void*)((unsigned int)SOCK_BASE+SOCK_RTRG);
 	*(unsigned int*) regaddr = 1;// Trigger Read
-	TCCE_Task_Sleep(100);
+	//TCCE_Task_Sleep(10);
 	regaddr = (void*)((unsigned int)SOCK_BASE+SOCK_RRET);
 	__len = *(unsigned int*) regaddr;
 
@@ -203,7 +203,7 @@ int bal_recv (int s, void *__buff, int __len, unsigned int __flags) {
 
         regaddr = (void*)((unsigned int)SOCK_BASE+SOCK_RTRANS);
         *(unsigned int*) regaddr = 1; // Free Read buffer
-	TCCE_Task_Sleep(100);
+	//TCCE_Task_Sleep(10);
 	regaddr = (void*)((unsigned int)SOCK_BASE+SOCK_RRET);
 	x = *(unsigned int*) regaddr;
 	emo_printf("Bal_recv returning %d\n", x);
@@ -223,13 +223,16 @@ int bal_closesocket(int fd) {
 int SimReadKey(void) {
     void *regaddr;
     regaddr = (void*)((unsigned int)SOCK_BASE+0x38);
-    emo_printf("EMO key %d\n", *(unsigned int*) regaddr);
+    //emo_printf("EMO key %d\n", *(unsigned int*) regaddr);
 
     switch(*(unsigned int*)regaddr) {
+	case 0x81: 
+		*(unsigned int*)regaddr =0;
+		return KCD_CANCLE;
 	case 0x1b: // Backspace
 	case 0x9b:
 		*(unsigned int*)regaddr =0;
-		return KCD_CANCLE;
+		return KCD_BACKSPACE;
         case 0x51: // up arrow
         case 0xd1:
         case 0xc8: // win
@@ -246,6 +249,15 @@ int SimReadKey(void) {
         case 0x9c:
                 *(unsigned int*) regaddr=0;
                 return KCD_NAV_CENTER;
+	case 0x9e:
+		*(unsigned int*) regaddr=0;
+		return KCD_A;
+	case 0xb0:
+		*(unsigned int*) regaddr=0;
+		return KCD_B;
+	case 0xae:
+		*(unsigned int*) regaddr=0;
+		return KCD_C;
         case 0x0f: // 1
         case 0x8f:
                 break;

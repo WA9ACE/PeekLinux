@@ -23,6 +23,8 @@ void emo_printf( const char* fmt, ...) {
         }
         rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
         va_end(ap);
+#ifndef EMO_SIM
         TCCE_Task_Sleep(2);
+#endif
 #endif
 }

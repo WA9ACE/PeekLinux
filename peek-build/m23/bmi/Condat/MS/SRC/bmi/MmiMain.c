@@ -729,7 +729,15 @@ void mainInit (UBYTE InitCause)
       if(FFS_flashData.refresh==1)
 	  	timStart(times);
 #endif
+
+#ifndef EMO_SIM
     globalBatteryPicNumber = 5;
+#else
+    globalBatteryPicNumber = 4;
+    globalSignalPicNumber  = 3;
+    globalSignalUpdate(3);
+#endif
+
     startExec(PhoneInit,0);		 /* get it rolling	    */
 
 }
@@ -1422,7 +1430,11 @@ int globalBatteryUpdate (U8 value)
     break;
 
     default:
+#ifndef EMO_SIM
 	  globalBatteryPicNumber = 5;
+#else
+	  globalBatteryPicNumber = 4;
+#endif
     break;
   }
 
