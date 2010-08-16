@@ -79,7 +79,7 @@ romsubdir-%:
 
 ALL_SUBDIRS=$(TARGET_DIRS) $(patsubst %,pc-bios/%, $(ROMS))
 
-recurse-all: $(SUBDIR_RULES) $(ROMSUBDIR_RULES)
+recurse-all: $(SUBDIR_RULES)
 
 #######################################################################
 # QObject
