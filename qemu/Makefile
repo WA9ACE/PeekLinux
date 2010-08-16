@@ -27,7 +27,7 @@ configure: ;
 
 VPATH=$(SRC_PATH):$(SRC_PATH)/hw
 
-LIBS+=-lz -lSDL_image $(LIBS_TOOLS)
+LIBS+=-lz $(LIBS_TOOLS)
 
 ifdef BUILD_DOCS
 DOCS=qemu-doc.html qemu-tech.html qemu.1 qemu-img.1 qemu-nbd.8
