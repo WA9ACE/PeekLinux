@@ -70,7 +70,7 @@ uint32_t g_debug = (//LOCO_DEBUG_INTH |
                     //LOCO_DEBUG_I2C |
                     //LOCO_DEBUG_MPU |
                     //LOCO_DEBUG_UART |
-		    LOCO_DEBUG_SOCKET |
+		    //LOCO_DEBUG_SOCKET |
                     //0xffffffff |
                     0);
 uint32_t g_dlevel = 0;//LOCO_DLVL_WARN;
@@ -701,7 +701,7 @@ static uint32_t emif_read(void *opaque, target_phys_addr_t addr)
     peek_state_s *s = (peek_state_s *)opaque;
     int offset = addr & 0xff;
 
-    LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_ERR, "%s: offset %08x\n", __FUNCTION__, (int)offset);
+    LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_INFO, "%s: offset %08x\n", __FUNCTION__, (int)offset);
 
     switch (offset) {
     case 0x0: // 
@@ -727,7 +727,7 @@ static uint32_t emif_read(void *opaque, target_phys_addr_t addr)
     case 0x1c:
 	 return s->emif.dynwait;
     default:
-        LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_ERR,
+        LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_INFO,
                    "%s: UNMAPPED_OFFSET = 0x%08X\n", __FUNCTION__, (int)offset);
     }
     return 0;
@@ -739,7 +739,7 @@ static void emif_write(void *opaque, target_phys_addr_t addr,
     peek_state_s *s = (peek_state_s *)opaque;
     int offset = addr & 0xff;
 
-    LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_ERR, "%s: offset=0x%02X value=0x%02X\n", __FUNCTION__, (int)offset, value);
+    LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_INFO, "%s: offset=0x%02X value=0x%02X\n", __FUNCTION__, (int)offset, value);
 
     switch (offset) {
     case 0x00: //
@@ -777,7 +777,7 @@ static void emif_write(void *opaque, target_phys_addr_t addr,
         //LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_ERR, "%s: CSCONF2 (%d) value=0x%04X\n",
         //           __FUNCTION__, ((int)offset >> 3) & 0x7, value);
     default:
-        LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_ERR,
+        LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_INFO,
                    "%s: UNMAPPED_OFFSET = 0x%08X and value=0x%08X\n",
                    __FUNCTION__, (int)offset, value);
     }
