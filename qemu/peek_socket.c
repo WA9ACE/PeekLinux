@@ -105,10 +105,10 @@ int SockConnect(int sockfd, void *opaque) {
 int SockWrite(char *buffer, int len, void *opaque) {
         peek_socket_s *s = (peek_socket_s *)opaque;
 	int i;
-	fprintf(stderr, "SockWrite() sending data with len %d\n", len);
-	for(i=0;i < len; i++) {	
-		fprintf(stderr, "Sending Buffer %08X\n", buffer[i]);
-	}
+	//fprintf(stderr, "SockWrite() sending data with len %d\n", len);
+	//for(i=0;i < len; i++) {	
+	//	fprintf(stderr, "Sending Buffer %08X\n", buffer[i]);
+	//}
 	return send(s->sock, buffer, len, 0);
 }
 
@@ -221,7 +221,7 @@ static void peek_socket_write(void *opaque, target_phys_addr_t offset, uint32_t 
 	//fprintf(stderr, "Socket transfer count=%d\n", s->cTransferCount);
 	if(s->cTransferSize > 0) {
 		//Start transfer
-		fprintf(stderr, "got: 0x%08X\n", value);
+		//fprintf(stderr, "got: 0x%08X\n", value);
 		memcpy(s->cTransferbuffer+s->cTransferCount, &value, 1);
 		if(s->cTransferCount < s->cTransferSize)
 			s->cTransferCount++;
