@@ -26,7 +26,7 @@ extern uint32_t g_debug;
 extern uint32_t g_dlevel;
 extern FILE *g_debug_fp;
 
-#define LOCO_DEBUG
+//#define LOCO_DEBUG
 #define LOCO_DEBUG(module, level, msg ...)                              \
     do {                                                                \
 	if ((module) & g_debug || (level) <= g_dlevel) {                \
@@ -43,7 +43,10 @@ extern FILE *g_debug_fp;
  */
 #define EXT_RAM_BASE    0x00400000
 #define CS3_BASE        0x06000000
+#define CS3_SIZE 	((8*1024*1024) - 1)
 #define SRAM_BASE       0x08000000
+#define NOR_SECTOR	0x10000
+#define NOR_BASE	0x06800000
 #define SROM_BASE       0x08050000
 #define ULPD_BASE       0xFFFE2000
 #define TIMER1_BASE     0xFFFE3800
@@ -55,7 +58,7 @@ extern FILE *g_debug_fp;
 #define TPURAM_BASE     0xFFFF9000
 #define DPLL_BASE       0xFFFF9800
 #define LCD_BASE        0xFFFFA000 /* 0x7ff */
-#define EMIF_BASE       0xFFFFb000
+#define EMIF_BASE       0xFFFFFB00
 #define KEYBOARD_BASE   0xFFFEB800
 #define TPU_BASE        0xFFFFF000
 #define WDTIMER_BASE    0xFFFFF800
@@ -279,6 +282,21 @@ typedef struct {
     uint16_t pull;
 } locosto_gpio_s;
 
+typedef struct emif_state {
+   uint32_t lru;
+   uint32_t conf;
+   uint32_t scs0;
+   uint32_t scs1;
+   uint32_t scs2;
+   uint32_t scs3;
+
+   uint32_t ecs0;
+   uint32_t ecs1;
+   uint32_t ecs2;
+   uint32_t ecs3;
+   uint32_t dynwait;
+} locosto_emif_s;
+
 typedef struct peek_state {
     CPUState *env;
     qemu_irq *irq[2];
@@ -296,6 +314,7 @@ typedef struct peek_state {
     struct locosto_uart_s *uart;
     struct locosto_intr_handler_s *ih;
     locosto_clkm clkm;
+    locosto_emif_s emif;
 } peek_state_s;
 
 /* UARTs */

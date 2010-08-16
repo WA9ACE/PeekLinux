@@ -13,6 +13,7 @@
 #include "devices.h"
 #include "sysemu.h"
 #include "loader.h"
+#include "block.h"
 #include "boards.h"
 #include "arm-misc.h"
 #include "qemu-char.h"
@@ -69,7 +70,7 @@ uint32_t g_debug = (//LOCO_DEBUG_INTH |
                     //LOCO_DEBUG_I2C |
                     //LOCO_DEBUG_MPU |
                     //LOCO_DEBUG_UART |
-		    //LOCO_DEBUG_SOCKET |
+		    LOCO_DEBUG_SOCKET |
                     //0xffffffff |
                     0);
 uint32_t g_dlevel = 0;//LOCO_DLVL_WARN;
@@ -552,9 +553,7 @@ static void locosto_lcd_update_display(void *opaque)
     lcd->invalidate = 1;
 
     /* Content */
-    //frame_base = 0x007c3750;
-    //frame_base = 0x007c4250;
-    frame_base =0x007288f0;
+    frame_base = 0x077c324;
 
     if (!ds_get_bits_per_pixel(lcd->ds))
         return;
@@ -680,17 +679,53 @@ static locosto_lcd_s * locosto_lcd_init(target_phys_addr_t base, qemu_irq irq)
 
 static void emif_reset(peek_state_s *s)
 {
+	s->emif.conf = 0;
+	s->emif.lru = 0;
+	s->emif.scs0 = 0;
+        s->emif.scs1 = 0;
+        s->emif.scs2 = 0;
+        s->emif.scs3 = 0;
+
+        s->emif.ecs0 = 0;
+        s->emif.ecs1 = 0;
+        s->emif.ecs2 = 0;
+        s->emif.ecs3 = 0;
+        s->emif.dynwait =0;
+
+
+
 }
 
-static uint32_t emif_read(void *opaque, target_phys_addr_t offset)
+static uint32_t emif_read(void *opaque, target_phys_addr_t addr)
 {
-    //peek_state_s *s = (peek_state_s *)opaque;
+    peek_state_s *s = (peek_state_s *)opaque;
+    int offset = addr & 0xff;
 
-    LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_INFO, "%s: offset %08x\n", __FUNCTION__, (int)offset);
+    LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_ERR, "%s: offset %08x\n", __FUNCTION__, (int)offset);
 
     switch (offset) {
     case 0x0: // 
-        return 0;
+         return s->emif.lru;
+    case 0x02: 
+	 return s->emif.conf;
+    case 0x04: //
+         return s->emif.scs0;
+    case 0x08: //
+         return s->emif.scs1;
+    case 0x0C: //
+         return s->emif.scs2;
+    case 0x10: //
+         return s->emif.scs3;
+    case 0x14: //
+         return s->emif.ecs0;
+    case 0x16: //
+         return s->emif.ecs1;
+    case 0x18: //
+         return s->emif.ecs2;
+    case 0x1a: //
+         return s->emif.ecs3;
+    case 0x1c:
+	 return s->emif.dynwait;
     default:
         LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_ERR,
                    "%s: UNMAPPED_OFFSET = 0x%08X\n", __FUNCTION__, (int)offset);
@@ -698,46 +733,68 @@ static uint32_t emif_read(void *opaque, target_phys_addr_t offset)
     return 0;
 }
 
-static void emif_write(void *opaque, target_phys_addr_t offset,
+static void emif_write(void *opaque, target_phys_addr_t addr,
                        uint32_t value)
 {
-    //peek_state_s *s = (peek_state_s *)opaque;
+    peek_state_s *s = (peek_state_s *)opaque;
+    int offset = addr & 0xff;
 
-    LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_INFO, "%s: offset=0x%02X value=0x%02X\n", __FUNCTION__, (int)offset, value);
+    LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_ERR, "%s: offset=0x%02X value=0x%02X\n", __FUNCTION__, (int)offset, value);
 
     switch (offset) {
+    case 0x00: //
+	 s->emif.lru |= value;
+	 break;
     case 0x04: // 
+	 s->emif.scs0 = value;
+	 break;
     case 0x08: // 
+	 s->emif.scs1 = value;
+	 break;
     case 0x0C: // 
+	 s->emif.scs2 = value;
+	 break;
     case 0x10: // 
-        LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_INFO, "%s: CSCONF1 (%d) value=0x%04X\n",
-                   __FUNCTION__, ((int)offset >> 2) & 0x7, value);
-        return;
+	 s->emif.scs3 = value;
+	 break;
+        //LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_ERR, "%s: CSCONF1 (%d) value=0x%04X\n",
+        //           __FUNCTION__, ((int)offset >> 2) & 0x7, value);
     case 0x14: // 
+	 s->emif.ecs0 = value;
+	 break;
     case 0x16: // 
+	 s->emif.ecs1 = value;
+	 break;
     case 0x18: // 
+	 s->emif.ecs2 = value;
+	 break;
     case 0x1a: // 
-        LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_INFO, "%s: CSCONF2 (%d) value=0x%04X\n",
-                   __FUNCTION__, ((int)offset >> 3) & 0x7, value);
-        return;
+	 s->emif.ecs3 = value;
+	 break;
+    case 0x1c:
+	 s->emif.dynwait = value;
+	 break;
+        //LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_ERR, "%s: CSCONF2 (%d) value=0x%04X\n",
+        //           __FUNCTION__, ((int)offset >> 3) & 0x7, value);
     default:
         LOCO_DEBUG(LOCO_DEBUG_EMIF, LOCO_DLVL_ERR,
                    "%s: UNMAPPED_OFFSET = 0x%08X and value=0x%08X\n",
                    __FUNCTION__, (int)offset, value);
     }
+    return;
 
 }
 
 static CPUReadMemoryFunc *emif_readfn[] = {
-    locosto_badwidth_read16,
     emif_read,
-    locosto_badwidth_read16,
+    emif_read,
+    emif_read,
 };
 
 static CPUWriteMemoryFunc *emif_writefn[] = {
-    locosto_badwidth_write16,
     emif_write,
-    locosto_badwidth_write16,
+    emif_write,
+    emif_write,
 };
 
 static void locosto_emif_init(peek_state_s *s)
@@ -745,7 +802,7 @@ static void locosto_emif_init(peek_state_s *s)
     int io;
     LOCOSTO_OPAQUE("emif", s);
     io = cpu_register_io_memory(emif_readfn, emif_writefn, s);
-    cpu_register_physical_memory(EMIF_BASE, 0x7FF, io);
+    cpu_register_physical_memory(EMIF_BASE, 0x2C, io);
     emif_reset(s);
 }
 
@@ -1272,7 +1329,7 @@ static void locosto_tpu_tick(void *opaque)
 
     //fprintf(stderr, "TPU_TICK\n");
 
-    nexttime = qemu_get_clock(vm_clock) + get_ticks_per_sec() / 100;
+    nexttime = qemu_get_clock(vm_clock) + get_ticks_per_sec() / 1000;
 
     if ((tpu->tpu_ctrl & TPU_CTRL_EN) &&
         (tpu->tpu_ctrl & TPU_CTRL_CK_ENABLE)) {
@@ -2170,6 +2227,8 @@ static void peek_init(ram_addr_t ram_size,
     qemu_irq *cpu_irq;
     ram_addr_t phys_flash;
     int srom_size,flash_size;
+    DriveInfo *dinfo;
+
 
     peek_state_s *s = (peek_state_s *)qemu_mallocz(sizeof(peek_state_s));
 
@@ -2210,7 +2269,6 @@ static void peek_init(ram_addr_t ram_size,
 	    option_rom[0], flash_size, option_rom[1], srom_size);
 
     /* Map first 8M of Nor attached to CS3 to rom file */
-#define CS3_SIZE (8*1024*1024)
     cpu_register_physical_memory(CS3_BASE, CS3_SIZE, (phys_flash = qemu_ram_alloc(CS3_SIZE)) | IO_MEM_ROM);
     load_image_targphys(option_rom[0], CS3_BASE, flash_size);
 
@@ -2280,6 +2338,19 @@ static void peek_init(ram_addr_t ram_size,
     /* peek buttons */
     qemu_add_kbd_event_handler(peek_button_event, s);
     qemu_add_mouse_event_handler(peek_mouse_event, s, 1, "Peek Scroll Wheel");
+
+    dinfo = drive_get(IF_PFLASH, 0, 0);
+    if (!dinfo) {
+      	    fprintf(stderr, "A flash image must be given with the 'pflash' parameter\n");
+            exit(1);
+    }
+
+    if(!pflash_cfi02_register(NOR_BASE, qemu_ram_alloc(0x800000),
+             dinfo->bdrv, NOR_SECTOR, 0x800000 / NOR_SECTOR,
+                1, 2, 0x0001, 0x2B7E, 0x2B33, 0x2B00, 0x555, 0x2AA)) {
+           fprintf(stderr, "qemu: Error registering flash memory.\n");
+            exit(1);
+    }
 
     /* Set PC to start addr */
     s->env->regs[15] = CS3_BASE;

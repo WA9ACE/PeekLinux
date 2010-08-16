@@ -44,7 +44,7 @@
 #ifdef PFLASH_DEBUG
 #define DPRINTF(fmt, ...)                          \
 do {                                               \
-    printf("PFLASH: " fmt , ## __VA_ARGS__);       \
+    fprintf(stderr, "PFLASH: " fmt , ## __VA_ARGS__);       \
 } while (0)
 #else
 #define DPRINTF(fmt, ...) do { } while (0)
@@ -71,6 +71,9 @@ struct pflash_t {
     int fl_mem;
     int rom_mode;
     void *storage;
+    int bufWriteOffset;
+    int bufWordCount;
+    int bufWordCur;
 };
 
 static void pflash_register_memory(pflash_t *pfl, int rom_mode)
@@ -81,10 +84,12 @@ static void pflash_register_memory(pflash_t *pfl, int rom_mode)
     if (rom_mode)
         phys_offset |= pfl->off | IO_MEM_ROMD;
     pfl->rom_mode = rom_mode;
-
-    for (i = 0; i < pfl->mappings; i++)
+    //DPRINTF("%s: pfl->off = 0x%08ld - IO_MEM - 0x%08x\n",__func__, pfl->off, IO_MEM_ROMD);
+    for (i = 0; i < pfl->mappings; i++) {
+	//DPRINTF("%s: base+i+chiplen 0x%08x - phys offset 0x%08ld\n", __func__, pfl->base + (i * pfl->chip_len), phys_offset);
         cpu_register_physical_memory(pfl->base + i * pfl->chip_len,
                                      pfl->chip_len, phys_offset);
+	}
 }
 
 static void pflash_timer (void *opaque)
@@ -137,7 +142,7 @@ static uint32_t pflash_read (pflash_t *pfl, uint32_t offset, int width)
         switch (width) {
         case 1:
             ret = p[offset];
-//            DPRINTF("%s: data offset %08x %02x\n", __func__, offset, ret);
+            DPRINTF("%s: data offset %08x %02x\n", __func__, offset, ret);
             break;
         case 2:
 #if defined(TARGET_WORDS_BIGENDIAN)
@@ -147,7 +152,7 @@ static uint32_t pflash_read (pflash_t *pfl, uint32_t offset, int width)
             ret = p[offset];
             ret |= p[offset + 1] << 8;
 #endif
-//            DPRINTF("%s: data offset %08x %04x\n", __func__, offset, ret);
+            DPRINTF("%s: data offset %08x %04x\n", __func__, offset, ret);
             break;
         case 4:
 #if defined(TARGET_WORDS_BIGENDIAN)
@@ -161,7 +166,7 @@ static uint32_t pflash_read (pflash_t *pfl, uint32_t offset, int width)
             ret |= p[offset + 2] << 16;
             ret |= p[offset + 3] << 24;
 #endif
-//            DPRINTF("%s: data offset %08x %08x\n", __func__, offset, ret);
+            DPRINTF("%s: data offset %08x %08x\n", __func__, offset, ret);
             break;
         }
         break;
@@ -217,6 +222,7 @@ static void pflash_update(pflash_t *pfl, int offset,
         /* round to sectors */
         offset = offset >> 9;
         offset_end = (offset_end + 511) >> 9;
+        DPRINTF("%s: Writing 0x%08x to image @ offset 0x%08x - num_secs = 0x%08x\n", __func__, *(int *)(pfl->storage + (offset << 9)), offset, offset_end - offset);
         bdrv_write(pfl->bs, offset, pfl->storage + (offset << 9),
                    offset_end - offset);
     }
@@ -230,20 +236,21 @@ static void pflash_write (pflash_t *pfl, uint32_t offset, uint32_t value,
     uint8_t cmd;
 
     cmd = value;
-    if (pfl->cmd != 0xA0 && cmd == 0xF0) {
-#if 0
+    if ((pfl->cmd != 0xA0 && pfl->cmd != 0x25) && cmd == 0xF0) {
+#if 1 
         DPRINTF("%s: flash reset asked (%02x %02x)\n",
                 __func__, pfl->cmd, cmd);
 #endif
         goto reset_flash;
     }
-    DPRINTF("%s: offset " TARGET_FMT_lx " %08x %d %d\n", __func__,
-            offset, value, width, pfl->wcycle);
+    DPRINTF("%s: offset " TARGET_FMT_lx " %08x %d %d %d\n", __func__,
+            offset, value, width, pfl->wcycle, pfl->chip_len);
     offset &= pfl->chip_len - 1;
 
-    DPRINTF("%s: offset " TARGET_FMT_lx " %08x %d\n", __func__,
-            offset, value, width);
     boff = offset & (pfl->sector_len - 1);
+
+    DPRINTF("%s: offset " TARGET_FMT_lx " %08x %d %08x\n", __func__,
+            offset, value, width, pfl->sector_len);
     if (pfl->width == 2)
         boff = boff >> 1;
     else if (pfl->width == 4)
@@ -263,7 +270,7 @@ static void pflash_write (pflash_t *pfl, uint32_t offset, uint32_t value,
             return;
         }
         if (boff != pfl->unlock_addr[0] || cmd != 0xAA) {
-            DPRINTF("%s: unlock0 failed " TARGET_FMT_lx " %02x %04x\n",
+            DPRINTF("%s: unlock0 failed " TARGET_FMT_lx " %08x %08x\n",
                     __func__, boff, cmd, pfl->unlock_addr[0]);
             goto reset_flash;
         }
@@ -281,7 +288,8 @@ static void pflash_write (pflash_t *pfl, uint32_t offset, uint32_t value,
         break;
     case 2:
         /* We finished an unlock sequence */
-        if (!pfl->bypass && boff != pfl->unlock_addr[0]) {
+        DPRINTF("%s: command 0x%08x - cmd - 0x%08x - pfl->wcycle - 0x%08x - boff 0x%08x\n", __func__, pfl->cmd, cmd, pfl->wcycle, boff);
+        if (!pfl->bypass && boff != pfl->unlock_addr[0] && cmd != 0x25) {
             DPRINTF("%s: command failed " TARGET_FMT_lx " %02x\n", __func__,
                     boff, cmd);
             goto reset_flash;
@@ -290,6 +298,12 @@ static void pflash_write (pflash_t *pfl, uint32_t offset, uint32_t value,
         case 0x20:
             pfl->bypass = 1;
             goto do_bypass;
+	case 0x25:
+            pfl->bypass = 1;
+	    pfl->cmd = 0x25;
+	    pfl->wcycle = 4;
+	    pfl->bufWriteOffset = offset;
+	    return;
         case 0x80:
         case 0x90:
         case 0xA0:
@@ -306,6 +320,53 @@ static void pflash_write (pflash_t *pfl, uint32_t offset, uint32_t value,
         case 0x80:
             /* We need another unlock sequence */
             goto check_unlock0;
+        case 0x25:
+            /* Check for write flush cmd */
+	    if((offset == pfl->bufWriteOffset) && (value == 0x29) && (pfl->bufWordCount == (pfl->bufWordCur - 1) ))  {
+		DPRINTF("%s: Received flush cmd\n", __func__);
+	    	goto reset_flash;
+	    }
+
+            DPRINTF("%s: write data offset " TARGET_FMT_lx " value = 0x%08x width = %d bufWriteoffset = 0x%08x bufWordCount = 0x%08x bufWordCur = 0x%08x\n",
+                    __func__, offset, value, width, pfl->bufWriteOffset, pfl->bufWordCount, (pfl->bufWordCur - 1));
+
+	    pfl->bufWordCur++;
+            p = pfl->storage;
+            switch (width) {
+            case 1:
+                p[offset] &= value;
+                pflash_update(pfl, offset, 1);
+                break;
+            case 2:
+#if defined(TARGET_WORDS_BIGENDIAN)
+                p[offset] &= value >> 8;
+                p[offset + 1] &= value;
+#else
+                p[offset] &= value;
+                p[offset + 1] &= value >> 8;
+#endif
+                pflash_update(pfl, offset, 2);
+                break;
+            case 4:
+#if defined(TARGET_WORDS_BIGENDIAN)
+                p[offset] &= value >> 24;
+                p[offset + 1] &= value >> 16;
+                p[offset + 2] &= value >> 8;
+                p[offset + 3] &= value;
+#else
+                p[offset] &= value;
+                p[offset + 1] &= value >> 8;
+                p[offset + 2] &= value >> 16;
+                p[offset + 3] &= value >> 24;
+#endif
+                pflash_update(pfl, offset, 4);
+                break;
+            }
+            pfl->status = 0x00 | ~(value & 0x80);
+            /* Let's pretend write is immediate */
+            if (pfl->bypass)
+                goto do_bufwrite;
+            goto reset_flash;
         case 0xA0:
             DPRINTF("%s: write data offset " TARGET_FMT_lx " %08x %d\n",
                     __func__, offset, value, width);
@@ -361,9 +422,18 @@ static void pflash_write (pflash_t *pfl, uint32_t offset, uint32_t value,
         }
     case 4:
         switch (pfl->cmd) {
+	case 0x25:
+	    /* Buffered write word count */
+	    DPRINTF("%s: buffered word count 0x%08x\n",__func__, value);
+	    pfl->bufWordCount = value;
+    	    pfl->bypass = 1;
+    	    pfl->wcycle = 3;
+    	    pfl->cmd = 0x25;
+	    return;
         case 0xA0:
             /* Ignore writes while flash data write is occuring */
             /* As we suppose write is immediate, this should never happen */
+	    DPRINTF("%s: write state pfl->wcycle - 0x%08x\n", __func__, pfl->wcycle);
             return;
         case 0x80:
             goto check_unlock1;
@@ -389,7 +459,7 @@ static void pflash_write (pflash_t *pfl, uint32_t offset, uint32_t value,
             pflash_update(pfl, 0, pfl->chip_len);
             /* Let's wait 5 seconds before chip erase is done */
             qemu_mod_timer(pfl->timer,
-                           qemu_get_clock(vm_clock) + (get_ticks_per_sec() * 5));
+                           qemu_get_clock(vm_clock) + (get_ticks_per_sec() * 1));
             break;
         case 0x30:
             /* Sector erase */
@@ -402,7 +472,7 @@ static void pflash_write (pflash_t *pfl, uint32_t offset, uint32_t value,
             pfl->status = 0x00;
             /* Let's wait 1/2 second before sector erase is done */
             qemu_mod_timer(pfl->timer,
-                           qemu_get_clock(vm_clock) + (get_ticks_per_sec() / 2));
+                           qemu_get_clock(vm_clock) + (get_ticks_per_sec()/ 10));
             break;
         default:
             DPRINTF("%s: invalid command %02x (wc 5)\n", __func__, cmd);
@@ -439,15 +509,22 @@ static void pflash_write (pflash_t *pfl, uint32_t offset, uint32_t value,
 
     /* Reset flash */
  reset_flash:
+    DPRINTF("%s: Doing reset\n", __func__);
     pfl->bypass = 0;
     pfl->wcycle = 0;
     pfl->cmd = 0;
+    pfl->bufWriteOffset = 0;
+    pfl->bufWordCur = 0;
+    pfl->bufWordCount = 0;
     return;
 
  do_bypass:
     pfl->wcycle = 2;
     pfl->cmd = 0;
     return;
+ do_bufwrite:
+    pfl->wcycle = 3;
+    pfl->cmd = 0x25;
 }
 
 
@@ -588,6 +665,9 @@ pflash_t *pflash_cfi02_register(target_phys_addr_t base, ram_addr_t off,
     pfl->width = width;
     pfl->wcycle = 0;
     pfl->cmd = 0;
+    pfl->bufWriteOffset = 0;
+    pfl->bufWordCount = 0;
+    pfl->bufWordCur = 0;
     pfl->status = 0;
     pfl->ident[0] = id0;
     pfl->ident[1] = id1;
@@ -644,8 +724,8 @@ pflash_t *pflash_cfi02_register(target_phys_addr_t base, ram_addr_t off,
     pfl->cfi_table[0x29] = 0x00;
     /* Max number of bytes in multi-bytes write */
     /* XXX: disable buffered write as it's not supported */
-    //    pfl->cfi_table[0x2A] = 0x05;
-    pfl->cfi_table[0x2A] = 0x00;
+    pfl->cfi_table[0x2A] = 0x05;
+    //pfl->cfi_table[0x2A] = 0x00;
     pfl->cfi_table[0x2B] = 0x00;
     /* Number of erase block regions (uniform) */
     pfl->cfi_table[0x2C] = 0x01;
