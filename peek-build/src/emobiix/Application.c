@@ -5,6 +5,7 @@
 #include "Widget.h"
 #include "Style.h"
 #include "ApplicationManager.h"
+#include "Script.h"
 
 #include "p_malloc.h"
 
@@ -51,6 +52,8 @@ Application *application_load(DataObject *dobj)
 	else
 		emo_printf("No startupview for applicaton" NL);
 
+	script_event(dobj, "onload");
+
 	return output;
 }
 
@@ -92,6 +95,7 @@ void application_setCurrentScreen(Application *app, DataObject *screen)
 	}
 	app->currentScreen = screen;
 	/*widget_markDirty(screen);*/
+	/*manager_focusView(screen);*/
 	manager_focusApplication(app);
 }
 
