@@ -111,7 +111,7 @@ static int __dataobject_setValue(lua_State *L)
 {
 	DataObject *dobj;/*, *parent;*/
 	DataObjectField *dstr;
-	Rectangle rectb4, rectAfter, *rect;
+	/*Rectangle rectb4, rectAfter, *rect;*/
 	const char *fieldName;
 
 	dobj = checkDataObject(L, 1);
@@ -127,6 +127,12 @@ static int __dataobject_setValue(lua_State *L)
     dataobject_setValue(dobj, fieldName, dstr);
 	emo_printf("Set value to %s" NL, dstr->field.string);
 
+	if (strcmp(fieldName, "reference") == 0)
+		dataobject_resolveReferences(dobj);
+
+	dataobjectfield_setIsModified(dstr, 1);
+	dataobject_setIsModified(dobj, 1);
+#if 0
 	/*parent = dataobject_superparent(dobj);*/
 	widget_getClipRectangle(dobj, &rectb4);
 	manager_resolveLayout();
@@ -140,23 +146,6 @@ static int __dataobject_setValue(lua_State *L)
 	lgui_clip_set(rect);
 	lgui_push_region();
 	manager_drawScreenPartial();
-#if 0
-	/* this needs to be fixed */
-	if (parent == currentScreen) {
-		widget_getClipRectangle(dobj, &rectb4);
-		widget_resolveLayout(currentScreen, currentStyle);
-		emo_printf("drawing from script setData" NL);
-		widget_markDirty(dobj);
-		lgui_clip_identity();
-		widget_getClipRectangle(dobj, &rectAfter);
-		if (rectAfter.width > rectb4.width)
-			rect = &rectAfter;
-		else
-			rect = &rectb4;
-		lgui_clip_set(rect);
-		lgui_push_region();
-		style_renderWidgetTree(currentStyle, parent);
-	}
 #endif
 
     return 1;
@@ -250,8 +239,8 @@ static int __dataobject_sync(lua_State *L)
 	purl = (URL *)application_getURL(app);
 
 	dobj = checkDataObject(L, 1);
-	dataobject_forceSyncFlag(dobj, 1);
-	connectionContext_syncRequest(connectionContext, purl);
+	/*dataobject_forceSyncFlag(dobj, 1);*/
+	connectionContext_syncRequestForce(connectionContext, purl, dobj);
 	
 	return 1;
 }
