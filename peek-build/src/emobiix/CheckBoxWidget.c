@@ -17,7 +17,6 @@ int checkboxWidget_handleKey(Widget *w, unsigned int key, Style *s)
 {
 	DataObject *dobj;
 	DataObjectField *field;
-	Rectangle rect;
 	int isChecked;
 
 	if (key != EKEY_ACTIVATE)
@@ -33,12 +32,15 @@ int checkboxWidget_handleKey(Widget *w, unsigned int key, Style *s)
 
 	dataobjectfield_setBoolean(field, !isChecked);
 
+	dataobject_setIsModified(w, 1);
+#if 0
 	lgui_clip_identity();
 	widget_getClipRectangle(w, &rect);
 	lgui_clip_set(&rect);
 	lgui_push_region();
 	widget_markDirty(w);
 	style_renderWidgetTree(s, dataobject_superparent(w));
+#endif
 
 	return 1;
 }
