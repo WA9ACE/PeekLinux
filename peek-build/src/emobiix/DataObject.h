@@ -21,6 +21,8 @@ int dataobjectfield_isString(DataObjectField *field, const char *str);
 void dataobjectfield_setString(DataObjectField *field, const char *str);
 void dataobjectfield_setBoolean(DataObjectField *field, int bval);
 void dataobjectfield_setIsDerived(DataObjectField *field, int isderrived);
+void dataobjectfield_setIsModified(DataObjectField *field, int isModified);
+void dataobject_setIsModifiedTree(DataObject *dobj, int isModified);
 
 typedef enum {DOS_INIT, DOS_SYNC, DOS_OK, DOS_ERROR} DataObjectState;
 typedef enum {DOOP_CHANGE, DOOP_DESTROY} DataObjectOperation;
@@ -34,6 +36,7 @@ DataObject *dataobject_copyTree(DataObject *dobj);
 void dataobject_delete(DataObject *dobj);
 DataObject *dataobject_newMap(DataObject *src, DataObjectMap *dmap);
 void dataobject_setValue(DataObject *dobj, const char *key, DataObjectField *v);
+void dataobject_setIsModified(DataObject *dobj, int isModified);
 DataObjectField *dataobject_getValue(DataObject *obj, const char *key);
 DataObjectField *dataobject_getValueAsInt(DataObject *dobj, const char *key);
 void dataobject_setRecordType(DataObject *dobj, int isRecord);
