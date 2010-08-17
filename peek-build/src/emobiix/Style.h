@@ -10,6 +10,7 @@ extern "C" {
 #endif
 
 #include "Style_internal.h"
+struct WidgetRenderer_t;
 
 /*Style *style_new(void);*/
 
