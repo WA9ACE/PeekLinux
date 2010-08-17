@@ -7,6 +7,7 @@
 #include "ConnectionContext.h"
 #include "Application.h"
 #include "ApplicationManager.h"
+#include "RenderManager.h"
 
 #include "p_malloc.h"
 
@@ -117,7 +118,9 @@ DataObject *dataobject_copyTree(DataObject *dobj)
 void dataobject_delete(DataObject *dobj)
 {
 	MapIterator iter;
+	ListIterator liter;
 	DataObjectField *item;
+	DataObject *cw;
 	char *key;
 	
 	do {
@@ -138,8 +141,18 @@ void dataobject_delete(DataObject *dobj)
 		listIterator_remove(&liter);
 	} while (1);*/
 
+	for (list_begin(dobj->referenced, &liter); !listIterator_finished(&liter);
+			listIterator_next(&liter)) {
+		cw = (DataObject *)listIterator_item(&liter);
+		cw->widgetData = NULL;
+		dataobject_setIsModified(cw, 1);
+		renderman_queue(cw);
+	}
+
 	list_delete(dobj->children);
+	list_delete(dobj->referenced);
 	map_delete(dobj->data);
+	renderman_dequeue(dobj);
 	p_free(dobj);
 }
 
@@ -147,6 +160,8 @@ void dataobject_setValue(DataObject *dobj, const char *key, DataObjectField *v)
 {
 	DataObjectField *old;
 	old = (DataObjectField *)map_find(dobj->data, key);
+	if (old == v)
+		return;
 	if (old != NULL) {
 		map_remove(dobj->data, key);
 		dataobjectfield_free(old);
@@ -863,6 +878,7 @@ void dataobject_resolveReferences(DataObject *dobj)
 
 void dataobject_forceSyncFlag(DataObject *dobj, int isFlag)
 {
+	emo_printf("Force Sync Flag: %d on %p" NL, isFlag, dobj);
 	if (isFlag)
 		dobj->flags1 |= DO_FLAG_FORCE_SYNC;
 	else
@@ -870,20 +886,31 @@ void dataobject_forceSyncFlag(DataObject *dobj, int isFlag)
 }
 
 #include "Script.h"
-void dataobject_onsyncfinished(DataObject *dobj)
+static void dataobject_onsyncfinishedR(DataObject *dobj, int *doneForced)
 {
 	ListIterator iter;
+	DataObject *child;
 
-	if (dobj->flags1 & DO_FLAG_FORCE_SYNC) {
+	if (!*doneForced && dobj->flags1 & DO_FLAG_FORCE_SYNC) {
 		script_event(dobj, "onsyncfinished");
 		dataobject_forceSyncFlag(dobj, 0);
+		*doneForced = 1;
 	}
 
 	list_begin(dobj->children, &iter);
 	while (!listIterator_finished(&iter)) {
-		dataobject_onsyncfinished((DataObject *)listIterator_item(&iter));
+		child = (DataObject *)listIterator_item(&iter);
+		dataobject_onsyncfinishedR(child, doneForced);
 		listIterator_next(&iter);
 	}
+}
+
+void dataobject_onsyncfinished(DataObject *dobj)
+{
+	int doneForced = 0;
+	emo_printf("Sync finished start" NL);
+	dataobject_onsyncfinishedR(dobj, &doneForced);
+	emo_printf("Sync finished end" NL);
 }
 
 void dataobject_setIsModified(DataObject *dobj, int isModified)
@@ -891,11 +918,11 @@ void dataobject_setIsModified(DataObject *dobj, int isModified)
 	ListIterator iter;
 
 	if (isModified) {
-		/*renderman_queue(dobj);
-		renderman_markLayoutChanged();*/
+		renderman_queue(dobj);
+		renderman_markLayoutChanged();
 		dobj->flags1 |= DO_FLAG_CHANGED;
 	} else {
-		/*renderman_dequeue(dobj);*/
+		renderman_dequeue(dobj);
 		dobj->flags1 &= ~DO_FLAG_CHANGED;
 	}
 
