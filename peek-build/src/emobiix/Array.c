@@ -27,7 +27,7 @@ Array *array_new(size_t elementSize)
     return output;
 }
 
-Array *array_new_with_size(size_t elementSize, size_t size)
+Array *array_newWithSize(size_t elementSize, size_t size)
 {
     Array *output;
 
@@ -37,7 +37,7 @@ Array *array_new_with_size(size_t elementSize, size_t size)
     return output;
 }
 
-void array_set_factor(Array *a, float factor)
+void array_setFactor(Array *a, float factor)
 {
     a->factor = factor;
 }
@@ -84,14 +84,14 @@ void array_delete(Array *a)
 	p_free(a);
 }
 
-void **array_item(Array *a, size_t index)
+void *array_item(Array *a, size_t index)
 {
     return (void *)(((char *)a->data)+index*a->elementSize);
 }
 
 void array_setItem(Array *a, size_t index, void *data)
 {
-    memcpy(((char *)a->data)+a->elementSize*index, &data, a->elementSize);
+    memcpy(((char *)a->data)+a->elementSize*index, data, a->elementSize);
 }
 
 void array_removeItem(Array *a, size_t index)
@@ -101,3 +101,7 @@ void array_removeItem(Array *a, size_t index)
             (a->length-1-index)*a->elementSize);
 }
 
+void array_empty(Array *a)
+{
+	a->length = 0;
+}

@@ -19,7 +19,7 @@ Gradient *gradient_new(void)
 {
 	Gradient *output;
 	output = (Gradient *)p_malloc(sizeof(Gradient));
-	output->stops = array_new_with_size(sizeof(GradientStop), 6);
+	output->stops = array_newWithSize(sizeof(GradientStop), 6);
 
 	return output;
 }
@@ -39,7 +39,7 @@ void gradient_addStop(Gradient *g, int position, Color color)
 	stop->position = position;
 	stop->color = color;
 
-	array_append(g->stops, stop);
+	array_append(g->stops, &stop);
 }
 
 int gradient_stops(Gradient *g)
@@ -52,7 +52,7 @@ Color gradient_getStop(Gradient *g, int id, int *height)
 	GradientStop *s;
 	int outheight;
 
-	s = *((GradientStop **)array_item(g->stops, id));
+	s = *(GradientStop **)array_item(g->stops, id);
 	outheight = ((*height)) * s->position / 100;
 	*height = outheight;
 	return s->color;
