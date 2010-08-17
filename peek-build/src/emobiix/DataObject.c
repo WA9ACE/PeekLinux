@@ -882,11 +882,11 @@ void dataobject_setIsModified(DataObject *dobj, int isModified)
 	ListIterator iter;
 
 	if (isModified) {
-		renderman_queue(dobj);
-		renderman_markLayoutChanged();
+		/*renderman_queue(dobj);
+		renderman_markLayoutChanged();*/
 		dobj->flags1 |= DO_FLAG_CHANGED;
 	} else {
-		renderman_dequeue(dobj);
+		/*renderman_dequeue(dobj);*/
 		dobj->flags1 &= ~DO_FLAG_CHANGED;
 	}
 
