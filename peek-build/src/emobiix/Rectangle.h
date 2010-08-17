@@ -12,6 +12,7 @@ struct Rectangle_t {
 typedef struct Rectangle_t Rectangle;
 
 void rectangle_zero(Rectangle *r);
+void rectangle_union(Rectangle *r, Rectangle *o);
 
 #ifdef __cplusplus
 }
