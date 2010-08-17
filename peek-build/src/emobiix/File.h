@@ -24,6 +24,8 @@ int file_size(File *f);
 
 int file_close(File *f);
 
+int file_mkdir(const char *directory);
+
 #ifdef __cplusplus
 }
 #endif
