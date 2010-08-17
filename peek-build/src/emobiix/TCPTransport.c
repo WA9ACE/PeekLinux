@@ -91,7 +91,7 @@ int TCPConnect(Endpoint *iep, URL *destination)
 
 	ep = (TCPEndpoint *)iep;
 
-	port = atoi(destination->port);
+	port = (unsigned short)atoi(destination->port);
 
 	if (isalpha(destination->hostname[0])) {
 		remoteHost = gethostbyname(destination->hostname);
@@ -175,7 +175,7 @@ int TCPBind(Endpoint *ep, URL *bindaddr)
 
     fprintf(stderr, "Binding to '%s' '%s'\n", bindaddr->hostname, bindaddr->port);
 
-	port = atoi(bindaddr->port);
+	port = (unsigned short)atoi(bindaddr->port);
 
 	if (tep->fd == -1) {
 		return -1;
