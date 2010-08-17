@@ -118,6 +118,7 @@ BEGIN
         syncP CHOICE {
             nodeOperationP CHOICE {
                 nodeGotoTreeP    INTEGER,
+                nodeGotoNamedTreeP    OCTET STRING,
                 nodeDeleteP      INTEGER,
                 nodeCloseTreeP   INTEGER (0 .. 64),
                 nodeAddP ENUMERATED {
