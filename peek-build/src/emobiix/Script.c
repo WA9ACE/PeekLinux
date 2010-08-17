@@ -55,8 +55,14 @@ static int __dataobject_getValue(lua_State *L)
     if (field == NULL) {
 			dobj = widget_getDataObject(dobj);
 			field = dataobject_getValue(dobj, fieldName);
-			if (field != NULL)
+			if (field == NULL)
+				lua_pushnil(L);
+			else if (field->type == DOF_STRING)
 				lua_pushstring(L, field->field.string);
+			else if (field->type == DOF_INT)
+				lua_pushnumber(L, field->field.integer);
+			else if (field->type == DOF_UINT)
+				lua_pushnumber(L, field->field.uinteger);
 			else
 				lua_pushnil(L);
     } else {
@@ -113,19 +119,27 @@ static int __dataobject_setValue(lua_State *L)
 	DataObjectField *dstr;
 	/*Rectangle rectb4, rectAfter, *rect;*/
 	const char *fieldName;
+	int dstrIdx;
 
 	dobj = checkDataObject(L, 1);
 	
 	if (lua_isstring(L, 3)) {
-		dstr = dataobjectfield_string(luaL_checkstring(L, 3));
+		dstrIdx = 3;
 		fieldName = luaL_checkstring(L, 2);
 	} else {
-		dstr = dataobjectfield_string(luaL_checkstring(L, 2));
+		dstrIdx = 2;
 		fieldName = "data";
 	}
 
+	if (lua_isstring(L, dstrIdx)) {
+		dstr = dataobjectfield_string(luaL_checkstring(L, dstrIdx));
+		emo_printf("Set value to %s" NL, dstr->field.string);
+	} else {
+		dstr = dataobjectfield_int((int)luaL_checknumber(L, dstrIdx));
+		emo_printf("Set value to %d" NL, dstr->field.integer);
+	}
+
     dataobject_setValue(dobj, fieldName, dstr);
-	emo_printf("Set value to %s" NL, dstr->field.string);
 
 	if (strcmp(fieldName, "reference") == 0)
 		dataobject_resolveReferences(dobj);
