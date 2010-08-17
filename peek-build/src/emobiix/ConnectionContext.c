@@ -775,7 +775,7 @@ static void connectionContext_processSyncOperand(ConnectionContext *ctx,
 				return;
 			}
 		} else if (syncOp->syncP.choice.nodeOperationP.present == nodeOperationP_PR_nodeGotoNamedTreeP) {
-			sobj = dataobject_findByName(sreq->dobj, syncOp->syncP.choice.nodeOperationP.choice.nodeGotoNamedTreeP.buf);
+			sobj = dataobject_findByName(sreq->dobj, (const char *)syncOp->syncP.choice.nodeOperationP.choice.nodeGotoNamedTreeP.buf);
 			/*emo_printf("#### GoTo index: %d" NL, sreq->objectIndex);*/
 			/*dataobject_debugPrint(sreq->dobj);*/
 			if (sobj == NULL) {
