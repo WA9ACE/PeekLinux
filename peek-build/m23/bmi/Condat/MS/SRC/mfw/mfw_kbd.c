@@ -629,6 +629,9 @@ static int toLong (U32 t, void *h)
 // in in Kpd pressed state and sets the long key bit.
    UBYTE state;
 
+#ifdef EMO_SIM
+   return 0;
+#endif
    if(curKey == 51 || curKey == 52)   
         return 0; 
 
@@ -657,6 +660,10 @@ static int toAuto (U32 t, void *h)
 #if(BOARD == 71)
    UBYTE state;
    TRACE_EVENT("toAuto()");
+
+#ifdef EMO_SIM
+   return 0;
+#endif
 
    kpd_retrieve_key_status(kpd_key, KPD_DEFAULT_MODE, &state);
    if(!state)
