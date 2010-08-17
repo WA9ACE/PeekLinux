@@ -1841,13 +1841,19 @@ T_P_CGREG_STAT status = (T_P_CGREG_STAT)0;
 	USHORT lac, ci;
 	
 	TRACE_FUNCTION("p_gprs_status");
-
+#ifndef EMO_SIM
 	if (qAT_PercentCGREG(CMD_SRC_LCL, &status, &lac, &ci) == AT_FAIL )
 	{
 		TRACE_EVENT("MFW_GPRS: Error. qAT_PercentCGREG failed");
 	}
+#endif
 		
+#ifndef EMO_SIM
 	gprs_set_location(lac, ci);
+#else
+	gprs_set_location(32111, 60572); // hard coded BAYSIDE for emulator
+	status = P_CGREG_STAT_REG_ROAM;
+#endif
 	  
 	return status;
 }

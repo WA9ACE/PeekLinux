@@ -429,11 +429,9 @@ void startInit( void )
 	mmi_cphs_init();	
 */
 	/* SPR#2346 - SH - GPRS */
-#ifndef EMO_SIM
 #ifdef MMI_GPRS_ENABLED
 	GPRS_Init();
 #endif /* GPRS */
-#endif
 
 #ifndef NEPTUNE_BOARD
 #ifndef EMO_SIM
@@ -503,7 +501,11 @@ void startInit( void )
 	showwelcome(idle_get_window());
 
         while(animation_complete == FALSE)
+#ifndef EMO_SIM
                 TCCE_Task_Sleep(1);
+#else
+		TCCE_Task_Sleep(10);
+#endif
 
 	//UIInit();
 
