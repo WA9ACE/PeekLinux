@@ -290,6 +290,7 @@ static unsigned char *imageConvert(void *input, int inputFormat, int outputForma
 
 	upper = width * height;
 	dest = output;
+	alpha = 255;
 	for (pos = 0; pos < upper; ++pos) {
 	/*for (y = 0; y < height; ++y) {
 		for (x = 0; x < width; ++x) {*/
