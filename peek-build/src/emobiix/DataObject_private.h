@@ -16,7 +16,7 @@ struct DataObject_t {
 	unsigned int stampMinor;
 	unsigned int stampMajor;
 
-	Subscription *mapSubscription;
+	List *referenced;
 
 	List *children;
 	DataObject *parent;
@@ -39,11 +39,6 @@ struct DataObject_t {
 #define DO_FLAG_LAYOUT_DIRTY_HEIGHT 0x04
 #define DO_FLAG_RECORD_TYPE			0x08
 #define DO_FLAG_FORCE_SYNC			0x10
-
-/* widget renderers can use draw flags as they choose. They dont get synced
-  or notified so are useful for draw-only information */
-/*#define DO_FLAG_DRAW_FLAG1 0x10
-#define DO_FLAG_DRAW_FLAG2 0x20
-#define DO_FLAG_DRAW_FLAG3 0x40*/
+#define DO_FLAG_CHANGED				0x20
 
 #endif
