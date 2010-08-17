@@ -811,6 +811,14 @@ DataObjectField *dataobjectfield_copy(DataObjectField *field)
 	return output;
 }
 
+void dataobjectfield_setIsModified(DataObjectField *field, int isModified)
+{
+	if (isModified)
+		field->flags |= DOFF_CHANGED;
+	else
+		field->flags &= ~DOFF_CHANGED;
+}
+
 extern ConnectionContext *connectionContext;
 
 void dataobject_resolveReferences(DataObject *dobj)
