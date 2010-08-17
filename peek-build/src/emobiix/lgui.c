@@ -56,8 +56,8 @@ void lgui_clear(unsigned char pixel)
 }
 
 /* potential optimization, err*100 => err, remove res /= 100 */
-#define GRADIENT_STEP(res, sr, er, val, idx) res = sr*100 * (((val-1)-idx)*100)/((val-1)*100); \
-		res += er*100 * (idx*100)/((val-1)*100); \
+#define GRADIENT_STEP(res, sr, er, val, idx) res = (unsigned short)(sr*100 * (((val-1)-idx)*100)/((val-1)*100)); \
+		res += (unsigned short)(er*100 * (idx*100)/((val-1)*100)); \
 		res /= 100;
 void lgui_vertical_gradient(unsigned char start_red, unsigned char start_green, unsigned char start_blue,
 	unsigned char end_red, unsigned char end_green, unsigned char end_blue,
@@ -482,7 +482,7 @@ void lgui_alpha_blitRGBA(int destx, int desty, int imgx, int imgy,
 }
 
 /* Wu Citcle implementation */
-static int I=255;           /* Intensity. */
+static unsigned char I=255;           /* Intensity. */
 static int A=1;             /*Accuracy determained by argument of the root function D.*/
 
 /*  
@@ -496,7 +496,7 @@ static int A=1;             /*Accuracy determained by argument of the root funct
 /*
  *  Auxiliary:
  */
-static int D[100];             /* Precalcuated reversed fractions of roots.*/
+static unsigned char D[100];             /* Precalcuated reversed fractions of roots.*/
 static int POWERES_OF_TEN[] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000 };
 
  static void initD(){
@@ -505,7 +505,7 @@ static int POWERES_OF_TEN[] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 100000
     /* D = new int[p]; */
     for(i=0; i<p; i++ ){  
         f = (       (int)(I*sqrt((double)i))       )%I;
-        D[i] =  f == 0 ? 0 : I-f;
+        D[i] =  (unsigned char)(f == 0 ? 0 : I-f);
     }
     D[0] = 0;  /* Secure from floating point errors on poor platforms. */
 }
@@ -542,7 +542,7 @@ static void putpixelAlpha(int x, int y, unsigned char red, unsigned char green, 
     int y=0;
     int x=R;
     int d=0;
-	int dnew;
+	unsigned char dnew;
     while( y<x ) {
         dnew = D[R*R-y*y];
         if( dnew < d ) x--;
@@ -917,6 +917,8 @@ static int lgui_text_line_complex(const char *p, int x, Font *f, EscapeSequenceS
 	
 	if (statein)
 		state = *statein;
+	else
+		memset(&state, 0, sizeof(EscapeSequenceState));
 	while (*p != 0) {
 another_escape:
 		if (statein && *p == '<') {
