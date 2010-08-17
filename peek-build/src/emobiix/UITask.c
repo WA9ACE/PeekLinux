@@ -16,6 +16,7 @@ typedef char CHAR;
 #include "DataObject.h"
 #include "Application.h"
 #include "ApplicationManager.h"
+#include "RenderManager.h"
 
 #include "gdi.h"
 #include "dspl.h"
@@ -187,6 +188,7 @@ int UIInit(void)
 			emo_printf("Failed to allocate screenBuf\n");
 
 		dataobject_platformInit();
+		renderman_init();
 
 		lgui_attach(screenBuf);
 		manager_init();
