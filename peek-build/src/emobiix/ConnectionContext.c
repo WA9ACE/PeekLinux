@@ -788,6 +788,9 @@ static void connectionContext_processSyncOperand(ConnectionContext *ctx,
 			sreq->objectIndex = dataobject_treeIndex(sobj);
 		} else {
 			emo_printf("Unsupported type of node operation" NL);
+#ifdef SIMULATOR
+				abort();
+#endif
 		}
 	} else {
 		emo_printf("Dont support that type of sync operation yet" NL);
