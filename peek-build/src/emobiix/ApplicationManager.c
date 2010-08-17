@@ -16,6 +16,7 @@
 #include "Script.h"
 #include "Hardware.h"
 #include "Mime.h"
+#include "RenderManager.h"
 
 #include "p_malloc.h"
 
@@ -151,13 +152,13 @@ void manager_resolveLayout(void)
 
 void manager_handleKey(unsigned int key)
 {
-	int isDirty = 0;
+	/*int isDirty = 0;*/
 	Widget *focus, *accessKey;
 	static Rectangle clip = {0, 0, 320, 240};
 	char keyStr[2];
 	Style *style;
 
-	emo_printf("manager_handleKey() key=%d", key);
+	emo_printf("manager_handleKey() key=%d" NL, key);
 
 	if (key == EKEY_ALTTAB) { /* lock symbol */
 		manager_focusNextApplication();
@@ -256,6 +257,8 @@ void manager_focusApplication(Application *app)
 	widget_markDirty(appManager->rootApplicationWindow);
 
 	appManager->focus = app;
+	
+	renderman_clearQueue();
 
 	/*dataobject_debugPrint(appManager->rootApplicationWindow);*/
 }
@@ -339,6 +342,11 @@ void manager_showDialog(DataObject *dobj)
 }
 
 void manager_showMenu(DataObject *dobj)
+{
+
+}
+
+void manager_focusView(DataObject *dobj)
 {
 
 }

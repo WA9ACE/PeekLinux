@@ -26,6 +26,7 @@ Application *manager_getBootApp(void);
 Style *manager_getRootStyle(void);
 void manager_showDialog(DataObject *dobj);
 void manager_showMenu(DataObject *dobj);
+void manager_focusView(DataObject *dobj);
 
 #ifdef __cplusplus
 }
