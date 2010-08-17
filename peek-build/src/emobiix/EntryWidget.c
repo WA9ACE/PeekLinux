@@ -5,6 +5,7 @@
 #include "lgui.h"
 #include "Style.h"
 #include "WidgetRenderer.h"
+#include "Debug.h"
 
 #include "p_malloc.h"
 #include "KeyMappings.h"
@@ -23,9 +24,10 @@ int entryWidget_handleKey(Widget *w, unsigned int key, Style *s)
 	int keylen;
 	int cursorindex, cursorbytes, i, adv;
 	char *newstring, *pos, *lastpos;
-	Rectangle rect;
 
+#ifndef SIMULATOR
 	emo_printf("entryWidget_handleKey() key=%d print=%d", key, isprint(key));
+#endif
 
 	if (key > 0xFFFFFF00 || !isprint(key) && key != '\b')
 		return 0;
@@ -41,6 +43,8 @@ int entryWidget_handleKey(Widget *w, unsigned int key, Style *s)
 	cursorindex = cursorfield->field.integer;
 	cursorbytes = 0;
 	pos = field->field.string;
+	lastpos = 0;
+	adv = 0;
 	for (i = 0; i < cursorindex; ++i) {
 		lastpos = pos;
 		if (UTF8toUTF32(pos, &adv) == 0)
@@ -81,12 +85,15 @@ int entryWidget_handleKey(Widget *w, unsigned int key, Style *s)
 		field->field.string = newstring;
 		++cursorfield->field.integer;
 	}
+	dataobject_setIsModified(w, 1);
+#if 0
 	lgui_clip_identity();
 	widget_getClipRectangle(w, &rect);
 	lgui_clip_set(&rect);
 	lgui_push_region();
 	widget_markDirty(w);
 	style_renderWidgetTree(s, dataobject_superparent(w));
+#endif
 	return 1;
 }
 
