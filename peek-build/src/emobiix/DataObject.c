@@ -142,16 +142,6 @@ void dataobject_delete(DataObject *dobj)
 	p_free(dobj);
 }
 
-DataObject *dataobject_newMap(DataObject *src, DataObjectMap *dmap)
-{
-	DataObject *output;
-
-	output = dataobject_new();
-	output->mapSubscription = subscription_new(src, dmap);
-	
-	return output;
-}
-
 void dataobject_setValue(DataObject *dobj, const char *key, DataObjectField *v)
 {
 	DataObjectField *old;
@@ -884,5 +874,36 @@ void dataobject_onsyncfinished(DataObject *dobj)
 	while (!listIterator_finished(&iter)) {
 		dataobject_onsyncfinished((DataObject *)listIterator_item(&iter));
 		listIterator_next(&iter);
+	}
+}
+
+void dataobject_setIsModified(DataObject *dobj, int isModified)
+{
+	ListIterator iter;
+
+	if (isModified) {
+		renderman_queue(dobj);
+		renderman_markLayoutChanged();
+		dobj->flags1 |= DO_FLAG_CHANGED;
+	} else {
+		renderman_dequeue(dobj);
+		dobj->flags1 &= ~DO_FLAG_CHANGED;
+	}
+
+	for (list_begin(dobj->referenced, &iter); !listIterator_finished(&iter);
+			listIterator_next(&iter)) {
+		dataobject_setIsModified((DataObject *)listIterator_item(&iter), isModified);
+	}
+}
+
+void dataobject_setIsModifiedTree(DataObject *dobj, int isModified)
+{
+	ListIterator iter;
+
+	dataobject_setIsModified(dobj, isModified);
+
+	for (list_begin(dobj->children, &iter); !listIterator_finished(&iter);
+			listIterator_next(&iter)) {
+		dataobject_setIsModifiedTree((DataObject *)listIterator_item(&iter), isModified);
 	}
 }
