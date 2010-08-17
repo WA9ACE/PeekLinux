@@ -52,6 +52,7 @@ DataObject *dataobject_new(void)
 	}
 	output->data = map_string();
 	output->children = list_new();
+	output->referenced = list_new();
 	output->parent = NULL;
 	output->widgetData = NULL;
 	output->state = DOS_INIT;
