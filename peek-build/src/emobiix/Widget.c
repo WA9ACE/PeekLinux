@@ -56,7 +56,22 @@ Widget *widget_newTypeIdName(const char *type, const char *id,
 
 void widget_setDataObject(Widget *w, DataObject *dobj)
 {
+	ListIterator iter;
+	DataObject *robj;
+
+	if (w->widgetData != NULL) {
+		for (list_begin(w->widgetData->referenced, &iter); !listIterator_finished(&iter);	
+				listIterator_next(&iter)) {
+			robj = (DataObject *)listIterator_item(&iter);
+			if (robj == w) {
+				listIterator_remove(&iter);
+				break;
+			}
+		}
+	}
 	w->widgetData = dobj;
+	if (dobj != NULL)
+		list_append(dobj->referenced, w);
 	/*w->self = dobj;*/
 }
 
@@ -370,6 +385,7 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 
 	type = dataobject_getValue(w, "type");
 	if (widget_typeNoChildRender(type)) {
+		result = 0;
 		if (type != NULL && type->type == DOF_STRING
 				&& strcmp(type->field.string, "array") == 0)
 			result = arraywidget_focusNext(w, alreadyUnset, alreadySet);
@@ -410,17 +426,18 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 
 void widget_forceFocus(Widget *tree, Widget *node, Style *s)
 {
-	Rectangle rect;
-
 	widget_focusNone(tree, s, 1);
 	
 	widget_setFocus(node, 1);
+	dataobject_setIsModified(node, 1);
+#if 0
 	widget_markDirty(node);
 	lgui_clip_identity();
 	widget_getClipRectangle(node, &rect);
 	lgui_clip_set(&rect);
 	lgui_push_region();
 	style_renderWidgetTree(s, tree);
+#endif
 }
 
 void widget_focusNext(Widget *tree, Style *s)
@@ -429,7 +446,6 @@ void widget_focusNext(Widget *tree, Style *s)
 	ListIterator iter;
 	int unset, iset;
 	Widget *w1;
-	Rectangle rect;
 
 	unset = 0;
 	iset = 0;
@@ -448,6 +464,7 @@ void widget_focusNext(Widget *tree, Style *s)
 			break;
 		w1 = (Widget *)listIterator_item(&iter);
 		/*emo_printf("redrawlist: %p\n", w1);*/
+#if 0
 		widget_markDirty(w1);
 
 		lgui_clip_identity();
@@ -455,6 +472,8 @@ void widget_focusNext(Widget *tree, Style *s)
 		lgui_clip_set(&rect);
 		lgui_push_region();
 		style_renderWidgetTree(s, tree);
+#endif
+		dataobject_setIsModified(w1, 1);
 #ifdef CLIP_DEBUG
 		lgui_box(rect.x, rect.y, rect.width, rect.height, 1, 0, 0, 0);
 #endif
@@ -610,7 +629,6 @@ static Widget *widget_focusLast(Widget *w)
 void widget_focusPrev(Widget *tree, Style *s)
 {
 	Widget *oldW, *newW;
-	Rectangle rect;
 	int result;
 	DataObjectField *type;
 
@@ -625,6 +643,7 @@ void widget_focusPrev(Widget *tree, Style *s)
 	if (dataobjectfield_isString(type, "array")) {
 		result = arraywidget_focusPrev(oldW);
 		if (result) {
+#if 0
 			widget_markDirty(oldW);
 			lgui_clip_identity();
 			widget_getClipRectangle(oldW, &rect);
@@ -632,7 +651,8 @@ void widget_focusPrev(Widget *tree, Style *s)
 
 			lgui_push_region();
 			style_renderWidgetTree(s, tree);
-
+#endif
+			dataobject_setIsModified(oldW, 1);
 			return;
 		}
 	}
@@ -647,6 +667,8 @@ focus_last:
 		return;*/
 
 	if (oldW != NULL) {
+		dataobject_setIsModified(oldW, 1);
+#if 0
 		widget_markDirty(oldW);
 		lgui_clip_identity();
 		widget_getClipRectangle(oldW, &rect);
@@ -654,9 +676,12 @@ focus_last:
 
 		lgui_push_region();
 		style_renderWidgetTree(s, tree);
+#endif
 	}
 
 	if (newW != NULL) {
+		dataobject_setIsModified(newW, 1);
+#if 0
 		widget_markDirty(newW);
 		lgui_clip_identity();
 		widget_getClipRectangle(newW, &rect);
@@ -664,6 +689,7 @@ focus_last:
 	
 		lgui_push_region();
 		style_renderWidgetTree(s, tree);
+#endif
 	}
 }
 
@@ -714,17 +740,19 @@ Widget *widget_focusNoneR(Widget *w)
 void widget_focusNone(Widget *w, Style *s, int doRender)
 {
 	Widget *dw;
-	Rectangle rect;
 
 	dw = widget_focusNoneR(w);
 
 	if (dw != NULL && doRender) {
+		dataobject_setIsModified(dw, 1);
+#if 0
 		lgui_clip_identity();
 		widget_getClipRectangle(dw, &rect);
 		lgui_clip_set(&rect);
 		lgui_push_region();
 		widget_markDirty(dw);
 		style_renderWidgetTree(s, w);
+#endif
 	}
 }
 
@@ -1080,7 +1108,7 @@ void widget_resolveMeasureRelative(Widget *w)
 	ListIterator iter;
 	int tmpint, slen, isset;
 	Application *app;
-	WidgetPacking pack;
+	WidgetPacking pack = WP_VERTICAL;
 
 	/* get specified absolute values */
 #define RELATIVE_FIELD(_x, _y, _z) \
