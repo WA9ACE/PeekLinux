@@ -14,6 +14,7 @@
 #include "ApplicationManager.h"
 #include "lgui.h"
 #include "KeyMappings.h"
+#include "RenderManager.h"
 
 #include "p_malloc.h"
 
@@ -54,6 +55,7 @@ void emo_BitBltFull(U8* bmp)
 void updateScreen(void) {
 #ifndef SIMULATOR
 	int index, upper;
+	renderman_flush();
 	manager_drawScreen();
 	dspl_Enable(0);
 	if (!lgui_is_dirty())
