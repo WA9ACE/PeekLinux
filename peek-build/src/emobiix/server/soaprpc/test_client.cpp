@@ -21,11 +21,11 @@ int main(int argc, char **argv)
 
 	map<string, string> param;
 	param["key"] = "value";
-	/*
+
 	cerr << "Using \"peek\" pass \"peek123\" for authentication..." << endl;
 	if (emobiix::soap_request::GetAuthentication(url, "1234567", "peek", "peek123", param))
 		cerr << "Authentication successful!" << endl;
-	*/
+
 	string tree;
 	if (emobiix::soap_request::GetTreeDataObject(url, "1234567", "dataobject", param, tree))
 		cerr << "Tree data request successful: " << endl << tree << endl;

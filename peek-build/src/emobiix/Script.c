@@ -51,23 +51,23 @@ static int __dataobject_getValue(lua_State *L)
 		fieldName = luaL_checkstring(L, 2);
 	if (fieldName == NULL)
 		fieldName = "data";
+
 	field = dataobject_getValue(dobj, fieldName);
-    if (field == NULL) {
-			dobj = widget_getDataObject(dobj);
-			field = dataobject_getValue(dobj, fieldName);
-			if (field == NULL)
-				lua_pushnil(L);
-			else if (field->type == DOF_STRING)
-				lua_pushstring(L, field->field.string);
-			else if (field->type == DOF_INT)
-				lua_pushnumber(L, field->field.integer);
-			else if (field->type == DOF_UINT)
-				lua_pushnumber(L, field->field.uinteger);
-			else
-				lua_pushnil(L);
-    } else {
-           lua_pushstring(L, field->field.string);
-    }
+	if (field == NULL) {
+		dobj = widget_getDataObject(dobj);
+		field = dataobject_getValue(dobj, fieldName);
+	}
+
+	if (field == NULL)
+		lua_pushnil(L);
+	else if (field->type == DOF_STRING)
+		lua_pushstring(L, field->field.string);
+	else if (field->type == DOF_INT)
+		lua_pushnumber(L, field->field.integer);
+	else if (field->type == DOF_UINT)
+		lua_pushnumber(L, field->field.uinteger);
+	else
+		lua_pushnil(L);
 
 	return 1;
 }

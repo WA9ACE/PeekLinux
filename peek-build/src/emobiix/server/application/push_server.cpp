@@ -78,7 +78,7 @@ void push_server::stop()
 
 }
 
-int ns__DataObjectPushRequest(struct soap*, std::string deviceId, std::string dataObjectURI, bool &isDelivered)
+int ns__DataObjectPushRequest(struct soap*, std::string deviceId, std::string dataObjectURI, std::vector<ns__KeyValue>* requestParam, bool &isDelivered)
 {
 	emobiix::appdata data;
 	if (!emobiix::shared_appdata::instance().get(deviceId, data))

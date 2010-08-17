@@ -140,7 +140,9 @@ int Test_Push(const std::string& data)
 	struct soap *s = soap_new();
 
 	bool isDelivered = false;
-	int ret = soap_call_ns__DataObjectPushRequest(s, "http://0.0.0.0:23456", NULL, "1", data, isDelivered);
+
+	std::vector<ns__KeyValue> requestParams;
+	int ret = soap_call_ns__DataObjectPushRequest(s, "http://0.0.0.0:23456", NULL, "1", data, &requestParams, isDelivered);
 
 	soap_end(s);
 	soap_free(s);

@@ -1,8 +1,7 @@
 #ifndef _GPRS_H_
 #define _GPRS_H_
 
-#include "sysdefs.h"
-#include "balapi.h"
+#include "typedefs.h"
 
 #define GPRS_URI "system://local/gprs"
 
@@ -19,10 +18,12 @@
 extern "C" {
 #endif
 
-void GprsRegisterRssi(void);
-void gprs_dataobject_init(void);
+//void GprsRegisterRssi(void);
+void gprs_set_status(BOOL status);
+void gprs_set_signal_level(U32 level);
+void gprs_set_location(U32 lac, U32 ci);
 
-static void rssiEventHandler(RegIdT RegId, uint32 MsgId, void* MsgBufferP);
+//static void rssiEventHandler(RegIdT RegId, uint32 MsgId, void* MsgBufferP);
 
 #ifdef __cplusplus
 }

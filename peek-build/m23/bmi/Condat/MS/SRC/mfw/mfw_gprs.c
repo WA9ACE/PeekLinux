@@ -80,6 +80,8 @@ $End
 /* import of external globals --------------------------------------*/
 EXTERN MfwHdr *current_mfw_elem;
 
+void gprs_set_location(U32 lac, U32 ci);
+
 /* definition of globals -------------------------------------------*/
 
 /* definition of constants -----------------------------------------*/
@@ -1821,7 +1823,9 @@ T_CGREG_STAT gprs_status()
  	{
     	TRACE_EVENT("MFW_GPRS: Error. qAT_PlusCGREG failed");
 	}
-		
+	
+	emo_printf("LOCATION: lac: %d ci: %d", lac, ci);
+	
 	return status;
 }
 //x0035544 Feb 23, 2006 DR:OMAPS00068976
@@ -1842,7 +1846,9 @@ T_P_CGREG_STAT status = (T_P_CGREG_STAT)0;
 	{
 		TRACE_EVENT("MFW_GPRS: Error. qAT_PercentCGREG failed");
 	}
-			  
+		
+	gprs_set_location(lac, ci);
+	  
 	return status;
 }
 

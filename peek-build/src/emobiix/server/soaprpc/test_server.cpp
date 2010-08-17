@@ -224,7 +224,7 @@ int ns__TreeDataObjectRequest(struct soap* soap, std::string deviceId, std::stri
 	return SOAP_OK;
 }
 
-int ns__DataObjectPushRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, bool &isDelivered)
+int ns__DataObjectPushRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, std::vector<ns__KeyValue>* requestParam, bool &isDelivered)
 {
 	return SOAP_OK;
 }

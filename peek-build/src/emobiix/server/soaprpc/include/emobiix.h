@@ -86,5 +86,6 @@ int ns__TextDataObjectRequest(
 int ns__DataObjectPushRequest(
 	xsd__string deviceId, 
 	xsd__string dataObjectURI, 
+	std::vector<ns__KeyValue>* requestParam,
 	bool &isDelivered
 );
