@@ -32,6 +32,7 @@ struct SyncRequest_t {
 	unsigned int stampMajor;
 	
 	DataObject *dobj;
+	DataObject *forcedObject;
 	List *completeFields;
 	List *completeNodes;
 	unsigned int sequenceID;
@@ -141,7 +142,7 @@ ConnectionContext *connectionContext_new(Endpoint *ep)
 		list_delete(list);
 		return NULL;
 	}
-        output->endpoint = ep;
+	output->endpoint = ep;
 	output->syncRequests = map;
 	output->buffer = buffer;
 	output->bufferBytes = 0;
@@ -267,7 +268,8 @@ void connectionContext_requestAuth(ConnectionContext *ctx)
 extern void xmlLoadObject(URL *url);
 #endif
 
-int connectionContext_syncRequest(ConnectionContext *ctx, URL *url)
+int connectionContext_syncRequestForce(ConnectionContext *ctx, URL *url,
+		DataObject *dobj)
 {
 	SyncRequest *sreq;
 	char mapKey[64];
@@ -287,13 +289,20 @@ int connectionContext_syncRequest(ConnectionContext *ctx, URL *url)
 	sreq = syncRequest_new(url, 1);
 	sreq->hasStarted = 0;
 	sreq->sequenceID = endpoint_getTransport(ctx->endpoint)->sequenceID(ctx->endpoint);
-	snprintf(mapKey, 64, "%p,%d", ctx->endpoint, sreq->sequenceID);
+	sreq->forcedObject = dobj;
+
+	strcpy(mapKey, generate_mapKey(ctx->endpoint, sreq->sequenceID));
 	/*emo_printf("@New Sync Request mapKey: %s" NL, mapKey);*/
 	map_append(ctx->syncRequests, mapKey, sreq);
 
 	// TODO Evaluate whether this is the best place for the loop iteration
 	connectionContext_loopIteration(ctx);
 	return 1;
+}
+
+int connectionContext_syncRequest(ConnectionContext *ctx, URL *url)
+{
+	return connectionContext_syncRequestForce(ctx, url, NULL);
 }
 
 int connectionContext_consumePacket(ConnectionContext *ctx)
@@ -470,10 +479,12 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 					manager_focusApplication(app);*/
 					/*dataobject_debugPrint(sreq->dobj);*/
 				} else {
-					/* shouldnt refocus, should force a reloayout and draw instead */
-					manager_focusApplication(manager_getFocusedApplication());
+					dataobject_setIsModifiedTree(sreq->dobj, 1);
 				}
 				
+				/* else {
+					manager_focusApplication(manager_getFocusedApplication());
+				}*/
 			}
 			break;
 		case packetTypeP_PR_NOTHING:
@@ -598,6 +609,7 @@ static SyncRequest *syncRequest_new(URL *url, int isClient)
 	output->dobj = dataobject_locate(url);
 	output->childOp = -2;
 	output->newObject = 0;
+	output->forcedObject = NULL;
 	if (output->dobj == NULL) {
 		output->dobj = dataobject_construct(url, !isClient);
 		output->newObject = 1;
@@ -644,15 +656,21 @@ static void connectionContext_outgoingSyncForced(ConnectionContext *ctx,
 		SyncRequest *sreq, FRIPacketP_t *p)
 {
 	DataObject *sobj;
-	
-	emo_printf( "Sending SyncForce Packet" NL);
+
+	emo_printf("Sending SyncForce Packet" NL);
     p->packetTypeP.present = packetTypeP_PR_dataObjectSyncP;
 	if (sreq->completeFields == NULL)
 		sreq->completeFields = list_new();
 
 	p->packetTypeP.choice.dataObjectSyncP.syncSequenceIDP = sreq->sequenceID;
 
-	sobj = dataobject_getForcedObject(sreq->dobj, &sreq->objectIndex);
+	sobj = sreq->forcedObject;
+	sreq->objectIndex = dataobject_treeIndex(sobj);
+	/*sobj = dataobject_getForcedObject(sreq->dobj, &sreq->objectIndex);*/
+	if (sobj == NULL) {
+		emo_printf("No forced object" NL);
+		return;
+	}
 	sreq->childOp = sreq->objectIndex;
 	protocol_blockSyncList(&p->packetTypeP.choice.dataObjectSyncP);
 	
@@ -756,6 +774,18 @@ static void connectionContext_processSyncOperand(ConnectionContext *ctx,
 #endif
 				return;
 			}
+		} else if (syncOp->syncP.choice.nodeOperationP.present == nodeOperationP_PR_nodeGotoNamedTreeP) {
+			sobj = dataobject_findByName(sreq->dobj, syncOp->syncP.choice.nodeOperationP.choice.nodeGotoNamedTreeP.buf);
+			/*emo_printf("#### GoTo index: %d" NL, sreq->objectIndex);*/
+			/*dataobject_debugPrint(sreq->dobj);*/
+			if (sobj == NULL) {
+				emo_printf("Going to invalid index" NL);
+#ifdef SIMULATOR
+				abort();
+#endif
+				return;
+			}
+			sreq->objectIndex = dataobject_treeIndex(sobj);
 		} else {
 			emo_printf("Unsupported type of node operation" NL);
 		}
@@ -801,7 +831,8 @@ static void connectionContext_processRecordSyncList(ConnectionContext *ctx,
 				!listIterator_finished(&iter); listIterator_next(&iter)) {
 			robj = listIterator_item(&iter);
 			dataobject_getStamp(robj, &minor, &major);
-			if (minor == rsl->recordIdMinorP && major == rsl->recordIdMajorP) {
+			if (minor == (unsigned int)rsl->recordIdMinorP &&
+						major == (unsigned int)rsl->recordIdMajorP) {
 				robj = dataobject_getTree(robj, sreq->objectIndex);			
 				break;
 			}

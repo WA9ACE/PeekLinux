@@ -2,6 +2,7 @@
 #define _CONNECTION_CONTEXT_H_
 
 #include "Transport.h"
+#include "DataObject_internal.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,6 +19,8 @@ int connectionContext_loopIteration(ConnectionContext *ctx);
 void connectionContext_requestAuth(ConnectionContext *ctx);
 
 int connectionContext_syncRequest(ConnectionContext *ctx, URL *url);
+int connectionContext_syncRequestForce(ConnectionContext *ctx, URL *url,
+		DataObject *dobj);
 
 /* used internally, here just incase they are useful */
 int connectionContext_consumePacket(ConnectionContext *ctx);
