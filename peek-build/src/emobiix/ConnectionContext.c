@@ -117,6 +117,9 @@ ConnectionContext *connectionContext_new(Endpoint *ep)
 	unsigned char *buffer;
 	List *list;
 
+	EMO_ASSERT_NULL(ep != NULL,
+			"new connection context with NULL end point")
+
 	map = map_string();
 	if (map == NULL)
 		return NULL;
@@ -156,6 +159,9 @@ ConnectionContext *connectionContext_new(Endpoint *ep)
 
 void connectionContext_delete(ConnectionContext *ctx)
 {
+	EMO_ASSERT(ctx != NULL,
+			"delete connection context with NULL context")
+
 	map_delete(ctx->syncRequests);
 	p_free(ctx->buffer);
 	p_free(ctx);
@@ -163,6 +169,11 @@ void connectionContext_delete(ConnectionContext *ctx)
 
 void connectionContext_setBuffer(ConnectionContext *ctx, char *buffer, int size) 
 {
+	EMO_ASSERT(ctx != NULL,
+			"setbuffer connection context with NULL context")
+	EMO_ASSERT(buffer != NULL,
+			"setbuffer connection context buffer is NULL")
+
 	emo_printf("connectionContext_setBuffer() buffer size %d", size);
         memcpy(ctx->buffer+ctx->bufferBytes, buffer, size); 
         ctx->bufferBytes += size;
@@ -180,6 +191,9 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 	MapIterator iter;
 	void *key;
 	SyncRequest *sreq;
+
+	EMO_ASSERT_INT(ctx != NULL, 0,
+			"connection context loop iteration without context")
 
 #ifdef SIMULATOR
 	transport = endpoint_getTransport(ctx->endpoint);
@@ -243,6 +257,9 @@ void connectionContext_requestAuth(ConnectionContext *ctx)
 	AuthRequestP_t *p;
 	AuthTypeP_t authType;
 
+	EMO_ASSERT(ctx != NULL,
+			"connection context reqeust auth without context")
+
 	ctx->needAuth = NA_YES;
 	ctx->hasAuth = 0;
 	authType = AuthTypeP_atUsernamePasswordP;
@@ -273,6 +290,11 @@ int connectionContext_syncRequestForce(ConnectionContext *ctx, URL *url,
 {
 	SyncRequest *sreq;
 	char mapKey[64];
+
+	EMO_ASSERT_INT(ctx != NULL, 0,
+			"connection context forced reqeust without context")
+	EMO_ASSERT_INT(url != NULL, 0,
+			"connection context forced reqeust missing URL")
 
 #ifdef SIMULATOR
 	if (strcmp(url->scheme, "xml") == 0) {
@@ -310,6 +332,9 @@ int connectionContext_consumePacket(ConnectionContext *ctx)
 	asn_dec_rval_t retval;
 	FRIPacketP_t *packet = NULL;
 	int consumed;
+
+	EMO_ASSERT_INT(ctx != NULL, 0,
+			"connection context consume packet without context")
 
 	if (ctx->bufferBytes <= 0)
 		return 0;
@@ -360,6 +385,11 @@ static void connectionContext_processSyncStart(ConnectionContext *ctx,
 	URL *url;
 	int isLocal;
 	const char *mapKey;
+
+	EMO_ASSERT(ctx != NULL,
+			"connection context process sync start without context")
+	EMO_ASSERT(p != NULL,
+			"connection context process sync start without packet input")
 
 	emo_printf("SyncStart packet" NL);
 	tmpstr = OCTET_STRING_to_string(&p->urlP);
@@ -417,6 +447,11 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 	const char *mapKey;
 	DataObjectField *field;
 	/*Application *app;*/
+
+	EMO_ASSERT(ctx != NULL,
+			"connection context process packet without context")
+	EMO_ASSERT(packet != NULL,
+			"connection context process packet without packet input")
 
 	emo_printf("Got packet : %d" NL, packet->packetTypeP.present);
 
@@ -499,6 +534,11 @@ static void connectionContext_processSyncRequest(ConnectionContext *ctx,
 	FRIPacketP_t packet;
 	Transport *transport;
 
+	EMO_ASSERT(ctx != NULL,
+			"connection context process sync request without context")
+	EMO_ASSERT(sreq != NULL,
+			"connection context process sync request without request")
+
 	transport = endpoint_getTransport(ctx->endpoint);
 
 	if (sreq->isClient) {
@@ -558,8 +598,13 @@ static void connectionContext_packetSend(ConnectionContext *ctx,
 	unsigned char *buffer;
 	Transport *transport;
 	int size, retval;
-
 	asn_enc_rval_t erv;
+
+	EMO_ASSERT(ctx != NULL,
+			"connection context packet send without context")
+	EMO_ASSERT(packet != NULL,
+			"connection context packet send missing packet")
+
 	emo_printf( "Sending packet : %d" NL, packet->packetTypeP.present);
 	buffer = (unsigned char *)p_malloc(4096);
 	if (buffer == NULL) {
@@ -595,6 +640,9 @@ static SyncRequest *syncRequest_new(URL *url, int isClient)
 {
 	SyncRequest *output;
 
+	EMO_ASSERT_NULL(url != NULL,
+			"connection context sync reqeust new with NULL url")
+
 	output = p_malloc(sizeof(SyncRequest));
 	output->url = url;
 	output->isClient = isClient;
@@ -620,6 +668,9 @@ static SyncRequest *syncRequest_new(URL *url, int isClient)
 
 static void syncRqeuest_delete(SyncRequest *sreq)
 {
+	EMO_ASSERT(sreq != NULL,
+			"connection context delete sync reqeust on NULL")
+
 	p_free(sreq);
 }
 
@@ -628,6 +679,13 @@ static void connectionContext_outgoingSync(ConnectionContext *ctx,
 {
 	DataObject *sobj;
 	
+	EMO_ASSERT(ctx != NULL,
+			"connection context outgoing sync without context")
+	EMO_ASSERT(sreq != NULL,
+			"connection context outgoing sync missing request")
+	EMO_ASSERT(p != NULL,
+			"connection context outgoing sync missing packet")
+
 	emo_printf( "Sending Sync Packet" NL);
     p->packetTypeP.present = packetTypeP_PR_dataObjectSyncP;
 	if (sreq->completeFields == NULL)
@@ -656,6 +714,13 @@ static void connectionContext_outgoingSyncForced(ConnectionContext *ctx,
 		SyncRequest *sreq, FRIPacketP_t *p)
 {
 	DataObject *sobj;
+
+	EMO_ASSERT(ctx != NULL,
+			"connection context outgoing sync forced without context")
+	EMO_ASSERT(sreq != NULL,
+			"connection context outgoing sync forced missing request")
+	EMO_ASSERT(p != NULL,
+			"connection context outgoing sync forced missing packet")
 
 	emo_printf("Sending SyncForce Packet" NL);
     p->packetTypeP.present = packetTypeP_PR_dataObjectSyncP;
@@ -686,6 +751,11 @@ static void connectionContext_processSync(ConnectionContext *ctx,
 	const char *mapKey;
 	SyncRequest *sreq;
 	DataObject *sobj;
+
+	EMO_ASSERT(ctx != NULL,
+			"connection context process sync without context")
+	EMO_ASSERT(p != NULL,
+			"connection context process sync missing packet")
 
 	emo_printf("DataObjectSync packet" NL);
 	mapKey = generate_mapKey(ctx->endpoint, p->syncSequenceIDP);
@@ -721,6 +791,15 @@ static void connectionContext_processSyncOperand(ConnectionContext *ctx,
 	DataObjectField *dof;
 	void *data;
 	DataObject *cobj;
+
+	EMO_ASSERT(ctx != NULL,
+			"connection context process sync operand without context")
+	EMO_ASSERT(sreq != NULL,
+			"connection context process sync operand without request")
+	EMO_ASSERT(sobj != NULL,
+			"connection context process sync operand without DataObject")
+	EMO_ASSERT(syncOp != NULL,
+			"connection context process sync operand missing operand")
 
 	fieldName = (char *)syncOp->fieldNameP.buf;
 	/*emo_printf("Field is '%s'" NL, fieldName);*/
@@ -804,6 +883,15 @@ static void connectionContext_processBlockSyncList(ConnectionContext *ctx,
 	int i;
 	SyncOperandP_t *syncOp;
 
+	EMO_ASSERT(ctx != NULL,
+			"connection context process block list without context")
+	EMO_ASSERT(sreq != NULL,
+			"connection context process block list without request")
+	EMO_ASSERT(sobj != NULL,
+			"connection context process block list without DataObject")
+	EMO_ASSERT(p != NULL,
+			"connection context process block list missing list")
+
 	for (i = 0; i < p->list.count; ++i) {
 		syncOp = p->list.array[i];
 		sobj = dataobject_getTree(sreq->dobj, sreq->objectIndex);
@@ -820,6 +908,13 @@ static void connectionContext_processRecordSyncList(ConnectionContext *ctx,
 	DataObject *robj;
 	SyncOperandP_t *syncOp;
 	int i, j;
+
+	EMO_ASSERT(ctx != NULL,
+			"connection context process record list without context")
+	EMO_ASSERT(sreq != NULL,
+			"connection context process record list without request")
+	EMO_ASSERT(p != NULL,
+			"connection context process record list missing list")
 
 	dataobject_setRecordType(sreq->dobj, 1);
 
@@ -859,6 +954,11 @@ static void connectionContext_processAuthRequest(ConnectionContext *ctx,
 	AuthTypeP_t authType;
 	int i;
 
+	EMO_ASSERT(ctx != NULL,
+			"connection context process auth request without context")
+	EMO_ASSERT(p != NULL,
+			"connection context process auth request missing request")
+
 	emo_printf("Processing request auth" NL);
 
 	for (i = 0; i < p->authTypesP.list.count; ++i) {
@@ -886,6 +986,9 @@ static void connectionContext_authUserPass(ConnectionContext *ctx)
 	//	BalGetImei(deviceImei);
 #endif
 
+	EMO_ASSERT(ctx != NULL,
+			"connection context auth user/pass without context")
+
 	packet.packetTypeP.present = packetTypeP_PR_authUserPassP;
 	p = &packet.packetTypeP.choice.authUserPassP;
 
@@ -909,6 +1012,11 @@ static void connectionContext_processAuthUserPass(ConnectionContext *ctx,
 {
 	FRIPacketP_t packet;
 
+	EMO_ASSERT(ctx != NULL,
+			"connection context process auth user/pass without context")
+	EMO_ASSERT(p != NULL,
+			"connection context process auth user/pass without packet")
+
 	emo_printf("Got Auth User Pass" NL);
 
 	packet.packetTypeP.present = packetTypeP_PR_authResponseP;
@@ -924,6 +1032,11 @@ static void connectionContext_processAuthUserPass(ConnectionContext *ctx,
 static void connectionContext_processAuthResponse(ConnectionContext *ctx,
 		AuthResponseP_t *p)
 {
+	EMO_ASSERT(ctx != NULL,
+			"connection context process auth response without context")
+	EMO_ASSERT(p != NULL,
+			"connection context process auth response without packet")
+
 	if (*p == RequestResponseP_responseOKP) {
 		emo_printf("Auth OK" NL);
 		ctx->hasAuth = 1;
@@ -940,6 +1053,13 @@ static void connectionContext_recordSyncList(ConnectionContext *ctx,
 	RecordSyncListP_t *rsync;
 	int idx = 0;
 	DataObject *sobj;
+
+	EMO_ASSERT(ctx != NULL,
+			"connection context record sync list without context")
+	EMO_ASSERT(sreq != NULL,
+			"connection context record sync list without request")
+	EMO_ASSERT(p != NULL,
+			"connection context record sync list without packet")
 
 	for (widget_getChildren(sreq->dobj, &iter); !listIterator_finished(&iter);
 			listIterator_next(&iter)) {
@@ -974,6 +1094,13 @@ static RecordSyncListP_t *connectionContext_recordSync(ConnectionContext *ctx,
 	RecordSyncListP_t *p;
 	unsigned int stampMinor, stampMajor;
 
+	EMO_ASSERT_NULL(ctx != NULL,
+			"connection context record sync without context")
+	EMO_ASSERT_NULL(sreq != NULL,
+			"connection context record sync without request")
+	EMO_ASSERT_NULL(dobj != NULL,
+			"connection context record sync without DataObject")
+
 	dataobject_getStamp(dobj, &stampMinor, &stampMajor);
 	p = protocol_recordSync(0, stampMinor, stampMajor);
 
@@ -992,6 +1119,13 @@ static void connectionContext_syncOperand(ConnectionContext *ctx,
 	ListIterator citer;
 	DataObjectField *field;
 	MapIterator iter;
+
+	EMO_ASSERT(ctx != NULL,
+			"connection context sync operand without context")
+	EMO_ASSERT(sreq != NULL,
+			"connection context sync operand without request")
+	EMO_ASSERT(sobj != NULL,
+			"connection context sync operand without DataObject")
 
 	dataobject_fieldIterator(sobj, &iter);
 

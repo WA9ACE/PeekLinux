@@ -56,6 +56,9 @@ void hashtable_append(HashTable *ht, const void *key, void *data)
     HashTableNode *node;
     int kstrlen;
 
+	EMO_ASSERT(ht != NULL, "appending to NULL hashtable")
+	EMO_ASSERT(key != NULL, "appending to hashtable missing key")
+
     node = (HashTableNode *)p_malloc(sizeof(HashTableNode));
     node->data = data;
 
@@ -77,6 +80,9 @@ void *hashtable_find(HashTable *ht, const void *key)
 {
     HashTableNode *output;
 
+	EMO_ASSERT_NULL(ht != NULL, "finding on NULL hashtable")
+	EMO_ASSERT_NULL(key != NULL, "finding on hashtable missing key")
+
     switch (ht->type) {
         case STRING:
             HASH_FIND_STR(ht->table, key, output);
@@ -94,6 +100,8 @@ void *hashtable_find(HashTable *ht, const void *key)
 
 void hashtable_delete(HashTable *ht)
 {
+	EMO_ASSERT(ht != NULL, "deleting NULL hashtable")
+
     HASH_CLEAR(hh, ht->table);
     p_free(ht);
 }

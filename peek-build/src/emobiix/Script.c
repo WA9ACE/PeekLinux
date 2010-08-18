@@ -24,6 +24,8 @@ extern ConnectionContext *connectionContext;
 
 static DataObject *checkDataObject (lua_State *L, int index)
 {
+	EMO_ASSERT_NULL(L != NULL, "script check object missing state")
+
   luaL_checktype(L, index, LUA_TUSERDATA);
   lua_getmetatable(L, index);
   if( ! lua_equal(L, lua_upvalueindex(1), -1) )
@@ -34,6 +36,9 @@ static DataObject *checkDataObject (lua_State *L, int index)
 
 static DataObject *pushDataObject(lua_State *L, DataObject *dobj)
 {
+	EMO_ASSERT_NULL(L != NULL, "script push object missing state")
+	EMO_ASSERT_NULL(dobj != NULL, "script push object missing object")
+
   lua_boxpointer(L, dobj);
   lua_pushvalue(L, lua_upvalueindex(1));
   lua_setmetatable(L, -2);
@@ -45,6 +50,8 @@ static int __dataobject_getValue(lua_State *L)
 	DataObjectField *field;
 	DataObject *dobj;
 	const char *fieldName = NULL;
+
+	EMO_ASSERT_INT(L != NULL, 0, "script get value missing state")
 
 	dobj = checkDataObject(L, 1);
 	if (lua_isstring(L, 2))
@@ -79,6 +86,8 @@ static int __dataobject_getValueList(lua_State *L)
 	MapIterator iter;
 	char *key;
 	char pkey[128];
+
+	EMO_ASSERT_INT(L != NULL, 0, "script get value list missing state")
 
 	dobj = checkDataObject(L, 1);
 	lua_newtable(L); 
@@ -120,6 +129,8 @@ static int __dataobject_setValue(lua_State *L)
 	/*Rectangle rectb4, rectAfter, *rect;*/
 	const char *fieldName;
 	int dstrIdx;
+
+	EMO_ASSERT_INT(L != NULL, 0, "script set value missing state")
 
 	dobj = checkDataObject(L, 1);
 	
@@ -171,6 +182,8 @@ static int __dataobject_locate(lua_State *L)
 	DataObject *dobj;
 	URL *purl;
 
+	EMO_ASSERT_INT(L != NULL, 0, "script locate value missing state")
+
 	durl = luaL_checkstring(L, 1);
 	purl = url_parse(durl, URL_ALL);
 	if (purl == NULL) {
@@ -193,6 +206,8 @@ static int __dataobject_find(lua_State *L)
 	DataObject *dobj;
 	DataObject *root;
 
+	EMO_ASSERT_INT(L != NULL, 0, "script find value missing state")
+
 	root = dataobject_superparent(contextObject);
 	if(root == NULL) {
 		lua_pushnil(L);
@@ -208,6 +223,8 @@ static int __dataobject_parent(lua_State *L)
 {
 	DataObject *dobj;
 
+	EMO_ASSERT_INT(L != NULL, 0, "script parent missing state")
+
 	dobj = checkDataObject(L, 1);
 	pushDataObject(L, dataobject_parent(dobj));
 	
@@ -219,6 +236,8 @@ static int __dataobject_children(lua_State *L)
 	DataObject *dobj;
 	ListIterator iter;
 	int idx;
+
+	EMO_ASSERT_INT(L != NULL, 0, "script children missing state")
 
 	dobj = checkDataObject(L, 1);
 	idx = 1;
@@ -238,6 +257,8 @@ static int __dataobject_sync(lua_State *L)
 	DataObject *dobj, *root;
 	Application *app;
 	URL *purl;
+
+	EMO_ASSERT_INT(L != NULL, 0, "script sync missing state")
 
 	root = dataobject_superparent(contextObject);
 	if (root == NULL) {
@@ -262,8 +283,16 @@ static int __dataobject_sync(lua_State *L)
 static int __toScreen(lua_State *L)
 {
 	Application *app;
-	DataObject *dobj = checkDataObject(L, 1);
+	DataObject *dobj;
+
+	EMO_ASSERT_INT(L != NULL, 0, "script toscreen missing state")
+	
+	dobj = checkDataObject(L, 1);
+	if (dobj == NULL)
+		return 0;
 	app = manager_getFocusedApplication();
+	if (app == NULL)
+		return 0;
 	application_setCurrentScreen(app, dobj);
 	
 	return 0;
@@ -295,6 +324,8 @@ static const luaL_reg baseFunctions[] = {
 int script_register (lua_State *L)
 {
   int metatable, methods;
+
+	EMO_ASSERT_INT(L != NULL, 0, "script register missing state")
 
   luaL_openlib(L, 0, baseFunctions, 0);
   lua_pushliteral(L, "DataObject");         /* name of Image table */
@@ -340,6 +371,9 @@ lua_State *script_getContext(DataObject *dobj, int *isTemporary)
     DataObjectField *script;
 	const char *errStr;
 	ListIterator iter;
+
+	EMO_ASSERT_NULL(dobj != NULL, "script get context missing object")
+	EMO_ASSERT_NULL(isTemporary != NULL, "script get context missing temporary")
 
     *isTemporary = 0;
     output = dataobject_findScriptContext(dobj);
@@ -401,6 +435,8 @@ int script_event(DataObject *context, const char *eventname)
 	DataObjectField *field;
     int isTemporary;
 	const char *errStr;
+
+	EMO_ASSERT_INT(context != NULL, 0, "script event missing object")
 
 	field = dataobject_getValue(context, eventname);
 	if (field == NULL || field->type != DOF_STRING)

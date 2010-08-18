@@ -1,7 +1,12 @@
 #include "Rectangle.h"
+#include "Debug.h"
+
+#include <stdio.h>
+#include <stdlib.h>
 
 void rectangle_zero(Rectangle *r)
 {
+	EMO_ASSERT(r != NULL, "rectangle zero on NULL rectangle")
 	r->width = 0;
 	r->height = 0;
 	r->x = 0;
@@ -12,6 +17,9 @@ void rectangle_union(Rectangle *r, Rectangle *o)
 {
 	int rx1, ry1, rx2, ry2;
 	int ox1, oy1, ox2, oy2;
+
+	EMO_ASSERT(r != NULL, "rectangle union on NULL rectangle")
+	EMO_ASSERT(o != NULL, "rectangle union missing operand")
 
 	rx1 = r->x;
 	ry1 = r->y;

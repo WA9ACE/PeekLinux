@@ -49,6 +49,9 @@ void *bitmapcache_add(BitmapCache *c, unsigned long value, int isBold,
 	unsigned char val;
 	int oddWidth;
 
+	EMO_ASSERT_NULL(c != NULL,
+			"Bitmap Cache NULL when adding bitmap")
+
 	b = (Bitmap *)p_malloc(sizeof(Bitmap));
 	b->pf = A4;
 	b->xadvance = xadvance;
@@ -112,6 +115,23 @@ int bitmapcache_get(BitmapCache *c, unsigned long value, int isBold,
 		int *xadvance, int *yadvance, int *baselinedy)
 {
 	Bitmap *b;
+
+	EMO_ASSERT_INT(c != NULL, 0,
+			"Bitmap Cache NULL when getting bitmap")
+	EMO_ASSERT_INT(data != NULL, 0,
+			"Bitmap Cache supplied data NULL when getting bitmap")
+	EMO_ASSERT_INT(pf != NULL, 0,
+			"Bitmap Cache supplied pixelformat NULL when getting bitmap")
+	EMO_ASSERT_INT(width != NULL, 0,
+			"Bitmap Cache supplied width NULL when getting bitmap")
+	EMO_ASSERT_INT(height != NULL, 0,
+			"Bitmap Cache supplied height NULL when getting bitmap")
+	EMO_ASSERT_INT(xadvance != NULL, 0,
+			"Bitmap Cache supplied xadvance NULL when getting bitmap")
+	EMO_ASSERT_INT(yadvance != NULL, 0,
+			"Bitmap Cache supplied yadvance NULL when getting bitmap")
+	EMO_ASSERT_INT(baselinedy != NULL, 0,
+			"Bitmap Cache supplied baselinedy NULL when getting bitmap")
 
 	b = map_find(c->cache, (void *)(value | (isBold ? 0x80000000 : 0)));
 	

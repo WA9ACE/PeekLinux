@@ -6,6 +6,7 @@
 #include "Rectangle.h"
 #include "Widget.h"
 #include "lgui.h"
+#include "Debug.h"
 
 #include "p_malloc.h"
 
@@ -36,6 +37,8 @@ void renderman_queue(DataObject *widget)
 {
 	int len, i;
 
+	EMO_ASSERT(widget != NULL, "renderman can't queue NULL widget")
+
 	if (renderman->flags & RM_COMPLETE_REDRAW)
 		return;
 
@@ -51,6 +54,8 @@ void renderman_queue(DataObject *widget)
 void renderman_dequeue(DataObject *widget)
 {
 	int len, i;
+
+	EMO_ASSERT(widget != NULL, "renderman can't dequeue NULL widget")
 
 	if (renderman->flags & RM_COMPLETE_REDRAW)
 		return;

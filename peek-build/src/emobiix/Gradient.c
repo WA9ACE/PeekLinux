@@ -26,12 +26,16 @@ Gradient *gradient_new(void)
 
 void gradient_delete(Gradient *g)
 {
+	EMO_ASSERT(g != NULL, "delete on NULL gradient")
+
 	/* FIXME: should do something */
 }
 
 void gradient_addStop(Gradient *g, int position, Color color)
 {
 	GradientStop *stop;
+
+	EMO_ASSERT(g != NULL, "adding stop to NULL gradient")
 
 	stop = (GradientStop *)p_malloc(sizeof(GradientStop));
 	if (stop == NULL)
@@ -44,13 +48,19 @@ void gradient_addStop(Gradient *g, int position, Color color)
 
 int gradient_stops(Gradient *g)
 {
+	EMO_ASSERT_INT(g != NULL, 0, "getting stop count on NULL gradient")
+
 	return array_length(g->stops);
 }
 
 Color gradient_getStop(Gradient *g, int id, int *height)
 {
-	GradientStop *s;
+	GradientStop *s = NULL;
 	int outheight;
+
+	EMO_ASSERT_INT(g != NULL, s->color, "getting stop on NULL gradient")
+	EMO_ASSERT_INT(height != NULL, s->color,
+			"getting stop on gradient missing height")
 
 	s = *(GradientStop **)array_item(g->stops, id);
 	outheight = ((*height)) * s->position / 100;

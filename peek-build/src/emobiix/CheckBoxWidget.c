@@ -6,6 +6,7 @@
 #include "Style.h"
 #include "WidgetRenderer.h"
 #include "KeyMappings.h"
+#include "Debug.h"
 
 #include "p_malloc.h"
 
@@ -18,6 +19,11 @@ int checkboxWidget_handleKey(Widget *w, unsigned int key, Style *s)
 	DataObject *dobj;
 	DataObjectField *field;
 	int isChecked;
+
+	EMO_ASSERT_INT(w != NULL, 0,
+			"CheckBox Key handler passed NULL widget")
+	EMO_ASSERT_INT(s != NULL, 0,
+			"CheckBox Key handler passed NULL style")
 
 	if (key != EKEY_ACTIVATE)
 		return 0;
@@ -54,6 +60,15 @@ static void checkbox_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	Color checkColor;
 	WidgetRenderer *iwr;
 
+	EMO_ASSERT(wr != NULL,
+			"CheckBox Renderer passed NULL widget renderer")
+	EMO_ASSERT(s != NULL,
+			"CheckBox Renderer passed NULL style")
+	EMO_ASSERT(w != NULL,
+			"CheckBox Renderer passed NULL widget")
+	EMO_ASSERT(dobj != NULL,
+			"CheckBox Renderer passed NULL data object")
+
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
 	checkBox.x = box->x+3 + margin->x;
@@ -79,6 +94,17 @@ static void checkbox_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 static void checkbox_measure(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj, IPoint *p)
 {
+	EMO_ASSERT(wr != NULL,
+			"CheckBox Renderer measure NULL widget renderer")
+	EMO_ASSERT(s != NULL,
+			"CheckBox Renderer measure NULL style")
+	EMO_ASSERT(w != NULL,
+			"CheckBox Renderer measure NULL widget")
+	EMO_ASSERT(dobj != NULL,
+			"CheckBox Renderer measure NULL data object")
+	EMO_ASSERT(p != NULL,
+			"CheckBox Renderer measure NULL point")
+
 	p->x = 12;
 	p->y = 12;
 }

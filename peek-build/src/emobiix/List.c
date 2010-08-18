@@ -34,6 +34,8 @@ void list_append(List *l, void *item)
 {
     ListNode *node;
 
+	EMO_ASSERT(l != NULL, "list append to NULL list")
+
     node = (ListNode *)p_malloc(sizeof(ListNode));
     if (l->tail != NULL)
         l->tail->next = node;
@@ -49,6 +51,8 @@ void list_append(List *l, void *item)
 void list_prepend(List *l, void *item)
 {
     ListNode *node;
+
+	EMO_ASSERT(l != NULL, "list prepend to NULL list")
 
     node = (ListNode *)p_malloc(sizeof(ListNode));
     if (l->head != NULL)
@@ -66,6 +70,8 @@ void list_delete(List *l)
 {
     ListNode *node, *next;
 
+	EMO_ASSERT(l != NULL, "deleting NULL list")
+
     node = l->head;
     while (node != NULL) {
         next = node->next;
@@ -81,6 +87,9 @@ void *list_find(List *l, void *obj, ListComparitor lc)
 	ListIterator iter;
 	void *output;
 
+	EMO_ASSERT_NULL(l != NULL, "list find on NULL list")
+	EMO_ASSERT_NULL(lc != NULL, "list find missing comparitor")
+
 	list_begin(l, &iter);
 	while (!listIterator_finished(&iter)) {
 		output = listIterator_item(&iter);
@@ -95,11 +104,15 @@ void *list_find(List *l, void *obj, ListComparitor lc)
 
 int list_size(List *l)
 {
+	EMO_ASSERT_INT(l != NULL, 0, "list size on NULL list")
+
 	return l->length;
 }
 void list_debug(List *l)
 {
 	ListIterator iter;
+
+	EMO_ASSERT(l != NULL, "list debug on NULL list")
 
 	emo_printf("List<");
 	for (list_begin(l, &iter); !listIterator_finished(&iter); listIterator_next(&iter)) {
@@ -114,7 +127,11 @@ void list_begin(List *l, ListIterator *output)
 /*    ListIterator *output;
 
     output = (ListIterator *)p_malloc(sizeof(ListIterator));*/
-    output->list = l;
+
+	EMO_ASSERT(l != NULL, "list begin on NULL list")
+	EMO_ASSERT(output != NULL, "list begin missing iterator")
+    
+		output->list = l;
     output->node = l->head;
     output->offset = (char *)&output->node->next - (char *)output->node;
 
@@ -126,6 +143,10 @@ void list_rbegin(List *l, ListIterator *output)
 /*    ListIterator *output;
 
     output = (ListIterator *)p_malloc(sizeof(ListIterator));*/
+	
+	EMO_ASSERT(l != NULL, "list rbegin on NULL list")
+	EMO_ASSERT(output != NULL, "list rbegin missing iterator")
+
     output->list = l;
     output->node = l->tail;
     output->offset = (char *)&output->node->prev - (char *)output->node;
@@ -135,11 +156,15 @@ void list_rbegin(List *l, ListIterator *output)
 
 int listIterator_finished(ListIterator *iter)
 {
+	EMO_ASSERT_INT(iter != NULL, 1, "list finished missing iterator")
+
     return iter->node == NULL;
 }
 
 void *listIterator_item(ListIterator *iter)
 {
+	EMO_ASSERT_NULL(iter != NULL, "list item missing iterator")
+
 	if (iter->node == NULL)
 		return NULL;
     return iter->node->data;
@@ -147,6 +172,8 @@ void *listIterator_item(ListIterator *iter)
 
 void listIterator_next(ListIterator *iter)
 {
+	EMO_ASSERT(iter != NULL, "list next missing iterator")
+
     iter->node = *(ListNode **)(((char *)(iter->node))+iter->offset);
 }
 
@@ -158,6 +185,8 @@ void listIterator_next(ListIterator *iter)
 void listIterator_remove(ListIterator *iter)
 {
     ListNode *node;
+
+	EMO_ASSERT(iter != NULL, "list remove missing iterator")
 
     node = iter->node;
 

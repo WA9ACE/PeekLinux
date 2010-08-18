@@ -21,6 +21,8 @@ int mime_load(DataObject *dobj)
 {
 	DataObjectField *mimeType;
 
+	EMO_ASSERT_INT(dobj != NULL, 0, "mime loader on NULL DataObject")
+
 	mimeType = dataobject_getValue(dobj, "mime-type");
 	if (mimeType == NULL)
 		return 0;
@@ -38,6 +40,8 @@ int mime_load(DataObject *dobj)
 void mime_loadAll(DataObject *dobj)
 {
 	ListIterator iter;
+
+	EMO_ASSERT(dobj != NULL, "mime All loader on NULL DataObject")
 
 	mime_load(dobj);
 	
@@ -99,6 +103,8 @@ static int load_png(DataObject *dobj)
 	PNG_memory_t	pngReader;
 	int outputFormat, inputFormat, outSize;
 	unsigned char *output, *convertedOutput;
+
+	EMO_ASSERT_INT(dobj != NULL, 0, "png loader on NULL DataObject")
 
 	data = dataobject_getValue(dobj, "data");
 	if (data == NULL || data->type != DOF_DATA)
@@ -248,6 +254,9 @@ static unsigned char *imageConvert(void *input, int inputFormat, int outputForma
 	unsigned char *output, *ooutput;
 	unsigned short pixel;
 	unsigned char alpha;
+
+	EMO_ASSERT_NULL(input != NULL, "image convert missing input")
+	EMO_ASSERT_NULL(outSize != NULL, "image convert missing outsize")
 
 	src = (unsigned char *)input;
 

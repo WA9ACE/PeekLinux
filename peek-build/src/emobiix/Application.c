@@ -25,6 +25,9 @@ Application *application_load(DataObject *dobj)
 	Application *output;
 	DataObjectField *field;
 
+
+	EMO_ASSERT_NULL(dobj != NULL, "Loading application from NULL object")
+
 	output = (Application *)p_malloc(sizeof(Application));
     if (output == NULL)
         return NULL;
@@ -59,11 +62,16 @@ Application *application_load(DataObject *dobj)
 
 void application_setURL(Application *app, const URL *url)
 {
+	EMO_ASSERT(url != NULL, "Setting application url to NULL")
+	EMO_ASSERT(app != NULL, "Setting application url on NULL Application")
+
 	app->url = url_parse(url->all, URL_ALL);
 }
 
 const URL *application_getURL(Application *app)
 {
+	EMO_ASSERT_NULL(app != NULL, "Getting application url on NULL Application")
+
 	return app->url;
 }
 
@@ -74,8 +82,8 @@ void application_setActive(Application *app)
 
 DataObject *application_getCurrentScreen(Application *app)
 {
-	if(!app)
-		return NULL;
+	EMO_ASSERT_NULL(app != NULL,
+			"Getting application current screen on NULL Application")
 	return app->currentScreen;
 }
 
@@ -83,6 +91,11 @@ void application_setCurrentScreen(Application *app, DataObject *screen)
 {
 	DataObjectField *field;
 	const char *fieldValue;
+
+	EMO_ASSERT(screen != NULL,
+			"Setting application current screen to NULL")
+	EMO_ASSERT(app != NULL,
+			"Setting application current screen on NULL Application")
 
 	field = dataobject_getValue(screen, "type");
 	if (!dataobjectfield_isString(field, "view")) {
@@ -101,21 +114,35 @@ void application_setCurrentScreen(Application *app, DataObject *screen)
 
 void *application_getCurrentStyle(Application *app)
 {
+	EMO_ASSERT_NULL(app != NULL,
+			"Getting application current style on NULL Application")
+
 	return app->currentStyle;
 }
 
 int application_isIconified(Application *app)
 {
+	EMO_ASSERT_INT(app != NULL, 0,
+			"Getting application iconified flag on NULL Application")
+
     return app->flags & APP_ICONIFIED;
 }
 
 DataObject *application_getDataObject(Application *app)
 {
-        return app->dobj;
+	EMO_ASSERT_NULL(app != NULL,
+			"Getting application DataObject on NULL Application")
+		
+	return app->dobj;
 }
 
 void application_showDialog(Application *app, DataObject *dobj)
 {
+	EMO_ASSERT(app != NULL,
+			"Application Show Dialog on NULL Application")
+	EMO_ASSERT(dobj != NULL,
+			"Application Show Dialog on NULL Dialog")
+
 	app->activeDialog = dataobject_copyTree(dobj);
 	if (app == manager_getFocusedApplication())
 		manager_showDialog(app->activeDialog);

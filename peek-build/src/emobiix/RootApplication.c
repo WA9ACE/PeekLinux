@@ -6,6 +6,7 @@
 #include "Mime.h"
 #include "Color.h"
 #include "Gradient.h"
+#include "Debug.h"
 
 #include "p_malloc.h"
 
@@ -25,6 +26,9 @@ DataObject *dobjFromFile(const char *filename, DataObject *root)
 	File *mimefile;
 	int mimedata_size;
 	void *mimedata;
+
+	EMO_ASSERT_NULL(filename != NULL, "load obj from file missing filename")
+	EMO_ASSERT_NULL(root != NULL, "load obj from file missing root")
 
 	mimefile = file_openRead(filename);
 	dobj1 = widget_newTypeIdName("image", NULL, NULL, root);

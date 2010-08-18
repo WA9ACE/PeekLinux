@@ -1,6 +1,7 @@
 #include "Map.h"
 
 #include "List.h"
+#include "Debug.h"
 
 #include "p_malloc.h"
 #include <string.h>
@@ -51,6 +52,9 @@ void map_append(Map *ht, const void *key, void *data)
     MapNode *node;
     int kstrlen;
 
+	EMO_ASSERT(ht != NULL, "map append to NULL map")
+	EMO_ASSERT(key != NULL, "map append missing key")
+
 	map_remove(ht, key);
 
     node = (MapNode *)p_malloc(sizeof(MapNode));
@@ -73,6 +77,9 @@ void *map_find(Map *ht, const void *key)
 {
     MapNode *output;
     ListIterator iter;
+
+	EMO_ASSERT_NULL(ht != NULL, "map find on NULL map")
+	EMO_ASSERT_NULL(key != NULL, "map find missing key")
 
     list_begin(ht->list, &iter);
     while (!listIterator_finished(&iter)) {
@@ -104,6 +111,9 @@ void map_remove(Map *ht, const void *key)
 {
     MapNode *output;
     ListIterator iter;
+
+	EMO_ASSERT(ht != NULL, "map remove on NULL map")
+	EMO_ASSERT(key != NULL, "map remove missing key")
 
     list_begin(ht->list, &iter);
     while (!listIterator_finished(&iter)) {
@@ -139,6 +149,8 @@ void map_delete(Map *ht)
 	ListIterator iter;
 	MapNode *node;
 
+	EMO_ASSERT(ht != NULL, "map delete on NULL map")
+
 	do {
 		list_begin(ht->list, &iter);
 		if (listIterator_finished(&iter))
@@ -160,6 +172,9 @@ void map_delete(Map *ht)
 
 void map_begin(Map *ht, MapIterator *iter)
 {
+	EMO_ASSERT(ht != NULL, "map begin on NULL map")
+	EMO_ASSERT(iter != NULL, "map begin missing iterator")
+
 	/*return (MapIterator *)*/
 	list_begin(ht->list, iter);
 }
@@ -172,6 +187,10 @@ int mapIterator_finished(MapIterator *iter)
 void *mapIterator_item(MapIterator *iter, void **key)
 {
 	MapNode *item;
+
+	EMO_ASSERT_NULL(iter != NULL, "map item missing iterator")
+	EMO_ASSERT_NULL(key != NULL, "map item missing key")
+	
 	item = (MapNode *)listIterator_item((ListIterator *)iter);
 	if (key != NULL) {
 		*key = *(void **)&item->key;
@@ -182,6 +201,9 @@ void *mapIterator_item(MapIterator *iter, void **key)
 void mapIterator_remove(MapIterator *iter)
 {
 	MapNode *item;
+
+	EMO_ASSERT(iter != NULL, "map remove missing iterator")
+	
 	item = (MapNode *)listIterator_item((ListIterator *)iter);
 	listIterator_remove((ListIterator *)iter);
 	p_free(item->key.kstring);
@@ -191,6 +213,9 @@ void mapIterator_remove(MapIterator *iter)
 void mapIterator_removeInt(MapIterator *iter)
 {
 	MapNode *item;
+
+	EMO_ASSERT(iter != NULL, "map removeInt missing iterator")
+	
 	item = (MapNode *)listIterator_item((ListIterator *)iter);
 	listIterator_remove((ListIterator *)iter);
 	p_free(item);
@@ -198,6 +223,8 @@ void mapIterator_removeInt(MapIterator *iter)
 
 void mapIterator_next(MapIterator *iter)
 {
+	EMO_ASSERT(iter != NULL, "map next missing iterator")
+
 	listIterator_next((ListIterator *)iter);
 }
 

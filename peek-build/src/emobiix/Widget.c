@@ -59,6 +59,8 @@ void widget_setDataObject(Widget *w, DataObject *dobj)
 	ListIterator iter;
 	DataObject *robj;
 
+	EMO_ASSERT(w != NULL, "widget set object missing widget")
+
 	if (w->widgetData != NULL) {
 		for (list_begin(w->widgetData->referenced, &iter); !listIterator_finished(&iter);	
 				listIterator_next(&iter)) {
@@ -79,6 +81,8 @@ int widget_isArraySource(Widget *w)
 {
 	DataObjectField *field;
 
+	EMO_ASSERT_INT(w != NULL, 0, "widget is array source missing widget")
+
 	field = dataobject_getValue(w, "arraysource");
     return dataobjectfield_isTrue(field);
 }
@@ -86,6 +90,9 @@ int widget_isArraySource(Widget *w)
 void widget_setDataObjectArray(Widget *w, DataObject *dobj)
 {
 	ListIterator iter;
+
+	EMO_ASSERT(w != NULL, "widget set array missing widget")
+	EMO_ASSERT(dobj != NULL, "widget set array missing array")
 
 	if (widget_isArraySource(w))
 		widget_setDataObject(w, dobj);
@@ -100,6 +107,8 @@ void widget_setDataObjectArray(Widget *w, DataObject *dobj)
 
 DataObject *widget_getDataObject(Widget *w)
 {
+	EMO_ASSERT_NULL(w != NULL, "widget get object missing widget")
+
 	while (w->widgetData != NULL)
 		w = w->widgetData;
 	return w;
@@ -108,6 +117,8 @@ DataObject *widget_getDataObject(Widget *w)
 void widget_setPacking(Widget *w, WidgetPacking p)
 {
 	DataObjectField *field;
+
+	EMO_ASSERT(w != NULL, "widget get object missing widget")
 
 	field = dataobject_getValue(w, "packing");
 	if (!field)
@@ -120,6 +131,8 @@ WidgetPacking widget_getPacking(Widget *w)
 {
 	DataObjectField *field, *newField;
 	
+	EMO_ASSERT_INT(w != NULL, WP_VERTICAL, "widget get packing missing widget")
+
 	field = dataobject_getValue(w, "packing");
 	if (!field)
 		return (WidgetPacking)0;
@@ -147,18 +160,27 @@ WidgetPacking widget_getPacking(Widget *w)
 
 void widget_pack(Widget *w, Widget *parent)
 {
+	EMO_ASSERT(w != NULL, "widget pack missing widget")
+	EMO_ASSERT(parent != NULL, "widget pack missing parent")
+
 	w->parent = parent;
 	list_append(parent->children, w);
 }
 
 void widget_getChildren(Widget *w, ListIterator *iter)
 {
+	EMO_ASSERT(w != NULL, "widget get children missing widget")
+	EMO_ASSERT(iter != NULL, "widget get children missing iterator")
+
 	list_begin(w->children, iter);
 }
 
 void widget_setClass(Widget *w, const char *className)
 {
 	DataObjectField *field;
+
+	EMO_ASSERT(w != NULL, "widget set class missing widget")
+	EMO_ASSERT(className != NULL, "widget set class missing name")
 
 	field = dataobject_getValue(w, "name");
 	if (!field)
@@ -172,6 +194,9 @@ void widget_setClass(Widget *w, const char *className)
 const char *widget_getClass(Widget *w)
 {
 	DataObjectField *field;
+
+	EMO_ASSERT_NULL(w != NULL, "widget get class missing widget")
+	
 	field = dataobject_getValue(w, "name");
 	if (!field)
 		return NULL;
@@ -181,6 +206,9 @@ const char *widget_getClass(Widget *w)
 void widget_setID(Widget *w, const char *idName)
 {
 	DataObjectField *field;
+
+	EMO_ASSERT(w != NULL, "widget set id missing widget")
+	EMO_ASSERT(idName != NULL, "widget set id missing id")
 
 	field = dataobject_getValue(w, "id");
 	if (!field)
@@ -194,6 +222,9 @@ void widget_setID(Widget *w, const char *idName)
 const char *widget_getID(Widget *w)
 {
 	DataObjectField *field;
+
+	EMO_ASSERT_NULL(w != NULL, "widget get id missing widget")
+
 	field = dataobject_getValue(w, "id");
 	if (!field)
 		return NULL;
@@ -203,6 +234,8 @@ const char *widget_getID(Widget *w)
 int widget_canFocus(Widget *w)
 {
 	DataObjectField *field;
+
+	EMO_ASSERT_INT(w != NULL, 0, "widget can focus missing widget")
 	
 	field = dataobject_getValue(w, "canfocus");
 	return dataobjectfield_isTrue(field);
@@ -211,6 +244,8 @@ int widget_canFocus(Widget *w)
 void widget_setCanFocus(Widget *w, int canFocus)
 {
 	DataObjectField *field;
+
+	EMO_ASSERT(w != NULL, "widget set can focus missing widget")
 
 	field = dataobject_getValue(w, "canfocus");
 	if (!field)
@@ -222,6 +257,9 @@ void widget_setCanFocus(Widget *w, int canFocus)
 int widget_hasFocus(Widget *w)
 {
 	DataObjectField *field;
+
+	EMO_ASSERT_INT(w != NULL, 0, "widget has focus missing widget")
+	
 	field = dataobject_getValueAsInt(w, "hasfocus");
 	if (!field)
 		return 0;
@@ -231,6 +269,8 @@ int widget_hasFocus(Widget *w)
 int widget_hasFocusOrParent(Widget *w)
 {
 	int hasFocus;
+
+	EMO_ASSERT_INT(w != NULL, 0, "widget has focus or parent missing widget")
 
 	hasFocus = widget_hasFocus(w);
 	if (!hasFocus) {
@@ -247,6 +287,8 @@ void widget_setFocus(Widget *w, int isFocus)
 {
 	DataObjectField *field;
 
+	EMO_ASSERT(w != NULL, "widget set focus missing widget")
+
 	field = dataobject_getValue(w, "hasfocus");
 	if (!field)
 		dataobject_setValue(w, "hasfocus", dataobjectfield_int(isFocus));
@@ -256,6 +298,9 @@ void widget_setFocus(Widget *w, int isFocus)
 
 int widget_isParent(Widget *wParent, Widget *w)
 {
+	EMO_ASSERT_INT(w != NULL, 0, "widget is parent missing widget")
+	EMO_ASSERT_INT(wParent != NULL, 0, "widget is parent missing parent")
+
 	while (w->parent != NULL) {
 		if (wParent == w)
 			return 1;
@@ -266,11 +311,15 @@ int widget_isParent(Widget *wParent, Widget *w)
 
 Rectangle *widget_getMargin(Widget *w)
 {
+	EMO_ASSERT_NULL(w != NULL, "widget get margin missing widget")
+
 	return &w->margin;
 }
 
 Rectangle *widget_getBox(Widget *w)
 {
+	EMO_ASSERT_NULL(w != NULL, "widget get box missing widget")
+
 	return &w->box;
 }
 
@@ -279,6 +328,8 @@ void widget_printTree(Widget *w, int level)
 #ifdef SIMULATOR
 	int i;
 	ListIterator iter;
+
+	EMO_ASSERT(w != NULL, "widget print tree missing widget")
 
 	for (i = 0; i < level; ++i)
 		printf("  ");
@@ -299,6 +350,9 @@ int widget_focusFirst(Widget *w, List *l)
 	DataObjectField *type;
 	DataObject *child;
 	Application *app;
+
+	EMO_ASSERT_INT(w != NULL, 0, "widget focus first missing widget")
+	EMO_ASSERT_INT(l != NULL, 0, "widget focus first missing list")
 
 	if (widget_canFocus(w)) {
 		widget_setFocus(w, 1);
@@ -346,6 +400,11 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 	DataObjectField *type;
 	DataObject *child;
 	Application *app;
+
+	EMO_ASSERT_INT(w != NULL, 0, "widget focus nextR missing widget")
+	EMO_ASSERT_INT(l != NULL, 0, "widget focus nextR missing list")
+	EMO_ASSERT_INT(alreadyUnset != NULL, 0, "widget focus nextR missing unset")
+	EMO_ASSERT_INT(alreadySet != NULL, 0, "widget focus nextR missing set")
 
 	/*printf("Widget(%p) %d, %d, %d\n", w, parentRedraw, alreadyUnset, alreadySet);*/
 
@@ -426,6 +485,10 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 
 void widget_forceFocus(Widget *tree, Widget *node, Style *s)
 {
+	EMO_ASSERT(tree != NULL, "widget force focus missing tree")
+	EMO_ASSERT(node != NULL, "widget force focus missing widget")
+	EMO_ASSERT(s != NULL, "widget force focus missing style")
+
 	widget_focusNone(tree, s, 1);
 	
 	widget_setFocus(node, 1);
@@ -446,6 +509,9 @@ void widget_focusNext(Widget *tree, Style *s)
 	ListIterator iter;
 	int unset, iset;
 	Widget *w1;
+
+	EMO_ASSERT(tree != NULL, "widget focus next missing tree")
+	EMO_ASSERT(s != NULL, "widget focus next missing style")
 
 	unset = 0;
 	iset = 0;
@@ -491,6 +557,8 @@ Widget *widget_focusPrevD(Widget *w)
 	DataObject *child;
 	Application *app;
 
+	EMO_ASSERT_NULL(w != NULL, "widget focus prevD missing widget")
+
 	type = dataobject_getValue(w, "type");
 	if (!widget_typeNoChildRender(type)) {
 		if (dataobjectfield_isString(type, "frame")) {
@@ -532,6 +600,8 @@ Widget *widget_focusPrevR(Widget *old)
 {
 	Widget *w, *cw, *iw;
 	ListIterator iter;
+
+	EMO_ASSERT_NULL(old != NULL, "widget focus prevR missing widget")
 
 	w = old->parent;
 	if (w == NULL)
@@ -586,6 +656,8 @@ static Widget *widget_focusLast(Widget *w)
 	int one, two;
 	Application *app;
 
+	EMO_ASSERT_NULL(w != NULL, "widget focus last missing widget")
+		
 	type = dataobject_getValue(w, "type");
 	if (!widget_typeNoChildRender(type)) {
 		if (dataobjectfield_isString(type, "frame")) {
@@ -631,6 +703,8 @@ void widget_focusPrev(Widget *tree, Style *s)
 	Widget *oldW, *newW;
 	int result;
 	DataObjectField *type;
+
+	EMO_ASSERT(tree != NULL, "widget focus prev missing widget")
 
 	oldW = widget_focusWhichOne(tree);
 	if (oldW == NULL) {
@@ -701,6 +775,8 @@ Widget *widget_focusNoneR(Widget *w)
 	Application *app;
 	DataObjectField *type;
 	
+	EMO_ASSERT_NULL(w != NULL, "widget focus noneR missing widget")
+
 	if (widget_hasFocus(w)) {
 		widget_setFocus(w, 0);
 		return w;
@@ -741,6 +817,9 @@ void widget_focusNone(Widget *w, Style *s, int doRender)
 {
 	Widget *dw;
 
+	EMO_ASSERT(w != NULL, "widget focus none missing widget")
+	EMO_ASSERT(s != NULL, "widget focus none missing style")
+
 	dw = widget_focusNoneR(w);
 
 	if (dw != NULL && doRender) {
@@ -763,6 +842,8 @@ Widget *widget_focusWhichOneNF(Widget *w)
 	DataObject *child;
 	DataObjectField *type;
 	Application *app;
+
+	EMO_ASSERT_NULL(w != NULL, "widget focus whoch oneNF missing widget")
 
 	if (widget_hasFocus(w)) {
 		return w;
@@ -806,6 +887,8 @@ Widget *widget_focusWhichOne(Widget *w)
 	DataObject *child;
 	DataObjectField *type;
 	Application *app;
+
+	EMO_ASSERT_NULL(w != NULL, "widget focus whoch one missing widget")
 	
 	if (widget_hasFocus(w)) {
 		widget_setFocus(w, 0);
@@ -848,6 +931,8 @@ static void widget_markDirtyChild(Widget *w)
 	DataObjectField *type;
 	Application *app;
 
+	EMO_ASSERT(w != NULL, "widget mark dirty child missing widget")
+
 	dataobject_setDirty(w);
 
 	type = dataobject_getValue(w, "type");
@@ -876,6 +961,8 @@ void widget_markDirty(Widget *w)
 {
 	Widget *parent;
 
+	EMO_ASSERT(w != NULL, "widget mark dirty missing widget")
+
 	widget_markDirtyChild(w);
 
 	parent = w;
@@ -892,6 +979,10 @@ Widget *widget_findStringField(Widget *w, const char *key, const char *value)
 	ListIterator iter;
 	Widget *retval;
 	Application *app;
+
+	EMO_ASSERT_NULL(w != NULL, "widget find string field missing widget")
+	EMO_ASSERT_NULL(key != NULL, "widget find string field missing key")
+	EMO_ASSERT_NULL(value != NULL, "widget find string field missing value")
 
 	field = dataobject_getValue(w, key);
 	if (dataobjectfield_isString(field, value))
@@ -934,6 +1025,9 @@ static void widget_layoutMeasureFinal(Widget *w, Style *s)
 	Application *app;
 	Style *style, *childStyle;
 	int wentUp = 0;
+
+	EMO_ASSERT(w != NULL, "widget layout measure final missing widget")
+	EMO_ASSERT(s != NULL, "widget layout measure final missing style")
 
 	/* get style default */
 	dobj = widget_getDataObject(w);
@@ -992,6 +1086,9 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 	IPoint p;
 	int slen, tmpint, wentUp = 0;
 	Style *style, *childStyle;
+
+	EMO_ASSERT(w != NULL, "widget layout measure absolute missing widget")
+	EMO_ASSERT(s != NULL, "widget layout measure absolute missing style")
 
 	/* get style default */
 	dobj = widget_getDataObject(w);
@@ -1079,6 +1176,8 @@ void widget_layoutForceResolveParent(Widget *w, unsigned int flag)
 {
 	DataObjectField *field;
 
+	EMO_ASSERT(w != NULL, "widget layout force resolve parent missing widget")
+
 	if (w->parent == NULL)
 		return;
 
@@ -1109,6 +1208,8 @@ void widget_resolveMeasureRelative(Widget *w)
 	int tmpint, slen, isset;
 	Application *app;
 	WidgetPacking pack = WP_VERTICAL;
+
+	EMO_ASSERT(w != NULL, "widget layout measure relative missing widget")
 
 	/* get specified absolute values */
 #define RELATIVE_FIELD(_x, _y, _z) \
@@ -1243,6 +1344,9 @@ void widget_resolveMargin(Widget *w, Style *s)
 	Style *style, *childStyle;
 	int wentUp;
 
+	EMO_ASSERT(w != NULL, "widget resolve margin missing widget")
+	EMO_ASSERT(s != NULL, "widget resolve margin missing style")
+
 	/* Apply margin from style */
 	dobj = widget_getDataObject(w);
 	className = widget_getClass(w);
@@ -1323,6 +1427,8 @@ void widget_resolvePosition(Widget *w)
 	DataObjectField *field;
 	DataObject *singleChild = NULL, *child;
 	Application *app;
+
+	EMO_ASSERT(w != NULL, "widget resolve position missing widget")
 
 	xpos = w->box.x+w->margin.x;
 	oxpos = xpos;
@@ -1466,6 +1572,9 @@ void widget_resolveLayoutRoot(Widget *w, Style *s, int resizeRoot)
 {
 	ListIterator iter;
 
+	EMO_ASSERT(w != NULL, "widget resolve layout root missing widget")
+	EMO_ASSERT(s != NULL, "widget resolve layout root missing style")
+
 	dataobject_setLayoutDirtyAll(w);
 
 	widget_resolveMargin(w, s);
@@ -1520,6 +1629,8 @@ void widget_setAlignment(Widget *w, WidgetAlignment a)
 {
 	DataObjectField *field;
 
+	EMO_ASSERT(w != NULL, "widget set alignment missing widget")
+
 	field = dataobject_getValue(w, "alignment");
 	if (!field)
 		dataobject_setValue(w, "alignment", dataobjectfield_int(a));
@@ -1530,6 +1641,8 @@ void widget_setAlignment(Widget *w, WidgetAlignment a)
 WidgetAlignment widget_getAlignment(Widget *w)
 {
 	DataObjectField *field, *newField;
+
+	EMO_ASSERT_INT(w != NULL, WA_LEFT, "widget get alignment missing widget")
 	
 	field = dataobject_getValue(w, "alignment");
 	if (!field)
@@ -1556,6 +1669,9 @@ WidgetAlignment widget_getAlignment(Widget *w)
 
 void widget_getClipRectangle(Widget *w, Rectangle *rect)
 {
+	EMO_ASSERT(w != NULL, "widget get clip rect missing widget")
+	EMO_ASSERT(rect != NULL, "widget get clip rect missing rect")
+
 	rect->x = w->box.x + w->margin.x;
 	rect->y = w->box.y + w->margin.y;
 	rect->width = w->box.width;
@@ -1564,6 +1680,8 @@ void widget_getClipRectangle(Widget *w, Rectangle *rect)
 
 int widget_typeNoChildRender(DataObjectField *field)
 {
+	EMO_ASSERT_INT(field != NULL, 0, "widget type no child render missing field")
+
 	if (field != NULL && field->type == DOF_STRING &&
 			strcmp(field->field.string, "array") == 0)
 		return 1;

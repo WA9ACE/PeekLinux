@@ -21,6 +21,12 @@ static void full_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	Rectangle *box;
 	DataObject *parent;
 
+	EMO_ASSERT(wr != NULL, "full measure missing widget renderer")
+	EMO_ASSERT(s != NULL, "full measure missing style")
+	EMO_ASSERT(w != NULL, "full measure missing widget")
+	EMO_ASSERT(dobj != NULL, "full measure missing data object")
+	EMO_ASSERT(output != NULL, "full measure missing the point")
+
 	parent = dataobject_parent(w);
 	box = widget_getBox(parent);
 	output->x = box->width;
@@ -30,6 +36,12 @@ static void full_measure(WidgetRenderer *wr, Style *s, Widget *w,
 void widgetrenderer_zeroMargin(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj, Rectangle *output)
 {
+	EMO_ASSERT(wr != NULL, "wrzeero margin missing widget renderer")
+	EMO_ASSERT(s != NULL, "wrzero margin missing style")
+	EMO_ASSERT(w != NULL, "wrzero margin missing widget")
+	EMO_ASSERT(dobj != NULL, "wrzero margin missing data object")
+	EMO_ASSERT(output != NULL, "wrzero margin missing rect")
+
 	output->x = 0;
 	output->y = 0;
 	output->width = 0;
@@ -80,6 +92,11 @@ static void box_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	const char *typestr = NULL;
 	unsigned int cornerFlags, borderFlags, cornerBorderFlags;
 	ListIterator iter;
+
+	EMO_ASSERT(wr != NULL, "box renderer missing widget renderer")
+	EMO_ASSERT(s != NULL, "box renderer missing style")
+	EMO_ASSERT(w != NULL, "box renderer missing widget")
+	EMO_ASSERT(dobj != NULL, "box renderer missing data object")
 
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
@@ -242,6 +259,12 @@ WidgetRenderer *widgetrenderer_full(void)
 static void button_margin(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj, Rectangle *output)
 {
+	EMO_ASSERT(wr != NULL, "button margin missing widget renderer")
+	EMO_ASSERT(s != NULL, "button margin missing style")
+	EMO_ASSERT(w != NULL, "button margin missing widget")
+	EMO_ASSERT(dobj != NULL, "button margin missing data object")
+	EMO_ASSERT(output != NULL, "button margin missing rect")
+
 	output->x = 2;
 	output->y = 2;
 	output->width = 2;
@@ -265,6 +288,8 @@ WidgetRenderer *widgetrenderer_button(void)
 
 WidgetRenderer *widgetRenderer_fromString(const char *str)
 {
+	EMO_ASSERT_NULL(str != NULL, "widget renderer from string missing string")
+
 	if (strcmp(str, "box") == 0)
 		return widgetrenderer_box();
 	if (strcmp(str, "button") == 0)

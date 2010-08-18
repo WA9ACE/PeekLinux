@@ -213,11 +213,17 @@ void manager_handleKey(unsigned int key)
 
 void manager_launchApplication(Application *app)
 {
+	EMO_ASSERT(app != NULL,
+			"Manager launching NULL application")
+
 	list_append(appManager->applications, app);
 }
 
 void manager_applications(ListIterator *iter)
 {
+	EMO_ASSERT(iter != NULL,
+			"Manager listing applications on NULL iterator")
+
 	list_begin(appManager->applications, iter);
 }
 
@@ -232,6 +238,9 @@ void manager_focusApplication(Application *app)
 	Style *style;
 	DataObjectField *field;
     /*ListIterator iter;*/
+
+	EMO_ASSERT(app != NULL,
+			"Manager focusing NULL application")
 
 	appObj = application_getDataObject(app);
 	field = dataobject_getValue(appObj, "name");
@@ -295,6 +304,9 @@ Application *manager_applicationForDataObject(DataObject *dobj)
     ListIterator iter;
     Application *item;
 
+	EMO_ASSERT_NULL(dobj != NULL,
+			"Manager locating application for NULL DataObject")
+
     list_begin(appManager->applications, &iter);
     while (!listIterator_finished(&iter)) {
         item = (Application *)listIterator_item(&iter);
@@ -308,6 +320,11 @@ Application *manager_applicationForDataObject(DataObject *dobj)
 
 void manager_loadApplication(DataObject *dobj, int focus, URL *url)
 {
+	EMO_ASSERT(dobj != NULL,
+			"Manager loading application for NULL DataObject")
+	EMO_ASSERT(url != NULL,
+			"Manager loading application with NULL URL")
+
 	appManager->loadingApplication = dobj;
 	appManager->loadingApplicationFocus = focus;
 	appManager->loadingApplicationURL = url_parse(url->all, URL_ALL);
@@ -316,6 +333,11 @@ void manager_loadApplication(DataObject *dobj, int focus, URL *url)
 void manager_loadApplicationReal(DataObject *dobj, int launch, int focus, URL *url)
 {
 	Application *app;
+
+	EMO_ASSERT(dobj != NULL,
+			"Manager Really loading application for NULL DataObject")
+	EMO_ASSERT(url != NULL,
+			"Manager Really loading application with NULL URL")
 
 	mime_loadAll(dobj);
 	app = application_load(dobj);
@@ -333,6 +355,9 @@ Style *manager_getRootStyle(void)
 
 void manager_showDialog(DataObject *dobj)
 {
+	EMO_ASSERT(dobj != NULL,
+			"Manager show dialog on NULL DataObject")
+
 	dataobject_pack(appManager->rootApplicationDialogHolder, dobj);
 
 	widget_resolveLayout(appManager->rootApplicationWindow,

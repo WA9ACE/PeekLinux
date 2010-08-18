@@ -7,6 +7,9 @@
 void protocol_syncStart(DataObjectSyncStartP_t *p, const char *url,
 		DataObjectStampP_t minor, DataObjectStampP_t major, long sequenceID)
 {
+	EMO_ASSERT(p != NULL, "protocol sync start missing packet")
+	EMO_ASSERT(url != NULL, "protocol sync start missing url")
+
 	p->urlP.buf = (uint8_t *)url;
 	p->urlP.size = strlen(url);
 	p->dataObjectStampMinorP = minor;
@@ -17,6 +20,8 @@ void protocol_syncStart(DataObjectSyncStartP_t *p, const char *url,
 void protocol_syncFinished(DataObjectSyncFinishP_t *p,
 		RequestResponseP_t response, long sequenceID)
 {
+	EMO_ASSERT(p != NULL, "protocol sync finished missing packet")
+
 	p->responseP = response;
 	p->syncSequenceIDP = sequenceID;
 }
@@ -25,6 +30,9 @@ SyncOperandP_t *protocol_serializeField(DataObject *sobj, const char *fieldName)
 {
 	SyncOperandP_t *syncOp;
 	DataObjectField *field;
+
+	EMO_ASSERT_NULL(sobj != NULL, "protocol serialize field missing DataObject")
+	EMO_ASSERT_NULL(fieldName != NULL, "protocol serialize field missing name")
 
 	emo_printf("Serializing field: %s\n", fieldName);
 
@@ -86,6 +94,8 @@ SyncOperandP_t *protocol_addChild(void)
 
 void protocol_blockSyncList(DataObjectSyncP_t *p)
 {
+	EMO_ASSERT(p != NULL, "protocol block sync list missing packet")
+
 	p->syncListP.present = SyncListP_PR_blockSyncListP;
 	p->syncListP.choice.blockSyncListP.list.array = NULL;
 	p->syncListP.choice.blockSyncListP.list.size = 0;
@@ -95,6 +105,8 @@ void protocol_blockSyncList(DataObjectSyncP_t *p)
 
 void protocol_recordSyncList(DataObjectSyncP_t *p)
 {
+	EMO_ASSERT(p != NULL, "protocol record sync list missing packet")
+
 	p->syncListP.present = SyncListP_PR_recordSyncListP;
 	p->syncListP.choice.recordSyncListP.list.array = NULL;
 	p->syncListP.choice.recordSyncListP.list.size = 0;
@@ -128,6 +140,10 @@ RecordSyncListP_t *protocol_recordSync(int isDelete, unsigned int stampMinor,
 void protocol_authUserPass(AuthUserPassP_t *p,
 		const char *username, const char *pass)
 {
+	EMO_ASSERT(p != NULL, "protocol auth user/pass missing packet")
+	EMO_ASSERT(username != NULL, "protocol auth user/pass missing user")
+	EMO_ASSERT(pass != NULL, "protocol auth user/pass missing pass")
+
 	p->authUsernameP.buf = NULL;
 	OCTET_STRING_fromString(&p->authUsernameP, username);
 	p->authPasswordP.buf = NULL;
@@ -145,6 +161,10 @@ void protocol_autUserPassExtra(AuthUserPassP_t *p,
 {
 	AuthExtraP_t *extra;
 
+	EMO_ASSERT(p != NULL, "protocol auth user/passExtra missing packet")
+	EMO_ASSERT(name != NULL, "protocol auth user/passExtra missing name")
+	EMO_ASSERT(value != NULL, "protocol auth user/passExtra missing value")
+
 	extra = (AuthExtraP_t *)p_malloc(sizeof(AuthExtraP_t));
 	extra->authExtraNameP.buf = NULL;
 	OCTET_STRING_fromString(&extra->authExtraNameP, name);
@@ -155,6 +175,8 @@ void protocol_autUserPassExtra(AuthUserPassP_t *p,
 
 void protocol_authResponse(AuthResponseP_t *p, long response)
 {
+	EMO_ASSERT(p != NULL, "protocol auth response missing packet")
+
 	*p = response;
 }
 

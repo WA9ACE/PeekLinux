@@ -5,6 +5,7 @@
 #include "lgui.h"
 #include "Style.h"
 #include "WidgetRenderer.h"
+#include "Debug.h"
 
 #include "p_malloc.h"
 
@@ -25,6 +26,11 @@ static void text_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	const char *ltype;
 	const char *str;
 	int percent, offset;
+
+	EMO_ASSERT(wr != NULL, "text renderer missing renderer")
+	EMO_ASSERT(s != NULL, "text renderer missing style")
+	EMO_ASSERT(w != NULL, "text renderer missing widget")
+	EMO_ASSERT(dobj != NULL, "text renderer missing dobj")
 
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
@@ -52,6 +58,12 @@ static void text_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	const char *dtype;
 	const char *ltype;
 	const char *str;
+
+	EMO_ASSERT(wr != NULL, "text measure missing renderer")
+	EMO_ASSERT(s != NULL, "text measure missing style")
+	EMO_ASSERT(w != NULL, "text measure missing widget")
+	EMO_ASSERT(dobj != NULL, "text measure missing dobj")
+	EMO_ASSERT(p != NULL, "text measure missing the point")
 
 	dtype = (const char *)dataobject_getValue(dobj, "type")->field.string;
 	ltype = widget_getID(w);

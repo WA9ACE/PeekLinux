@@ -23,6 +23,11 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	DataObjectField *field;
 	int trans;
 
+	EMO_ASSERT(wr != NULL, "image render missing renderer")
+	EMO_ASSERT(s != NULL, "image render missing style")
+	EMO_ASSERT(w != NULL, "image render missing widget")
+	EMO_ASSERT(dobj != NULL, "image render missing DataObject")
+
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
 	
@@ -90,6 +95,12 @@ static void image_measure(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj, IPoint *output)
 {
 	DataObjectField *field;
+
+	EMO_ASSERT(wr != NULL, "image measure missing renderer")
+	EMO_ASSERT(s != NULL, "image measure missing style")
+	EMO_ASSERT(w != NULL, "image measure missing widget")
+	EMO_ASSERT(dobj != NULL, "image measure missing DataObject")
+	EMO_ASSERT(output != NULL, "image measure missing the point")
 
 	field = dataobject_getValue(dobj, "width");
 	if (field == NULL || field->type != DOF_INT) {

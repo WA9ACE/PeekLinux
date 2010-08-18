@@ -21,6 +21,11 @@ static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	DataObjectField *field, *sourceField, *boldField;
     int isBold = 0;
 
+	EMO_ASSERT(wr != NULL, "string render missing renderer")
+	EMO_ASSERT(s != NULL, "string render missing style")
+	EMO_ASSERT(w != NULL, "string render missing widget")
+	EMO_ASSERT(dobj != NULL, "string render missing DataObject")
+
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
 	dtype = (const char *)dataobject_getValue(w, "type")->field.string;
@@ -67,6 +72,12 @@ static void string_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	DataObjectField *field, *sourceField, *boldField;
     int isBold = 0;
 
+	EMO_ASSERT(wr != NULL, "string measure missing renderer")
+	EMO_ASSERT(s != NULL, "string measure missing style")
+	EMO_ASSERT(w != NULL, "string measure missing widget")
+	EMO_ASSERT(dobj != NULL, "string measure missing DataObject")
+	EMO_ASSERT(p != NULL, "string measure missing the point")
+
 	dtype = (const char *)dataobject_getValue(w, "type")->field.string;
 	ltype = widget_getID(w);
 	f = (Font *)defaultFont;/*style_getProperty(s, NULL, ltype, dtype, "font");*/
@@ -105,6 +116,12 @@ static void string_measure(WidgetRenderer *wr, Style *s, Widget *w,
 static void string_margin(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj, Rectangle *output)
 {
+	EMO_ASSERT(wr != NULL, "string margin missing renderer")
+	EMO_ASSERT(s != NULL, "string margin missing style")
+	EMO_ASSERT(w != NULL, "string margin missing widget")
+	EMO_ASSERT(dobj != NULL, "string margin missing DataObject")
+	EMO_ASSERT(output != NULL, "string margin missing rectangle")
+
 	output->x = 3;
 	output->y = 2;
 	output->width = 3;

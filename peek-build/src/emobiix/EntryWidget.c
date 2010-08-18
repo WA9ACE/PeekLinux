@@ -25,6 +25,9 @@ int entryWidget_handleKey(Widget *w, unsigned int key, Style *s)
 	int cursorindex, cursorbytes, i, adv;
 	char *newstring, *pos, *lastpos;
 
+	EMO_ASSERT_INT(w != NULL, 0, "entry widget handle key on NULL widget")
+	EMO_ASSERT_INT(s != NULL, 0, "entry widget handle key missing style")
+
 #ifndef SIMULATOR
 	emo_printf("entryWidget_handleKey() key=%d print=%d", key, isprint(key));
 #endif
@@ -114,6 +117,11 @@ static void entry_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	int percent, offset;/*, hasFocus;*/
 	WidgetRenderer *iwr;
 
+	EMO_ASSERT(wr != NULL, "entry widget render missing renderer")
+	EMO_ASSERT(w != NULL, "entry widget render on NULL widget")
+	EMO_ASSERT(s != NULL, "entry widget render missing style")
+	EMO_ASSERT(dobj != NULL, "entry widget render missing DataObject")
+
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
 	/*dtype = (const char *)dataobject_getValue(dobj, "type")->field.string;
@@ -178,6 +186,12 @@ static void entry_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	const char *ltype;
 	const char *str;
 	DataObjectField *field;
+
+	EMO_ASSERT(wr != NULL, "entry widget measure missing renderer")
+	EMO_ASSERT(w != NULL, "entry widget measure on NULL widget")
+	EMO_ASSERT(s != NULL, "entry widget measure missing style")
+	EMO_ASSERT(dobj != NULL, "entry widget measure missing DataObject")
+	EMO_ASSERT(p != NULL, "entry widget measure missing the point")
 
 	dtype = (const char *)dataobject_getValue(dobj, "type")->field.string;
 	ltype = widget_getID(w);

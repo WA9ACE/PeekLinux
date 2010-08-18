@@ -58,6 +58,8 @@ Font *font_load(DataObject *dobj)
 	char *data;
 	Font *output;
 
+	EMO_ASSERT_NULL(dobj != NULL, "loading from from NULL object")
+
 	if (!ftInit) {
 		ftlibrary = *init_freetype();
 		ftInit = 1;
@@ -105,6 +107,8 @@ void font_setHeight(Font *f, int height)
 {
 	int error;
 	
+	EMO_ASSERT(f != NULL, "setting height on NULL font")
+
 	f->height = height;
 	error = FT_Set_Pixel_Sizes(f->face, 0, height);
 	if (error)
@@ -122,6 +126,13 @@ void *font_getGlyph(Font *f, unsigned int utf32, int isBold,
 	int error, glyph_index;
 	void *data;
 	PixelFormat pformat;
+
+	EMO_ASSERT_NULL(f != NULL, "getting glyph from NULL font")
+	EMO_ASSERT_NULL(width != NULL, "getting glyph missing width")
+	EMO_ASSERT_NULL(height != NULL, "getting glyph missing height")
+	EMO_ASSERT_NULL(xadvance != NULL, "getting glyph missing xadvance")
+	EMO_ASSERT_NULL(yadvance != NULL, "getting glyph missing yadvance")
+	EMO_ASSERT_NULL(baselinedy != NULL, "getting glyph missing baselinedy")
 
 #if 1
 	if (bitmapcache_get(f->cache, utf32, isBold,
@@ -209,6 +220,9 @@ unsigned int UTF8toUTF32(const char *isource, int *advance)
 	unsigned short extraBytesToRead;
 	unsigned int ch;
 
+	EMO_ASSERT_INT(isource != NULL, 0, "UTF8->UTF32 missing UTF8")
+	EMO_ASSERT_INT(advance != NULL, 0, "UTF8->UTF32 missing advance")
+
 	source = (const unsigned char *)isource;
 
 	ch = 0;
@@ -235,6 +249,9 @@ static int fsi_new_FT_Stream(const char *filename, FT_Stream output)
 {
 	File *fs;
 
+	EMO_ASSERT_INT(filename != NULL, 0, "new FT stream missing filename")
+	EMO_ASSERT_INT(output != NULL, 0, "new FT stream missing stream")
+
 	fs = file_openRead(filename);
 	if (fs == NULL)
 		return 0;
@@ -256,6 +273,8 @@ static void fsi_FT_Stream_CloseFunc(FT_Stream  stream)
 {
 	FT_StreamRec *rec;
 
+	EMO_ASSERT(stream != NULL, "close FT stream missing stream")
+
 	//emo_printf("Close stream: %p" NL, stream);
 	rec = (FT_StreamRec *)&stream;
 
@@ -268,6 +287,9 @@ static unsigned long fsi_FT_Stream_IoFunc(FT_Stream rec,
 		unsigned long count)
 {
 	File *f;
+
+	EMO_ASSERT_INT(rec != NULL, 0, "IO on FT stream missing stream")
+	
 	//emo_printf("Stream IO %p: @%d size: %d" NL, rec, offset, count);
 	if (rec->descriptor.pointer == NULL) {
 		emo_printf("font io file pointer is NULL" NL);

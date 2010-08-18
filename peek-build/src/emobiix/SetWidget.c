@@ -23,6 +23,8 @@ DataObject *setwidget_activeItem(DataObject *w)
 	DataObjectField *itemvalue;
 	ListIterator iter;
 
+	EMO_ASSERT_NULL(w != NULL, "Set widet active item missing set");
+
 	dobj = widget_getDataObject(w);
 
 	fieldname = dataobject_getValue(w, "fieldname");

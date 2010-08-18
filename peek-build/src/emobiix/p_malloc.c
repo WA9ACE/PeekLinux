@@ -1,4 +1,5 @@
 #include "p_malloc.h"
+#include "Debug.h"
 #include <string.h>
 #include <stdio.h>
 
@@ -6,6 +7,8 @@ char *p_strdup(const char *s)
 {
 	int len;
 	char *output;
+
+	EMO_ASSERT_NULL(s != NULL, "strdup on NULL string")
 
 	len = strlen(s);
 	output = (char *)p_malloc(len+1);

@@ -2,17 +2,21 @@
 
 #include <asn_application.h>
 #include "SyncOperandP.h"
+#include "Debug.h"
 
 #include "p_malloc.h"
 
 void protocolFreeFRIPacketP(FRIPacketP_t *p)
 {
+	EMO_ASSERT(p != NULL, "protocol free packet missing packet")
 	protocolFreeFRIPacketP_children(p);
 	p_free(p);
 }
 
 void protocolFreeFRIPacketP_children(FRIPacketP_t *p)
 {
+	EMO_ASSERT(p != NULL, "protocol free packet children missing packet")
+
 	switch (p->packetTypeP.present) {
 		case packetTypeP_PR_protocolHandshakeP:
 			break;
@@ -42,12 +46,16 @@ void protocolFreeFRIPacketP_children(FRIPacketP_t *p)
 
 void protocolFreeDataObjectSyncP(DataObjectSyncP_t *p)
 {
+	EMO_ASSERT(p != NULL, "protocol free DataObjectSync missing packet")
+
 	protocolFreeDataObjectSyncP_children(p);
 	p_free(p);
 }
 
 void protocolFreeDataObjectSyncP_children(DataObjectSyncP_t *p)
 {
+	EMO_ASSERT(p != NULL,"protocol free DataObjectSync children missing packet")
+
 	if (p->syncListP.present == SyncListP_PR_blockSyncListP) {
 		asn_sequence_empty(&p->syncListP.choice.blockSyncListP.list);
 	} else {
@@ -58,6 +66,8 @@ void protocolFreeDataObjectSyncP_children(DataObjectSyncP_t *p)
 char *OCTET_STRING_to_string(OCTET_STRING_t *o)
 {
 	char *tmpstr;
+
+	EMO_ASSERT_NULL(o != NULL, "OCTET_STRING to string missing OCTET_STRING")
 
 	tmpstr = p_malloc(o->size+1);
 	if (tmpstr == NULL)

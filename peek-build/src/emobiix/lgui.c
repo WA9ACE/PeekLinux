@@ -42,6 +42,7 @@ void lgui_attach(void *buf)
 	static int aacircleInit = 0;
 	lgui_buffer = (unsigned short *)buf;
     
+	EMO_ASSERT(buf != NULL, "lgui attach to NULL buffer")
 
 	if (!aacircleInit) {
 		initD();
@@ -110,6 +111,8 @@ void lgui_vertical_gradientG(Gradient *g,
 	int hstart, hend;
 	int stop, maxStop;
 	Color cstart, cend;
+
+	EMO_ASSERT(g != NULL, "lgui vgradient missing gradient")
 
 	hstart = height;
 	cstart = gradient_getStop(g, 0, &hstart);
@@ -704,6 +707,8 @@ void lgui_rbox_gradient(Gradient *g, int x, int y, int width, int height, int ra
 	int startx, cstartx, cendx;
 	int istart;
 
+	EMO_ASSERT(g != NULL, "lgui rbox missing gradient")
+
 	rect.x = x;
 	rect.y = y;
 	rect.width = width;
@@ -873,6 +878,9 @@ typedef struct EscapeSequenceState_t EscapeSequenceState;
 /* assumes p[0] is '<' */
 static int lgui_process_escape_seq(const char *p, EscapeSequenceState *state)
 {
+	EMO_ASSERT_INT(p != NULL, 0, "lgui process escape seq on NULL string")
+	EMO_ASSERT_INT(state != NULL, 0, "lgui process escape seq missing state")
+
 	if (p[1] == 'b' && p[2] == '>') {
 		state->isBold = 1;
 		return 3;
@@ -914,6 +922,8 @@ static int lgui_text_line_complex(const char *p, int x, Font *f, EscapeSequenceS
 	EscapeSequenceState state;
 	unsigned int val;
 	int width, height, xadvance, yadvance, baselinedy;
+
+	EMO_ASSERT_INT(p != NULL, 0, "lgui line complex on NULL string")
 	
 	if (statein)
 		state = *statein;
@@ -1141,6 +1151,8 @@ void lgui_measure_font_complex(const char *utf8, Font *f, IPoint *output)
 
 void lgui_clip_set(Rectangle *rect)
 {
+	EMO_ASSERT(rect != NULL, "lgui clip set missing rect")
+
 	CLIP.x = rect->x;
 	CLIP.y = rect->y;
 	CLIP.width = rect->width;
@@ -1150,6 +1162,8 @@ void lgui_clip_set(Rectangle *rect)
 void lgui_clip_union(Rectangle *rect)
 {
 	int yh, xh, nyh, nxh;
+
+	EMO_ASSERT(rect != NULL, "lgui clip union missing rect")
 
 	yh = CLIP.y + CLIP.height;
 	xh = CLIP.x + CLIP.width;
@@ -1172,6 +1186,8 @@ void lgui_clip_union(Rectangle *rect)
 void lgui_clip_and(Rectangle *rect)
 {
 	int yh, xh, nyh, nxh;
+
+	EMO_ASSERT(rect != NULL, "lgui clip add missing rect")
 
 	yh = CLIP.y + CLIP.height;
 	xh = CLIP.x + CLIP.width;
@@ -1226,6 +1242,12 @@ int lgui_clip_rect(Rectangle *rect, int *lowx, int *lowy,
 		int *highx, int *highy)
 {
 	int val;
+
+	EMO_ASSERT_INT(rect != NULL, 0, "lgui clip rect missing rect")
+	EMO_ASSERT_INT(lowx != NULL, 0, "lgui clip rect missing lowx")
+	EMO_ASSERT_INT(lowy != NULL, 0, "lgui clip rect missing lowy")
+	EMO_ASSERT_INT(highx != NULL, 0, "lgui clip rect missing highx")
+	EMO_ASSERT_INT(highy != NULL, 0, "lgui clip rect missing highy")
 
 	/* Y */
 

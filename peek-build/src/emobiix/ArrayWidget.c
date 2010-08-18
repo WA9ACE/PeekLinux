@@ -21,6 +21,15 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	int sfHeight, sfStartY, recordCount;
 	int startidx, focusidx, endidx, idx, canFocus;
 
+	EMO_ASSERT(wr != NULL,
+			"Attempting to render array with NULL WidgetRenderer")
+	EMO_ASSERT(s != NULL,
+			"Attempting to render array with NULL Style")
+	EMO_ASSERT(w != NULL,
+			"Attempting to render array with NULL Widget")
+	EMO_ASSERT(dobj != NULL,
+			"Attempting to render array with NULL dobj")
+
 	boxwr = widgetrenderer_box();
 	boxwr->render(boxwr, s, w, dobj);
 
@@ -149,6 +158,17 @@ skip_record_draw:
 static void array_margin(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj, Rectangle *output)
 {
+	EMO_ASSERT(wr != NULL,
+			"Attempting to margin array with NULL WidgetRenderer")
+	EMO_ASSERT(s != NULL,
+			"Attempting to margin array with NULL Style")
+	EMO_ASSERT(w != NULL,
+			"Attempting to margin array with NULL Widget")
+	EMO_ASSERT(dobj != NULL,
+			"Attempting to margin array with NULL dobj")
+	EMO_ASSERT(dobj != NULL,
+			"Attempting to margin array with NULL Rectangle")
+
 	output->x = 0;
 	output->y = 0;
 	output->width = 0;
@@ -174,6 +194,13 @@ int arraywidget_focusNext(Widget *w, int *alreadyUnset, int *alreadySet)
 {
 	DataObjectField *focusindex, *startindex, *endindex;
 	DataObject *record;
+
+	EMO_ASSERT_INT(w != NULL, 0,
+			"Focus next on array with NULL widget")
+	EMO_ASSERT_INT(alreadyUnset != NULL, 0,
+			"Focus next on array with NULL alreadyUnset")
+	EMO_ASSERT_INT(alreadySet != NULL, 0,
+			"Focus next on array with NULL alreadySet")
 
 	startindex = dataobject_getValue(w, "startindex");
 	if (startindex == NULL) {
@@ -228,6 +255,9 @@ int arraywidget_focusPrev(Widget *w)
 {
 	DataObjectField *focusindex, *startindex, *endindex;
 	DataObject *record;
+
+	EMO_ASSERT_INT(w != NULL, 0,
+			"Focus prev on array with NULL widget")
 
 	startindex = dataobject_getValue(w, "startindex");
 	if (startindex == NULL) {
