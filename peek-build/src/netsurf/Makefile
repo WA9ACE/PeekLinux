@@ -10,6 +10,7 @@ INCLUDE += $(SRCDIR)/netdepends/libparserutils/include
 INCLUDE += $(SRCDIR)/netdepends/libnsfb/include
 INCLUDE += $(SRCDIR)/zlib
 INCLUDE += $(SRCDIR)/freetype2/include
+INCLUDE += $(SRCDIR)/regex
 
 S_CONTENT := content.c fetch.c hlcache.c llcache.c urldb.c fetchers/fetch_curl.c fetchers/fetch_data.c
 S_CSS := css.c dump.c internal.c select.c utils.c

@@ -29,7 +29,7 @@
 //#include <sys/stat.h>
 //#include <sys/types.h>
 //#include <sys/time.h>
-//#include <regex.h>
+#include <regex.h>
 #include <time.h>
 #include "utils/config.h"
 #define NDEBUG

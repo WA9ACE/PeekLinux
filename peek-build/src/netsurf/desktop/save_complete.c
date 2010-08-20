@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <string.h>
 //#include <sys/types.h>
-//#include <regex.h>
+#include <regex.h>
 #include <libxml/HTMLtree.h>
 #include <libxml/parserInternals.h>
 #include "utils/config.h"
