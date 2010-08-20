@@ -22,6 +22,7 @@
 //#include <sys/ioctl.h>
 #include <limits.h>
 //#include <unistd.h>
+#include <dirent.h>
 #include <assert.h>
 #include <string.h>
 #include <strings.h>
@@ -384,7 +385,8 @@ static bool
 process_cmdline(int argc, char** argv)
 {
 	int opt;
-
+// XXX: fix to call from emo code
+#if 0
 	LOG(("argc %d, argv %p", argc, argv));
 
 	fename = "sdl";
@@ -433,7 +435,7 @@ process_cmdline(int argc, char** argv)
 	if (optind < argc) {
 		feurl = argv[optind];
 	}
-
+#endif
 	return true;
 }
 
@@ -1200,7 +1202,7 @@ void
 gui_window_scroll_visible(struct gui_window *g, int x0, int y0,
 			  int x1, int y1)
 {
-	LOG(("%s:(%p, %d, %d, %d, %d)", __func__, g, x0, y0, x1, y1));
+	LOG(("gui_window_scroll_visible:(%p, %d, %d, %d, %d)", g, x0, y0, x1, y1));
 }
 
 void

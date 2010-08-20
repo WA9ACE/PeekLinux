@@ -1236,7 +1236,7 @@ void url_destroy_components(const struct url_components *components)
 }
 
 
-#ifdef TEST
+#if 0
 
 int main(int argc, char *argv[])
 {

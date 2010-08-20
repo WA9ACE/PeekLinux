@@ -1,4 +1,6 @@
 DEFINE  = strdup=p_strdup
+DEFINE  += NETSURF_HOMEPAGE="\"www.emobiix.com\""
+DEFINE  += NETSURF_FB_RESPATH="\"netsurf\""
 
 INCLUDE  = $(SRCDIR)/netsurf
 INCLUDE += $(SRCDIR)/netdepends/libcss/include
@@ -11,6 +13,7 @@ INCLUDE += $(SRCDIR)/netdepends/libnsfb/include
 INCLUDE += $(SRCDIR)/zlib
 INCLUDE += $(SRCDIR)/freetype2/include
 INCLUDE += $(SRCDIR)/regex
+INCLUDE += $(SRCDIR)/libiconv/include
 
 S_CONTENT := content.c fetch.c hlcache.c llcache.c urldb.c fetchers/fetch_curl.c fetchers/fetch_data.c
 S_CSS := css.c dump.c internal.c select.c utils.c

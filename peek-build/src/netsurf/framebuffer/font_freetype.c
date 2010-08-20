@@ -20,6 +20,7 @@
 #include <inttypes.h>
 #include <assert.h>
 #include <strings.h>
+#include <dirent.h>
 
 #include <ft2build.h>
 #include FT_CACHE_H

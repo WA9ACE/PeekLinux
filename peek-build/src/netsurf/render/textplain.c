@@ -47,7 +47,7 @@
 #include "utils/talloc.h"
 #include "utils/utils.h"
 #include "utils/utf8.h"
-
+#include "errorno.h"
 
 #define CHUNK 20480
 #define MARGIN 4
@@ -56,12 +56,12 @@
 #define TAB_WIDTH 8  /* must be power of 2 currently */
 
 static plot_font_style_t textplain_style = {
-	.family = PLOT_FONT_FAMILY_MONOSPACE,
-	.size = 10 * FONT_SIZE_SCALE,
-	.weight = 400,
-	.flags = FONTF_NONE,
-	.background = 0xffffff,
-	.foreground = 0x000000,
+	PLOT_FONT_FAMILY_MONOSPACE,
+	FONT_SIZE_SCALE,
+	400,
+	FONTF_NONE,
+	0xffffff,
+	0x000000,
 };
 
 static int textplain_tab_width = 256;  /* try for a sensible default */

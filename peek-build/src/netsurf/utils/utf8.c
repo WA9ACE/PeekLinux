@@ -25,8 +25,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-//#include <iconv.h>
-
+#include <iconv.h>
+#include "errorno.h"
 #include <parserutils/charset/utf8.h>
 
 #include "utils/config.h"
