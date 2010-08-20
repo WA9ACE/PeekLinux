@@ -150,7 +150,7 @@ LINK_OBJ += $(LIBSDIR)/csw-system/drv_app/wheel.a
 
 include $(BASEDIR)/Makefile.rules
 
-SUBDIRS = m23 src
+SUBDIRS = src m23
 
 .PHONY: $(SUBDIRS)
 

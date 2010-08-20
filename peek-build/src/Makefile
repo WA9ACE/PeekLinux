@@ -10,6 +10,7 @@ SUBDIR_DEPEND = $(SRCDIR)/zlib/libz.a \
 
 TARGET = $(SRCDIR)/vin.a
 
+#SUBDIR = netsurf zlib libpng freetype2 lua nmealib tasks emobiix
 SUBDIR = zlib libpng freetype2 lua nmealib tasks emobiix
 
 .PHONY: $(SUBDIR)
@@ -36,5 +37,6 @@ clean:
 	$(MAKE) -C zlib clean
 	$(MAKE) -C emobiix clean
 	$(MAKE) -C tasks clean
+#	$(MAKE) -C netsurf clean
 
 include $(BASEDIR)/Makefile.rules
