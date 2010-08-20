@@ -1,13 +1,13 @@
 <application name="Calcumobiix" description="emobiix calculator demo application" startupview="calculator" style="calcstyle">
 	<style name="calcstyle">
-		<calcbox background-color="31233100" renderer="box" fill="solid"/>
-		<label font-color="dfa93300" renderer="label"/>
-		<cframe renderer="box" fill="none" border-color="ad966300" border="1234" margin="4"/>
+		<calcbox background-color="#312331" renderer="box" fill="solid"/>
+		<label font-color="#dfa933" renderer="label"/>
+		<cframe renderer="box" fill="none" border-color="#ad9663" border="1234" margin="4"/>
 		<button margin="4">
-			<label font-color="ad966300" renderer="label" weight="bold"/>
+			<label font-color="#ad9663" renderer="label" weight="bold"/>
 		</button>
-		<button hasfocus="1" background-color="dfa93300" font-color="31233100" renderer="box" fill="solid" margin="4">
-			<label hasfocus="1" font-color="31233100" renderer="label" weight="bold"/>
+		<button hasfocus="1" background-color="#dfa933" font-color="#312331" renderer="box" fill="solid" margin="4">
+			<label hasfocus="1" font-color="#312331" renderer="label" weight="bold"/>
 		</button>
 	</style>
 	<script><![CDATA[
@@ -82,8 +82,8 @@ end;
 	<box id="cframe" packing="vertical" border-corners="1234" rounded="1234">
     	<label alignment="center" weight="bold">Calcumobiix</label>
 	<box width="300" id="cframe">
-		<box width="100%" id="calcbox" background-color="d1ebb300" margin="4" packing="vertical">
-			<label alignment="right" name="output" font-color="000F0000">0</label>
+		<box width="100%" id="calcbox" background-color="#d1ebb3" margin="4" packing="vertical">
+			<label alignment="right" name="output" font-color="#000F00">0</label>
 		</box>
 	</box>
 		<box packing="horizontal">
