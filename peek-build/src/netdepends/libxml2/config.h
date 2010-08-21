@@ -233,7 +233,7 @@
 //#define HAVE_UNISTD_H 1
 
 /* Whether va_copy() is available */
-#define HAVE_VA_COPY 1
+//#define HAVE_VA_COPY 1
 
 /* Define to 1 if you have the `vfprintf' function. */
 #define HAVE_VFPRINTF 1
