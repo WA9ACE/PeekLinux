@@ -19,6 +19,38 @@ CMD_OPT_PP = $(BUILDDIR)/lcfgen.pp
 
 UNDEFINE += 
 
+SRCSUBDIR  = netdepends/hubbub-0.0.2 
+SRCSUBDIR += netdepends/libparserutils
+SRCSUBDIR += netdepends/libxml2
+SRCSUBDIR += netdepends/libnsfb
+SRCSUBDIR += netdepends/libcss
+SRCSUBDIR += netsurf
+SRCSUBDIR += regex
+SRCSUBDIR += zlib
+SRCSUBDIR += libpng
+SRCSUBDIR += freetype2
+SRCSUBDIR += lua
+SRCSUBDIR += nmealib
+SRCSUBDIR += tasks
+SRCSUBDIR += emobiix
+
+SRCLIB  = $(SRCDIR)/zlib/libz.a 
+SRCLIB += $(SRCDIR)/freetype2/freetype2.a 
+SRCLIB += $(SRCDIR)/libpng/libpng.a 
+SRCLIB += $(SRCDIR)/zlib/libz.a 
+SRCLIB += $(SRCDIR)/tasks/peitasks.a 
+SRCLIB += $(SRCDIR)/lua/lua.a 
+SRCLIB += $(SRCDIR)/nmealib/nmealib.a 
+SRCLIB += $(SRCDIR)/emobiix/emobiix.a 
+SRCLIB += $(SRCDIR)/netsurf/libnetsurf.a 
+SRCLIB += $(SRCDIR)/regex/regex.a 
+SRCLIB += $(SRCDIR)/netdepends/libcss/libcss.a 
+SRCLIB += $(SRCDIR)/netdepends/libnsfb/libnsfb.a 
+SRCLIB += $(SRCDIR)/netdepends/libxml2/libxml2.a 
+SRCLIB += $(SRCDIR)/netdepends/libparserutils/libparserutils.a 
+SRCLIB += $(SRCDIR)/netdepends/hubbub-0.0.2/libhubbub.a 
+SRCLIB += $(SRCDIR)/emobiix/protocol/protocol.a
+
 CMD_MAP  = $(M23DIR)/chipsetsw/system/template/gsm_is_lj3.template 
 CMD_MAP += $(LIBSDIR)/layer1/l1_intram.o 
 CMD_MAP += $(M23DIR)/csw-system/drv_core/clkm/drivers_int_ram.a 
@@ -145,12 +177,12 @@ LINK_OBJ += $(M23DIR)/chipsetsw/Services/tty/tty.a
 LINK_OBJ += $(LIBSDIR)/thirdparty/flashfx.lib
 LINK_OBJ += $(M23DIR)/CS_ThirdParty/Beatnik/bae.a
 LINK_OBJ += $(M23DIR)/CS_ThirdParty/Beatnik/bae_sram.a
-LINK_OBJ += $(SRCDIR)/vin.a
+LINK_OBJ += $(SRCLIB)
 LINK_OBJ += $(LIBSDIR)/csw-system/drv_app/wheel.a
 
 include $(BASEDIR)/Makefile.rules
 
-SUBDIRS = src m23
+SUBDIRS = $(addprefix src/,$(SRCSUBDIR)) m23
 
 .PHONY: $(SUBDIRS)
 
