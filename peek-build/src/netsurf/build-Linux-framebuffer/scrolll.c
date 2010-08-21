@@ -33,10 +33,11 @@ static uint8_t scrolll_pixdata[] = {
 };
 
 struct bitmap scrolll = {
-	.width		= 18,
-	.height		= 18,
-	.hot_x		= 0,
-	.hot_y		= 0,
-	.pixdata	= scrolll_pixdata,
+	18,
+	18,
+	scrolll_pixdata,
+	0,
+	0,
+	0
 };
 

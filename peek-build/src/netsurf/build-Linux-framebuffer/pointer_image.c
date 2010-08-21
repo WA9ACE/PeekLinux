@@ -37,10 +37,11 @@ static uint8_t pointer_image_pixdata[] = {
 };
 
 struct bitmap pointer_image = {
-	.width		= 12,
-	.height		= 22,
-	.hot_x		= 0,
-	.hot_y		= 0,
-	.pixdata	= pointer_image_pixdata,
+	12,
+	22,
+	pointer_image_pixdata,
+	0,
+	0,
+	0
 };
 

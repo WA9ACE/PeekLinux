@@ -36,6 +36,8 @@
 #include "utils/url.h"
 #include "utils/utils.h"
 
+void regcomp_wrapper(regex_t *preg, const char *regex, int cflags);
+
 struct url_components_internal {
 	char *buffer;	/* buffer used for all the following data */
 	char *scheme;
@@ -1285,6 +1287,7 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
+#endif
 void regcomp_wrapper(regex_t *preg, const char *regex, int cflags)
 {
 	char errbuf[200];
@@ -1297,5 +1300,3 @@ void regcomp_wrapper(regex_t *preg, const char *regex, int cflags)
 		exit(1);
 	}
 }
-
-#endif

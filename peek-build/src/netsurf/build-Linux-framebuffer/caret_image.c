@@ -34,10 +34,11 @@ static uint8_t caret_image_pixdata[] = {
 };
 
 struct bitmap caret_image = {
-	.width		= 7,
-	.height		= 19,
-	.hot_x		= 3,
-	.hot_y		= 8,
-	.pixdata	= caret_image_pixdata,
+	7,
+	19,
+	caret_image_pixdata,
+	0,
+	3,
+	8
 };
 

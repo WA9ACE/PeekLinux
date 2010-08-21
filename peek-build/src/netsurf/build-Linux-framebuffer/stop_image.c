@@ -41,10 +41,11 @@ static uint8_t stop_image_pixdata[] = {
 };
 
 struct bitmap stop_image = {
-	.width		= 26,
-	.height		= 26,
-	.hot_x		= 0,
-	.hot_y		= 0,
-	.pixdata	= stop_image_pixdata,
+	26,
+	26,
+	stop_image_pixdata,
+	0,
+	0,
+	0
 };
 

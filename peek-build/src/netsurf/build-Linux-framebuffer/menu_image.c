@@ -40,10 +40,11 @@ static uint8_t menu_image_pixdata[] = {
 };
 
 struct bitmap menu_image = {
-	.width		= 26,
-	.height		= 25,
-	.hot_x		= 8,
-	.hot_y		= 3,
-	.pixdata	= menu_image_pixdata,
+	26,
+	25,
+	menu_image_pixdata,
+	0,
+	8,
+	3
 };
 

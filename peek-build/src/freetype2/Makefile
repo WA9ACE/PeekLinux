@@ -67,6 +67,15 @@ SRC += src/psnames/psnames.c
 SRC += src/psnames/pspic.c
 SRC += src/smooth/smooth.c
 SRC += src/autofit/autofit.c
+SRC += src/cache/ftcache.c
+SRC += src/cache/ftcbasic.c
+SRC += src/cache/ftccache.c
+SRC += src/cache/ftccmap.c
+SRC += src/cache/ftcglyph.c
+SRC += src/cache/ftcimage.c
+SRC += src/cache/ftcmanag.c
+SRC += src/cache/ftcmru.c
+SRC += src/cache/ftcsbits.c
 
 OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))
 DEPS = $(patsubst %.o,%.d,$(OBJ))

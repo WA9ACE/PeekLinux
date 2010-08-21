@@ -8,12 +8,15 @@ SUBDIR_DEPEND = $(SRCDIR)/zlib/libz.a \
 		$(SRCDIR)/emobiix/emobiix.a \
 		$(SRCDIR)/netsurf/libnetsurf.a \
 		$(SRCDIR)/regex/regex.a \
+		$(SRCDIR)/netdepends/libcss/libcss.a \
+		$(SRCDIR)/netdepends/libnsfb/libnsfb.a \
 		$(SRCDIR)/netdepends/libxml2/libxml2.a \
+		$(SRCDIR)/netdepends/libparserutils/libparserutils.a \
 		$(SRCDIR)/emobiix/protocol/protocol.a
 
 TARGET = $(SRCDIR)/vin.a
 
-SUBDIR = netdepends/libxml2 netsurf regex zlib libpng freetype2 lua nmealib tasks emobiix
+SUBDIR = netdepends/libparserutils netdepends/libxml2 netdepends/libnsfb netdepends/libcss netsurf regex zlib libpng freetype2 lua nmealib tasks emobiix
 
 .PHONY: $(SUBDIR)
 

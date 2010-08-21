@@ -43,6 +43,7 @@ int UIWaitForActivity(void);
 static void UICleanup(void);
 ConnectionContext *connectionContext;
 extern void appProtocolStatus(int status);
+int netsurf_main(int argc, char** argv);
 
 Task UITask_s = {UIInit, UIIteration, UIWaitForActivity, UICleanup};
 
@@ -179,8 +180,8 @@ extern BOOL powered_on;
 
 int UIInit(void)
 {	
-
 	static int initd = 0;
+	char *argv = "emobiix";
 
 	if (!initd) {
 		screenBuf = (unsigned char *)p_malloc(320*240*2);
@@ -196,6 +197,8 @@ int UIInit(void)
 
 		manager_drawScreen();
 		updateScreen();
+
+		netsurf_main(1, &argv);
 	}
 
 	return 1;

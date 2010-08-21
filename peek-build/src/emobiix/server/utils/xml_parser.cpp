@@ -80,5 +80,14 @@ std::string xml_parser::GetAttribute(DOMNode* pElem, const char* szAttr)
 	return "";
 }
 
+DOMNodeList* xml_parser::GetNodesByName(const char *name)
+{
+	XMLCh *str = XMLString::transcode(name);
+	DOMNodeList *nodes = getDocument()->getElementsByTagName(str);
+	XMLString::release(&str);
+
+	return nodes;
+}
+
 }
 

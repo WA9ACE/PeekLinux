@@ -41,10 +41,11 @@ static uint8_t left_arrow_pixdata[] = {
 };
 
 struct bitmap left_arrow = {
-	.width		= 22,
-	.height		= 26,
-	.hot_x		= 0,
-	.hot_y		= 0,
-	.pixdata	= left_arrow_pixdata,
+	22,
+	26,
+	left_arrow_pixdata,
+	0,
+	0,
+	0
 };
 

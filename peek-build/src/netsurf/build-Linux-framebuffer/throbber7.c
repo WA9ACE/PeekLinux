@@ -39,10 +39,11 @@ static uint8_t throbber7_pixdata[] = {
 };
 
 struct bitmap throbber7 = {
-	.width		= 24,
-	.height		= 24,
-	.hot_x		= 0,
-	.hot_y		= 0,
-	.pixdata	= throbber7_pixdata,
+	24,
+	24,
+	throbber7_pixdata,
+	0,
+	0,
+	0
 };
 

@@ -41,10 +41,11 @@ static uint8_t history_image_g_pixdata[] = {
 };
 
 struct bitmap history_image_g = {
-	.width		= 26,
-	.height		= 26,
-	.hot_x		= 0,
-	.hot_y		= 0,
-	.pixdata	= history_image_g_pixdata,
+	26,
+	26,
+	history_image_g_pixdata,
+	0,
+	0,
+	0
 };
 

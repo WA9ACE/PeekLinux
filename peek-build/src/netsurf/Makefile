@@ -42,14 +42,16 @@ S_FRAMEBUFFER := gui.c framebuffer.c tree.c history.c hotlist.c 	\
         save.c schedule.c thumbnail.c misc.c bitmap.c filetype.c	\
 	login.c	findfile.c localhistory.c
 
-S_FRAMEBUFFER_FBTK := fbtk.c event.c fill.c bitmap.c user.c window.c 	\
-	text.c scroll.c osk.c 
+S_FRAMEBUFFER_FBTK := fbtk.c event.c fill.c fbbitmap.c user.c window.c 	\
+	fbtext.c fbscroll.c osk.c 
 
 S_FRAMEBUFFER += font_freetype.c
 
-S_FRAMEBUFFER := $(addprefix framebuffer/,$(S_FRAMEBUFFER)) $(addprefix framebuffer/fbtk/,$(S_FRAMEBUFFER_FBTK))
+S_IMAGES := caret_image.c hand_image.c history_image.c history_image_g.c left_arrow.c left_arrow_g.c menu_image.c pointer_image.c progress_image.c reload.c reload_g.c right_arrow.c right_arrow_g.c scrolld.c scrolll.c scrollr.c scrollu.c stop_image.c stop_image_g.c throbber0.c throbber1.c throbber2.c throbber3.c throbber4.c throbber5.c throbber6.c throbber7.c throbber8.c
 
-SOURCES := $(S_COMMON) $(S_IMAGE) $(S_BROWSER) $(S_FRAMEBUFFER) $(S_IMAGES)
+S_FRAMEBUFFER := $(addprefix framebuffer/,$(S_FRAMEBUFFER)) $(addprefix framebuffer/fbtk/,$(S_FRAMEBUFFER_FBTK)) $(addprefix build-Linux-framebuffer/,$(S_IMAGES))
+
+SOURCES := $(S_COMMON) $(S_IMAGE) $(S_BROWSER) $(S_FRAMEBUFFER) 
 
 SRC  = $(patsubst %.c,%.o,$(SOURCES))
 OBJ  = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))

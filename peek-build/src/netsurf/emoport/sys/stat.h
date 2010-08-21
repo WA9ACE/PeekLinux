@@ -27,6 +27,8 @@
 #define S_IWOTH 	00002  
 #define S_IXOTH 	00001  
 
+#define S_ISDIR(mode) (((mode) & S_IFDIR) == (S_IFDIR))
+
 struct stat
 {
 	short		st_mode;

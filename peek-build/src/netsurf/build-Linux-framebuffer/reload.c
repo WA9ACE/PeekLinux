@@ -41,10 +41,11 @@ static uint8_t reload_pixdata[] = {
 };
 
 struct bitmap reload = {
-	.width		= 24,
-	.height		= 26,
-	.hot_x		= 0,
-	.hot_y		= 0,
-	.pixdata	= reload_pixdata,
+	24,
+	26,
+	reload_pixdata,
+	0,
+	0,
+	0
 };
 

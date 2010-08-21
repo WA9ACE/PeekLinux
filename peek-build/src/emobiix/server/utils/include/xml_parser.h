@@ -19,6 +19,7 @@ public:
 	virtual ~xml_parser();
 
 	DOMDocument *getDocument();
+	DOMNodeList* GetNodesByName(const char *name);
 
 public:
 	static std::string XMLToUTF8String(const XMLCh *xszValue);

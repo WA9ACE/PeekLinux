@@ -1,7 +1,6 @@
 DEFINE = HAVE_CONFIG_H
 
 INCLUDE  = $(SRCDIR)/netdepends/libxml2/include
-INCLUDE += $(SRCDIR)/zlib
 
 SRC  = SAX.c
 SRC += entities.c

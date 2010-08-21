@@ -37,10 +37,11 @@ static uint8_t hand_image_pixdata[] = {
 };
 
 struct bitmap hand_image = {
-	.width		= 16,
-	.height		= 22,
-	.hot_x		= 4,
-	.hot_y		= 0,
-	.pixdata	= hand_image_pixdata,
+	16,
+	22,
+	hand_image_pixdata,
+	0,
+	4,
+	0
 };
 

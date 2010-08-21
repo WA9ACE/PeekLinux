@@ -7,6 +7,7 @@ CLIENT = test_client
 
 INCLUDE  = ./ 
 INCLUDE += ./include
+INCLUDE += $(SRCDIR)/utils/include
 INCLUDE += $(GSOAPINC)
 
 DEFINE  = WITH_GZIP
@@ -21,6 +22,7 @@ CLIENT_OBJ = test_client.o
 
 LIB  = $(GSOAPLIB)/libgsoapssl++.a -lssl -lcrypto -lz
 LIB += /usr/lib/libcurl.a -lidn
+LIB += $(SRCDIR)/utils/utils.a -lxerces-c
 
 all: $(TARGET) $(SERVERLIB) $(SERVER) $(CLIENT)
 

@@ -8,16 +8,27 @@
 #include <map> 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <sys/stat.h>
 
-#include "curl/curl.h"  
+#include "curl/curl.h"
+#include "xml_parser.h"
+#include "xercesc/dom/DOMXPathResult.hpp"
   
 using namespace std;
 
 int main()
 {
-   emobiixService c;
-   return c.serve(); // calls soap_serve to serve as CGI application (using stdin/out)
+	int json_location_request(size_t lac, size_t ci);
+	int zipcode = json_location_request(32111, 60572);
+
+	cerr << "Zip code: " << zipcode <<  endl;
+	string weather_forecast_request(int zipcode);
+	string icon = weather_forecast_request(zipcode);
+	
+	cerr << "Weather icon: " << icon << endl;
+//   emobiixService c;
+//   return c.serve(); // calls soap_serve to serve as CGI application (using stdin/out)
 }
 
 xsd__base64Binary base64BinaryFromString(struct soap* soap, const char *str)
@@ -114,6 +125,107 @@ bool curl_get_file(const std::string& filename, const char *szUrl)
 	return true;
 }  
 
+size_t stream_consume(void *ptr, size_t size, size_t nmemb, void *userdata)
+{
+	size_t sizeRead = size * nmemb;
+	string block((char *)ptr, sizeRead);
+	
+	cerr << "Read block: " << block << endl;
+
+	*((stringstream *)userdata) << block;
+	return sizeRead;
+}
+
+int json_location_request(size_t lac, size_t ci)
+{
+	CURL *curl;  
+	CURLcode result;  
+
+	curl = curl_easy_init();  
+	if (!curl) 
+		return false;
+
+	stringstream reply;
+	char output[1024] = "";
+	sprintf(output, "{\"cell_towers\": [{\"location_area_code\": \"%d\", \"mobile_network_code\": \"260\", \"cell_id\": \"%d\", \"mobile_country_code\": \"310\"}], \"version\": \"1.1.0\", \"request_address\": \"true\"}", lac, ci);
+
+	curl_easy_setopt(curl, CURLOPT_URL, "http://www.google.com/loc/json");  
+	curl_easy_setopt(curl, CURLOPT_POST, 1);  
+	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, output);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&reply);  
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, stream_consume);  
+	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);  
+
+	result = curl_easy_perform(curl);  
+
+	curl_easy_cleanup(curl);  
+
+	if (result != CURLE_OK)  
+	{  
+		cout << "Error: [" << result << "] - " << errorBuffer;  
+		return -1;
+	}
+
+	const string &location = reply.str();	
+	string postal = "\"postal_code\":\"";
+	size_t pos = location.find(postal);
+	if (pos != string::npos)
+		return atoi(location.c_str() + pos + postal.length());
+
+	return -1;
+}
+
+string weather_forecast_request(int zipcode)
+{	
+	CURL *curl;  
+	CURLcode result;  
+
+	curl = curl_easy_init();  
+	if (!curl) 
+		return "";
+
+	stringstream reply;
+	char url[1024] = "";
+	sprintf(url, "http://xoap.weather.com/weather/local/%d?cc=*&dayf=5&link=xoap&prod=xoap&par=1203593248&key=59bfeda2a528c5ed", zipcode);
+
+	curl_easy_setopt(curl, CURLOPT_URL, url);  
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&reply);  
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, stream_consume);  
+	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);  
+
+	result = curl_easy_perform(curl);  
+
+	curl_easy_cleanup(curl);  
+
+	if (result != CURLE_OK)  
+	{  
+		cout << "Error: [" << result << "] - " << errorBuffer;  
+		return "";
+	}
+
+	emobiix::xml_parser parser(reply.str().c_str());
+	DOMDocument *doc = parser.getDocument();
+
+	DOMNodeList *current = parser.GetNodesByName("cc");
+	if (!current || current->getLength() == 0)
+		return "";
+
+	DOMNode *node = current->item(0)->getFirstChild();
+	while (node)
+	{
+		string name = emobiix::xml_parser::XMLToString(node->getNodeName());
+		if (name == "icon")
+		{
+			string iconId = emobiix::xml_parser::XMLToString(node->getFirstChild()->getNodeValue());
+			return iconId;
+		}
+
+		node = node->getNextSibling();
+	}
+
+	return "";
+}  
+
 int ns__BlockDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, std::vector<ns__KeyValue>* requestParam, xsd__base64Binary &binaryData)
 {
 	cerr << "Received block data request: " << deviceId << " " << dataObjectURI	<< endl;
@@ -154,7 +266,7 @@ int ns__BlockDataObjectRequest(struct soap* soap, std::string deviceId, std::str
 int ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::vector<ns__KeyValue>* requestParam, xsd__base64Binary& recordData)
 {
 	cerr << "Received record request: " << deviceId << " " << dataObjectURI << endl;
-	
+
 	char path[2048] = "";
 	sprintf(path, "%s.xml", dataObjectURI.c_str());
 
