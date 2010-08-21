@@ -1,50 +1,53 @@
-# Component settings
-COMPONENT := parserutils
-COMPONENT_VERSION := 0.0.2
-# Default to a static library
-COMPONENT_TYPE ?= lib-static
+VARIANT_DEFINE :=
 
-# Setup the tooling
-include build/makefiles/Makefile.tools
+DEFINE += alloca=p_malloc
+DEFINE += malloc=p_malloc
+DEFINE += calloc=p_calloc
+DEFINE += realloc=p_realloc
+DEFINE += free=p_free
+DEFINE += printf=emo_printf
 
-TESTRUNNER := $(PERL) build/testtools/testrunner.pl
+INCLUDE += $(SRCDIR)/include
+INCLUDE += $(SRCDIR)/netdepends/libparserutils/src
+INCLUDE += $(SRCDIR)/netdepends/libparserutils/include/parserutils
+INCLUDE += $(SRCDIR)/netdepends/libparserutils/include
+INCLUDE += $(SRCDIR)/netsurf/emoport
 
-# Toolchain flags
-WARNFLAGS := -Wall -W -Wundef -Wpointer-arith -Wcast-align \
-	-Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes \
-	-Wmissing-declarations -Wnested-externs -pedantic
-# BeOS/Haiku standard library headers create warnings.
-ifneq ($(TARGET),beos)
-  WARNFLAGS := $(WARNFLAGS) -Werror
-endif
+SRC  = src/input/filter.c
+SRC += src/input/inputstream.c
+SRC += src/charset/codec.c
+SRC += src/charset/encodings/utf8.c
+SRC += src/charset/encodings/utf16.c
+SRC += src/charset/charset.c
+SRC += src/charset/codecs/codec_utf16.c
+SRC += src/charset/codecs/codec_utf8.c
+SRC += src/charset/codecs/codec_ascii.c
+SRC += src/charset/codecs/codec_ext8.c
+SRC += src/charset/codecs/codec_8859.c
+SRC += src/charset/aliases.c
+SRC += src/parserutils.c
+SRC += src/utils/buffer.c
+SRC += src/utils/stack.c
+SRC += src/utils/errors.c
+SRC += src/utils/vector.c
 
-CFLAGS := -D_BSD_SOURCE -I$(CURDIR)/include/ \
-	-I$(CURDIR)/src $(WARNFLAGS) $(CFLAGS)
-ifneq ($(GCCVER),2)
-  CFLAGS := $(CFLAGS) -std=c99
-else
-  # __inline__ is a GCCism
-  CFLAGS := $(CFLAGS) -Dinline="__inline__"
-endif
+DEPS = $(patsubst %.o,%.d,$(OBJ))
 
-include build/makefiles/Makefile.top
+TARGET = $(CURDIR)/libcss.a
 
-# Extra installation rules
-Is := include/parserutils
-I := /include/parserutils
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):$(Is)/errors.h;$(Is)/functypes.h;$(Is)/parserutils.h;$(Is)/types.h
+all: $(TARGET)
+OBJ  = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
 
-Is := include/parserutils/charset
-I := /include/parserutils/charset
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):$(Is)/codec.h;$(Is)/mibenum.h;$(Is)/utf16.h;$(Is)/utf8.h
+$(TARGET): $(OBJ)
+	$(subst /cygdrive/c,C:,$(AR) $(ARFLAGS) $@ $?)
 
-Is := include/parserutils/input
-I := /include/parserutils/input
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):$(Is)/inputstream.h
+clean:
+	$(RM) $(OBJ)
+	$(RM) $(TARGET)
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
 
-Is := include/parserutils/utils
-I := /include/parserutils/utils
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):$(Is)/buffer.h;$(Is)/stack.h;$(Is)/vector.h
+include $(BASEDIR)/Makefile.rules
 
-INSTALL_ITEMS := $(INSTALL_ITEMS) /lib/pkgconfig:lib$(COMPONENT).pc.in
-INSTALL_ITEMS := $(INSTALL_ITEMS) /lib:$(OUTPUT)
