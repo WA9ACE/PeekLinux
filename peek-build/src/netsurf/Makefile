@@ -1,7 +1,7 @@
 DEFINE  = strdup=p_strdup
 DEFINE += nsframebuffer
 DEFINE += NETSURF_HOMEPAGE="\"www.emobiix.com\""
-DEFINE += NETSURF_FB_RESPATH="\"netsurf\""
+DEFINE += NETSURF_FB_RESPATH="\"peekffs:/\""
 DEFINE += FB_USE_FREETYPE
 
 INCLUDE  = $(SRCDIR)/netsurf/emoport
@@ -26,7 +26,7 @@ INCLUDE += $(M23DIR)/csw-system/drv_core
 INCLUDE += $(M23DIR)/chipsetsw/Services
 INCLUDE += $(M23DIR)/CS_ThirdParty/Datalight/Reliance/include
 
-S_PORT := ceilf.c strcmp.c gettimeofday.c strtof.c iconv.c locale.c getcwd.c realpath.c stat.c
+S_PORT := ceilf.c strcmp.c gettimeofday.c strtof.c iconv.c locale.c getcwd.c realpath.c stat.c peek_file.c
 #S_CONTENT := content.c fetch.c hlcache.c llcache.c urldb.c fetchers/fetch_curl.c fetchers/fetch_data.c
 S_CONTENT := content.c fetch.c hlcache.c llcache.c urldb.c
 S_CSS := css.c dump.c internal.c select.c utils.c
