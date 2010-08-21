@@ -33,7 +33,7 @@ SRC += src/utils/vector.c
 
 DEPS = $(patsubst %.o,%.d,$(OBJ))
 
-TARGET = $(CURDIR)/libcss.a
+TARGET = $(CURDIR)/libparserutils.a
 
 all: $(TARGET)
 OBJ  = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))
