@@ -1,56 +1,70 @@
-# Component settings
-COMPONENT := css
-COMPONENT_VERSION := 0.0.1
-# Default to a static library
-COMPONENT_TYPE ?= lib-static
+VARIANT_DEFINE :=
 
-# Setup the tooling
-include build/makefiles/Makefile.tools
+DEFINE += alloca=p_malloc
+DEFINE += malloc=p_malloc
+DEFINE += calloc=p_calloc
+DEFINE += realloc=p_realloc
+DEFINE += free=p_free
+DEFINE += printf=emo_printf
 
-TESTRUNNER := $(PERL) build/testtools/testrunner.pl
+INCLUDE += $(SRCDIR)/include
+INCLUDE += $(SRCDIR)/netdepends/libwapcaplet/include
+INCLUDE += $(SRCDIR)/netdepends/libcss/src
+INCLUDE += $(SRCDIR)/netdepends/libcss/include
+INCLUDE += $(SRCDIR)/netdepends/libparserutils/include/parserutils
+INCLUDE += $(SRCDIR)/netdepends/libparserutils/include
+INCLUDE += $(SRCDIR)/netsurf/emoport
 
-# Toolchain flags
-WARNFLAGS := -Wall -W -Wundef -Wpointer-arith -Wcast-align \
-	-Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes \
-	-Wmissing-declarations -Wnested-externs -pedantic
-# BeOS/Haiku/AmigaOS4 standard library headers create warnings
-ifneq ($(TARGET),beos)
-  ifneq ($(TARGET),AmigaOS)
-    WARNFLAGS := $(WARNFLAGS) -Werror
-  endif
-endif
-CFLAGS := -D_BSD_SOURCE -I$(CURDIR)/include/ \
-	-I$(CURDIR)/src $(WARNFLAGS) $(CFLAGS)
-ifneq ($(GCCVER),2)
-  CFLAGS := $(CFLAGS) -std=c99
-else
-  # __inline__ is a GCCism
-  CFLAGS := $(CFLAGS) -Dinline="__inline__"
-endif
 
-# Parserutils & wapcaplet
-ifneq ($(PKGCONFIG),)
-  CFLAGS := $(CFLAGS) $(shell $(PKGCONFIG) libparserutils libwapcaplet --cflags)
-  LDFLAGS := $(LDFLAGS) $(shell $(PKGCONFIG) libparserutils libwapcaplet --libs)
-else
-  CFLAGS := $(CFLAGS) -I$(PREFIX)/include
-  LDFLAGS := $(LDFLAGS) -lparserutils -lwapcaplet
-endif
+SRC = src/select/computed.c
+SRC += src/select/select.c
+SRC += src/select/hash.c
+SRC += src/select/properties.c
+SRC += src/select/dispatch.c
+SRC += src/stylesheet.c
+SRC += src/lex/lex.c
+SRC += src/parse/important.c
+SRC += src/parse/propstrings.c
+SRC += src/parse/language.c
+SRC += src/parse/parse.c
+SRC += src/parse/properties/positioning.c
+SRC += src/parse/properties/border_outline.c
+SRC += src/parse/properties/generated_list.c
+SRC += src/parse/properties/ui.c
+SRC += src/parse/properties/font.c
+SRC += src/parse/properties/text.c
+SRC += src/parse/properties/background.c
+SRC += src/parse/properties/page.c
+SRC += src/parse/properties/aural.c
+SRC += src/parse/properties/utils.c
+SRC += src/parse/properties/margin.c
+SRC += src/parse/properties/effects_stacking.c
+SRC += src/parse/properties/padding.c
+SRC += src/parse/properties/display_sizing.c
+SRC += src/parse/properties/properties.c
+SRC += src/parse/properties/table.c
+SRC += src/libcss.c
+SRC += src/charset/detect.c
+SRC += src/utils/utils.c
+SRC += src/utils/errors.c
 
-include build/makefiles/Makefile.top
+DEPS = $(patsubst %.o,%.d,$(OBJ))
 
-# Extra installation rules
-I := /include/libcss
+TARGET = $(CURDIR)/libcss.a
 
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/computed.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/errors.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/fpmath.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/functypes.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/hint.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/libcss.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/properties.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/select.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/stylesheet.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libcss/types.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) /lib/pkgconfig:lib$(COMPONENT).pc.in
-INSTALL_ITEMS := $(INSTALL_ITEMS) /lib:$(OUTPUT)
+all: $(TARGET)
+OBJ  = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+$(TARGET): $(OBJ)
+	$(subst /cygdrive/c,C:,$(AR) $(ARFLAGS) $@ $?)
+
+clean:
+	$(RM) $(OBJ)
+	$(RM) $(TARGET)
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules
+
