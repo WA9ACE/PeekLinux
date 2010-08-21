@@ -34,10 +34,18 @@ typedef struct nsfb_frontend_rtns_s {
 
 void _nsfb_register_frontend(const enum nsfb_frontend_e type, const nsfb_frontend_rtns_t *rtns, const char *name);
 
-
+#if 0
 /* macro which adds a builtin command with no argument limits */
 #define NSFB_FRONTEND_DEF(__name, __type, __rtns)                       \
     static void __name##_register_frontend(void) __attribute__((constructor)); \
+    void __name##_register_frontend(void) {                              \
+        _nsfb_register_frontend(__type, __rtns, #__name);               \
+    }                                                                   
+#endif
+
+/* macro which adds a builtin command with no argument limits */
+#define NSFB_FRONTEND_DEF(__name, __type, __rtns)                       \
+    static void __name##_register_frontend(void); \
     void __name##_register_frontend(void) {                              \
         _nsfb_register_frontend(__type, __rtns, #__name);               \
     }                                                                   

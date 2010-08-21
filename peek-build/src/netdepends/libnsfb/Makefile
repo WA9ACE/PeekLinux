@@ -1,8 +1,9 @@
 VARIANT_DEFINE :=
 
-DEFINE =
+DEFINE = 
 
-INCLUDE = $(SRCDIR)/netsurf/emoport
+INCLUDE  = $(SRCDIR)/netsurf/emoport
+INCLUDE += $(SRCDIR)/emobiix
 INCLUDE += $(SRCDIR)/netdepends/libnsfb/include
 
 SRC  = src/libnsfb.c
@@ -13,6 +14,8 @@ SRC += src/plot/generic.c
 SRC += src/plot/32bpp.c
 SRC += src/plot/16bpp.c
 SRC += src/plot/8bpp.c
+SRC += src/surface/surface.c
+SRC += src/surface/peek.c
 
 DEPS = $(patsubst %.o,%.d,$(OBJ))
 
