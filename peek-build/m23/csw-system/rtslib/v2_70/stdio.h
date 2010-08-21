@@ -102,7 +102,7 @@ typedef long fpos_t;
 #if 0
 #define _NFILE          20                   /* Max number of files open    */
 #else
-#define _NFILE          3                   /* Max number of files open    */
+#define _NFILE          20                   /* Max number of files open    */
 #endif
 extern _DATA_ACCESS FILE _ftable[_NFILE];
 extern _DATA_ACCESS char _tmpnams[_NFILE][L_tmpnam];
