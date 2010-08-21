@@ -2,7 +2,6 @@ DEFINE  = strdup=p_strdup
 DEFINE += nsframebuffer
 DEFINE += NETSURF_HOMEPAGE="\"www.emobiix.com\""
 DEFINE += NETSURF_FB_RESPATH="\"netsurf\""
-DEFINE += LIBICONV_PLUG
 
 INCLUDE  = $(SRCDIR)/netsurf/emoport
 INCLUDE += $(M23DIR)/gpf/inc
@@ -17,9 +16,8 @@ INCLUDE += $(SRCDIR)/netdepends/libnsfb/include
 INCLUDE += $(SRCDIR)/zlib
 INCLUDE += $(SRCDIR)/freetype2/include
 INCLUDE += $(SRCDIR)/regex
-INCLUDE += $(SRCDIR)/libiconv/include
 
-S_PORT := ceilf.c strcmp.c gettimeofday.c strtof.c
+S_PORT := ceilf.c strcmp.c gettimeofday.c strtof.c iconv.c
 #S_CONTENT := content.c fetch.c hlcache.c llcache.c urldb.c fetchers/fetch_curl.c fetchers/fetch_data.c
 S_CONTENT := content.c fetch.c hlcache.c llcache.c urldb.c
 S_CSS := css.c dump.c internal.c select.c utils.c
