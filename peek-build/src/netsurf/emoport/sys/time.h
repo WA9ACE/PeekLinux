@@ -6,6 +6,13 @@ struct timeval {
 	long int	tv_usec;
 };
 
+struct timezone {
+	int tz_minuteswest;
+	int tz_dsttime;
+};
+
+int gettimeofday(struct timeval *tv, struct timezone *tz);
+
 #define timercmp(a, b, CMP)	\
 	(((a)->tv_sec == (b)->tv_sec) ? \
 	((a)->tv_usec CMP (b)->tv_usec) :	\
