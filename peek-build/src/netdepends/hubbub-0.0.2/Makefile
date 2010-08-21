@@ -1,68 +1,61 @@
-# Component settings
-COMPONENT := hubbub
-COMPONENT_VERSION := 0.0.2
-# Default to a static library
-COMPONENT_TYPE ?= lib-static
+VARIANT_DEFINE :=
 
-# Setup the tooling
-include build/makefiles/Makefile.tools
+DEFINE =
 
-TESTRUNNER := $(PERL) build/testtools/testrunner.pl
+INCLUDE  = $(SRCDIR)/netsurf/emoport
+INCLUDE += $(SRCDIR)/netdepends/libparserutils/include
+INCLUDE += $(SRCDIR)/netdepends/hubbub-0.0.2/include
+INCLUDE += $(SRCDIR)/netdepends/hubbub-0.0.2/src
 
-# Toolchain flags
-WARNFLAGS := -Wall -W -Wundef -Wpointer-arith -Wcast-align \
-	-Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes \
-	-Wmissing-declarations -Wnested-externs -pedantic
-# BeOS/Haiku have standard library errors that issue warnings.
-ifneq ($(TARGET),beos)
-  WARNFLAGS := $(WARNFLAGS) -Werror
-endif
-CFLAGS := -D_BSD_SOURCE -I$(CURDIR)/include/ \
-	-I$(CURDIR)/src $(WARNFLAGS) $(CFLAGS)
-ifneq ($(GCCVER),2)
-  CFLAGS := $(CFLAGS) -std=c99
-else
-  # __inline__ is a GCCism
-  CFLAGS := $(CFLAGS) -Dinline="__inline__"
-endif
+SRC += src/hubbub.c
+SRC += src/tokeniser/entities.c
+SRC += src/tokeniser/tokeniser.c
+SRC += src/hubbubparser.c
+SRC += src/treebuilder/initial.c
+SRC += src/treebuilder/in_foreign_content.c
+SRC += src/treebuilder/in_body.c
+SRC += src/treebuilder/in_head_noscript.c
+SRC += src/treebuilder/in_head.c
+SRC += src/treebuilder/in_table_body.c
+SRC += src/treebuilder/before_html.c
+SRC += src/treebuilder/after_after_body.c
+SRC += src/treebuilder/in_table.c
+SRC += src/treebuilder/after_body.c
+SRC += src/treebuilder/after_after_frameset.c
+SRC += src/treebuilder/treebuilder.c
+SRC += src/treebuilder/in_frameset.c
+SRC += src/treebuilder/after_frameset.c
+SRC += src/treebuilder/before_head.c
+SRC += src/treebuilder/after_head.c
+SRC += src/treebuilder/in_cell.c
+SRC += src/treebuilder/in_row.c
+SRC += src/treebuilder/generic_rcdata.c
+SRC += src/treebuilder/in_caption.c
+SRC += src/treebuilder/in_select.c
+SRC += src/treebuilder/in_select_in_table.c
+SRC += src/treebuilder/in_column_group.c
+SRC += src/charset/hubbubdetect.c
+SRC += src/utils/hubbubstring.c
+SRC += src/utils/hubbubdict.c
+SRC += src/utils/hubbuberrors.c
 
-# Parserutils
-ifneq ($(findstring clean,$(MAKECMDGOALS)),clean)
-  ifneq ($(PKGCONFIG),)
-    CFLAGS := $(CFLAGS) $(shell $(PKGCONFIG) libparserutils --cflags)
-    LDFLAGS := $(LDFLAGS) $(shell $(PKGCONFIG) libparserutils --libs)
-  else
-    CFLAGS := $(CFLAGS) -I$(PREFIX)/include
-    LDFLAGS := $(LDFLAGS) -lparserutils
-  endif
-endif
+DEPS = $(patsubst %.o,%.d,$(OBJ))
 
-include build/makefiles/Makefile.top
+TARGET = $(CURDIR)/libhubbub.a
 
-ifeq ($(WANT_TEST),yes)
-  # We require the presence of libjson -- http://oss.metaparadigm.com/json-c/
-  ifneq ($(PKGCONFIG),)
-    TESTCFLAGS := $(TESTCFLAGS) \
-		$(shell $(PKGCONFIG) $(PKGCONFIGFLAGS) --cflags json)
-    TESTLDFLAGS := $(TESTLDFLAGS) \
-		$(shell $(PKGCONFIG) $(PKGCONFIGFLAGS) --libs json)
-  else
-    TESTCFLAGS := $(TESTCFLAGS) -I$(PREFIX)/include/json
-    TESTLDFLAGS := $(TESTLDFLAGS) -ljson
-  endif
+all: $(TARGET)
+OBJ  = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
 
-  ifneq ($(GCCVER),2)
-    TESTCFLAGS := $(TESTCFLAGS) -Wno-unused-parameter
-  endif
-endif
+$(TARGET): $(OBJ)
+	$(subst /cygdrive/c,C:,$(AR) $(ARFLAGS) $@ $?)
 
-# Extra installation rules
-I := /include/hubbub
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/hubbub/errors.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/hubbub/functypes.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/hubbub/hubbub.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/hubbub/parser.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/hubbub/tree.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/hubbub/types.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) /lib/pkgconfig:lib$(COMPONENT).pc.in
-INSTALL_ITEMS := $(INSTALL_ITEMS) /lib:$(OUTPUT)
+clean:
+	$(RM) $(OBJ)
+	$(RM) $(TARGET)
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules
+
