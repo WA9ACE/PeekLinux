@@ -33,7 +33,9 @@ void warn_user(const char *warning, const char *detail)
 
 void die(const char *error)
 {
-	exit(1);
+        emo_printf("Die baby die()");
+        while(1)
+                TCCE_Task_Sleep(1000);
 }
 
 bool cookies_update(const char *domain, const struct cookie_data *data)
