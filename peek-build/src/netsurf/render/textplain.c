@@ -47,7 +47,7 @@
 #include "utils/talloc.h"
 #include "utils/utils.h"
 #include "utils/utf8.h"
-#include "errorno.h"
+#include "errno.h"
 
 #define CHUNK 20480
 #define MARGIN 4

@@ -2,6 +2,7 @@ DEFINE  = strdup=p_strdup
 DEFINE += nsframebuffer
 DEFINE += NETSURF_HOMEPAGE="\"www.emobiix.com\""
 DEFINE += NETSURF_FB_RESPATH="\"netsurf\""
+DEFINE += FB_USE_FREETYPE
 
 INCLUDE  = $(SRCDIR)/netsurf/emoport
 INCLUDE += $(M23DIR)/gpf/inc
