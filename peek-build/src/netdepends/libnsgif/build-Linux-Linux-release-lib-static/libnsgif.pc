@@ -1,0 +1,10 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: libnsgif
+Description: Provides gif loading and conversion
+Version: 0.0.2
+Libs: -L${libdir} -lnsgif
+Cflags: -I${includedir}
