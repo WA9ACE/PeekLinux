@@ -17,7 +17,7 @@ INCLUDE += $(SRCDIR)/zlib
 INCLUDE += $(SRCDIR)/freetype2/include
 INCLUDE += $(SRCDIR)/regex
 
-S_PORT := ceilf.c strcmp.c gettimeofday.c strtof.c iconv.c
+S_PORT := ceilf.c strcmp.c gettimeofday.c strtof.c iconv.c locale.c
 #S_CONTENT := content.c fetch.c hlcache.c llcache.c urldb.c fetchers/fetch_curl.c fetchers/fetch_data.c
 S_CONTENT := content.c fetch.c hlcache.c llcache.c urldb.c
 S_CSS := css.c dump.c internal.c select.c utils.c
