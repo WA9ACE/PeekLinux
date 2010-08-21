@@ -1,5 +1,6 @@
 #include "File.h"
 #include "ffs.h"
+#include "dirent.h"
 
 struct File_t
 {
@@ -81,7 +82,7 @@ int file_eof(File *f)
 
 int file_size(File *f)
 {
-	uint32 ffsSret;
+	int ffsSret;
 	struct stat_s ffsStat;
 
 	ffsSret = ffs_stat(f->filename, &ffsStat);
@@ -101,3 +102,35 @@ int file_close(File *f)
 
 	return ffsCret;
 }
+
+
+/* posix wrapper stuff */
+
+DIR *opendir(const char *name)
+{
+	DIR *retdir;
+	struct dir_s tdir;
+	int dirRet;
+
+	dirRet = ffs_opendir(name, &tdir);
+	
+	if(dirRet < 0) {
+
+	}
+
+	retdir = (DIR *)malloc(sizeof(DIR));
+
+	return retdir;
+}
+
+struct dirent *readdir (DIR *dirp)
+{
+//int FEXPORT ffs_readdir(struct dir_s *dir, char *name, int size);
+	
+
+}
+
+int closedir(DIR *dir) {
+//	ffs_closedir(&dir);
+}
+

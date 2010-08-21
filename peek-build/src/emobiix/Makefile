@@ -33,6 +33,7 @@ INCLUDE += $(SRCDIR)/libpng
 INCLUDE += $(SRCDIR)/zlib
 INCLUDE += $(SRCDIR)/emobiix/protocol
 INCLUDE += $(SRCDIR)/emobiix/peek
+INCLUDE += $(SRCDIR)/netsurf/emoport
 
 SRC  = peek/KeyHandler.c
 SRC += peek/PeekEmobiix.c
