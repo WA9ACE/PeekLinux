@@ -82,7 +82,9 @@ char *fb_find_resource(char *buf, const char *filename, const char *def)
 		strcat(t, "/.netsurf/");
 		strcat(t, filename);
 		if (realpath(t, buf) != NULL) {
+			#ifdef USE_ACCESS
                         if (access(buf, R_OK) == 0)
+			#endif
                                 return buf;
                 }
 	}
@@ -93,7 +95,9 @@ char *fb_find_resource(char *buf, const char *filename, const char *def)
 		if (realpath(cdir, buf) != NULL) {
                         strcat(buf, "/");
                         strcat(buf, filename);
+			#ifdef USE_ACCESS
                         if (access(buf, R_OK) == 0)
+			#endif
                                 return buf;
                 }
 	}
@@ -101,7 +105,9 @@ char *fb_find_resource(char *buf, const char *filename, const char *def)
 	strcpy(t, NETSURF_FB_RESPATH);
 	strcat(t, filename);
 	if (realpath(t, buf) != NULL) {
+		#ifdef USE_ACCESS
                 if (access(buf, R_OK) == 0)
+		#endif
                         return buf;
         }
 
