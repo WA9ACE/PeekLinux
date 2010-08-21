@@ -1,34 +1,36 @@
-# Component settings
-COMPONENT := nsfb
-COMPONENT_VERSION := 0.0.1
-# Default to a static library
-COMPONENT_TYPE ?= lib-static
+VARIANT_DEFINE :=
 
-# Setup the tooling
-include build/makefiles/Makefile.tools
+DEFINE =
 
-# Reevaluate when used, as BUILDDIR won't be defined yet
-TESTRUNNER = test/runtest.sh $(BUILDDIR) $(EXEEXT)
+INCLUDE = $(SRCDIR)/netsurf/emoport
+INCLUDE += $(SRCDIR)/netdepends/libnsfb/include
 
-# Toolchain flags
-WARNFLAGS := -Wall -Wextra -Wundef -Wpointer-arith -Wcast-align \
-	-Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes \
-	-Wmissing-declarations -Wnested-externs -Werror -pedantic \
-	#-Wno-overlength-strings # For nsglobe.c
-CFLAGS := -g -std=c99 -D_BSD_SOURCE -I$(CURDIR)/include/ \
-	-I$(CURDIR)/src $(WARNFLAGS) $(CFLAGS)
+SRC  = src/libnsfb.c
+SRC += src/cursor.c
+SRC += src/plot/api.c
+SRC += src/plot/util.c
+SRC += src/plot/generic.c
+SRC += src/plot/32bpp.c
+SRC += src/plot/16bpp.c
+SRC += src/plot/8bpp.c
 
-# TODO: probably want to retrieve SDL from pkg-config
-TESTLDFLAGS = -Wl,--whole-archive -l$(COMPONENT) -Wl,--no-whole-archive -lSDL -lxcb-icccm -lxcb -lxcb-image -lxcb-keysyms
+DEPS = $(patsubst %.o,%.d,$(OBJ))
 
-include build/makefiles/Makefile.top
+TARGET = $(CURDIR)/libnsfb.a
 
-# Extra installation rules
-I := /include
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libnsfb.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libnsfb_plot.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libnsfb_plot_util.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libnsfb_event.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libnsfb_cursor.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) /lib/pkgconfig:lib$(COMPONENT).pc.in
-INSTALL_ITEMS := $(INSTALL_ITEMS) /lib:$(OUTPUT)
+all: $(TARGET)
+OBJ  = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+$(TARGET): $(OBJ)
+	$(subst /cygdrive/c,C:,$(AR) $(ARFLAGS) $@ $?)
+
+clean:
+	$(RM) $(OBJ)
+	$(RM) $(TARGET)
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules
+

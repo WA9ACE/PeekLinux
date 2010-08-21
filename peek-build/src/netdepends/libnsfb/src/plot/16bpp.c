@@ -8,7 +8,7 @@
  */
 
 #include <stdbool.h>
-#include <endian.h>
+#include "endian.h"
 #include <stdlib.h>
 
 #include "libnsfb.h"
@@ -18,7 +18,8 @@
 #include "nsfb.h"
 #include "plot.h"
 
-#define UNUSED __attribute__((unused)) 
+#define UNUSED
+//#define UNUSED __attribute__((unused)) 
 
 static inline uint16_t *get_xy_loc(nsfb_t *nsfb, int x, int y)
 {
@@ -110,13 +111,26 @@ static bool fill(nsfb_t *nsfb, nsfb_bbox_t *rect, nsfb_colour_t c)
 }
 
 const nsfb_plotter_fns_t _nsfb_16bpp_plotters = {
-        .line = line,
-        .fill = fill,
-        .point = point,
-        .bitmap = bitmap,
-        .glyph8 = glyph8,
-        .glyph1 = glyph1,
-        .readrect = readrect,
+        0,
+        0,
+        line,
+        0,
+        fill,
+        0,
+        0,
+        0,
+        0,
+        0,
+        bitmap,
+        point,
+        0,
+        glyph8,
+        glyph1,
+        readrect,
+        0,
+        0,
+        0,
+        0
 };
 
 /*

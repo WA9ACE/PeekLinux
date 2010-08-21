@@ -10,7 +10,7 @@ enum {
         POINT_LEFTOF_REGION = 1,
         POINT_RIGHTOF_REGION = 2,
         POINT_ABOVE_REGION = 4,
-        POINT_BELOW_REGION = 8,
+        POINT_BELOW_REGION = 8
 };
 
 #define REGION(x,y,cx1,cx2,cy1,cy2) \

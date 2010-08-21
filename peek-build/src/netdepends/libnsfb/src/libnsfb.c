@@ -8,7 +8,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
-#include <malloc.h>
+//#include <malloc.h>
 
 #include "libnsfb.h"
 #include "libnsfb_plot.h"
@@ -21,7 +21,7 @@ nsfb_t*
 nsfb_init(const enum nsfb_frontend_e frontend_type)
 {
     nsfb_t *newfb;
-    newfb = calloc(1, sizeof(nsfb_t));
+    newfb = (nsfb_t *)calloc(1, sizeof(nsfb_t));
     if (newfb == NULL)
         return NULL;
 
