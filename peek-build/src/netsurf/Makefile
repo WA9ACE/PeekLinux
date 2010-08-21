@@ -2,7 +2,8 @@ DEFINE  = strdup=p_strdup
 DEFINE  += NETSURF_HOMEPAGE="\"www.emobiix.com\""
 DEFINE  += NETSURF_FB_RESPATH="\"netsurf\""
 
-INCLUDE  = $(SRCDIR)/netsurf
+INCLUDE  = $(SRCDIR)/netsurf/emoport
+INCLUDE += $(SRCDIR)/netsurf
 INCLUDE += $(SRCDIR)/netdepends/libcss/include
 INCLUDE += $(SRCDIR)/netdepends/libwapcaplet/include
 INCLUDE += $(SRCDIR)/netdepends/libxml2/include
