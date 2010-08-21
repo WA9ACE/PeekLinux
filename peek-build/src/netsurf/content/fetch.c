@@ -104,8 +104,10 @@ static bool fetch_dispatch_job(struct fetch *fetch);
 
 void fetch_init(void)
 {
+#if __EMOBIIX_ENABLE_CURL__
 	fetch_curl_register();
 	fetch_data_register();
+#endif
 	fetch_active = false;
 }
 

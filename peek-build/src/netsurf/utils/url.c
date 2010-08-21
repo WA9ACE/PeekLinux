@@ -765,6 +765,7 @@ url_func_result url_leafname(const char *url, char **result)
  * \return URL_FUNC_OK on success
  */
 
+#if __EMOBIIX_ENABLE_CURL
 url_func_result url_fragment(const char *url, char **result)
 {
 	url_func_result status;
@@ -793,6 +794,12 @@ url_func_result url_fragment(const char *url, char **result)
 	url_destroy_components(&components);
 	return status;
 }
+#else
+url_func_result url_fragment(const char *url, char **result)
+{
+	return URL_FUNC_FAILED;
+}
+#endif
 
 /**
  * Attempt to find a nice filename for a URL.

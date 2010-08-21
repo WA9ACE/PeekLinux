@@ -35,7 +35,7 @@
 #include <string.h>
 #include <strings.h>
 #include <time.h>
-//#include <sys/stat.h>
+#include <sys/stat.h>
 
 #include "utils/config.h"
 //XXX

@@ -3283,7 +3283,11 @@ bool urldb_parse_avpair(struct cookie_internal_data *c, char *n, char *v,
 				datenoday++)
 			; /* do nothing */
 
+#if __EMOBIIX_ENABLE_CURL__
 		expires = curl_getdate(datenoday, NULL);
+#else
+		expires = 0;
+#endif
 		if (expires == -1) {
 			/* assume we have an unrepresentable
 			 * date => force it to the maximum
