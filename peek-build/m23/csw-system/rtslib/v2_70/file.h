@@ -62,8 +62,8 @@ _DECL _CODE_ACCESS int add_device(
 #define _NSTREAM        20                   /* Size of stream table        */
 #define _NDEVICE        3                    /* Size of device table        */
 #else
-#define _NSTREAM        3                   /* Size of stream table        */
-#define _NDEVICE        1                    /* Size of device table        */
+#define _NSTREAM        20                   /* Size of stream table        */
+#define _NDEVICE        2                    /* Size of device table        */
 #endif
 
 #define _SSA      (0x0000)             /* Single Stream allowed       */

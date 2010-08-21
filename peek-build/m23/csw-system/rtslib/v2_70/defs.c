@@ -15,9 +15,7 @@
 _DATA_ACCESS
 FILE _ftable[_NFILE] = {{  0, NULL, NULL, NULL, NULL, (_MODER | _IOLBF), 0},
                         {  1, NULL, NULL, NULL, NULL, (_MODEW | _IOLBF), 1},
-                        {  2, NULL, NULL, NULL, NULL, (_MODEW | _IONBF), 2}
-#if 0                        
-			,
+                        {  2, NULL, NULL, NULL, NULL, (_MODEW | _IONBF), 2},
 			{ -1, NULL, NULL, NULL, NULL,  _IONBF,           3},
 			{ -1, NULL, NULL, NULL, NULL,  _IONBF,           4},
 			{ -1, NULL, NULL, NULL, NULL,  _IONBF,           5},
@@ -35,7 +33,6 @@ FILE _ftable[_NFILE] = {{  0, NULL, NULL, NULL, NULL, (_MODER | _IOLBF), 0},
 			{ -1, NULL, NULL, NULL, NULL,  _IONBF,           17},
 			{ -1, NULL, NULL, NULL, NULL,  _IONBF,           18},
 			{ -1, NULL, NULL, NULL, NULL,  _IONBF,           19} 
-#endif
 			};
 
 /*---------------------------------------------------------------------------*/
