@@ -17,8 +17,8 @@ INCLUDE += $(SRCDIR)/netsurf/emoport
 
 
 SRC = src/select/computed.c
-SRC += src/select/select.c
-SRC += src/select/hash.c
+SRC += src/select/libcssselect.c
+SRC += src/select/libcsshash.c
 SRC += src/select/properties.c
 SRC += src/select/dispatch.c
 SRC += src/stylesheet.c
