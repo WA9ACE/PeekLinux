@@ -20,6 +20,7 @@ CMD_OPT_PP = $(BUILDDIR)/lcfgen.pp
 UNDEFINE += 
 
 SRCSUBDIR  = netdepends/hubbub-0.0.2 
+SRCSUBDIR += netdepends/libwapcaplet
 SRCSUBDIR += netdepends/libparserutils
 SRCSUBDIR += netdepends/libxml2
 SRCSUBDIR += netdepends/libnsfb
@@ -49,6 +50,7 @@ SRCLIB += $(SRCDIR)/netdepends/libnsfb/libnsfb.a
 SRCLIB += $(SRCDIR)/netdepends/libxml2/libxml2.a 
 SRCLIB += $(SRCDIR)/netdepends/libparserutils/libparserutils.a 
 SRCLIB += $(SRCDIR)/netdepends/hubbub-0.0.2/libhubbub.a 
+SRCLIB += $(SRCDIR)/netdepends/libwapcaplet/libwapcaplet.a
 SRCLIB += $(SRCDIR)/emobiix/protocol/protocol.a
 
 CMD_MAP  = $(M23DIR)/chipsetsw/system/template/gsm_is_lj3.template 

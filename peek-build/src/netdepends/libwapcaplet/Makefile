@@ -1,45 +1,36 @@
-# Component settings
-COMPONENT := wapcaplet
-COMPONENT_VERSION := 0.0.2
-# Default to a static library
-COMPONENT_TYPE ?= lib-static
+VARIANT_DEFINE :=
 
-# Setup the tooling
-include build/makefiles/Makefile.tools
+DEFINE += alloca=p_malloc
+DEFINE += malloc=p_malloc
+DEFINE += calloc=p_calloc
+DEFINE += realloc=p_realloc
+DEFINE += free=p_free
+DEFINE += printf=emo_printf
 
-# Reevaluate when used, as BUILDDIR won't be defined yet
-TESTRUNNER = $(BUILDDIR)/test_testrunner$(EXEEXT)
+INCLUDE += $(SRCDIR)/include
+INCLUDE += $(SRCDIR)/netdepends/libwapcaplet/include
+INCLUDE += $(SRCDIR)/netsurf/emoport
 
-# Toolchain flags
-WARNFLAGS := -Wall -W -Wundef -Wpointer-arith -Wcast-align \
-	-Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes \
-	-Wmissing-declarations -Wnested-externs -pedantic
-# BeOS/Haiku standard library headers issue warnings
-ifneq ($(TARGET),beos)
-  WARNFLAGS := $(WARNFLAGS) -Werror
-endif
-CFLAGS := -D_BSD_SOURCE -I$(CURDIR)/include/ \
-	-I$(CURDIR)/src $(WARNFLAGS) $(CFLAGS)
-ifneq ($(GCCVER),2)
-  CFLAGS := $(CFLAGS) -std=c99
-else
-  # __inline__ is a GCCism
-  CFLAGS := $(CFLAGS) -Dinline="__inline__"
-endif
 
-include build/makefiles/Makefile.top
+SRC = src/libwapcaplet.c
 
-ifeq ($(WANT_TEST),yes)
-  ifneq ($(PKGCONFIG),)
-    TESTCFLAGS := $(TESTCFLAGS) $(shell $(PKGCONFIG) --cflags check)
-    TESTLDFLAGS := $(TESTLDFLAGS) $(shell $(PKGCONFIG) --libs check)
-  else
-    TESTLDFLAGS := $(TESTLDFLAGS) -lcheck
-  endif
-endif
+DEPS = $(patsubst %.o,%.d,$(OBJ))
 
-# Extra installation rules
-I := /include/libwapcaplet
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libwapcaplet/libwapcaplet.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) /lib/pkgconfig:lib$(COMPONENT).pc.in
-INSTALL_ITEMS := $(INSTALL_ITEMS) /lib:$(OUTPUT)
+TARGET = $(CURDIR)/libwapcaplet.a
+
+all: $(TARGET)
+OBJ  = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+$(TARGET): $(OBJ)
+	$(subst /cygdrive/c,C:,$(AR) $(ARFLAGS) $@ $?)
+
+clean:
+	$(RM) $(OBJ)
+	$(RM) $(TARGET)
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules
+
