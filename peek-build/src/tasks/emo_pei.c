@@ -263,6 +263,8 @@ void initLock(void) {
 	
 }
 */
+extern void peek_file_init(void);
+
 LOCAL SHORT pei_init (T_HANDLE handle)
 {
     T_RV_RET ret = RV_OK;
@@ -303,6 +305,7 @@ LOCAL SHORT pei_init (T_HANDLE handle)
 
     ExeInit();
     */
+	  peek_file_init();
     return (PEI_OK);
 } /* End pei_init(..) */
 
