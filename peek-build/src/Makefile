@@ -6,12 +6,14 @@ SUBDIR_DEPEND = $(SRCDIR)/zlib/libz.a \
 		$(SRCDIR)/lua/lua.a \
 		$(SRCDIR)/nmealib/nmealib.a \
 		$(SRCDIR)/emobiix/emobiix.a \
+		$(SRCDIR)/netsurf/libnetsurf.a \
+		$(SRCDIR)/regex/regex.a \
+		$(SRCDIR)/netdepends/libxml2/libxml2.a \
 		$(SRCDIR)/emobiix/protocol/protocol.a
 
 TARGET = $(SRCDIR)/vin.a
 
-SUBDIR = netsurf regex zlib libpng freetype2 lua nmealib tasks emobiix
-#SUBDIR = zlib libpng freetype2 lua nmealib tasks emobiix
+SUBDIR = netdepends/libxml2 netsurf regex zlib libpng freetype2 lua nmealib tasks emobiix
 
 .PHONY: $(SUBDIR)
 
@@ -39,5 +41,6 @@ clean:
 	$(MAKE) -C tasks clean
 	$(MAKE) -C regex clean
 	$(MAKE) -C netsurf clean
+	$(MAKE) -C libxml2 clean
 
 include $(BASEDIR)/Makefile.rules

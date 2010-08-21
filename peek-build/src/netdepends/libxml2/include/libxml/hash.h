@@ -53,7 +53,8 @@ extern "C" {
  * so it is disabled now
  */
 
-#define XML_CAST_FPTR(fptr) fptr
+//#define XML_CAST_FPTR(fptr) fptr
+#define XML_CAST_FPTR(fptr) (*(void **)(&fptr))
 
 
 /*

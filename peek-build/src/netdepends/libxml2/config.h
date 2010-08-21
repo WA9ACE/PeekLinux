@@ -8,11 +8,11 @@
 #define HAVE_ISNAN 
 /* #undef HAVE_LIBHISTORY */
 /* #undef HAVE_LIBREADLINE */
-#define HAVE_LIBPTHREAD 
-#define HAVE_PTHREAD_H 
+//#define HAVE_LIBPTHREAD 
+//#define HAVE_PTHREAD_H 
 
 /* Define if IPV6 support is there */
-#define SUPPORT_IP6 
+//#define SUPPORT_IP6 
 
 /* Define if getaddrinfo is there */
 #define HAVE_GETADDRINFO 
@@ -21,10 +21,10 @@
 /* #undef HAVE_ANSIDECL_H */
 
 /* Define to 1 if you have the <arpa/inet.h> header file. */
-#define HAVE_ARPA_INET_H 1
+//#define HAVE_ARPA_INET_H 1
 
 /* Define to 1 if you have the <arpa/nameser.h> header file. */
-#define HAVE_ARPA_NAMESER_H 1
+//#define HAVE_ARPA_NAMESER_H 1
 
 /* Whether struct sockaddr::__ss_family exists */
 /* #undef HAVE_BROKEN_SS_FAMILY */
@@ -39,10 +39,10 @@
 #define HAVE_DIRENT_H 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
-#define HAVE_DLFCN_H 1
+//#define HAVE_DLFCN_H 1
 
 /* Have dlopen based dso */
-#define HAVE_DLOPEN 
+//#define HAVE_DLOPEN 
 
 /* Define to 1 if you have the <dl.h> header file. */
 /* #undef HAVE_DL_H */
@@ -51,7 +51,7 @@
 #define HAVE_ERRNO_H 1
 
 /* Define to 1 if you have the <fcntl.h> header file. */
-#define HAVE_FCNTL_H 1
+//#define HAVE_FCNTL_H 1
 
 /* Define to 1 if you have the `finite' function. */
 #define HAVE_FINITE 1
@@ -78,7 +78,7 @@
 #define HAVE_GETADDRINFO 
 
 /* Define to 1 if you have the `gettimeofday' function. */
-#define HAVE_GETTIMEOFDAY 1
+//#define HAVE_GETTIMEOFDAY 1
 
 /* Define to 1 if you have the <ieeefp.h> header file. */
 /* #undef HAVE_IEEEFP_H */
@@ -102,7 +102,7 @@
 /* #undef HAVE_LIBHISTORY */
 
 /* Define if pthread library is there (-lpthread) */
-#define HAVE_LIBPTHREAD 
+//#define HAVE_LIBPTHREAD 
 
 /* Define if readline library is there (-lreadline) */
 /* #undef HAVE_LIBREADLINE */
@@ -144,7 +144,7 @@
 #define HAVE_PRINTF 1
 
 /* Define if <pthread.h> is there */
-#define HAVE_PTHREAD_H 
+//#define HAVE_PTHREAD_H 
 
 /* Define to 1 if you have the <resolv.h> header file. */
 #define HAVE_RESOLV_H 1
@@ -168,7 +168,7 @@
 #define HAVE_SSCANF 1
 
 /* Define to 1 if you have the `stat' function. */
-#define HAVE_STAT 1
+//#define HAVE_STAT 1
 
 /* Define to 1 if you have the <stdarg.h> header file. */
 #define HAVE_STDARG_H 1
@@ -212,10 +212,10 @@
 #define HAVE_SYS_SELECT_H 1
 
 /* Define to 1 if you have the <sys/socket.h> header file. */
-#define HAVE_SYS_SOCKET_H 1
+//#define HAVE_SYS_SOCKET_H 1
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
-#define HAVE_SYS_STAT_H 1
+//#define HAVE_SYS_STAT_H 1
 
 /* Define to 1 if you have the <sys/timeb.h> header file. */
 #define HAVE_SYS_TIMEB_H 1
@@ -224,13 +224,13 @@
 #define HAVE_SYS_TIME_H 1
 
 /* Define to 1 if you have the <sys/types.h> header file. */
-#define HAVE_SYS_TYPES_H 1
+//#define HAVE_SYS_TYPES_H 1
 
 /* Define to 1 if you have the <time.h> header file. */
 #define HAVE_TIME_H 1
 
 /* Define to 1 if you have the <unistd.h> header file. */
-#define HAVE_UNISTD_H 1
+//#define HAVE_UNISTD_H 1
 
 /* Whether va_copy() is available */
 #define HAVE_VA_COPY 1
