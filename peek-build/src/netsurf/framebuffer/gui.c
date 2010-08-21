@@ -502,7 +502,7 @@ gui_init(int argc, char** argv)
  * /return The return code to the OS
  */
 int
-main(int argc, char** argv)
+netsurf_main(int argc, char** argv)
 {
 	struct browser_window *bw;
 	char options[PATH_MAX];

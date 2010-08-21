@@ -770,7 +770,7 @@ hubbub_error set_quirks_mode(void *ctx, hubbub_quirks_mode mode)
 hubbub_error change_encoding(void *ctx, const char *charset)
 {
 	hubbub_ctx *c = (hubbub_ctx *) ctx;
-	uint32_t source;
+	hubbub_charset_source source;
 	const char *name;
 
 	/* If we have an encoding here, it means we are *certain* */

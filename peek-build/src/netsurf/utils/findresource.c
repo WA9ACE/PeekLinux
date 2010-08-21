@@ -23,7 +23,7 @@
  */
 
 //#include <sys/types.h>
-//#include <sys/stat.h>
+#include <sys/stat.h>
 #include <stdarg.h>
 #include <dirent.h>
 //#include <malloc.h>

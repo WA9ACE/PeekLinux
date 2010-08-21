@@ -29,7 +29,7 @@
 #include <strings.h>
 #include <stdio.h>
 #include <stdlib.h>
-//#include <sys/stat.h>
+#include <sys/stat.h>
 #include <time.h>
 #include "content/content_protected.h"
 #include "content/fetch.h"

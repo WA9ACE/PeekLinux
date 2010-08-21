@@ -24,7 +24,7 @@ S_DESKTOP := knockout.c options.c plot_style.c print.c search.c searchweb.c scro
 S_COMMON := $(addprefix content/,$(S_CONTENT)) $(addprefix css/,$(S_CSS)) $(addprefix render/,$(S_RENDER)) $(addprefix utils/,$(S_UTILS)) $(addprefix desktop/,$(S_DESKTOP))
 
 # S_IMAGE are sources related to image management
-S_IMAGE := bmp.c gif.c ico.c jpeg.c mng.c nssprite.c png.c svg.c rsvg.c
+S_IMAGE := bmp.c gif.c ico.c jpeg.c mng.c nssprite.c netsurfpng.c svg.c rsvg.c
 S_IMAGE := $(addprefix image/,$(S_IMAGE))
 
 # S_PDF are sources of the pdf plotter + the ones for paged-printing
