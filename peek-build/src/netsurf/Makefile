@@ -17,8 +17,12 @@ INCLUDE += $(SRCDIR)/netdepends/libnsfb/include
 INCLUDE += $(SRCDIR)/zlib
 INCLUDE += $(SRCDIR)/freetype2/include
 INCLUDE += $(SRCDIR)/regex
+INCLUDE += $(M23DIR)/config
+INCLUDE += $(M23DIR)/csw-system/drv_app/ffs
+INCLUDE += $(M23DIR)/chipsetsw/riviera
+INCLUDE += $(M23DIR)/csw-system/drv_core
 
-S_PORT := ceilf.c strcmp.c gettimeofday.c strtof.c iconv.c locale.c
+S_PORT := ceilf.c strcmp.c gettimeofday.c strtof.c iconv.c locale.c realpath.c
 #S_CONTENT := content.c fetch.c hlcache.c llcache.c urldb.c fetchers/fetch_curl.c fetchers/fetch_data.c
 S_CONTENT := content.c fetch.c hlcache.c llcache.c urldb.c
 S_CSS := css.c dump.c internal.c select.c utils.c
