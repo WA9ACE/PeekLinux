@@ -27,6 +27,7 @@
 #include <strings.h>
 #include <iconv.h>
 #include "errno.h"
+#include "emoerrno.h"
 #include <parserutils/charset/utf8.h>
 
 #include "utils/config.h"

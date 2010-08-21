@@ -48,6 +48,7 @@
 #include "utils/utils.h"
 #include "utils/utf8.h"
 #include "errno.h"
+#include "emoerrno.h"
 
 #define CHUNK 20480
 #define MARGIN 4
