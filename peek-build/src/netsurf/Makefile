@@ -1,6 +1,8 @@
 DEFINE  = strdup=p_strdup
-DEFINE  += NETSURF_HOMEPAGE="\"www.emobiix.com\""
-DEFINE  += NETSURF_FB_RESPATH="\"netsurf\""
+DEFINE += nsframebuffer
+DEFINE += NETSURF_HOMEPAGE="\"www.emobiix.com\""
+DEFINE += NETSURF_FB_RESPATH="\"netsurf\""
+DEFINE += LIBICONV_PLUG
 
 INCLUDE  = $(SRCDIR)/netsurf/emoport
 INCLUDE += $(SRCDIR)/netsurf
