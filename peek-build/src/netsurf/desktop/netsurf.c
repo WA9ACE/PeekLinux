@@ -139,6 +139,9 @@ nserror netsurf_init(int *pargc,
 #ifdef _MEMDEBUG_H_
 	memdebug_memdebug("memdump");
 #endif
+#ifdef EMO_DEBUG
+	verbose_log = true;
+#endif
 	LOG(("version '%s'", netsurf_version));
 	if (uname(&utsname) < 0)
 		LOG(("Failed to extract machine information"));
@@ -149,8 +152,8 @@ nserror netsurf_init(int *pargc,
 				utsname.version, utsname.machine));
 
 	LOG(("Using '%s' for Options file", options));
-	options_read(options);
-
+	//options_read(options);
+	
 	messages_load(messages);
 
 	lwc_initialise(netsurf_lwc_alloc, NULL, 0);

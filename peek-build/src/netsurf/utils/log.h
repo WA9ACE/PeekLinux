@@ -31,7 +31,7 @@
 #  elif defined(__CC_NORCROFT)
 #    define LOG(x) do { if (verbose_log) (printf(__FILE__ " %s %i: ", __func__, __LINE__), printf x, fputc('\n', stdout)); } while (0)
 #  else
-#    define LOG(x) do { if (verbose_log) (printf(__FILE__ " %i: ", __LINE__), printf x, fputc('\n', stdout)); } while (0)
+#    define LOG(x) do { if (verbose_log) (emo_printf(__FILE__ " %i: ", __LINE__), emo_printf x); } while (0)
 #  endif
 #endif
 
