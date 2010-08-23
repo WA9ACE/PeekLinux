@@ -33,7 +33,7 @@ void warn_user(const char *warning, const char *detail)
 
 void die(const char *error)
 {
-        emo_printf("Die baby die()");
+        emo_printf("Die(): %s", error);
         while(1)
                 TCCE_Task_Sleep(1000);
 }

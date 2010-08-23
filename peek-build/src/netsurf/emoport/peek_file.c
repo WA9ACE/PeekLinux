@@ -5,15 +5,17 @@ static int peek_open(const char *path, unsigned flags, int llv_fd)
 {
 	int openflag = 0;
 	
-	if (flags & O_RDONLY == O_RDONLY) openflag |= FFS_O_RDONLY;
-	if (flags & O_WRONLY == O_WRONLY) openflag |= FFS_O_WRONLY;
-	if (flags & O_RDWR == O_RDWR) openflag |= FFS_O_RDWR;
-	if (flags & O_APPEND == O_APPEND) openflag |= FFS_O_APPEND;
-	if (flags & O_CREAT == O_CREAT) openflag |= O_CREAT;
-	if (flags & O_TRUNC == O_TRUNC) openflag |= FFS_O_TRUNC;
-//	if (flags & O_BINARY == O_BINARY) openflag |= FFS_O_BINARY;
+	if (!flags) openflag |= FFS_O_RDONLY;
+	if ((flags & O_WRONLY) == O_WRONLY) openflag |= FFS_O_WRONLY;
+	if ((flags & O_RDWR) == O_RDWR) openflag |= FFS_O_RDWR;
+	if ((flags & O_APPEND) == O_APPEND) openflag |= FFS_O_APPEND;
+	if ((flags & O_CREAT) == O_CREAT) openflag |= FFS_O_CREATE;
+	if ((flags & O_TRUNC) == O_TRUNC) openflag |= FFS_O_TRUNC;
+	
+        for(;*path != '/';path++)
+                ;
 
-	return ffs_open(path, flags);
+	return ffs_open(path, openflag);
 }
 
 static int peek_close(int dev_fd)
@@ -44,11 +46,19 @@ static off_t peek_seek(int dev_fd, off_t offset, int origin)
 
 static int peek_unlink(const char *path)
 {
+        for(;*path != '/';path++)
+                ;
+
 	return ffs_remove(path);
 }
 
 static int peek_rename(const char *old_name, const char *new_name)
 {
+        for(;*old_name != '/';old_name++)
+                ;
+        for(;*new_name != '/';new_name++)
+                ;
+
 	return ffs_rename(old_name, new_name);
 }
 
