@@ -81,9 +81,13 @@ char *url_to_path(const char *url)
 
 char *fb_find_resource(char *buf, const char *filename, const char *def)
 {
-	char *cdir = getenv("HOME");
-	char t[PATH_MAX];
+	//char *cdir = getenv("HOME");
+	//char t[PATH_MAX];
+	strncpy(buf, def, PATH_MAX);
 
+	return buf;
+	
+#if 0
 	if (cdir != NULL) {
 		strcpy(t, cdir);
 		strcat(t, "/.netsurf/");
@@ -128,8 +132,8 @@ char *fb_find_resource(char *buf, const char *filename, const char *def)
                         strcpy(buf, def);
                 }
 	}
-
 	return buf;
+#endif
 }
 
 

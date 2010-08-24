@@ -152,7 +152,7 @@ nserror netsurf_init(int *pargc,
 				utsname.version, utsname.machine));
 
 	LOG(("Using '%s' for Options file", options));
-	//options_read(options);
+	options_read(options);
 	
 	messages_load(messages);
 

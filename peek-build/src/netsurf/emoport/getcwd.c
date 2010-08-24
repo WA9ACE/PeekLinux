@@ -1,6 +1,9 @@
 #include "p_malloc.h"
 
-long getcwd(char *buf, unsigned long size) {
-	buf = p_strdup("/");
-	return (long)buf; 
+char *getcwd(char *buf, unsigned long size) {
+	if (!buf)
+		return 0;
+
+	strcpy(buf, "/");
+	return buf;
 }

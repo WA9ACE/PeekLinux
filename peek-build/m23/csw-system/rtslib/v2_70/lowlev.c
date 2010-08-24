@@ -39,13 +39,13 @@ typedef struct {
    int 	  	  (*RENAME) (const char *old_name, const char *new_name);
 } _DEVICE;
 
-extern _CODE_ACCESS int HOSTopen(const char *path, unsigned flags, int llv_fd),
-                        HOSTclose(int dev_fd),
-                        HOSTread(int dev_fd, char *buf, unsigned count),
-                        HOSTwrite(int dev_fd, const char *buf, unsigned count),
-                        HOSTunlink(const char *path),
-                        HOSTrename(const char *old_name, const char *new_name);
-extern _CODE_ACCESS off_t HOSTlseek(int dev_fd, off_t offset, int origin);
+extern int DStreamopen(const char *path, unsigned flags, int llv_fd);
+extern int DStreamclose(int dev_fd);
+extern int DStreamread(int dev_fd, char *buf, unsigned count);
+extern int DStreamwrite(int dev_fd, const char *buf, unsigned count);
+extern int DStreamunlink(const char *path);
+extern int DStreamrename(const char *old_name, const char *new_name);
+extern off_t DStreamlseek(int dev_fd, off_t offset, int origin);
 
 static _CODE_ACCESS void tabinit(void);
 static _CODE_ACCESS _DEVICE *finddevice(const char *devname);
@@ -90,8 +90,21 @@ static _CODE_ACCESS void tabinit(void)
        for (st = &_stream[3]; st != &_stream[_NSTREAM]; (st++)->dev = NULL);
        for (dt = &_device[1]; dt != &_device[_NDEVICE]; *(dt++)->name = '\0');
        init = 1;
-   }
 
+	dt =  &_device[0];
+	strncpy(dt->name,"default",8);
+	dt->name[8] = '\0';
+	dt->flags   = 0;
+	dt->OPEN    = DStreamopen;
+	dt->CLOSE   = DStreamclose;
+	dt->READ    = DStreamread;
+	dt->WRITE   = DStreamwrite;
+	dt->LSEEK   = DStreamlseek;
+	dt->UNLINK  = DStreamunlink;
+	dt->RENAME  = DStreamrename;
+    }
+
+   
    _unlock();
 }
 

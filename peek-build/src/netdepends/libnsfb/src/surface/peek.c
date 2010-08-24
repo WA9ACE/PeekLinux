@@ -19,6 +19,7 @@
 #include "cursor.h"
 
 extern uint8_t* get_LCD_bitmap(void);
+extern void dspl_Enable(uint8_t);
 
 static int peek_geometry(nsfb_t *nsfb, int width, int height, int bpp)
 {
@@ -63,6 +64,7 @@ static int peek_claim(nsfb_t *nsfb, nsfb_bbox_t *box)
 {
 	struct nsfb_cursor_s *cursor = nsfb->cursor;
 
+	dspl_Enable(0);
 	if ((cursor != NULL) && 
 			(cursor->plotted == true) && 
 			(nsfb_plot_bbox_intersect(box, &cursor->loc))) {
@@ -77,12 +79,15 @@ static int peek_claim(nsfb_t *nsfb, nsfb_bbox_t *box)
 		cursor->plotted = false;
 	}
 
+	dspl_Enable(1);
 	return 0;
 }
 
 static int peek_cursor(nsfb_t *nsfb, struct nsfb_cursor_s *cursor)
 {
 	nsfb_bbox_t sclip;
+
+	dspl_Enable(0);
 
 	if ((cursor != NULL) && (cursor->plotted == true)) {
 		sclip = nsfb->clip;
@@ -101,6 +106,8 @@ static int peek_cursor(nsfb_t *nsfb, struct nsfb_cursor_s *cursor)
 
 		nsfb->clip = sclip;
 	}
+
+	dspl_Enable(1);
 	return true;
 }
 
@@ -109,10 +116,13 @@ static int peek_update(nsfb_t *nsfb, nsfb_bbox_t *box)
 {
 	struct nsfb_cursor_s *cursor = nsfb->cursor;
 
+	dspl_Enable(0);
+
 	if ((cursor != NULL) && (cursor->plotted == false)) {
 		nsfb_cursor_plot(nsfb, cursor);
 	}
 
+	dspl_Enable(1);
 	return 0;
 }
 
@@ -127,5 +137,9 @@ const nsfb_frontend_rtns_t peek_rtns = {
 	peek_cursor				/* cursor */
 };
 
-NSFB_FRONTEND_DEF(peek, NSFB_FRONTEND_PEEK, &peek_rtns)
+//NSFB_FRONTEND_DEF(peek, NSFB_FRONTEND_PEEK, &peek_rtns)
+void peek_register_frontend(void) 
+{ 
+	_nsfb_register_frontend(NSFB_FRONTEND_PEEK, &peek_rtns, "peek"); 
+}
 

@@ -25,6 +25,12 @@
 
 #define MAX_READLINKS 32
 
+char *realpath(const char *path, char *resolved_path)
+{
+	return strncpy(resolved_path, path, PATH_MAX);
+}
+
+#if 0
 char *realpath(const char *path, char got_path[])
 {
 	char copy_path[PATH_MAX];
@@ -148,4 +154,4 @@ char *realpath(const char *path, char got_path[])
 	*new_path = '\0';
 	return got_path;
 }
-
+#endif

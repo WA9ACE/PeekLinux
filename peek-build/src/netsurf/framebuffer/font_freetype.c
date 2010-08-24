@@ -168,9 +168,7 @@ bool fb_font_init(void)
 
         fb_faces[FB_FACE_SANS_SERIF] = NULL;
         fb_faces[FB_FACE_SANS_SERIF] = 
-                fb_new_face(option_fb_face_sans_serif,
-                            "sans_serif.ttf",
-                            DEJAVU_PATH"DejaVuSans.ttf");
+                fb_new_face(option_fb_face_sans_serif, "DroidSans.ttf", "peekffs:DroidSans.ttf");
         if (fb_faces[FB_FACE_SANS_SERIF] == NULL) {
                 LOG(("Could not find default font (code %d)\n", error));
                 FTC_Manager_Done(ft_cmanager );
@@ -180,33 +178,34 @@ bool fb_font_init(void)
 
         fb_faces[FB_FACE_SANS_SERIF_BOLD] = 
                 fb_new_face(option_fb_face_sans_serif_bold,
-                            "sans_serif_bold.ttf",
-                            DEJAVU_PATH"DejaVuSans-Bold.ttf");
+                            "DroidSans.ttf",
+                            "peekffs:DroidSans.ttf");
 
         fb_faces[FB_FACE_SANS_SERIF_ITALIC] = 
                 fb_new_face(option_fb_face_sans_serif_italic,
-                            "sans_serif_italic.ttf",
-                            DEJAVU_PATH"DejaVuSans-Oblique.ttf");
+                            "DroidSans.ttf",
+                            "peekffs:DroidSans.ttf");
+
 
         fb_faces[FB_FACE_SANS_SERIF_ITALIC_BOLD] = 
                 fb_new_face(option_fb_face_sans_serif_italic_bold, 
-                            "sans_serif_italic_bold.ttf",
-                            DEJAVU_PATH"DejaVuSans-BoldOblique.ttf");
+                            "DroidSans.ttf",
+                            "peekffs:DroidSans.ttf");
 
         fb_faces[FB_FACE_MONOSPACE] = 
                 fb_new_face(option_fb_face_monospace,
-                            "monospace.ttf",
-                            DEJAVU_PATH"DejaVuSansMono.ttf");
+                            "DroidSans.ttf",
+                            "peekffs:DroidSans.ttf");
 
         fb_faces[FB_FACE_SERIF] = 
                 fb_new_face(option_fb_face_serif,
-                            "serif.ttf",
-                            DEJAVU_PATH"DejaVuSerif.ttf");
+                            "DroidSans.ttf",
+                            "peekffs:DroidSans.ttf");
 
         fb_faces[FB_FACE_SERIF_BOLD] = 
                 fb_new_face(option_fb_face_serif_bold,
-                            "serif_bold.ttf",
-                            DEJAVU_PATH"DejaVuSerif-Bold.ttf");
+                            "DroidSans.ttf",
+                            "peekffs:DroidSans.ttf");
         
         /* set the default render mode */
         if (option_fb_font_monochrome == true)

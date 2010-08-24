@@ -17,6 +17,12 @@ static int peek_open(const char *path, unsigned flags, int llv_fd)
 	if ((flags & O_CREAT) == O_CREAT) openflag |= FFS_O_CREATE;
 	if ((flags & O_TRUNC) == O_TRUNC) openflag |= FFS_O_TRUNC;
 
+	/* No binary flag in FFS and RO is = 0
+	 * So if binary is set and nothing else assume RO
+	 * Otherwise we ignore it */ 
+        if (flags == O_BINARY) openflag |= FFS_O_RDONLY;
+
+
 	return ffs_open(path, openflag);
 }
 
