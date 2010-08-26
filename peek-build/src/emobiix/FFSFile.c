@@ -46,9 +46,9 @@ int file_read(File *f, int bytes, void *buffer)
 	return ffs_read(f->handle, buffer, bytes);
 }
 
-int file_write(File *f, int bytes, void *buffer)
+int file_write(File *f, int bytes, const void *buffer)
 {
-	return ffs_write(f->handle, buffer, bytes);
+	return ffs_write(f->handle, (void *)buffer, bytes);
 }
 
 int file_seek(File *f, int offset, FilePosition pos)
@@ -103,6 +103,15 @@ int file_close(File *f)
 	return ffsCret;
 }
 
+int file_mkdir(const char *directory)
+{
+	return ffs_mkdir(directory);
+}
+
+int file_move(const char *fromfile, const char *tofile)
+{
+	return ffs_rename(fromfile, tofile);
+}
 
 /* posix wrapper stuff */
 

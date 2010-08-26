@@ -15,7 +15,7 @@ File *file_openWrite(const char *filename);
 File *file_openAppend(const char *filename);
 
 int file_read(File *f, int bytes, void *buffer);
-int file_write(File *f, int bytes, void *buffer);
+int file_write(File *f, int bytes, const void *buffer);
 
 int file_seek(File *f, int offset, FilePosition pos);
 int file_pos(File *f);
@@ -25,6 +25,7 @@ int file_size(File *f);
 int file_close(File *f);
 
 int file_mkdir(const char *directory);
+int file_move(const char *fromstr, const char *tostr);
 
 #ifdef __cplusplus
 }
