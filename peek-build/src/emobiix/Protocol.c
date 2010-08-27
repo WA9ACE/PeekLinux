@@ -30,11 +30,12 @@ SyncOperandP_t *protocol_serializeField(DataObject *sobj, const char *fieldName)
 {
 	SyncOperandP_t *syncOp;
 	DataObjectField *field;
+	char fieldstr[64];
 
 	EMO_ASSERT_NULL(sobj != NULL, "protocol serialize field missing DataObject")
 	EMO_ASSERT_NULL(fieldName != NULL, "protocol serialize field missing name")
 
-	emo_printf("Serializing field: %s\n", fieldName);
+	/*emo_printf("Serializing field: %s\n", fieldName);*/
 
 	syncOp = (SyncOperandP_t *)p_malloc(sizeof(SyncOperandP_t));
 	syncOp->fieldNameP.buf = NULL;
@@ -53,8 +54,18 @@ SyncOperandP_t *protocol_serializeField(DataObject *sobj, const char *fieldName)
                 field->field.data.size);
 		syncOp->syncP.choice.syncModifyP.modifySizeP = field->field.data.size;
 		syncOp->syncP.choice.syncModifyP.modifyOffsetP = 0;
+	} else if (field->type == DOF_INT || field->type == DOF_UINT) {
+		if (field->type == DOF_INT)
+			snprintf(fieldstr, 64, "%d", field->field.integer);
+		else
+			snprintf(fieldstr, 64, "%ud", field->field.uinteger);
+		syncOp->syncP.present = syncP_PR_syncSetP;
+		syncOp->syncP.choice.syncSetP.buf = NULL;
+        OCTET_STRING_fromBuf(&syncOp->syncP.choice.syncSetP,
+				fieldstr, strlen(fieldstr));
 	} else {
         emo_printf("Unsupported field type in sync" NL);
+		emo_abort;
 		p_free(syncOp);
 		return NULL;
 	}
