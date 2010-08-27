@@ -24,9 +24,11 @@ void manager_loadApplication(DataObject *dobj, int focus, URL *url);
 void manager_loadApplicationReal(DataObject *dobj, int launch, int focus, URL *url);
 Application *manager_getBootApp(void);
 Style *manager_getRootStyle(void);
-void manager_showDialog(DataObject *dobj);
+void manager_showDialog(const char *name);
+void manager_finishDialog(void);
 void manager_showMenu(DataObject *dobj);
 void manager_focusView(DataObject *dobj);
+void manager_debugPrint(void);
 
 #ifdef __cplusplus
 }

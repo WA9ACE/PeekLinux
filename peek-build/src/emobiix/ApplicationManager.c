@@ -17,6 +17,7 @@
 #include "Hardware.h"
 #include "Mime.h"
 #include "RenderManager.h"
+#include "Cache.h"
 
 #include "p_malloc.h"
 
@@ -54,6 +55,7 @@ Application *manager_getBootApp(void) {
 void manager_init(void)
 {
     Application *bootApp;
+	URL *burl, *rurl;
 
 	appManager = (ApplicationManager *)p_malloc(sizeof(ApplicationManager));
     if (appManager == NULL) {
@@ -73,6 +75,7 @@ void manager_init(void)
         emo_printf("Failed to create root style" NL);
         return;
     }
+	/*dataobject_debugPrint(appManager->style);*/
 
 	HardwareInit();
 
@@ -82,6 +85,9 @@ void manager_init(void)
 		emo_printf("Fatal - Root application failed to load" NL);
 		return;
 	}
+	/*dataobject_debugPrint(appManager->rootApplicationObj);*/
+	rurl = url_parse("xml://local/RootApplication/RootApplication.xml", URL_ALL);
+	application_setURL(appManager->rootApplication, rurl);
 	appManager->rootApplicationWindow =
 			application_getCurrentScreen(appManager->rootApplication);
 	appManager->rootApplicationPlaceHolder =
@@ -94,12 +100,22 @@ void manager_init(void)
 			dataobject_findByName(appManager->rootApplicationWindow,
 			"dialogholder");
 
+	list_delete(appManager->applications);
+	appManager->applications = list_new();
+
     bootApp = application_load(BootApplication());
+	/*dataobject_debugPrint(application_getDataObject(bootApp));*/
+	burl = url_parse("xml://local/RootApplication/BootApplication.xml", URL_ALL);
+	dataobject_exportGlobal(BootApplication(), burl, 1);
+	application_setURL(bootApp, burl);
 	/*bootApp = application_load(LockApplication());*/
-    	manager_launchApplication(bootApp);
+    manager_launchApplication(bootApp);
 
 	manager_focusApplication(bootApp);
 	appManager->bootApp = bootApp;
+
+	appManager->loadingApplication = NULL;
+	cache_commit();
 }
 
 void manager_drawScreen(void)
@@ -237,6 +253,7 @@ void manager_focusApplication(Application *app)
     DataObject *currentScreen, *appObj;
 	Style *style;
 	DataObjectField *field;
+	const URL *appURL;
     /*ListIterator iter;*/
 
 	EMO_ASSERT(app != NULL,
@@ -251,7 +268,11 @@ void manager_focusApplication(Application *app)
 		return;
 	}
 
-	widget_setDataObject(appManager->rootApplicationPlaceHolder, appObj);
+	appURL = application_getURL(app);
+	dataobject_setValue(appManager->rootApplicationPlaceHolder, "reference",
+			dataobjectfield_string(appURL->all));
+	dataobject_resolveReferences(appManager->rootApplicationPlaceHolder);
+	/*widget_setDataObject(appManager->rootApplicationPlaceHolder, appObj);*/
 
 	style = application_getCurrentStyle(app);
 	if (style == NULL)
@@ -346,6 +367,8 @@ void manager_loadApplicationReal(DataObject *dobj, int launch, int focus, URL *u
 		manager_launchApplication(app);
 	if (focus)
 		manager_focusApplication(app);
+
+	/*dataobject_debugPrint(dobj);*/
 }
 
 Style *manager_getRootStyle(void)
@@ -353,17 +376,46 @@ Style *manager_getRootStyle(void)
 	return appManager->style;
 }
 
-void manager_showDialog(DataObject *dobj)
+void manager_showDialog(const char *name)
 {
-	EMO_ASSERT(dobj != NULL,
-			"Manager show dialog on NULL DataObject")
+	DataObjectField *field;
 
-	dataobject_pack(appManager->rootApplicationDialogHolder, dobj);
+	EMO_ASSERT(name != NULL,
+			"Manager show dialog on NULL name")
+
+	field = dataobjectfield_string(name);
+	dataobjectfield_setIsModified(field, 1);
+	dataobject_setValue(appManager->rootApplicationDialogHolder,
+			"reference", field);
+	dataobject_resolveReferences(appManager->rootApplicationDialogHolder);
+	dataobject_setIsModified(appManager->rootApplicationDialogHolder, 1);
+	dataobject_setValue(dataobject_parent(appManager->rootApplicationDialogHolder),
+			"focusstack", dataobjectfield_int(2));
 
 	widget_resolveLayout(appManager->rootApplicationWindow,
 			appManager->style);
 
 	widget_markDirty(appManager->rootApplicationWindow);
+	
+	renderman_clearQueue();
+
+	/*dataobject_debugPrint(application_getDataObject(appManager->focus));*/
+}
+
+void manager_finishDialog(void)
+{
+	dataobject_unsetValue(appManager->rootApplicationDialogHolder,
+			"reference");
+	dataobject_resolveReferences(appManager->rootApplicationDialogHolder);
+	dataobject_setValue(dataobject_parent(appManager->rootApplicationDialogHolder),
+			"focusstack", dataobjectfield_int(-1));
+	
+	widget_resolveLayout(appManager->rootApplicationWindow,
+			appManager->style);
+
+	widget_markDirty(appManager->rootApplicationWindow);
+
+	renderman_clearQueue();
 }
 
 void manager_showMenu(DataObject *dobj)
@@ -374,4 +426,9 @@ void manager_showMenu(DataObject *dobj)
 void manager_focusView(DataObject *dobj)
 {
 
+}
+
+void manager_debugPrint(void)
+{
+	dataobject_debugPrint(appManager->rootApplicationObj);
 }
