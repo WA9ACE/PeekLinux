@@ -94,6 +94,8 @@ SRC += LabelWidget.c
 SRC += StaticApplications.c
 SRC += CheckBoxWidget.c
 SRC += RenderManager.c
+SRC += Cache.c
+SRC += StackWidget.c
 
 ifneq (,$(findstring EMO_SIM,$(VARIANT_DEFINE)))
 SRC += SimDriver.c
