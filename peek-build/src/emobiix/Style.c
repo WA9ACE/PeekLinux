@@ -18,7 +18,7 @@ void style_renderWidgetTree(Style *s, Widget *w)
 	ListIterator iter;
 	const char *id;
 	DataObjectField *type = NULL;
-	DataObject *dobj = NULL, *singleChild = NULL, *child;
+	DataObject *dobj = NULL, *singleChild = NULL, *child, *root;
 	WidgetRenderer *wr;
 	Application *app;
 	Style *style = NULL, *childStyle;
@@ -63,19 +63,33 @@ void style_renderWidgetTree(Style *s, Widget *w)
 
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
-		if (child != NULL) {
+		if (child != NULL && child != w) {
 			app = manager_applicationForDataObject(child);
 			if (app != NULL) {
 				child = application_getCurrentScreen(app);
+				if (child != NULL) {
+					style = application_getCurrentStyle(app);
+					if (style == NULL)
+						style = manager_getRootStyle();
+					if (child != NULL)
+						style_renderWidgetTree(style, child);
+				}
+			}
+		}
+	} else if (dataobjectfield_isString(type, "reference")) {
+		child = widget_getDataObject(w);
+		if (child != NULL && child != w) {
+			root = dataobject_superparent(child);
+			app = manager_applicationForDataObject(root);
+			if (app != NULL) {
 				style = application_getCurrentStyle(app);
 				if (style == NULL)
 					style = manager_getRootStyle();
-				if (child != NULL)
-					style_renderWidgetTree(style, child);
+				style_renderWidgetTree(style, child);
 			}
 		}
 	} else {
-		widget_getChildren(w, &iter);
+		dataobject_childIterator(w, &iter);
 		while (!listIterator_finished(&iter)) {
 			style_renderWidgetTree(childStyle,
 					(Widget *)listIterator_item(&iter));
@@ -198,15 +212,11 @@ DataObjectField *style_getColor(Style *s, DataObject *dobj, const char *key,
 	EMO_ASSERT_NULL(key != NULL, "style get color missing key")
 	EMO_ASSERT_NULL(color != NULL, "style get color missing color")
 
-	output = style_getProperty(s, dobj, key);
+	output = style_getPropertyAsInt(s, dobj, key);
 	if (output == NULL)
 		return output;
 	if (output->type == DOF_UINT || output->type == DOF_INT) {
 		*color = output->field.uinteger;
-		return output;
-	}
-	if (output->type == DOF_STRING) {
-		sscanf(output->field.string, "%X", color);
 		return output;
 	}
 	return NULL;
