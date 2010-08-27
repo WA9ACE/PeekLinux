@@ -8,6 +8,7 @@
 #include "Application.h"
 #include "ApplicationManager.h"
 #include "RenderManager.h"
+#include "ArrayWidget.h"
 
 #include "p_malloc.h"
 
@@ -60,6 +61,7 @@ DataObject *dataobject_new(void)
 	output->data = map_string();
 	output->children = list_new();
 	output->referenced = list_new();
+	output->arrayChildren = list_new();
 	output->parent = NULL;
 	output->widgetData = NULL;
 	output->state = DOS_INIT;
@@ -87,7 +89,7 @@ DataObject *dataobject_copy(DataObject *dobj)
 
 	output = dataobject_new();
 	output->box = dobj->box;
-	output->flags1 = dobj->flags1;
+	output->flags1 = 0;
 	output->isLocal = dobj->isLocal;
 	output->margin = dobj->margin;
 	output->packing = dobj->packing;
@@ -101,7 +103,7 @@ DataObject *dataobject_copy(DataObject *dobj)
 	for (map_begin(dobj->data, &iter); !mapIterator_finished(&iter);
 			mapIterator_next(&iter)) {
 		field = dataobjectfield_copy((DataObjectField *)mapIterator_item(&iter, (void **)&key));
-		dataobject_setValue(dobj, key, field);
+		dataobject_setValue(output, key, field);
 	}
 
 	return output;
@@ -118,8 +120,8 @@ DataObject *dataobject_copyTree(DataObject *dobj)
 
 	for (list_begin(dobj->children, &iter); !listIterator_finished(&iter);
 			listIterator_next(&iter)) {
-		list_append(output->children,
-				dataobject_copy((DataObject *)listIterator_item(&iter)));
+		widget_pack(dataobject_copyTree((DataObject *)listIterator_item(&iter)),
+				output);
 	}
 
 	return output;
@@ -190,6 +192,20 @@ void dataobject_setValue(DataObject *dobj, const char *key, DataObjectField *v)
 	map_append(dobj->data, key, v);
 }
 
+void dataobject_unsetValue(DataObject *dobj, const char *key)
+{
+	DataObjectField *old;
+
+	EMO_ASSERT(dobj != NULL, "unsetValue on NULL DataObject")
+	EMO_ASSERT(key != NULL, "unsetValue missing key")
+
+	old = (DataObjectField *)map_find(dobj->data, key);
+	if (old != NULL) {
+		map_remove(dobj->data, key);
+		dataobjectfield_free(old);
+	}
+}
+
 DataObjectField *dataobject_getValue(DataObject *dobj, const char *key)
 {
 	DataObjectField *output;
@@ -213,6 +229,8 @@ DataObjectField *dataobject_getValueAsInt(DataObject *dobj, const char *key)
 {
 	DataObjectField *output;
 	char *str;
+	int len;
+	unsigned int tmpcol;
 
 	EMO_ASSERT_NULL(dobj != NULL, "getValueAsInt on NULL DataObject")
 	EMO_ASSERT_NULL(key != NULL, "getValueAsInt missing key")
@@ -226,7 +244,29 @@ DataObjectField *dataobject_getValueAsInt(DataObject *dobj, const char *key)
 
 	if (output->type == DOF_STRING) {
 		str = output->field.string;
-		output->field.integer = atoi(str);
+		if (str[0] == '#') {
+			len = strlen(str+1);
+			switch (len) {
+				case 8:
+				default:
+					sscanf(str+1, "%X", &output->field.uinteger);
+					break;
+				case 6:
+					sscanf(str+1, "%X", &output->field.uinteger);
+					output->field.uinteger <<= 8;
+					output->field.uinteger |= 0xFF;
+					break;
+				case 3:
+					sscanf(str+1, "%X", &tmpcol);
+					output->field.uinteger = ((tmpcol & 0xF00) << 20) | ((tmpcol & 0xF00) << 16);
+					output->field.uinteger |= ((tmpcol & 0x0F0) << 16) | ((tmpcol & 0x0F0) << 12);
+					output->field.uinteger |= ((tmpcol & 0x00F) << 12) | (tmpcol & 0x00F);
+					output->field.uinteger |= 0xFF;
+					break;
+			}
+		} else {
+			output->field.integer = atoi(str);
+		}
 		output->type = DOF_INT;
 		p_free(str);
 		return output;
@@ -318,10 +358,40 @@ void dataobject_fieldIterator(DataObject *dobj, MapIterator *iter)
 
 void dataobject_childIterator(DataObject *dobj, ListIterator *iter)
 {
+	DataObject *item;
+	DataObjectField *type;
+
 	EMO_ASSERT(dobj != NULL, "iterate children on NULL DataObject")
 	EMO_ASSERT(iter != NULL, "iterate children on DataObject without iterator")
 
 	list_begin(dobj->children, iter);
+	if (list_size(dobj->children) > 0) {
+		item = (DataObject *)listIterator_item(iter);
+		/*if (list_size(item->arrayChildren) > 0) {*/
+		type = dataobject_getValue(item, "type");
+		if (dataobjectfield_isString(type, "array")) {
+			list_begin(item->arrayChildren, iter);
+			return;
+		}
+	}
+}
+
+void dataobject_rchildIterator(DataObject *dobj, ListIterator *iter)
+{
+	DataObject *item;
+
+	EMO_ASSERT(dobj != NULL, "iterate children on NULL DataObject")
+	EMO_ASSERT(iter != NULL, "iterate children on DataObject without iterator")
+
+
+	list_rbegin(dobj->children, iter);
+	if (list_size(dobj->children) > 0) {
+		item = (DataObject *)listIterator_item(iter);
+		if (list_size(item->arrayChildren) > 0) {
+			list_rbegin(item->arrayChildren, iter);
+			return;
+		}
+	}
 }
 
 static DataObject *dataobject_getTreeR(DataObject *dobj, int *index)
@@ -535,17 +605,42 @@ DataObject *dataobject_superparent(DataObject *dobj)
 
 DataObject *dataobject_findByName(DataObject *dobj, const char *name)
 {
-	DataObjectField *field;
+	DataObjectField *field, *dtype;
 	ListIterator iter;
 	DataObject *child;
+	Application *app;
 
 	EMO_ASSERT_NULL(dobj != NULL, "findByName on NULL DataObject")
 	EMO_ASSERT_NULL(name != NULL, "findByName without name")
 
 	field = dataobject_getValue(dobj, "name");
-	if (field != NULL && field->type == DOF_STRING) {
-		if (strcmp(name, field->field.string) == 0)
-			return dobj;
+	if (dataobjectfield_isString(field, name)) {
+		emo_printf("Found, returning" NL);
+		return dobj;
+	}
+
+	dtype = dataobject_getValue(dobj, "type");
+	if (dataobjectfield_isString(dtype, "frame")) {
+		child = widget_getDataObject(dobj);
+		if (child != NULL) {
+			app = manager_applicationForDataObject(child);
+			if (app != NULL) {
+				/*child = application_getCurrentScreen(app);*/
+				child = application_getDataObject(app);
+				if (child != NULL) {
+					child = dataobject_findByName(child, name);
+					if (child != NULL)
+						return child;
+				}
+			}
+		}
+	} else if (dataobjectfield_isString(dtype, "reference")) {
+		child = widget_getDataObject(dobj);
+		if (child != NULL && child != dobj) {
+			child = dataobject_findByName(child, name);
+			if (child != NULL)
+				return child;
+		}
 	}
 
 	if (list_size(dobj->children) == 0)
@@ -616,7 +711,7 @@ void dataobject_setLayoutDirtyAll(DataObject *dobj)
 	type = dataobject_getValue(dobj, "type");
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(dobj);
-		if (child != NULL) {
+		if (child != NULL && child != dobj) {
 			app = manager_applicationForDataObject(child);
 			if (app != NULL) {
 				child = application_getCurrentScreen(app);
@@ -624,8 +719,13 @@ void dataobject_setLayoutDirtyAll(DataObject *dobj)
 					dataobject_setLayoutDirtyAll(child);
 			}
 		}
+	} else if (dataobjectfield_isString(type, "reference")) {
+		child = widget_getDataObject(dobj);
+		if (child != NULL && child != dobj)
+			dataobject_setLayoutDirtyAll(child);
 	} else {
-		list_begin(dobj->children, &iter);
+		dataobject_childIterator(dobj, &iter);
+		/*list_begin(dobj->children, &iter);*/
 		while (!listIterator_finished(&iter)) {
 			dataobject_setLayoutDirtyAll(
 					(DataObject *)listIterator_item(&iter));
@@ -660,8 +760,8 @@ static void dataobject_debugPrintR(DataObject *dobj, int level)
 	if (dataobject_getRecordType(dobj)) {
 		emo_printf("RecordObject<%p, ", dobj);
 	} else {
-		emo_printf("DataObject<%p, wh(%d, %d, %d, %d), margin(%d, %d)",
-				dobj, dobj->box.width, dobj->box.height,
+		emo_printf("DataObject<wh(%d, %d, %d, %d), margin(%d, %d)",
+				dobj->box.width, dobj->box.height,
 				dobj->box.x, dobj->box.y,
 				dobj->margin.x, dobj->margin.y);
 	}
@@ -700,12 +800,15 @@ static void dataobject_debugPrintR(DataObject *dobj, int level)
 		child = widget_getDataObject(dobj);
 		if (child != NULL) {
 			app = manager_applicationForDataObject(child);
-			child = application_getCurrentScreen(app);
-			if (child != NULL)
-				dataobject_debugPrintR(child, level+1);
+			if (app != NULL) {
+				child = application_getCurrentScreen(app);
+				if (child != NULL)
+					dataobject_debugPrintR(child, level+1);
+			}
 		}
 	} else {
-		list_begin(dobj->children, &citer);
+		dataobject_childIterator(dobj, &citer);
+		/*list_begin(dobj->children, &citer);*/
 		while (!listIterator_finished(&citer)) {
 			dataobject_debugPrintR((DataObject *)listIterator_item(&citer), level+1);
 			listIterator_next(&citer);
@@ -972,26 +1075,26 @@ void dataobject_resolveReferences(DataObject *dobj)
 
 	ref = widget_getDataObject(dobj);
 
-	if (ref == dobj) {
-		field = dataobject_getValue(dobj, "reference");
-		if (field != NULL && field->type == DOF_STRING) {
-			if (strchr(field->field.string, ':') != NULL) {
-				url = url_parse(field->field.string, URL_ALL);	
+	/*if (ref == dobj) {*/
+	field = dataobject_getValue(dobj, "reference");
+	if (field != NULL && field->type == DOF_STRING) {
+		if (strchr(field->field.string, ':') != NULL) {
+			url = url_parse(field->field.string, URL_ALL);	
+			ref = dataobject_locate(url);
+			if (ref == NULL) {
+				connectionContext_syncRequest(connectionContext, url);
 				ref = dataobject_locate(url);
-				if (ref == NULL) {
-					connectionContext_syncRequest(connectionContext, url);
-					ref = dataobject_locate(url);
-				}
-				if (ref != NULL)	
-					widget_setDataObject(dobj, ref);
-			} else {
-				parent = dataobject_superparent(dobj);
-				ref = dataobject_findByName(parent, field->field.string);
-				if (ref != NULL)
-					widget_setDataObject(dobj, ref);
 			}
+			widget_setDataObject(dobj, ref);
+		} else {
+			parent = dataobject_superparent(dobj);
+			ref = dataobject_findByName(parent, field->field.string);
+			widget_setDataObject(dobj, ref);
 		}
+	} else {
+		widget_setDataObject(dobj, NULL);
 	}
+	/*}*/
 
 	list_begin(dobj->children, &iter);
 	while (!listIterator_finished(&iter)) {
@@ -999,6 +1102,12 @@ void dataobject_resolveReferences(DataObject *dobj)
 		listIterator_next(&iter);
 	}
 	/*listIterator_delete(iter);*/
+
+	field = dataobject_getValue(dobj, "type");
+	if (dataobjectfield_isString(field, "array")) {
+		array_expand(dobj);
+		renderman_clearQueue();
+	}
 }
 
 
@@ -1042,14 +1151,18 @@ void dataobject_onsyncfinished(DataObject *dobj)
 
 	EMO_ASSERT(dobj != NULL, "syncfinishedcallback missing DataObject")
 	
+	script_event(dobj, "onsyncfinished");
+#if 0
 	emo_printf("Sync finished start" NL);
 	dataobject_onsyncfinishedR(dobj, &doneForced);
 	emo_printf("Sync finished end" NL);
+#endif
 }
 
 void dataobject_setIsModified(DataObject *dobj, int isModified)
 {
 	ListIterator iter;
+	DataObjectField *type;
 
 	EMO_ASSERT(dobj != NULL, "setting modified on NULL DataObject")
 
@@ -1060,6 +1173,11 @@ void dataobject_setIsModified(DataObject *dobj, int isModified)
 	} else {
 		renderman_dequeue(dobj);
 		dobj->flags1 &= ~DO_FLAG_CHANGED;
+	}
+
+	type = dataobject_getValue(dobj, "type");
+	if (dataobjectfield_isString(type, "array")) {
+		array_expand(dobj);
 	}
 
 	for (list_begin(dobj->referenced, &iter); !listIterator_finished(&iter);
