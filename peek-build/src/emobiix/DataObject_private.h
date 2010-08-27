@@ -19,6 +19,7 @@ struct DataObject_t {
 	List *referenced;
 
 	List *children;
+	List *arrayChildren;
 	DataObject *parent;
 
 	Rectangle margin, box;
