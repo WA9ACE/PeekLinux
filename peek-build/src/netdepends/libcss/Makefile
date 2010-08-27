@@ -6,6 +6,7 @@ DEFINE += calloc=p_calloc
 DEFINE += realloc=p_realloc
 DEFINE += free=p_free
 DEFINE += printf=emo_printf
+DEFINE += DEBUG_STACK
 
 INCLUDE += $(SRCDIR)/include
 INCLUDE += $(SRCDIR)/netdepends/libwapcaplet/include
@@ -14,6 +15,11 @@ INCLUDE += $(SRCDIR)/netdepends/libcss/include
 INCLUDE += $(SRCDIR)/netdepends/libparserutils/include/parserutils
 INCLUDE += $(SRCDIR)/netdepends/libparserutils/include
 INCLUDE += $(SRCDIR)/netsurf/emoport
+
+CCOPTIMIZE0     = 
+CCOPTIMIZE1     =
+CCOPTIMIZE2     =
+CCOPTIMIZE3     =
 
 
 SRC = src/select/computed.c

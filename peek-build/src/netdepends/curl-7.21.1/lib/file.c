@@ -199,7 +199,7 @@ static CURLcode file_connect(struct connectdata *conn, bool *done)
   int i;
   char *actual_path;
 #endif
-
+   emo_printf("file_connect()");
   if(!real_path)
     return CURLE_OUT_OF_MEMORY;
 
@@ -354,7 +354,7 @@ static CURLcode file_upload(struct connectdata *conn)
 
   /* treat the negative resume offset value as the case of "-" */
   if(data->state.resume_from < 0) {
-    if(fstat(fileno(fp), &file_stat)) {
+    if(fstat(fp, &file_stat) < 0) {
       fclose(fp);
       failf(data, "Can't get the size of %s", file->path);
       return CURLE_WRITE_ERROR;

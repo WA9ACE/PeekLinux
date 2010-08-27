@@ -33,7 +33,31 @@ static int peek_close(int dev_fd)
 
 static int peek_read(int dev_fd, char *buf, unsigned count)
 {
-	return ffs_read(dev_fd, (void *)buf, count);
+	int ret = 0;
+
+	ret = ffs_read(dev_fd, (void *)buf, count);
+	
+	/*
+	if (ret > 0)
+	{
+		int i = 0;
+		char out[100] = "";
+
+		emo_printf("==BLOCKSTART== data read - %d\n", ret);
+		
+		while (i < ret)
+		{
+			//memset(out, 0, 81);
+			//memcpy(out, (char *)buf, ret - i > 80 ? 80 : ret - i);
+			emo_printf("%c", ((char *)buf)[i]);
+			i++;
+			//i += 80;
+		}
+
+		emo_printf("==BLOCKEND==\n");
+	}
+	*/
+	return ret;
 }
 
 static int peek_write(int dev_fd, const char *buf, unsigned count)

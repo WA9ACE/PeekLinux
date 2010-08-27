@@ -74,7 +74,7 @@
 /* #undef EGD_SOCKET */
 
 /* Define if you want to enable IPv6 support */
-#define ENABLE_IPV6 1
+#define ENABLE_IPV6 0
 
 /* Define to the type qualifier of arg 1 for getnameinfo. */
 #define GETNAMEINFO_QUAL_ARG1 const
@@ -98,16 +98,16 @@
 #define GETSERVBYPORT_R_BUFSIZE 4096
 
 /* Define to 1 if you have the alarm function. */
-#define HAVE_ALARM 1
+#define HAVE_ALARM 0 
 
 /* Define to 1 if you have the <alloca.h> header file. */
-#define HAVE_ALLOCA_H 1
+#define HAVE_ALLOCA_H 0 
 
 /* Define to 1 if you have the <arpa/inet.h> header file. */
-#define HAVE_ARPA_INET_H 1
+#define HAVE_ARPA_INET_H 0
 
 /* Define to 1 if you have the <arpa/tftp.h> header file. */
-#define HAVE_ARPA_TFTP_H 1
+#define HAVE_ARPA_TFTP_H 0
 
 /* Define to 1 if you have the <assert.h> header file. */
 #define HAVE_ASSERT_H 1
@@ -299,16 +299,16 @@
 /* #undef HAVE_INET_NTOA_R_3 */
 
 /* Define to 1 if you have a IPv6 capable working inet_ntop function. */
-#define HAVE_INET_NTOP 1
+#define HAVE_INET_NTOP 0
 
 /* Define to 1 if you have a IPv6 capable working inet_pton function. */
-#define HAVE_INET_PTON 1
+#define HAVE_INET_PTON 0
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
 
 /* Define to 1 if you have the ioctl function. */
-#define HAVE_IOCTL 1
+#define HAVE_IOCTL 0
 
 /* Define to 1 if you have the ioctlsocket function. */
 /* #undef HAVE_IOCTLSOCKET */
@@ -354,7 +354,7 @@
 /* #undef HAVE_LDAP_INIT_FD */
 
 /* Use LDAPS implementation */
-#define HAVE_LDAP_SSL 1
+//#define HAVE_LDAP_SSL 1
 
 /* Define to 1 if you have the ldap_ssl.h header file. */
 /* #undef HAVE_LDAP_SSL_H */
@@ -363,10 +363,10 @@
 /* #undef HAVE_LDAP_URL_PARSE */
 
 /* Define to 1 if you have the <libgen.h> header file. */
-#define HAVE_LIBGEN_H 1
+//#define HAVE_LIBGEN_H 1
 
 /* Define to 1 if you have the `idn' library (-lidn). */
-#define HAVE_LIBIDN 1
+//#define HAVE_LIBIDN 1
 
 /* Define to 1 if you have the `resolv' library (-lresolv). */
 /* #undef HAVE_LIBRESOLV */
@@ -399,7 +399,7 @@
 /* #undef HAVE_LIBSSH2_VERSION */
 
 /* Define to 1 if you have the `ssl' library (-lssl). */
-#define HAVE_LIBSSL 1
+//#define HAVE_LIBSSL 1
 
 /* if zlib is available */
 #define HAVE_LIBZ 1
@@ -408,13 +408,13 @@
 #define HAVE_LIMITS_H 1
 
 /* if your compiler supports LL */
-#define HAVE_LL 1
+//#define HAVE_LL 1
 
 /* Define to 1 if you have the <locale.h> header file. */
 #define HAVE_LOCALE_H 1
 
 /* Define to 1 if you have a working localtime_r function. */
-#define HAVE_LOCALTIME_R 1
+//#define HAVE_LOCALTIME_R 1
 
 /* Define to 1 if the compiler supports the 'long long' data type. */
 #define HAVE_LONGLONG 1
@@ -432,16 +432,16 @@
 #define HAVE_MSG_NOSIGNAL 1
 
 /* Define to 1 if you have the <netdb.h> header file. */
-#define HAVE_NETDB_H 1
+//#define HAVE_NETDB_H 1
 
 /* Define to 1 if you have the <netinet/in.h> header file. */
-#define HAVE_NETINET_IN_H 1
+//#define HAVE_NETINET_IN_H 1
 
 /* Define to 1 if you have the <netinet/tcp.h> header file. */
-#define HAVE_NETINET_TCP_H 1
+//#define HAVE_NETINET_TCP_H 1
 
 /* Define to 1 if you have the <net/if.h> header file. */
-#define HAVE_NET_IF_H 1
+//#define HAVE_NET_IF_H 1
 
 /* Define to 1 if NI_WITHSCOPEID exists and works. */
 /* #undef HAVE_NI_WITHSCOPEID */
@@ -451,28 +451,28 @@
 /* #undef HAVE_OLD_GSSMIT */
 
 /* Define to 1 if you have the <openssl/crypto.h> header file. */
-#define HAVE_OPENSSL_CRYPTO_H 1
+//#define HAVE_OPENSSL_CRYPTO_H 1
 
 /* Define to 1 if you have the <openssl/engine.h> header file. */
-#define HAVE_OPENSSL_ENGINE_H 1
+//#define HAVE_OPENSSL_ENGINE_H 1
 
 /* Define to 1 if you have the <openssl/err.h> header file. */
-#define HAVE_OPENSSL_ERR_H 1
+//#define HAVE_OPENSSL_ERR_H 1
 
 /* Define to 1 if you have the <openssl/pem.h> header file. */
-#define HAVE_OPENSSL_PEM_H 1
+//#define HAVE_OPENSSL_PEM_H 1
 
 /* Define to 1 if you have the <openssl/pkcs12.h> header file. */
-#define HAVE_OPENSSL_PKCS12_H 1
+//#define HAVE_OPENSSL_PKCS12_H 1
 
 /* Define to 1 if you have the <openssl/rsa.h> header file. */
-#define HAVE_OPENSSL_RSA_H 1
+//#define HAVE_OPENSSL_RSA_H 1
 
 /* Define to 1 if you have the <openssl/ssl.h> header file. */
-#define HAVE_OPENSSL_SSL_H 1
+//#define HAVE_OPENSSL_SSL_H 1
 
 /* Define to 1 if you have the <openssl/x509.h> header file. */
-#define HAVE_OPENSSL_X509_H 1
+//#define HAVE_OPENSSL_X509_H 1
 
 /* Define to 1 if you have the <pem.h> header file. */
 /* #undef HAVE_PEM_H */
@@ -481,19 +481,19 @@
 #define HAVE_PERROR 1
 
 /* Define to 1 if you have the `pipe' function. */
-#define HAVE_PIPE 1
+//#define HAVE_PIPE 1
 
 /* if you have the function PK11_CreateGenericObject */
 /* #undef HAVE_PK11_CREATEGENERICOBJECT */
 
 /* Define to 1 if you have a working poll function. */
-#define HAVE_POLL 1
+//#define HAVE_POLL 1
 
 /* If you have a fine poll */
-#define HAVE_POLL_FINE 1
+//#define HAVE_POLL_FINE 1
 
 /* Define to 1 if you have the <poll.h> header file. */
-#define HAVE_POLL_H 1
+//#define HAVE_POLL_H 1
 
 /* Define to 1 if you have a working POSIX-style strerror_r function. */
 #define HAVE_POSIX_STRERROR_R 1
@@ -505,13 +505,13 @@
 #define HAVE_PWD_H 1
 
 /* Define to 1 if you have the `RAND_egd' function. */
-#define HAVE_RAND_EGD 1
+//#define HAVE_RAND_EGD 1
 
 /* Define to 1 if you have the `RAND_screen' function. */
 /* #undef HAVE_RAND_SCREEN */
 
 /* Define to 1 if you have the `RAND_status' function. */
-#define HAVE_RAND_STATUS 1
+//#define HAVE_RAND_STATUS 1
 
 /* Define to 1 if you have the recv function. */
 #define HAVE_RECV 1
@@ -547,31 +547,31 @@
 /* #undef HAVE_SETSOCKOPT_SO_NONBLOCK */
 
 /* Define to 1 if you have the <sgtty.h> header file. */
-#define HAVE_SGTTY_H 1
+//#define HAVE_SGTTY_H 1
 
 /* Define to 1 if you have the sigaction function. */
-#define HAVE_SIGACTION 1
+//#define HAVE_SIGACTION 1
 
 /* Define to 1 if you have the siginterrupt function. */
-#define HAVE_SIGINTERRUPT 1
+//#define HAVE_SIGINTERRUPT 1
 
 /* Define to 1 if you have the signal function. */
-#define HAVE_SIGNAL 1
+//#define HAVE_SIGNAL 1
 
 /* Define to 1 if you have the <signal.h> header file. */
-#define HAVE_SIGNAL_H 1
+//#define HAVE_SIGNAL_H 1
 
 /* Define to 1 if you have the sigsetjmp function or macro. */
-#define HAVE_SIGSETJMP 1
+//#define HAVE_SIGSETJMP 1
 
 /* Define to 1 if sig_atomic_t is an available typedef. */
-#define HAVE_SIG_ATOMIC_T 1
+//#define HAVE_SIG_ATOMIC_T 1
 
 /* Define to 1 if sig_atomic_t is already defined as volatile. */
 /* #undef HAVE_SIG_ATOMIC_T_VOLATILE */
 
 /* Define to 1 if struct sockaddr_in6 has the sin6_scope_id member */
-#define HAVE_SOCKADDR_IN6_SIN6_SCOPE_ID 1
+//#define HAVE_SOCKADDR_IN6_SIN6_SCOPE_ID 1
 
 /* Define to 1 if you have the socket function. */
 #define HAVE_SOCKET 1
@@ -583,7 +583,7 @@
 /* #undef HAVE_SPNEGO */
 
 /* Define to 1 if you have the `SSL_get_shutdown' function. */
-#define HAVE_SSL_GET_SHUTDOWN 1
+//#define HAVE_SSL_GET_SHUTDOWN 1
 
 /* Define to 1 if you have the <ssl.h> header file. */
 /* #undef HAVE_SSL_H */
@@ -809,7 +809,7 @@
 #define PACKAGE_VERSION "-"
 
 /* a suitable file to read random data from */
-#define RANDOM_FILE "/dev/urandom"
+#define RANDOM_FILE "peekffs:rand"
 
 /* Define to the type of arg 1 for recvfrom. */
 #define RECVFROM_TYPE_ARG1 int
@@ -938,7 +938,7 @@
 /* #undef USE_LIBSSH2 */
 
 /* If you want to build curl with the built-in manual */
-#define USE_MANUAL 1
+//#define USE_MANUAL 1
 
 /* if NSS is enabled */
 /* #undef USE_NSS */
@@ -947,13 +947,13 @@
 /* #undef USE_OPENLDAP */
 
 /* if OpenSSL is in use */
-#define USE_OPENSSL 1
+//#define USE_OPENSSL 1
 
 /* if PolarSSL is enabled */
 /* #undef USE_POLARSSL */
 
 /* if SSL is enabled */
-#define USE_SSLEAY 1
+//#define USE_SSLEAY 1
 
 /* if you want POSIX threaded DNS lookup */
 /* #undef USE_THREADS_POSIX */

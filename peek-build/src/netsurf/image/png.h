@@ -27,7 +27,7 @@
 #include "desktop/plot_style.h"
 
 #include <stdbool.h>
-#include <png.h>
+#include <libpng/png.h>
 
 struct content;
 struct bitmap;

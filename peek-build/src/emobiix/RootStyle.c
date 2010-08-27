@@ -32,10 +32,12 @@ Style *RootStyle(void)
 	file_openWrite("test0");
 	file_openWrite("test1");
 	file_openWrite("test2");
+/*
 	file_openWrite("test3");
 	file_openWrite("test4");
+*/
 #endif
-
+	/*
 	defaultFont = font_load(fontObject1);
 	if (defaultFont != NULL)
 		font_setHeight(defaultFont, 12);
@@ -46,6 +48,9 @@ Style *RootStyle(void)
 	} else {
 		font_setHeight(hugeFont, 20);
 	}
+	*/
+	defaultFont = NULL;
+	hugeFont = NULL;
 
 	defaultGradient = gradient_new();
 	color.value = 0xF9F9F9FF;

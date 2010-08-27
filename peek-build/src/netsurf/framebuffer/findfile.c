@@ -47,7 +47,6 @@ char *path_to_url(const char *path)
 }
 
 
-#if __EMOBIIX_ENABLE_CURL__
 char *url_to_path(const char *url)
 {
 	char *url_path = curl_unescape(url, 0);
@@ -59,12 +58,6 @@ char *url_to_path(const char *url)
 
 	return path;
 }
-#else
-char *url_to_path(const char *url)
-{
-	return strdup(url + (FILE_SCHEME_PREFIX_LEN - 1));
-}
-#endif
 
 /**
  * Locate a shared resource file by searching known places in order.

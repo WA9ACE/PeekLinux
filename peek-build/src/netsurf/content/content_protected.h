@@ -76,7 +76,7 @@
 #include "image/rsvg.h"
 #endif
 
-typedef long off_t;
+//typedef long off_t;
 
 struct bitmap;
 struct content;

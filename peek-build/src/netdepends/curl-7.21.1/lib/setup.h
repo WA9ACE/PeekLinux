@@ -73,6 +73,10 @@
 #  include "config-vxworks.h"
 #endif
 
+#ifdef __PEEK__
+#include "ngdsock.h"
+#endif
+
 #endif /* HAVE_CONFIG_H */
 
 /* ================================================================ */

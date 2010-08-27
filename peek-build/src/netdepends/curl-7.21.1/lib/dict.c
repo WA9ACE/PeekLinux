@@ -38,14 +38,14 @@
 #ifdef HAVE_SYS_SOCKET_H
 #include <sys/socket.h>
 #endif
-#include <netinet/in.h>
+//#include <netinet/in.h>
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#include <netdb.h>
+//#include <netdb.h>
 #ifdef HAVE_ARPA_INET_H
 #include <arpa/inet.h>
 #endif

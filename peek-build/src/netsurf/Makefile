@@ -1,8 +1,11 @@
 DEFINE  = strdup=p_strdup
 DEFINE += nsframebuffer
-DEFINE += NETSURF_HOMEPAGE="\"www.emobiix.com\""
+DEFINE += fprintf=emo_fprintf
+#DEFINE += NETSURF_HOMEPAGE="\"file:///home.html\""
+DEFINE += NETSURF_HOMEPAGE="\"file:///emo/index.html\""
 DEFINE += NETSURF_FB_RESPATH="\"peekffs:/\""
 DEFINE += FB_USE_FREETYPE
+DEFINE += WITH_PNG
 
 INCLUDE  = $(SRCDIR)/netsurf/emoport
 INCLUDE += $(M23DIR)/gpf/inc
@@ -26,10 +29,14 @@ INCLUDE += $(M23DIR)/csw-system/drv_core
 INCLUDE += $(M23DIR)/chipsetsw/Services
 INCLUDE += $(M23DIR)/CS_ThirdParty/Datalight/Reliance/include
 INCLUDE += $(SRCDIR)/emobiix
+INCLUDE += $(SRCDIR)/netdepends/curl-7.21.1/emoport
+INCLUDE += $(M23DIR)/g23m/nexgen/coreip
+INCLUDE += $(SRCDIR)/netsurf/image
+INCLUDE += $(SRCDIR)/
 
 S_PORT := ceilf.c strcmp.c gettimeofday.c strtof.c iconv.c locale.c getcwd.c realpath.c stat.c peek_file.c
 #S_CONTENT := content.c fetch.c hlcache.c llcache.c urldb.c fetchers/fetch_curl.c fetchers/fetch_data.c
-S_CONTENT := content.c fetch.c hlcache.c llcache.c urldb.c
+S_CONTENT := content.c fetch.c hlcache.c llcache.c urldb.c fetchers/fetch_curl.c fetchers/fetch_data.c
 S_CSS := css.c dump.c internal.c select.c utils.c
 S_RENDER := box.c box_construct.c box_normalise.c directory.c favicon.c font.c form.c html.c html_interaction.c html_redraw.c hubbub_binding.c imagemap.c layout.c list.c table.c textplain.c
 S_UTILS := base64.c filename.c hashtable.c http.c locale.c messages.c talloc.c url.c utf8.c utils.c useragent.c findresource.c

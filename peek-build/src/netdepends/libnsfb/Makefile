@@ -1,10 +1,16 @@
 VARIANT_DEFINE :=
 
-DEFINE = 
+DEFINE += $(EMO_SIM)
 
 INCLUDE  = $(SRCDIR)/netsurf/emoport
 INCLUDE += $(SRCDIR)/emobiix
 INCLUDE += $(SRCDIR)/netdepends/libnsfb/include
+INCLUDE += $(M23DIR)/csw-system/drv_app/kpd
+INCLUDE += $(M23DIR)/csw-system/drv_app
+INCLUDE += $(M23DIR)/config
+INCLUDE += $(M23DIR)/
+INCLUDE += $(M23DIR)/chipsetsw/riviera
+INCLUDE += $(M23DIR)/csw-system/drv_core
 
 SRC  = src/libnsfb.c
 SRC += src/cursor.c

@@ -152,14 +152,11 @@
 #  include <sys/socket.h>
 #endif
 
-// XXX
-typedef long socklen_t;
-
 /* The size of `long', as computed by sizeof. */
 #define CURL_SIZEOF_LONG 4
 
 /* Integral data type used for curl_socklen_t. */
-#define CURL_TYPEOF_CURL_SOCKLEN_T socklen_t
+#define CURL_TYPEOF_CURL_SOCKLEN_T int
 
 /* The size of `curl_socklen_t', as computed by sizeof. */
 #define CURL_SIZEOF_CURL_SOCKLEN_T 4

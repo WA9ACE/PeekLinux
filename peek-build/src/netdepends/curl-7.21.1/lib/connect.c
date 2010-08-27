@@ -70,6 +70,7 @@
 
 #include <stdio.h>
 #include <errno.h>
+#include "peekerrno.h"
 #include <string.h>
 
 #define _MPRINTF_REPLACE /* use our functions only */

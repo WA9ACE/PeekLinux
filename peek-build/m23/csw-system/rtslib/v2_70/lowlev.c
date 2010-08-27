@@ -150,8 +150,9 @@ static _CODE_ACCESS _DEVICE *getdevice (const char **path)
 
        if (dev) { *path = colon + 1; return dev; }
    }
+   dev = finddevice("peekffs");
 
-   return stdevice; /* the "standard" device - host I/O */
+   return dev;//stdevice; /* the "standard" device - host I/O */
 }
 
 

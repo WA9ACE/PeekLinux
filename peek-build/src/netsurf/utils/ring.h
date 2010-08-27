@@ -67,7 +67,7 @@
  * provided element variable
  */
 #define RING_FINDBYHOST(ring, element, hostname) \
-	/*LOG(("RING_FINDBYHOST(%s, %s)", #ring, hostname));*/ \
+	LOG(("RING_FINDBYHOST(%s, %s)", #ring, hostname)); \
 	if (ring) { \
 		bool found = false; \
 		element = ring; \

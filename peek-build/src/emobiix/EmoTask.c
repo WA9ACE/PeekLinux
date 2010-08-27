@@ -65,6 +65,7 @@ void EmoTask(void) {
 	//stCurSettingMode.eFlightMode = 0; // Set to normal mode
 	while(1) {
 #ifdef EMO_SIM
+#if 0
 	if(uiStatusGet()) {
         	int key = SimReadKey();
         	int hasData = SimReadReg();
@@ -75,8 +76,10 @@ void EmoTask(void) {
         	if (hasData > 0)
                 	app_recv();
 	}
+#endif
         TCCE_Task_Sleep(20);
 #else
+
         TCCE_Task_Sleep(1000);
 #endif
 	}

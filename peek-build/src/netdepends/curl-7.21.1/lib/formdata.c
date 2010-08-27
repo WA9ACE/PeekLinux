@@ -123,6 +123,7 @@ Content-Disposition: form-data; name="FILECONTENT"
 #include "curl_rand.h"
 #include "strequal.h"
 #include "curl_memory.h"
+#include "p_malloc.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
@@ -1093,11 +1094,11 @@ static char *strippath(const char *fullfile)
 {
   char *filename;
   char *base;
-  filename = strdup(fullfile); /* duplicate since basename() may ruin the
+  filename = p_strdup(fullfile); /* duplicate since basename() may ruin the
                                   buffer it works on */
   if(!filename)
     return NULL;
-  base = strdup(basename(filename));
+  base = p_strdup(basename(filename));
 
   free(filename); /* free temporary buffer */
 

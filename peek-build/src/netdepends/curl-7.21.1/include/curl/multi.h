@@ -52,8 +52,10 @@
 extern "C" {
 #endif
 
+#if 0
 // XXX
 typedef long fd_set;
+#endif
 
 typedef void CURLM;
 

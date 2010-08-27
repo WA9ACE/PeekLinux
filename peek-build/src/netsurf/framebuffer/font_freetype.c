@@ -168,7 +168,7 @@ bool fb_font_init(void)
 
         fb_faces[FB_FACE_SANS_SERIF] = NULL;
         fb_faces[FB_FACE_SANS_SERIF] = 
-                fb_new_face(option_fb_face_sans_serif, "DroidSans.ttf", "peekffs:DroidSans.ttf");
+                fb_new_face(option_fb_face_sans_serif, "DroidSans.ttf", "DroidSans.ttf");
         if (fb_faces[FB_FACE_SANS_SERIF] == NULL) {
                 LOG(("Could not find default font (code %d)\n", error));
                 FTC_Manager_Done(ft_cmanager );
@@ -179,33 +179,33 @@ bool fb_font_init(void)
         fb_faces[FB_FACE_SANS_SERIF_BOLD] = 
                 fb_new_face(option_fb_face_sans_serif_bold,
                             "DroidSans.ttf",
-                            "peekffs:DroidSans.ttf");
+                            "blah.ttf");
 
         fb_faces[FB_FACE_SANS_SERIF_ITALIC] = 
                 fb_new_face(option_fb_face_sans_serif_italic,
                             "DroidSans.ttf",
-                            "peekffs:DroidSans.ttf");
+                            "blah.ttf");
 
 
         fb_faces[FB_FACE_SANS_SERIF_ITALIC_BOLD] = 
                 fb_new_face(option_fb_face_sans_serif_italic_bold, 
                             "DroidSans.ttf",
-                            "peekffs:DroidSans.ttf");
+                            "blah.ttf");
 
         fb_faces[FB_FACE_MONOSPACE] = 
                 fb_new_face(option_fb_face_monospace,
                             "DroidSans.ttf",
-                            "peekffs:DroidSans.ttf");
+                            "blah.ttf");
 
         fb_faces[FB_FACE_SERIF] = 
                 fb_new_face(option_fb_face_serif,
                             "DroidSans.ttf",
-                            "peekffs:DroidSans.ttf");
+                            "blah.ttf");
 
         fb_faces[FB_FACE_SERIF_BOLD] = 
                 fb_new_face(option_fb_face_serif_bold,
                             "DroidSans.ttf",
-                            "peekffs:DroidSans.ttf");
+                            "blah.ttf");
         
         /* set the default render mode */
         if (option_fb_font_monochrome == true)

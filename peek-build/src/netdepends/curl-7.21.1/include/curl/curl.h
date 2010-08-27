@@ -76,7 +76,7 @@
 #endif
 
 #ifndef _WIN32_WCE
-//#include <sys/socket.h>
+#include <sys/socket.h>
 #endif
 #if !defined(WIN32) && !defined(__WATCOMC__) && !defined(__VXWORKS__)
 //#include <sys/time.h>
@@ -319,12 +319,14 @@ typedef int (*curl_sockopt_callback)(void *clientp,
                                      curl_socket_t curlfd,
                                      curlsocktype purpose);
 
+#if 0
 // XXX
 struct sockaddr {
     unsigned short    sa_family;    // address family, AF_xxx
     char              sa_data[14];  // 14 bytes of protocol address
 };
 // XXX
+#endif
 
 struct curl_sockaddr {
   int family;

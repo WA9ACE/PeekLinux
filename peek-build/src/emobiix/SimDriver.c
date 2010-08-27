@@ -219,12 +219,25 @@ int bal_closesocket(int fd) {
 
     return 0;
 }
+int SimReadKeyState(void) {
+    void *regaddr;
+    int state = 0;
+    regaddr = (void*)((unsigned int)SOCK_BASE+0x3C);
+    //emo_printf("EMO key %d\n", *(unsigned int*) regaddr);
+    state = *(unsigned int*)regaddr;
+    *(unsigned int*) regaddr=0;
+    return state;
+}
 
 int SimReadKey(void) {
     void *regaddr;
+	int key = 0;
     regaddr = (void*)((unsigned int)SOCK_BASE+0x38);
     //emo_printf("EMO key %d\n", *(unsigned int*) regaddr);
-
+	key = *(unsigned int*)regaddr;
+	*(unsigned int*) regaddr=0;
+	return key;
+	/*
     switch(*(unsigned int*)regaddr) {
 	case 0x81: 
 		*(unsigned int*)regaddr =0;
@@ -285,10 +298,24 @@ int SimReadKey(void) {
         case 0x17: // 9
         case 0x97:
                 break;
+	case 0x50:
+		*(unsigned int*) regaddr=0;
+		return 0x50;
+	case 0x48:
+        *(unsigned int*) regaddr=0;
+		return 0x48;
+	case 0x4b:
+        *(unsigned int*) regaddr=0;
+        return 0x4b;
+	case 0x4d:
+        *(unsigned int*) regaddr=0;
+        return 0x4d;
+		
       default:
 		*(unsigned int*) regaddr=0;
                 return 0;
    }
+	*/
 
 }
 #endif

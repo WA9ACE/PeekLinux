@@ -183,7 +183,10 @@ void fetch_curl_register(void)
 #define SETOPT(option, value) \
 	code = curl_easy_setopt(fetch_blank_curl, option, value);	\
 	if (code != CURLE_OK)						\
-		goto curl_easy_setopt_failed;
+	{								\
+		emo_printf("tried to set option: "#option);		\
+		goto curl_easy_setopt_failed;				\
+	}
 
 	if (verbose_log) {
 	    SETOPT(CURLOPT_VERBOSE, 1);
@@ -200,6 +203,9 @@ void fetch_curl_register(void)
 	SETOPT(CURLOPT_HEADERFUNCTION, fetch_curl_header);
 	SETOPT(CURLOPT_PROGRESSFUNCTION, fetch_curl_progress);
 	SETOPT(CURLOPT_NOPROGRESS, 0);
+
+	emo_printf("Setting useragent to: %s\n", user_agent_string());
+
 	SETOPT(CURLOPT_USERAGENT, user_agent_string());
 	SETOPT(CURLOPT_ENCODING, "gzip");
 	SETOPT(CURLOPT_LOW_SPEED_LIMIT, 1L);
@@ -580,7 +586,7 @@ fetch_curl_set_options(struct curl_fetch_info *f)
 	} else {
 		SETOPT(CURLOPT_USERPWD, NULL);
 	}
-
+/* Currently no proxy support
 	if (option_http_proxy && option_http_proxy_host &&
 			strncmp(f->url, "file:", 5) != 0) {
 		SETOPT(CURLOPT_PROXY, option_http_proxy_host);
@@ -601,7 +607,8 @@ fetch_curl_set_options(struct curl_fetch_info *f)
 	} else {
 		SETOPT(CURLOPT_PROXY, NULL);
 	}
-
+*/
+#if __SSL_JUNK_DEFINE__
 	if (urldb_get_cert_permissions(f->url)) {
 		/* Disable certificate verification */
 		SETOPT(CURLOPT_SSL_VERIFYPEER, 0L);
@@ -614,13 +621,12 @@ fetch_curl_set_options(struct curl_fetch_info *f)
 		/* do verification */
 		SETOPT(CURLOPT_SSL_VERIFYPEER, 1L);
 		SETOPT(CURLOPT_SSL_VERIFYHOST, 2L);
-#if __SSL_JUNK_DEFINE__
 		if (curl_with_openssl) {
 			SETOPT(CURLOPT_SSL_CTX_FUNCTION, fetch_curl_sslctxfun);
 			SETOPT(CURLOPT_SSL_CTX_DATA, f);
 		}
-#endif 
 	}
+#endif
 
 	return CURLE_OK;
 }
@@ -944,8 +950,10 @@ int fetch_curl_progress(void *clientp, double dltotal, double dlnow,
 #define UPDATES_PER_SECOND 2
 #define UPDATE_DELAY_CS (100 / UPDATES_PER_SECOND)
 	time_now_cs = wallclock();
-	if (time_now_cs - f->last_progress_update < UPDATE_DELAY_CS)
+	if (time_now_cs - f->last_progress_update < UPDATE_DELAY_CS) {
+		emo_printf("fetch_curl_progress()");
 		return 0;
+        }
 	f->last_progress_update = time_now_cs;
 #undef UPDATE_DELAY_CS
 #undef UPDATES_PERS_SECOND
@@ -1177,8 +1185,6 @@ bool fetch_curl_process_headers(struct curl_fetch_info *f)
 	}
 	/* find MIME type from filetype for local files */
 	if (strncmp(f->url, FILE_SCHEME_PREFIX, FILE_SCHEME_PREFIX_LEN) == 0) {
-#if __SSL_JUNK_DEFINE__
-#NEED_TO_FIX_THIS
 		struct stat s;
 		char *url_path = url_to_path(f->url);
 
@@ -1232,7 +1238,6 @@ bool fetch_curl_process_headers(struct curl_fetch_info *f)
 		}
 		if (url_path != NULL)
 			free(url_path);
-#endif
 	}
 
 	if (f->abort)

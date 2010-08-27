@@ -2485,6 +2485,7 @@ CURLcode Curl_setopt(struct SessionHandle *data, CURLoption option,
   default:
     /* unknown tag and its companion, just ignore: */
     result = CURLE_FAILED_INIT; /* correct this */
+    emo_printf("Curl_setopt failed for option %d\n", option);
     break;
   }
 

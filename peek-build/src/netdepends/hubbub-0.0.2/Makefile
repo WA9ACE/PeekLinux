@@ -1,6 +1,6 @@
 VARIANT_DEFINE :=
 
-DEFINE =
+DEFINE = NDEBUG
 
 INCLUDE  = $(SRCDIR)/netsurf/emoport
 INCLUDE += $(SRCDIR)/netdepends/libparserutils/include
