@@ -14,7 +14,8 @@
 
 struct Application_t {
 	DataObject *dobj;
-	DataObject *currentScreen, *activeDialog, *activeMenu;
+	DataObject *currentScreen;
+	char *activeDialog, *activeMenu;
 	Style *currentStyle;
     int flags;
 	URL *url;
@@ -136,21 +137,28 @@ DataObject *application_getDataObject(Application *app)
 	return app->dobj;
 }
 
-void application_showDialog(Application *app, DataObject *dobj)
+void application_showDialog(Application *app, const char *name)
 {
 	EMO_ASSERT(app != NULL,
 			"Application Show Dialog on NULL Application")
-	EMO_ASSERT(dobj != NULL,
-			"Application Show Dialog on NULL Dialog")
+	EMO_ASSERT(name != NULL,
+			"Application Show Dialog on NULL name")
 
-	app->activeDialog = dataobject_copyTree(dobj);
+	if (app->activeDialog != NULL)
+		p_free(app->activeDialog);
+	app->activeDialog = p_strdup(name);
 	if (app == manager_getFocusedApplication())
-		manager_showDialog(app->activeDialog);
+		manager_showDialog(name);
 }
 
 void application_finishDialog(Application *app)
 {
-
+	if (app->activeDialog != NULL) {
+		p_free(app->activeDialog);
+		app->activeDialog = NULL;
+	}
+	if (app == manager_getFocusedApplication())
+		manager_finishDialog();
 }
 
 void application_showMenu(Application *app, DataObject *dobj)

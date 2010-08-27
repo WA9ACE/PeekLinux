@@ -22,7 +22,7 @@ void application_setCurrentScreen(Application *app, DataObject *screen);
 void *application_getCurrentStyle(Application *app);
 int application_isIconified(Application *app);
 DataObject *application_getDataObject(Application *app);
-void application_showDialog(Application *app, DataObject *dobj);
+void application_showDialog(Application *app, const char *name);
 void application_finishDialog(Application *app);
 void application_showMenu(Application *app, DataObject *dobj);
 void application_finishMenu(Application *app);
