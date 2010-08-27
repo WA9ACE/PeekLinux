@@ -70,15 +70,9 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 					0, 0, width, height, data);
 			break;
 		case A4:
-			field = style_getProperty(s, w, "color");
+			field = style_getPropertyAsInt(s, w, "color");
 			if (field != NULL) {
-				if (field->type == DOF_UINT || field->type == DOF_INT) {
-					c.value = field->field.uinteger;
-				} else if (field->type == DOF_STRING) {
-					sscanf(field->field.string, "%X", &c.value);
-				} else {
-					c.value = 0xFF00FF;
-				}
+				c.value = field->field.uinteger;
 			} else {
 				c.value = 0xFFFFFFFF;
 				style_getColor(s, w, "color", &c.value);
