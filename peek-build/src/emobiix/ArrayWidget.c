@@ -2,11 +2,69 @@
 
 #include "lgui.h"
 #include "Debug.h"
+#include "DataObject_private.h"
 
 #include "p_malloc.h"
 
 #include <stdio.h>
 
+void array_expand(Widget *w)
+{
+	DataObject *shim;
+	DataObject *dobj, *rec, *arrtemplate;
+	ListIterator iter;
+	DataObjectField *direction, *startfield;
+	int childCount, startNumber, recordIdx;
+
+	EMO_ASSERT(w != NULL,
+			"Attempting to expand array with NULL Widget")
+
+	childCount = dataobject_getChildCount(w);
+	if (childCount == 0)
+		return;
+	if (childCount != 1) {
+		emo_printf("Array shim comprises multiple root widgets, it shouldnt" NL);
+		return;
+	}
+
+	dobj = widget_getDataObject(w);
+	if (dobj == w)
+		return;
+
+	/* FIXME: we are not deallocating the widgets in this list */
+	list_delete(w->arrayChildren);
+	w->arrayChildren = list_new();
+
+	list_begin(w->children, &iter);
+	arrtemplate = (DataObject *)listIterator_item(&iter);
+
+	direction = dataobject_getValue(w, "direction");
+	startfield = dataobject_getValueAsInt(w, "startcount");
+	
+	if (startfield != NULL && startfield->type == DOF_INT)
+		startNumber = startfield->field.integer;
+	else
+		startNumber = 30;
+
+	if (dataobjectfield_isString(direction, "prepend"))
+		list_rbegin(dobj->children, &iter);
+	else
+		list_begin(dobj->children, &iter);
+
+	recordIdx = 0;
+	for (; !listIterator_finished(&iter); listIterator_next(&iter)) {
+		rec = (DataObject *)listIterator_item(&iter);
+		shim = dataobject_copyTree(arrtemplate);
+		widget_setDataObjectArray(shim, rec);
+		list_append(w->arrayChildren, (void *)shim);
+		shim->parent = w->parent;
+		++recordIdx;
+		if (recordIdx >= startNumber)
+			break;
+	}
+}
+
+#if 0
 static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj)
 {
@@ -299,4 +357,4 @@ int arraywidget_focusPrev(Widget *w)
 
 	return 1;
 }
-
+#endif
