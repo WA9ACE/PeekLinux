@@ -641,7 +641,7 @@ static void putpixelAlpha(int x, int y, unsigned char red, unsigned char green, 
 			radAdd += radius;
 		lgui_vline(x,
 			y+((borderCornerFlags & LGUI_CORNER_TOPLEFT) ? radius : 0),
-			height-radAdd, 1, red, green, blue);
+			height-radAdd+1, 1, red, green, blue);
 	}
 
 	if (borderFlags & LGUI_RIGHT) {
@@ -652,7 +652,7 @@ static void putpixelAlpha(int x, int y, unsigned char red, unsigned char green, 
 			radAdd += radius;
 		lgui_vline(x+width,
 			y+((borderCornerFlags & LGUI_CORNER_TOPRIGHT) ? radius : 0),
-			height-radAdd, 1, red, green, blue);
+			height-radAdd+1, 1, red, green, blue);
 	}
  }
 
@@ -1145,6 +1145,9 @@ void lgui_measure_font_complex(const char *utf8, Font *f, IPoint *output)
 			break;
 		output->y += fontHeight+1;
 	}
+
+	if (output->y == 0)
+		output->y = fontHeight+1;
 
 	lgui_clip_pop();
 }
