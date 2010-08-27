@@ -19,11 +19,9 @@ static void text_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj) {
 	Rectangle *box, *margin;
 	DataObject *text;
-	DataObjectField *field;
+	DataObjectField *field, *sourceField;
 	Font *f;
 	Color c;
-	const char *dtype;
-	const char *ltype;
 	const char *str;
 	int percent, offset;
 
@@ -34,13 +32,15 @@ static void text_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
-	dtype = (const char *)dataobject_getValue(dobj, "type")->field.string;
-	ltype = widget_getID(w);
 	f = (Font *)defaultFont;/*style_getProperty(s, NULL, ltype, dtype, "font");*/
 	c.value = 0;
 	style_getColor(s, w, "font-color", &c.value);
 	text = widget_getDataObject(w);
-	field = dataobject_getValue(text, "data");
+	sourceField = dataobject_getValue(w, "datafield");
+	if (sourceField != NULL && sourceField->type == DOF_STRING)
+		field = dataobject_getValue(dobj, sourceField->field.string);
+	else
+		field = dataobject_getValue(dobj, "data");
 	if (field != NULL) {
 		str = field->field.string;
 	} else {
@@ -55,9 +55,8 @@ static void text_measure(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj, IPoint *p)
 {
 	Font *f;
-	const char *dtype;
-	const char *ltype;
 	const char *str;
+	DataObjectField *sourceField, *field;
 
 	EMO_ASSERT(wr != NULL, "text measure missing renderer")
 	EMO_ASSERT(s != NULL, "text measure missing style")
@@ -65,10 +64,18 @@ static void text_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	EMO_ASSERT(dobj != NULL, "text measure missing dobj")
 	EMO_ASSERT(p != NULL, "text measure missing the point")
 
-	dtype = (const char *)dataobject_getValue(dobj, "type")->field.string;
-	ltype = widget_getID(w);
 	f = (Font *)defaultFont;/*style_getProperty(s, NULL, ltype, dtype, "font");*/
-	str = (const char *)dataobject_getValue(dobj, "data")->field.data.bytes;
+	/*str = (const char *)dataobject_getValue(dobj, "data")->field.data.bytes;*/
+	sourceField = dataobject_getValue(w, "datafield");
+	if (sourceField != NULL && sourceField->type == DOF_STRING)
+		field = dataobject_getValue(dobj, sourceField->field.string);
+	else
+		field = dataobject_getValue(dobj, "data");
+	if (field != NULL) {
+		str = field->field.string;
+	} else {
+		str = "";
+	}
 
 	lgui_measure_font_complex(str, f, p);
 	p->y += 4;
