@@ -9,6 +9,9 @@
 #include "ProtocolUtils.h"
 #include "Application.h"
 #include "ApplicationManager.h"
+#include "RenderManager.h"
+#include "Cache.h"
+#include "Mime.h"
 
 #include "Style.h"
 
@@ -207,7 +210,9 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 		/* error state, or no data */
 	} else if (response > 0) {
 		response = transport->read(ctx->endpoint, ctx->buffer+ctx->bufferBytes, CCTX_BUFLEN-ctx->bufferBytes);
+#ifndef SIMULATOR
 		emo_printf("Read %d bytes" NL, response);
+#endif
 		if (response < 0) {
 			emo_printf("read got error state" NL);
 			/* error state */
@@ -215,7 +220,9 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 			ctx->bufferBytes += response;
 			do {
 				response = connectionContext_consumePacket(ctx);
+#ifndef SIMULATOR
 				emo_printf("Consumed %d bytes" NL, response);
+#endif
 			} while (response > 0);
 			return 1;
 		}
@@ -234,7 +241,9 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 	while (!mapIterator_finished(&iter)) {
 		sreq = (SyncRequest *)mapIterator_item(&iter, &key);
 
+#ifndef SIMULATOR
 		emo_printf("Processing sync request %s" NL, sreq->url->all);
+#endif
 
 		connectionContext_processSyncRequest(ctx, sreq);
 		if (sreq->finalize)
@@ -290,18 +299,32 @@ int connectionContext_syncRequestForce(ConnectionContext *ctx, URL *url,
 {
 	SyncRequest *sreq;
 	char mapKey[64];
+	DataObject *cobj;
+	DataObjectField *field;
 
-	EMO_ASSERT_INT(ctx != NULL, 0,
-			"connection context forced reqeust without context")
 	EMO_ASSERT_INT(url != NULL, 0,
 			"connection context forced reqeust missing URL")
 
+	if (dobj == NULL) {
+		cobj = cache_loadObject(url);
+		if (cobj != NULL) {
+			dataobject_exportGlobal(cobj, url, 0);
+			dataobject_resolveReferences(cobj);
+			mime_loadAll(cobj);
+
+			field = dataobject_getValue(cobj, "type");
+			if (dataobjectfield_isString(field, "application"))
+				manager_loadApplication(cobj, 1, url);
+			return 1;
+		}
+
 #ifdef SIMULATOR
-	if (strcmp(url->scheme, "xml") == 0) {
-		xmlLoadObject(url);
-		return 1;
-	}
+		if (strcmp(url->scheme, "xml") == 0) {
+			xmlLoadObject(url);
+			return 1;
+		}
 #endif
+	}
 
 	if (ctx == NULL) {
 		emo_printf("ConnectionContext is NULL.." NL);
@@ -453,7 +476,9 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 	EMO_ASSERT(packet != NULL,
 			"connection context process packet without packet input")
 
+#ifndef SIMULATOR
 	emo_printf("Got packet : %d" NL, packet->packetTypeP.present);
+#endif
 
 	switch (packet->packetTypeP.present) {
 		case packetTypeP_PR_protocolHandshakeP:
@@ -499,9 +524,15 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 
 				/* call onsyncfinish handlers */
 				if (!sreq->newObject) {
-					/*dataobject_debugPrint(sreq->dobj);*/
-					dataobject_onsyncfinished(sreq->dobj);
+					//dataobject_debugPrint(sreq->forcedObject);
+					if (sreq->forcedObject != NULL)
+						dataobject_onsyncfinished(sreq->forcedObject);
+					else
+						dataobject_onsyncfinished(sreq->dobj);
 				}
+
+				cache_commitServerSide(sreq->dobj, sreq->url);
+				cache_commit();
 
 				if (field != NULL && field->type == DOF_STRING)
 					emo_printf("Finished Type: %s" NL, field->field.string); 
@@ -514,8 +545,12 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 					manager_focusApplication(app);*/
 					/*dataobject_debugPrint(sreq->dobj);*/
 				} else {
+					/* FIXME: dirty */
+					/*renderman_clearQueue();*/
 					dataobject_setIsModifiedTree(sreq->dobj, 1);
 				}
+				
+				/*dataobject_debugPrint(sreq->dobj);*/
 				
 				/* else {
 					manager_focusApplication(manager_getFocusedApplication());
@@ -756,8 +791,9 @@ static void connectionContext_processSync(ConnectionContext *ctx,
 			"connection context process sync without context")
 	EMO_ASSERT(p != NULL,
 			"connection context process sync missing packet")
-
+#ifndef SIMULATOR
 	emo_printf("DataObjectSync packet" NL);
+#endif
 	mapKey = generate_mapKey(ctx->endpoint, p->syncSequenceIDP);
 	sreq = map_find(ctx->syncRequests, mapKey);
 	if (sreq == NULL) {
@@ -1061,7 +1097,7 @@ static void connectionContext_recordSyncList(ConnectionContext *ctx,
 	EMO_ASSERT(p != NULL,
 			"connection context record sync list without packet")
 
-	for (widget_getChildren(sreq->dobj, &iter); !listIterator_finished(&iter);
+	for (dataobject_childIterator(sreq->dobj, &iter); !listIterator_finished(&iter);
 			listIterator_next(&iter)) {
 		if (idx != sreq->recordIndex) {
 			++idx;
