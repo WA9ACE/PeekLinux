@@ -1,0 +1,196 @@
+<application name="AIMOBIIX" description="emobiix AIM demo application" startupview="login" style="aimstyle">
+	<data name="request" onsyncfinished="validate()" />
+  <style name="aimstyle">
+		<abox renderer="box" fill="gradient">
+			<gradient>
+				<stop position="0" color="#089eb5"/>
+				<stop position="100" color="#42bab5"/>
+			</gradient>
+			<label renderer="label" weight="bold" font-color="#FFF" margin="2"/>
+		</abox>
+		<dialogb renderer="box" fill="gradient" border="1234" border-color="#000" rounded="1234" border-corners="1234">
+			<gradient>
+				<stop position="0" color="#cb5bcd"/>
+				<stop position="100" color="#F17cce"/>
+			</gradient>
+		</dialogb>
+		<dialogu renderer="box" fill="solid" border="124" border-color="#000" rounded="12" border-corners="12" background-color="#FFF">
+		</dialogu>
+		<dialogl renderer="box" fill="solid" border="234" border-color="#000" rounded="34" border-corners="34" background-color="#ddf">
+		</dialogl>
+		<button renderer="box" border-color="#444" border="1234" fill="gradient">
+			<gradient>
+				<stop position="0" color="#F9F9F9FF"/>
+				<stop position="50" color="#C9C9C9FF"/>
+				<stop position="50" color="#B1B1B1FF"/>
+				<stop position="100" color="#DEDEDEFF"/>
+			</gradient>
+			<label renderer="label" weight="bold" font-color="#444" margin="2"/>
+		</button>
+		<button hasfocus="1" renderer="box" border-color="#000" border="1234" fill="gradient">
+			<gradient>
+				<stop position="0" color="#8cddde"/>
+				<stop position="50" color="#69ced6"/>
+				<stop position="50" color="#5cb6be"/>
+				<stop position="100" color="#85dfe0"/>
+			</gradient>
+			<label renderer="label" weight="bold" font-color="#000" margin="2"/>
+		</button>
+		<selbox/>
+		<selbox hasfocus="1" renderer="box" rounded="1234" fill="gradient" radius="7" border="1234" border-corners="1234" border-color="#000">
+			<gradient>
+				<stop position="0" color="#F9F9F9FF"/>
+				<stop position="50" color="#59DFFEFF"/>
+				<stop position="50" color="#35dcfbFF"/>
+				<stop position="100" color="#b7f1ffFF"/>
+			</gradient>
+		</selbox>
+	</style>
+	<script>
+	<![CDATA[
+activeBuddy = nil;
+function alert(msg)
+	error = DataObject.find("errormsg");
+	error:setValue(msg);
+	DataObject.showDialog("alert");
+end
+function login()
+	user = DataObject.find("user");
+	pass = DataObject.find("pass");
+	if user:getValue() == "" then
+		alert("Blank username field");
+	elseif pass:getValue() == "" then
+		alert("Blank password field");
+	else
+		request = DataObject.find("request");
+		request:setValue("user", user:getValue());
+		request:setValue("pass", pass:getValue());
+		request:setValue("action", "login");
+		request:sync();
+	end
+end
+function validate()
+	request = DataObject.find("request");
+	reply = request:getValue("reply");
+	print("Replay is " .. reply);
+	if reply == "connected" then
+		chat = DataObject.find("chat");
+		chat:toScreen();
+		buddies = DataObject.find("buddylist");
+		buddies:setValue("reference", "tcp://127.0.0.1:5533/buddylist");
+	elseif reply == "im sent" then
+		print("IM sent");
+	else	
+		alert(reply);
+	end
+end
+function buddyswitch()
+	obj = DataObject.this();
+	dobj = obj:data();
+	val = dobj:getValue("user");
+	title = DataObject.find("msgtitle");
+	title:setValue(val);
+	val = dobj:getValue("account");
+	activeBuddy = val;
+end
+function send_im()
+  entry = DataObject.find("IM");
+	if entry == nil then print("nil entry") return end
+	message = entry:getValue();
+	if activeBuddy == nil then print("nil activebuddy") return end
+	if message == nil then print("nil message") return end
+	if #message == 0 then print("zero length message") return end
+	request = DataObject.find("request");
+	request:setValue("action", "im");
+	request:setValue("user", activeBuddy);
+	request:setValue("pass", message);
+	--entry:setValue("");
+	request:sync();
+	localmsg = DataObject.new();
+	localmsg:setValue("from", "me");
+	localmsg:setValue("message", message);
+	localmsg:setValue("mine", "1");
+	messages = DataObject.find("messageURL");
+	messages:append(localmsg);
+end
+	]]>
+	</script>
+	<data name="messageURL">
+	</data>
+	<view name="login" width="320" height="240">
+		<box packing="vertical" width="100%" height="100%">
+			<box renderer="box" fill="solid" background-color="#FFF" packing="vertical" width="100%">
+				<image src="aim/aimlogo1.png" margin="5" alignment="center"/>
+			</box>
+					<box packing="vertical" id="abox" width="100%">
+						<label margin="20" alignment="center">Login</label>
+						<box packing="horizontal" alignment="center">
+							<label>Name</label>
+							<entry name="user" canfocus="1" margintop="5" width="200">ryanpeekster@aim.com</entry>
+						</box>
+						<box packing="horizontal" alignment="center">
+							<label>Pass  </label>
+							<entry name="pass" canfocus="1" margintop="5" width="200">emobiix123</entry>
+						</box>
+						<button packing="vertical" margin="10" alignment="center" canfocus="1" onreturn="login()">
+							<label margin="5" alignment="center">Connect</label>
+						</button>
+					</box>
+			<box renderer="box" fill="solid" background-color="#FFF" packing="vertical" width="100%" height="35">
+			</box>
+		</box>
+	</view>
+	<view name="chat">
+		<box alignment="center" packing="vertical" id="gradbox" width="320" height="240">
+		<box packing="horizontal" id="abox" width="100%" height="100%">
+			<box packing="vertical" width="59%" height="100%" marginleft="10" margintop="5">
+				<box packing="vertical" id="dialogu" width="100%">
+					<label name="msgtitle" alignment="center" font-color="#000">Messages</label>
+				</box>
+				<box alignment="center" width="100%" height="70%" id="dialogl" packing="vertical">
+					<array name="messages" reference="messageURL">
+						<box width="100%" packing="vertical">
+							<text width="100%" arraysource="1" datafield="from" font-color="#F00"/>
+							<text width="100%" arraysource="1" datafield="message" marginleft="5"/>
+						</box>
+					</array>
+				</box>
+				<box alignment="left" packing="horizontal" width="100%" margintop="5">
+					<entry name="IM" width="140" canfocus="1" alignment="center" />
+					<button packing="horizontal" alignment="center" canfocus="1" onreturn="send_im()">
+						<label alignment="center" margin="3">Send</label>
+					</button>
+				</box>
+			</box>
+			<box packing="vertical" width="39%" marginleft="10" margintop="5">
+				<box packing="vertical" id="dialogu" width="100%">
+					<label alignment="center" font-color="#000">Buddy List</label>
+				</box>
+			  <box alignment="center" width="100%" height="70%" id="dialogl" packing="vertical">
+					<array width="100%" height="100%" name="buddylist" packing="vertical">
+						<box id="selbox" width="100%" packing="vertical" height="17" canfocus="1" onreturn="buddyswitch()" arraysource="1">
+							<label alignment="left" arraysource="1" datafield="user" onreturn="buddyswitch()" font-color="#000" weight="normal"/>
+						</box>
+					</array>
+				</box>
+			</box>
+		</box>
+	</box>
+	</view>
+	<dialog name="alert" width="320" height="224">
+		<box packing="vertical" alignment="center" width="320" height="224">
+			<box packing="horizontal" alignment="center" height="100%">
+				<box id="dialogb" packing="vertical" alignment="center">
+					<box id="dialogu" marginleft="10" marginright="10" margintop="10" width="200">
+						<label alignment="center" name="errormsg" margin="20"/>
+					</box>
+					<box id="dialogl" marginleft="10" marginright="10" marginbottom="10" width="200">
+						<button canfocus="1" alignment="center" onreturn="DataObject.finishDialog();" margin="10">
+							<label>OK</label>
+						</button>
+					</box>
+				</box>
+			</box>
+		</box>
+	</dialog>
+</application>
