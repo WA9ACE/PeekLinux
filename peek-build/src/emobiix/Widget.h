@@ -21,7 +21,9 @@ void widget_setDataObjectArray(Widget *w, DataObject *dobj);
 void widget_setPacking(Widget *w, WidgetPacking p);
 WidgetPacking widget_getPacking(Widget *w);
 void widget_pack(Widget *w, Widget *parent);
+#if 0
 void widget_getChildren(Widget *w, ListIterator *iter);
+#endif
 void widget_setClass(Widget *w, const char *className);
 const char *widget_getClass(Widget *w);
 void widget_setID(Widget *w, const char *idName);
@@ -39,7 +41,9 @@ Widget *widget_focusWhichOne(Widget *w);
 Widget *widget_focusWhichOneNF(Widget *w);
 void widget_markDirty(Widget *w);
 Widget *widget_findStringField(Widget *screen, const char *key, const char *value);
+#if 0
 int widget_typeNoChildRender(DataObjectField *field);
+#endif
 
 Rectangle *widget_getMargin(Widget *w);
 Rectangle *widget_getBorder(Widget *w);
