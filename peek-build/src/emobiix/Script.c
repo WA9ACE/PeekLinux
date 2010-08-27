@@ -7,6 +7,7 @@
 #include "Widget.h"
 #include "lgui.h"
 #include "ApplicationManager.h"
+#include "RenderManager.h"
 
 #include "lua.h"
 #include "lauxlib.h"
@@ -205,6 +206,7 @@ static int __dataobject_find(lua_State *L)
 {
 	DataObject *dobj;
 	DataObject *root;
+	const char *str;
 
 	EMO_ASSERT_INT(L != NULL, 0, "script find value missing state")
 
@@ -213,7 +215,12 @@ static int __dataobject_find(lua_State *L)
 		lua_pushnil(L);
 		return 1;
 	}
-	dobj = dataobject_findByName(root, luaL_checkstring(L, 1));
+	str = luaL_checkstring(L, 1);
+	dobj = dataobject_findByName(root, str);
+	if (dobj == NULL) {
+		lua_pushnil(L);
+		return 1;
+	}
 	pushDataObject(L, dobj);
 	
 	return 1;
@@ -298,6 +305,96 @@ static int __toScreen(lua_State *L)
 	return 0;
 }
 
+static int __showDialog(lua_State *L)
+{
+	Application *app;
+	const char *dialogName;
+	DataObject *root, *dobj;
+
+	EMO_ASSERT_INT(L != NULL, 0, "script showDialog missing state")
+	
+	dialogName = luaL_checkstring(L, 1);
+
+	root = dataobject_superparent(contextObject);
+	app = manager_applicationForDataObject(root);
+	if(app == NULL) {
+		lua_pushnil(L);
+		return 1;
+	}
+	dobj = dataobject_findByName(root, dialogName);
+	if(dobj == NULL) {
+		lua_pushnil(L);
+		return 1;
+	}
+	application_showDialog(app, dialogName);
+	
+	return 0;
+}
+
+static int __finishDialog(lua_State *L)
+{
+	Application *app;
+	DataObject *root;
+
+	EMO_ASSERT_INT(L != NULL, 0, "script finishDialog missing state")
+	
+	root = dataobject_superparent(contextObject);
+	app = manager_applicationForDataObject(root);
+	if(app == NULL) {
+		lua_pushnil(L);
+		return 1;
+	}
+	application_finishDialog(app);
+	
+	return 0;
+}
+
+static int __dataobject_this(lua_State *L)
+{
+	EMO_ASSERT_INT(L != NULL, 0, "script find value missing state")
+
+	pushDataObject(L, contextObject);
+	
+	return 1;
+}
+
+static int __dataobject_data(lua_State *L)
+{
+	DataObject *dobj;
+
+	EMO_ASSERT_INT(L != NULL, 0, "script find value missing state")
+
+	dobj = checkDataObject(L, 1);
+	pushDataObject(L, widget_getDataObject(dobj));
+	
+	return 1;
+}
+
+static int __dataobject_new(lua_State *L)
+{
+	EMO_ASSERT_INT(L != NULL, 0, "script find value missing state")
+
+	pushDataObject(L, dataobject_new());
+	
+	return 1;
+}
+
+static int __dataobject_append(lua_State *L)
+{
+	DataObject *dobj, *nobj;
+
+	EMO_ASSERT_INT(L != NULL, 0, "script find value missing state")
+
+	dobj = checkDataObject(L, 1);
+	nobj = checkDataObject(L, 2);
+	widget_pack(nobj, dobj);
+	
+	dataobject_setIsModified(dobj, 1);
+	dataobject_setIsModified(nobj, 1);
+
+	return 0;
+}
+
 static const luaL_reg meta_methods[] = {
 {0,0}
 };
@@ -312,6 +409,12 @@ static const luaL_reg script_methods[] = {
 {"parent",    __dataobject_parent},
 {"children",    __dataobject_children},
 {"sync",    __dataobject_sync},
+{"showDialog",    __showDialog},
+{"finishDialog",    __finishDialog},
+{"this",    __dataobject_this},
+{"data",    __dataobject_data},
+{"new",    __dataobject_new},
+{"append",    __dataobject_append},
 {0,0}
 };
 
