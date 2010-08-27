@@ -160,6 +160,7 @@ typedef struct peek_socket_s {
     int domain;
     int protocol;
     int key;
+	int state;
     /* Connect vars */
     int cRet;
     int wRet;

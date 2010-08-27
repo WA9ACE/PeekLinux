@@ -553,7 +553,7 @@ static void locosto_lcd_update_display(void *opaque)
     lcd->invalidate = 1;
 
     /* Content */
-    frame_base = 0x077c324;
+    frame_base = 0x007bc060;
 
     if (!ds_get_bits_per_pixel(lcd->ds))
         return;

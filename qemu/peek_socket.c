@@ -178,6 +178,8 @@ static uint32_t peek_socket_read(void *opaque, target_phys_addr_t offset)
 	return s->cRet;
     case 0x38:
 	return s->key;
+	case 0x3c:
+	return s->state;
     default:
         LOCO_DEBUG(LOCO_DEBUG_SOCKET, LOCO_DLVL_ERR,
                    "%s: UNMAPPED_OFFSET = 0x%08X\n", __FUNCTION__, (int)offset);
@@ -277,6 +279,9 @@ static void peek_socket_write(void *opaque, target_phys_addr_t offset, uint32_t 
     case 0x38:
 	s->key = value;
 	break;
+	case 0x3c:
+	s->state = value;
+	break;
 
     default:
         LOCO_DEBUG(LOCO_DEBUG_SOCKET, LOCO_DLVL_ERR, "%s: UNMAPPED_OFFSET = 0x%08X and value=0x%08X\n", __FUNCTION__, (int)offset, value);
@@ -362,12 +367,225 @@ static CPUWriteMemoryFunc *peek_socket_writefn[] = {
     peek_socket_write,
 };
 
+#define KEY_UNKNOWN 0
+#define KCD_0          (1)
+#define KCD_1          (2)
+#define KCD_2          (3)
+#define KCD_3          (4)
+#define KCD_4          (5)
+#define KCD_5          (6)
+#define KCD_6          (7)
+#define KCD_7          (8)
+#define KCD_8          (9)
+#define KCD_9          (10)
+#define KCD_A          (11)
+#define KCD_B          (12)
+#define KCD_C          (13)
+#define KCD_D          (14)
+#define KCD_E          (15)
+#define KCD_F          (16)
+#define KCD_G          (17)
+#define KCD_H          (18)
+#define KCD_I          (19)
+#define KCD_J          (20)
+#define KCD_K          (21)
+#define KCD_L          (22)
+#define KCD_M          (23)
+#define KCD_N          (24)
+#define KCD_O          (25)
+#define KCD_P          (26)
+
+/* KCD_MUX = 1 */
+#define KCD_Q          (27)
+#define KCD_R          (28)
+#define KCD_S          (29)
+#define KCD_T          (30)
+#define KCD_U          (31)
+#define KCD_V          (32)
+#define KCD_W          (33)
+#define KCD_X          (34)
+#define KCD_Y          (35)
+#define KCD_Z          (36)
+#define KCD_AT         (37)
+#define KCD_SPACE      (38)
+#define KCD_SHIFT_L    (39)
+#define KCD_SHIFT_R    (40)
+#define KCD_ENTER      (41)
+#define KCD_LOCK       (42)
+#define KCD_REDUCE     (43)
+#define KCD_DOT        (44)
+#define KCD_COMMA      (45)
+#define KCD_QUOTE      (46)
+#define KCD_NAV_CENTER (47)
+#define KCD_CANCLE     (48)
+#define KCD_BACKSPACE  (49)
+#define KCD_POWR       (50)
+#define KCD_UP         (51)
+#define KCD_DOWN       (52)
+
+static int linux_key_map[] = {
+	KEY_UNKNOWN,
+	KCD_CANCLE,
+	KCD_1,
+	KCD_2,
+	KCD_3,
+	KCD_4,
+	KCD_5,
+	KCD_6,
+	KCD_7,
+	KCD_8,
+	KCD_9,
+	KEY_UNKNOWN,
+	KCD_REDUCE,
+	KEY_UNKNOWN,
+	KCD_BACKSPACE,
+	KCD_LOCK, /* tab */
+	KCD_Q,
+	KCD_W,
+	KCD_E,
+	KCD_R,
+	KCD_T,
+	KCD_Y,
+	KCD_U,
+	KCD_I,
+	KCD_O,
+	KCD_P,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KCD_ENTER,
+	KEY_UNKNOWN,
+	KCD_A,
+	KCD_S,
+	KCD_D,
+	KCD_F,
+	KCD_G,
+	KCD_H,
+	KCD_J,
+	KCD_K,
+	KCD_L,
+	KEY_UNKNOWN,
+	KCD_QUOTE,
+	KEY_UNKNOWN,
+	KCD_SHIFT_L,
+	KEY_UNKNOWN,
+	KCD_Z,
+	KCD_X,
+	KCD_C,
+	KCD_V,
+	KCD_B,
+	KCD_N,
+	KCD_M,
+	KCD_COMMA,
+	KCD_DOT,
+	KCD_6,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KCD_SPACE,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KCD_UP,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KCD_UP,
+	KEY_UNKNOWN,
+	KCD_DOWN,
+	KEY_UNKNOWN,
+	KEY_UNKNOWN,
+	KCD_DOWN // slash
+};
+#if 0	
+static int linux_keys[0x80] = {
+    [0x01] = 16,    /* Q */
+    [0x02] = 37,    /* K */
+    [0x03] = 24,    /* O */
+    [0x04] = 25,    /* P */
+    [0x05] = 14,    /* Backspace */
+    [0x06] = 30,    /* A */
+    [0x07] = 31,    /* S */
+    [0x08] = 32,    /* D */
+    [0x09] = 33,    /* F */
+    [0x0a] = 34,    /* G */
+    [0x0b] = 35,    /* H */
+    [0x0c] = 36,    /* J */
+
+    [0x11] = 17,    /* W */
+    [0x12] = 62,    /* Menu (F4) */
+    [0x13] = 38,    /* L */
+    [0x14] = 40,    /* ' (Apostrophe) */
+    [0x16] = 44,    /* Z */
+    [0x17] = 45,    /* X */
+    [0x18] = 46,    /* C */
+    [0x19] = 47,    /* V */
+    [0x1a] = 48,    /* B */
+    [0x1b] = 49,    /* N */
+    [0x1c] = 42,    /* Shift (Left shift) */
+    [0x1f] = 65,    /* Zoom+ (F7) */
+
+    [0x21] = 18,    /* E */
+    [0x22] = 39,    /* ; (Semicolon) */
+    [0x23] = 12,    /* - (Minus) */
+    [0x24] = 13,    /* = (Equal) */
+    [0x2b] = 56,    /* Fn (Left Alt) */
+    [0x2c] = 50,    /* M */
+    [0x2f] = 66,    /* Zoom- (F8) */
+
+    [0x31] = 19,    /* R */
+    [0x32] = 29,    /* Right Ctrl */
+    [0x34] = 57,    /* Space */
+    [0x35] = 51,    /* , (Comma) */
+    [0x37] = 72,    /* Up */
+    [0x3c] = 82,    /* Compose (Insert) */
+    [0x3f] = 64,    /* FullScreen (F6) */
+
+    [0x41] = 20,    /* T */
+    [0x44] = 52,    /* . (Dot) */
+    [0x46] = 77,    /* Right */
+    [0x4f] = 63,    /* Home (F5) */
+    [0x51] = 21,    /* Y */
+    [0x53] = 80,    /* Down */
+    [0x55] = 28,    /* Enter */
+    [0x5f] =  1,    /* Cycle (ESC) */
+
+    [0x61] = 22,    /* U */
+    [0x64] = 75,    /* Left */
+
+    [0x71] = 23,    /* I */
+    [0x75] = 15,    /* KP Enter (Tab) */
+};
+#endif
 static void locosto_keyboard_event (peek_socket_s *s, int keycode)
 {
-    //int row, col,rel;
+	int down = 1;
+	int extended = 0;
 
-    fprintf(stderr, "Got keypad event 0x%02x\n", keycode);
-    s->key=keycode;
+    if (keycode == 0xe0) {
+		extended = 1;
+   		return;
+    } else if (keycode & 0x80) {
+    	keycode &= 0x7f;
+    	down = 0;
+    }
+    if (extended) {
+    	keycode |= 0x80;
+    	extended = 0;
+    }
+    fprintf(stderr, "Got keypad event %d - orig %d - state %d\n",
+linux_key_map[keycode], keycode, down);
+    s->key=linux_key_map[keycode];
+	s->state = down;
 }
 
 void peek_socket_init(peek_socket_s *s)
