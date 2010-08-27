@@ -67,12 +67,12 @@ DataObject *BootApplication(void)
 	dataobject_setValue(root, "height", dataobjectfield_string("100%"));
     widget_setPacking(root, WP_VERTICAL);
 
-    dobj1 = widget_newTypeIdName("label", NULL, NULL, root);
+    dobj1 = widget_newTypeIdName(NULL, NULL, NULL, root);
     dataobject_setValue(dobj1, "data", dataobjectfield_string("emobiix"));
 	dataobject_setValue(dobj1, "weight", dataobjectfield_string("bold"));
     widget_setAlignment(dobj1, WA_CENTER);
 
-	dobj1 = widget_newTypeIdName("string", "label", NULL, root);
+	dobj1 = widget_newTypeIdName("label", NULL, NULL, root);
     dataobject_setValue(dobj1, "data", dataobjectfield_string("Application Boot Environment"));
     widget_setAlignment(dobj1, WA_CENTER);
 
@@ -89,7 +89,7 @@ DataObject *BootApplication(void)
 	widget_setCanFocus(dobj1, 1);
 	/*widget_setPacking(dobj1, WP_VERTICAL);*/
 
-	dobj2 = widget_newTypeIdName("string", "label", NULL, dobj1);
+	dobj2 = widget_newTypeIdName("label", NULL, NULL, dobj1);
     dataobject_setValue(dobj2, "data", dataobjectfield_string("Hello World"));
     widget_setAlignment(dobj2, WA_CENTER);
 
@@ -99,7 +99,7 @@ DataObject *BootApplication(void)
     widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 
-	dobj2 = widget_newTypeIdName("string", "label", NULL, dobj1);
+	dobj2 = widget_newTypeIdName("label", NULL, NULL, dobj1);
     dataobject_setValue(dobj2, "data", dataobjectfield_string("Calculator"));
     widget_setAlignment(dobj2, WA_CENTER);
 
@@ -117,7 +117,7 @@ DataObject *BootApplication(void)
     widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 
-	dobj2 = widget_newTypeIdName("string", "label", NULL, dobj1);
+	dobj2 = widget_newTypeIdName("label", NULL, NULL, dobj1);
     dataobject_setValue(dobj2, "data", dataobjectfield_string("Where am I?"));
     widget_setAlignment(dobj2, WA_CENTER);
 
@@ -128,7 +128,7 @@ DataObject *BootApplication(void)
     widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 
-	dobj2 = widget_newTypeIdName("string", "label", NULL, dobj1);
+	dobj2 = widget_newTypeIdName("label", NULL, NULL, dobj1);
     dataobject_setValue(dobj2, "data", dataobjectfield_string("Mail"));
     widget_setAlignment(dobj2, WA_CENTER);
 
@@ -156,7 +156,7 @@ DataObject *BootApplication(void)
     widget_setAlignment(dobj1, WA_CENTER);
 	widget_setCanFocus(dobj1, 1);
 
-	dobj2 = widget_newTypeIdName("string", "label", NULL, dobj1);
+	dobj2 = widget_newTypeIdName("label", NULL, NULL, dobj1);
     dataobject_setValue(dobj2, "data", dataobjectfield_string("NoGPS"));
     widget_setAlignment(dobj2, WA_CENTER);
 
@@ -209,7 +209,7 @@ DataObject *BootApplication(void)
 
 	/* array test */
 #if 0
-	dobj2 = widget_newTypeIdName("string", "label", NULL, root);
+	dobj2 = widget_newTypeIdName("label", NULL, NULL, root);
     dataobject_setValue(dobj2, "data", dataobjectfield_string("Running Applications"));
 	dataobject_setValue(dobj2, "margintop", dataobjectfield_int(10));
     widget_setAlignment(dobj2, WA_LEFT);
@@ -251,17 +251,17 @@ DataObject *BootApplication(void)
 	widget_setCanFocus(sbox, 1);
 	widget_setPacking(sbox, WP_HORIZONTAL);
 
-	label = widget_newTypeIdName("string", "label", NULL, sbox);
+	label = widget_newTypeIdName("label", NULL, NULL, sbox);
 	dataobject_setValue(label, "width", dataobjectfield_string("10%"));
 	dataobject_setValue(label, "data", dataobjectfield_string("M"));
 	widget_setAlignment(label, WA_CENTER);
 
-	label = widget_newTypeIdName("string", "label", NULL, sbox);
+	label = widget_newTypeIdName("label", NULL, NULL, sbox);
 	dataobject_setValue(label, "datafield", dataobjectfield_string("str2"));
 	dataobject_setValue(label, "arraysource", dataobjectfield_string("true"));
 	dataobject_setValue(label, "width", dataobjectfield_string("40%"));
 
-	label = widget_newTypeIdName("string", "label", NULL, sbox);
+	label = widget_newTypeIdName("label", NULL, NULL, sbox);
 	dataobject_setValue(label, "datafield", dataobjectfield_string("str1"));
 	dataobject_setValue(label, "arraysource", dataobjectfield_string("true"));
 	dataobject_setValue(label, "width", dataobjectfield_string("40%"));
