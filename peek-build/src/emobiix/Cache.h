@@ -9,10 +9,10 @@ extern "C" {
 #endif
 
 void cache_init(void);
+int cache_commitServerSide(DataObject *dobj, URL *url);
+int cache_commitClientSide(DataObject *dobj, URL *url);
 DataObject *cache_loadObject(URL *url);
-int cache_addToObject(DataObject *obj, int fromServer,
-		void *buffer, int len);
-int cache_commitObject(DataObject *dobj);
+int cache_commit(void);
 
 #ifdef __cplusplus
 }
