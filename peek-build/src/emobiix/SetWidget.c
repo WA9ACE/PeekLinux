@@ -33,14 +33,14 @@ DataObject *setwidget_activeItem(DataObject *w)
 
 	fieldvalue = dataobject_getValue(dobj, fieldname->field.string);
 
-	widget_getChildren(w, &iter);
+	dataobject_childIterator(w, &iter);
 	while (!listIterator_finished(&iter)) {
 		itemobj = (DataObject *)listIterator_item(&iter);
 		itemvalue = dataobject_getValue(itemobj, "fieldvalue");
 		if (itemvalue != NULL && itemvalue->type == DOF_STRING &&
 				fieldvalue != NULL && fieldvalue->type == DOF_STRING &&
 				strcmp(itemvalue->field.string, fieldvalue->field.string) == 0) {
-			widget_getChildren(itemobj, &iter);
+			dataobject_childIterator(itemobj, &iter);
 			if (listIterator_finished(&iter))
 				return NULL;
 			return listIterator_item(&iter);
