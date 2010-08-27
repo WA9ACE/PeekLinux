@@ -45,7 +45,7 @@ void mime_loadAll(DataObject *dobj)
 
 	mime_load(dobj);
 	
-	widget_getChildren(dobj, &iter);
+	dataobject_childIterator(dobj, &iter);
 	while (!listIterator_finished(&iter)) {
 		mime_loadAll((DataObject *)listIterator_item(&iter));
 		listIterator_next(&iter);
