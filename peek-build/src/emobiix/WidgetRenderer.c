@@ -200,7 +200,7 @@ static void box_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 				outline.rgba.red, outline.rgba.green, outline.rgba.blue,
 				borderFlags);
 	} else {
-		lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width, box->height, radius,
+		lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width-1, box->height-1, radius,
 			outline.rgba.red, outline.rgba.green, outline.rgba.blue,
 			borderFlags, cornerBorderFlags);
 	}
@@ -302,8 +302,10 @@ WidgetRenderer *widgetRenderer_fromString(const char *str)
 		return widgetrenderer_text();
 	if (strcmp(str, "entry") == 0)
 		return widgetrenderer_entry();
+#if 0
 	if (strcmp(str, "array") == 0)
 		return widgetrenderer_array();
+#endif
 	if (strcmp(str, "checkbox") == 0)
 		return widgetrenderer_checkbox();
 	return NULL;
