@@ -288,7 +288,7 @@ DataObject *RootApplication(void)
 	dataobject_setValue(frame, "height", dataobjectfield_string(CONTENTHEIGHT));
 	widget_setPacking(frame, WP_VERTICAL);
 
-	frame = widget_newTypeIdName("box", NULL, "dialogholder", dobj2);
+	frame = widget_newTypeIdName("reference", NULL, "dialogholder", dobj2);
 	dataobject_setValue(frame, "width", dataobjectfield_string("320"));
 	dataobject_setValue(frame, "height", dataobjectfield_string(CONTENTHEIGHT));
 	widget_setPacking(frame, WP_VERTICAL);
