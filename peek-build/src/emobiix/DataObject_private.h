@@ -22,7 +22,7 @@ struct DataObject_t {
 	List *arrayChildren;
 	DataObject *parent;
 
-	Rectangle margin, box;
+	Rectangle margin, box, childBox;
 	Point position;
 	//char *className;
 	//char *idName;
