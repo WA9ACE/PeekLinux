@@ -218,6 +218,7 @@ WidgetRenderer *widgetrenderer_entry(void)
 	output->render = entry_renderer;
 	output->measure = entry_measure;
 	output->margin = widgetrenderer_zeroMargin;
+	output->postrender = NULL;
 
 	return output;
 }
