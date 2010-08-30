@@ -9,6 +9,7 @@
 #include "ArrayWidget.h"
 #include "SetWidget.h"
 #include "StackWidget.h"
+#include "ScrolledWidget.h"
 #include "lgui.h"
 #include "Debug.h"
 #include "Application.h"
@@ -317,6 +318,13 @@ Rectangle *widget_getBox(Widget *w)
 	EMO_ASSERT_NULL(w != NULL, "widget get box missing widget")
 
 	return &w->box;
+}
+
+Rectangle *widget_getChildBox(Widget *w)
+{
+	EMO_ASSERT_NULL(w != NULL, "widget get child box missing widget")
+
+	return &w->childBox;
 }
 
 void widget_printTree(Widget *w, int level)
@@ -1346,6 +1354,7 @@ void widget_resolveMeasureRelative(Widget *w)
 	int tmpint, slen, isset;
 	Application *app;
 	WidgetPacking pack = WP_VERTICAL;
+	int widthStillDirty, heightStillDirty;
 
 	EMO_ASSERT(w != NULL, "widget layout measure relative missing widget")
 
@@ -1376,6 +1385,8 @@ void widget_resolveMeasureRelative(Widget *w)
 	rowWidth = 0;
 	rowHeight = 0;
 	isset = 0;
+	widthStillDirty = 0;
+	heightStillDirty = 0;
 
 	sField = dataobject_getValue(w, "type");
 	/*if (!widget_typeNoChildRender(sField)) {*/
@@ -1411,6 +1422,10 @@ void widget_resolveMeasureRelative(Widget *w)
 			}
 start_child:
 			widget_resolveMeasureRelative(child);
+			if (dataobject_isLayoutDirty(child, LAYOUT_DIRTY_WIDTH))
+				widthStillDirty = 1;
+			if (dataobject_isLayoutDirty(child, LAYOUT_DIRTY_HEIGHT))
+				heightStillDirty = 1;
 			if (pack == WP_HGRID) {
 				sumNew = child->box.width + child->margin.x + child->margin.width;
 				if (rowWidth+sumNew > w->box.width) {
@@ -1467,14 +1482,20 @@ start_child:
 		}
 	}
 
-	if (dataobject_isLayoutDirty(w, LAYOUT_DIRTY_WIDTH)) {
+	if (!widthStillDirty && dataobject_isLayoutDirty(w, LAYOUT_DIRTY_WIDTH)) {
 		w->box.width = sumWidth;
 		dataobject_setLayoutClean(w, LAYOUT_DIRTY_WIDTH);
 	}
-	if (dataobject_isLayoutDirty(w, LAYOUT_DIRTY_HEIGHT)) {
-		w->box.height = sumHeight;
-		dataobject_setLayoutClean(w, LAYOUT_DIRTY_HEIGHT);
+	if (!heightStillDirty && dataobject_isLayoutDirty(w, LAYOUT_DIRTY_HEIGHT)) {
+		sField = dataobject_getValue(w, "type");
+		if (!dataobjectfield_isString(sField, "text")) {
+			w->box.height = sumHeight;
+			dataobject_setLayoutClean(w, LAYOUT_DIRTY_HEIGHT);
+		}
 	}
+
+	w->childBox.width = sumWidth;
+	w->childBox.height = sumHeight;
 }
 
 void widget_resolveMargin(Widget *w, Style *s)
@@ -1496,6 +1517,20 @@ void widget_resolveMargin(Widget *w, Style *s)
 	className = widget_getClass(w);
 	id = widget_getID(w);
 	type = dataobject_getValue(w, "type");
+
+#if 0
+	/* for debugging css on buttons */
+	if (dataobjectfield_isString(type, "label")) {
+		parent = dataobject_parent(dobj);
+		if (parent != NULL) {
+			output = dataobject_getValue(parent, "type");
+			if (dataobjectfield_isString(output, "button")) {
+				emo_printf("button->label" NL);
+			}
+		}
+	}
+#endif	
+
 	style = style_getID(s, type == NULL ? NULL : type->field.string, id,
 			widget_hasFocus(w), &wentUp);
 
@@ -1724,6 +1759,9 @@ start_child:
 		listIterator_next(&iter);
 	}
 
+	if (dataobjectfield_isString(field, "scrolled"))
+		scrolled_autoscroll(w);
+
 	/*listIterator_delete(iter);*/
 }
 
@@ -1775,6 +1813,13 @@ void widget_resolveLayoutRoot(Widget *w, Style *s, int resizeRoot)
 	dataobject_childIterator(w, &iter);
 	while (!listIterator_finished(&iter)) {
 		widget_layoutMeasureFinal((DataObject *)listIterator_item(&iter), s);
+		listIterator_next(&iter);
+	}
+
+	/* measure those whos size is based on their children or parent */
+	dataobject_childIterator(w, &iter);
+	while (!listIterator_finished(&iter)) {
+		widget_resolveMeasureRelative((DataObject *)listIterator_item(&iter));
 		listIterator_next(&iter);
 	}
 

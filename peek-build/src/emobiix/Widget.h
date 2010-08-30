@@ -48,6 +48,7 @@ int widget_typeNoChildRender(DataObjectField *field);
 Rectangle *widget_getMargin(Widget *w);
 Rectangle *widget_getBorder(Widget *w);
 Rectangle *widget_getBox(Widget *w);
+Rectangle *widget_getChildBox(Widget *w);
 #define widget_resolveLayout(_w, _s) widget_resolveLayoutRoot(_w, _s, 1)
 void widget_resolveLayoutRoot(Widget *w, Style *s, int resizeRoot);
 void widget_getClipRectangle(Widget *w, Rectangle *rect);
