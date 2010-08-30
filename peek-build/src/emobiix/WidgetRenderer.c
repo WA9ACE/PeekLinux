@@ -220,6 +220,7 @@ WidgetRenderer *widgetrenderer_box(void)
 	output->render = box_renderer;
 	output->measure = NULL;
 	output->margin = widgetrenderer_zeroMargin;
+	output->postrender = NULL;
 
 	return output;
 }
@@ -236,6 +237,7 @@ WidgetRenderer *widgetrenderer_zero(void)
 	output->render = zero_renderer;
 	output->measure = NULL;
 	output->margin = widgetrenderer_zeroMargin;
+	output->postrender = NULL;
 
 	return output;
 }
@@ -252,6 +254,7 @@ WidgetRenderer *widgetrenderer_full(void)
 	output->render = zero_renderer;
 	output->measure = full_measure;
 	output->margin = widgetrenderer_zeroMargin;
+	output->postrender = NULL;
 
 	return output;
 }
@@ -282,6 +285,7 @@ WidgetRenderer *widgetrenderer_button(void)
 	output->render = box_renderer;
 	output->measure = NULL;
 	output->margin = button_margin;
+	output->postrender = NULL;
 
 	return output;
 }
@@ -302,6 +306,10 @@ WidgetRenderer *widgetRenderer_fromString(const char *str)
 		return widgetrenderer_text();
 	if (strcmp(str, "entry") == 0)
 		return widgetrenderer_entry();
+	if (strcmp(str, "scrolled") == 0)
+		return widgetrenderer_scrolled();
+	if (strcmp(str, "scrollbar") == 0)
+		return widgetrenderer_scrollbar();
 #if 0
 	if (strcmp(str, "array") == 0)
 		return widgetrenderer_array();
