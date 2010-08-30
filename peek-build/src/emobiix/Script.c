@@ -197,7 +197,10 @@ static int __dataobject_locate(lua_State *L)
 		dobj = dataobject_locate(purl);
 	}
 	/*url_delete(purl);*/
-	pushDataObject(L, dobj);
+	if (dobj == NULL)
+		lua_pushnil(L);
+	else
+		pushDataObject(L, dobj);
 
 	return 1;
 }
