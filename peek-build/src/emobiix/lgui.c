@@ -21,6 +21,8 @@ static Rectangle clip_stack[CLIP_STACK_SIZE];
 static short clip_index = 0;
 #define CLIP clip_stack[clip_index]
 
+static int translate_x = 0, translate_y = 0;
+
 #define SCALE_PIXEL(scale, r, g, b) ((( (((unsigned short)(r))*scale/255) << 8) & 0xF800) | \
 	(((((unsigned short)(g))*scale/255) << 3) & 0x7E0) | \
 	(((((unsigned short)(b))*scale/255) >> 3) & 0x1F))
@@ -71,6 +73,9 @@ void lgui_vertical_gradient(unsigned char start_red, unsigned char start_green, 
 	unsigned short *buf, pixel;
 	Rectangle rect;
 	int cline, ccol, cwidth, cheight;
+
+	startx += translate_x;
+	starty += translate_y;
 
 	rect.x = startx;
 	rect.y = starty;
@@ -152,6 +157,9 @@ void lgui_vline(int x, int y, int len, int width, unsigned char red, unsigned ch
 	Rectangle rect;
 	int cline, ccol, cwidth, cheight;
 
+	x += translate_x;
+	y += translate_y;
+
 	rect.x = x;
 	rect.y = y;
 	rect.width = width;
@@ -196,7 +204,7 @@ void lgui_box(int x, int y, int width, int height, int linewidth,
 		lgui_vline(x+width-linewidth, y, height, linewidth, red, green, blue);
 }
 
-// FIXME - needs clipping
+// FIXME - needs clipping and alpha - unusable at the moment
 void lgui_luminence_alpha_blitC(int destx, int desty, int imgx, int imgy, int imgdx, int imgdy,
 							   int imgwidth, int imgheight, unsigned char *img,
 							   unsigned char red, unsigned char green, unsigned char blue)
@@ -245,6 +253,9 @@ void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 	int cline, cwidth, ccol, cheight;
 	Rectangle rect;
 	
+	destx += translate_x;
+	desty += translate_y;
+
 	ypos = desty;
 	imgypos = imgy;
 	
@@ -326,6 +337,9 @@ void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
 	int cline, cwidth, ccol, cheight;
 	Rectangle rect;
 	
+	destx += translate_x;
+	desty += translate_y;
+
 	ypos = desty;
 	imgypos = imgy;
 	
@@ -377,6 +391,9 @@ void lgui_blitRGB565A8(int destx, int desty, int imgx, int imgy,
 	int cline, cwidth, ccol, cheight;
 	Rectangle rect;
 	
+	destx += translate_x;
+	desty += translate_y;
+
 	ypos = desty;
 	imgypos = imgy;
 	
@@ -426,6 +443,9 @@ void lgui_black_alpha_blitRGB(int destx, int desty, int imgx, int imgy,
 	unsigned short pixel;
 	int line, col, ypos, imgypos;
 	
+	destx += translate_x;
+	desty += translate_y;
+
 	ypos = desty;
 	imgypos = imgy;
 	for (line = 0; line < imgheight; ++line) {
@@ -459,6 +479,9 @@ void lgui_alpha_blitRGBA(int destx, int desty, int imgx, int imgy,
 	unsigned short pixel, srcpixel;
 	int line, col, ypos, imgypos;
 	
+	destx += translate_x;
+	desty += translate_y;
+
 	ypos = desty;
 	imgypos = imgy;
 	for (line = 0; line < imgheight; ++line) {
@@ -520,6 +543,9 @@ static void putpixelAlpha(int x, int y, unsigned char red, unsigned char green, 
 {
 	unsigned short pixel, srcpixel;
 	unsigned short *buf;
+
+	x += translate_x;
+	y += translate_y;
 
 	x+=putpixelX;
 	y+=putpixelY;
@@ -709,6 +735,9 @@ void lgui_rbox_gradient(Gradient *g, int x, int y, int width, int height, int ra
 
 	EMO_ASSERT(g != NULL, "lgui rbox missing gradient")
 
+	x += translate_x;
+	y += translate_y;
+
 	rect.x = x;
 	rect.y = y;
 	rect.width = width;
@@ -846,10 +875,10 @@ void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f,
 		val = UTF8toUTF32(p, &adv);
 		data = (unsigned char *)font_getGlyph(f, val, isBold, A4, &width, &height,
 				&xadvance, &yadvance, &baselinedy);
-		if (!(x + xadvance < CLIP.x ||
-				x > CLIP.x + CLIP.width ||
-				y + fontHeight < CLIP.y ||
-				y > CLIP.y + CLIP.height)) {
+		if (!(x + xadvance + translate_x < CLIP.x ||
+				x + translate_x > CLIP.x + CLIP.width ||
+				y + fontHeight + translate_y < CLIP.y ||
+				y + translate_y > CLIP.y + CLIP.height)) {
 			if (data == NULL)
 				emo_printf("lgui_draw_font() Glyph missing: %s", utf8);
 			else
@@ -1015,10 +1044,10 @@ more_escape:
 		val = UTF8toUTF32(p, &adv);
 		data = (unsigned char *)font_getGlyph(f, val, state.isBold, A4, &width, &height,
 				&xadvance, &yadvance, &baselinedy);
-		if (!(x + xadvance < CLIP.x ||
-				x > CLIP.x + CLIP.width ||
-				y + fontHeight < CLIP.y ||
-				y > CLIP.y + CLIP.height)) {
+		if (!(x + xadvance + translate_x < CLIP.x ||
+				x + translate_x > CLIP.x + CLIP.width ||
+				y + fontHeight + translate_y < CLIP.y ||
+				y + translate_y > CLIP.y + CLIP.height)) {
 			if (data == NULL) {
 				/*emo_printf(" Glyph missing" NL);*/
 			} else {
@@ -1323,6 +1352,12 @@ int lgui_clip_rect(Rectangle *rect, int *lowx, int *lowy,
 		return 0;
 
 	return 1;
+}
+
+void lgui_translate(int x, int y)
+{
+	translate_x += x;
+	translate_y += y;
 }
 
 #define REDRAW_REGION_COUNT 30
