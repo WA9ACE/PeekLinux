@@ -120,6 +120,7 @@ WidgetRenderer *widgetrenderer_checkbox(void)
 	output->render = checkbox_renderer;
 	output->measure = checkbox_measure;
 	output->margin = widgetrenderer_zeroMargin;
+	output->postrender = NULL;
 
 	return output;
 }
