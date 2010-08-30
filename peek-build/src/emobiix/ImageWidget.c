@@ -126,6 +126,7 @@ WidgetRenderer *widgetrenderer_image(void)
 	output->render = image_renderer;
 	output->measure = image_measure;
 	output->margin = widgetrenderer_zeroMargin;
+	output->postrender = NULL;
 
 	return output;
 }

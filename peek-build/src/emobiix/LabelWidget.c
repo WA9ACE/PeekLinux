@@ -139,6 +139,7 @@ WidgetRenderer *widgetrenderer_string(void)
 	output->render = string_renderer;
 	output->measure = string_measure;
 	output->margin = string_margin;
+	output->postrender = NULL;
 
 	return output;
 }
