@@ -14,6 +14,7 @@ void array_expand(Widget *w)
 	DataObject *dobj, *rec, *arrtemplate;
 	ListIterator iter;
 	DataObjectField *direction, *startfield;
+	DataObjectField *filterfield, *filtervalue, *filteredObj;
 	int childCount, startNumber, recordIdx;
 
 	EMO_ASSERT(w != NULL,
@@ -31,7 +32,15 @@ void array_expand(Widget *w)
 	if (dobj == w)
 		return;
 
-	/* FIXME: we are not deallocating the widgets in this list */
+	filterfield = dataobject_getValue(w, "filterfield");
+	filtervalue = dataobject_getValue(w, "filtervalue");
+	if (filtervalue == NULL || filtervalue->type != DOF_STRING)
+		filterfield = NULL;
+	
+	for (list_begin(w->arrayChildren, &iter); !listIterator_finished(&iter);
+			listIterator_next(&iter)) {
+		dataobject_delete((DataObject *)listIterator_item(&iter));
+	}
 	list_delete(w->arrayChildren);
 	w->arrayChildren = list_new();
 
@@ -54,10 +63,22 @@ void array_expand(Widget *w)
 	recordIdx = 0;
 	for (; !listIterator_finished(&iter); listIterator_next(&iter)) {
 		rec = (DataObject *)listIterator_item(&iter);
+
+		if (filterfield != NULL) {
+			filteredObj = dataobject_getValue(rec, filterfield->field.string);
+			if (!dataobjectfield_isString(filteredObj, filtervalue->field.string))
+				goto skip_record;
+		}
+
 		shim = dataobject_copyTree(arrtemplate);
 		widget_setDataObjectArray(shim, rec);
 		list_append(w->arrayChildren, (void *)shim);
 		shim->parent = w->parent;
+
+		dataobject_setIsModified(shim, 1);
+		widget_markDirty(shim);
+
+skip_record:
 		++recordIdx;
 		if (recordIdx >= startNumber)
 			break;
