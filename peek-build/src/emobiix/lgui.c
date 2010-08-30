@@ -803,7 +803,7 @@ void lgui_rbox_gradient(Gradient *g, int x, int y, int width, int height, int ra
 				}
 
 				buf = lgui_buffer + startx + ypos*LGUI_WIDTH;
-				buf += imod;
+				buf += imodl;
 				istart = 0;
 
 				if (cstartx > imodl) {
