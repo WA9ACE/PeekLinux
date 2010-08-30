@@ -179,7 +179,8 @@ void *font_getGlyph(Font *f, unsigned int utf32, int isBold,
 		f->face->glyph->bitmap.buffer, pf,
 		f->face->glyph->bitmap.width,
 		f->face->glyph->bitmap.rows,
-		f->face->glyph->advance.x >> 6,
+		(f->face->glyph->advance.x + 32) >> 6,
+		//f->face->glyph->bitmap.width,
 		f->face->glyph->advance.y >> 6,
 		f->face->glyph->bitmap.pitch,
 		f->face->glyph->bitmap_top);
@@ -189,7 +190,7 @@ void *font_getGlyph(Font *f, unsigned int utf32, int isBold,
 
 	*width = f->face->glyph->bitmap.width;
 	*height = f->face->glyph->bitmap.rows;
-	*xadvance = f->face->glyph->advance.x >> 6;
+	*xadvance = (f->face->glyph->advance.x + 32) >> 6;
 	*yadvance = f->face->glyph->advance.y >> 6;
 	*baselinedy = f->face->glyph->bitmap_top;
 
