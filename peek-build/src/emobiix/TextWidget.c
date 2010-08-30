@@ -92,6 +92,7 @@ WidgetRenderer *widgetrenderer_text(void)
 	output->render = text_renderer;
 	output->measure = text_measure;
 	output->margin = widgetrenderer_zeroMargin;
+	output->postrender = NULL;
 
 	return output;
 }
