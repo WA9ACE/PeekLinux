@@ -41,18 +41,20 @@ void style_renderWidgetTree(Style *s, Widget *w)
 			childStyle = style;
 	}
 
+	wr = NULL;
 	if (dataobject_isDirty(w)) {
 		dobj = widget_getDataObject(w);
-		wr = NULL;	
 		style_getRenderer(style, w, "renderer", &wr);
 		if (wr != NULL)
 			wr->render(wr, style, w, dobj);
 		dataobject_setClean(w);
 	}
 
+#if 0
 	/* we dont render array children - they render themselves */
 	if (dataobjectfield_isString(type, "array"))
 		return;
+#endif
 
 	if (dataobjectfield_isString(type, "set")) {
 		singleChild = setwidget_activeItem(w);
@@ -96,6 +98,9 @@ void style_renderWidgetTree(Style *s, Widget *w)
 			listIterator_next(&iter);
 		}
 	}
+
+	if (wr != NULL && wr->postrender != NULL)
+		wr->postrender(wr, style, w, dobj);
 }
 
 Style *style_getID(Style *styleRoot, const char *otype, const char *id, int isFocused,
