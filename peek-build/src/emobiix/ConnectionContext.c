@@ -534,6 +534,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 				cache_commitServerSide(sreq->dobj, sreq->url);
 				cache_commit();
 
+				dataobject_setState(sreq->dobj, DOS_OK);
 				if (field != NULL && field->type == DOF_STRING)
 					emo_printf("Finished Type: %s" NL, field->field.string); 
 				if (field != NULL && field->type == DOF_STRING &&
@@ -697,6 +698,7 @@ static SyncRequest *syncRequest_new(URL *url, int isClient)
 		output->dobj = dataobject_construct(url, !isClient);
 		output->newObject = 1;
 	}
+	dataobject_setState(output->dobj, DOS_SYNC);
 
 	return output;
 }
