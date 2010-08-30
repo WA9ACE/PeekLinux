@@ -64,7 +64,7 @@ DataObject *dataobject_new(void)
 	output->arrayChildren = list_new();
 	output->parent = NULL;
 	output->widgetData = NULL;
-	output->state = DOS_INIT;
+	output->state = DOS_OK;
 	rectangle_zero(&output->margin);
 	output->margin.x = 0;
 	output->margin.y = 0;
@@ -160,13 +160,13 @@ void dataobject_delete(DataObject *dobj)
 		cw = (DataObject *)listIterator_item(&liter);
 		cw->widgetData = NULL;
 		dataobject_setIsModified(cw, 1);
-		renderman_queue(cw);
+		/*renderman_queue(cw);*/
 	}
 
 	list_delete(dobj->children);
 	list_delete(dobj->referenced);
 	map_delete(dobj->data);
-	renderman_dequeue(dobj);
+	/*renderman_dequeue(dobj);*/
 	p_free(dobj);
 }
 
@@ -615,7 +615,7 @@ DataObject *dataobject_findByName(DataObject *dobj, const char *name)
 
 	field = dataobject_getValue(dobj, "name");
 	if (dataobjectfield_isString(field, name)) {
-		emo_printf("Found, returning" NL);
+		/*emo_printf("Found, returning" NL);*/
 		return dobj;
 	}
 
@@ -1107,6 +1107,13 @@ void dataobject_resolveReferences(DataObject *dobj)
 	if (dataobjectfield_isString(field, "array")) {
 		array_expand(dobj);
 		renderman_clearQueue();
+		widget_markDirty(dataobject_superparent(dobj));
+	}
+
+	list_begin(dobj->arrayChildren, &iter);
+	while (!listIterator_finished(&iter)) {
+		dataobject_resolveReferences((DataObject *)listIterator_item(&iter));
+		listIterator_next(&iter);
 	}
 }
 
@@ -1166,6 +1173,9 @@ void dataobject_setIsModified(DataObject *dobj, int isModified)
 
 	EMO_ASSERT(dobj != NULL, "setting modified on NULL DataObject")
 
+	if (dobj->state != DOS_OK)
+		return;
+
 	if (isModified) {
 		renderman_queue(dobj);
 		renderman_markLayoutChanged();
@@ -1178,6 +1188,8 @@ void dataobject_setIsModified(DataObject *dobj, int isModified)
 	type = dataobject_getValue(dobj, "type");
 	if (dataobjectfield_isString(type, "array")) {
 		array_expand(dobj);
+		renderman_clearQueue();
+		widget_markDirty(dataobject_superparent(dobj));
 	}
 
 	for (list_begin(dobj->referenced, &iter); !listIterator_finished(&iter);
