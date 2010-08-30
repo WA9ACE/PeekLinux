@@ -89,8 +89,10 @@ void renderman_flush(void)
 		return;
 	appObj = application_getDataObject(app);
 
-	if (renderman->flags & RM_COMPLETE_REDRAW)
+	if (renderman->flags & RM_COMPLETE_REDRAW) {
+		manager_resolveLayout();
 		goto cleanup_flush;
+	}
 
 	len = array_length(renderman->queue);
 	if (len == 0)
