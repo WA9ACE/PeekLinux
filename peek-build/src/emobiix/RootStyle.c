@@ -37,7 +37,9 @@ Style *RootStyle(void)
 	file_openWrite("test4");
 */
 #endif
-	/*
+	defaultFont = NULL;
+	hugeFont = NULL;
+	
 	defaultFont = font_load(fontObject1);
 	if (defaultFont != NULL)
 		font_setHeight(defaultFont, 12);
@@ -48,9 +50,8 @@ Style *RootStyle(void)
 	} else {
 		font_setHeight(hugeFont, 20);
 	}
-	*/
-	defaultFont = NULL;
-	hugeFont = NULL;
+	
+
 
 	defaultGradient = gradient_new();
 	color.value = 0xF9F9F9FF;
@@ -126,6 +127,16 @@ Style *RootStyle(void)
 	solidbox = widget_newTypeIdName("text", NULL, NULL, defaultStyle);
 	dataobject_setValue(solidbox, "renderer", dataobjectfield_string("text"));
 	dataobject_setValue(solidbox, "font-color", dataobjectfield_int(0));
+
+	/* scroll bar */
+	solidbox = widget_newTypeIdName("scrollbar", NULL, NULL, defaultStyle);
+	dataobject_setValue(solidbox, "renderer", dataobjectfield_string("scrollbar"));
+	dataobject_setValue(solidbox, "thumb-color", dataobjectfield_int(0xAAAAAAFF));
+	dataobject_setValue(solidbox, "track-color", dataobjectfield_int(0x444444FF));
+
+	/* scrolled */
+	solidbox = widget_newTypeIdName("scrolled", NULL, NULL, defaultStyle);
+	dataobject_setValue(solidbox, "renderer", dataobjectfield_string("scrolled"));
 
 	/* label */
 	solidbox = widget_newTypeIdName("array", NULL, NULL, defaultStyle);
