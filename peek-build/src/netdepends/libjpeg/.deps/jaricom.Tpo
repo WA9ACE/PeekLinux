@@ -1,0 +1,32 @@
+jaricom.lo .libs/jaricom.o: jaricom.c jinclude.h jconfig.h \
+  /opt/TI/TMS470CGT4.6.1/include/stddef.h \
+  /opt/TI/TMS470CGT4.6.1/include/stdlib.h \
+  /opt/TI/TMS470CGT4.6.1/include/linkage.h \
+  /opt/TI/TMS470CGT4.6.1/include/stdio.h \
+  /opt/TI/TMS470CGT4.6.1/include/stdarg.h \
+  /opt/TI/TMS470CGT4.6.1/include/string.h jpeglib.h jmorecfg.h jpegint.h \
+  jerror.h
+
+jinclude.h:
+
+jconfig.h:
+
+/opt/TI/TMS470CGT4.6.1/include/stddef.h:
+
+/opt/TI/TMS470CGT4.6.1/include/stdlib.h:
+
+/opt/TI/TMS470CGT4.6.1/include/linkage.h:
+
+/opt/TI/TMS470CGT4.6.1/include/stdio.h:
+
+/opt/TI/TMS470CGT4.6.1/include/stdarg.h:
+
+/opt/TI/TMS470CGT4.6.1/include/string.h:
+
+jpeglib.h:
+
+jmorecfg.h:
+
+jpegint.h:
+
+jerror.h:
