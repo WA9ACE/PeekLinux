@@ -370,10 +370,12 @@ int menuEmobiixItemCB(URL *purl, MfwMnu* m, MfwMnuItem* i)
         dobj = dataobject_locate(purl);
         if (dobj == NULL)
         {
+#if 0
 		manager_loadApplicationReal(LoadingApplication(), 1, 1, purl);
 	        lgui_set_dirty();
 		updateScreen();
         	dspl_Enable(1);
+#endif
 
 		emo_printf("menuEmobiixItemCB() calling connectionContext_syncRequest()");
                 connectionContext_syncRequest(connectionContext, purl);
