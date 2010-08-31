@@ -48,7 +48,7 @@ STR2IND_C   = $(BUILDDIR)/trace/str2ind.c
 
 %.o: %.s
 	@echo "  Assembling: $< => $@"
-	$(CC) $(ASFLAGS) -eoo -fr $(@D) $<
+	@$(CC) $(ASFLAGS) -eoo -fr $(@D) $<
 
 %.o: %.asm
 	@echo "  Assembling: $< => $@"
