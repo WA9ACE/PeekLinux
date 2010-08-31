@@ -42,11 +42,11 @@
  * necessary for interaction with nsbmplib.
  */
 bmp_bitmap_callback_vt bmp_bitmap_callbacks = {
-	.bitmap_create = nsbmp_bitmap_create,
-	.bitmap_destroy = bitmap_destroy,
-	.bitmap_set_suspendable = bitmap_set_suspendable,
-	.bitmap_get_buffer = bitmap_get_buffer,
-	.bitmap_get_bpp = bitmap_get_bpp
+	nsbmp_bitmap_create,
+	bitmap_destroy,
+	bitmap_set_suspendable,
+	bitmap_get_buffer,
+	bitmap_get_bpp
 };
 
 bool nsbmp_create(struct content *c, const struct http_parameter *params)

@@ -9,12 +9,15 @@ DEFINE += FB_USE_FREETYPE
 DEFINE += WITH_PNG
 DEFINE += WITH_GIF
 DEFINE += WITH_BMP
+DEFINE += WITH_JPEG
 
 INCLUDE  = $(SRCDIR)/netsurf/emoport
 INCLUDE += $(M23DIR)/gpf/inc
 INCLUDE += $(SRCDIR)/netsurf
 INCLUDE += $(SRCDIR)/netdepends/libcss/include
 INCLUDE += $(SRCDIR)/netdepends/libnsgif/include
+INCLUDE += $(SRCDIR)/netdepends/libnsbmp/include
+INCLUDE += $(SRCDIR)/netdepends/libjpeg
 INCLUDE += $(SRCDIR)/netdepends/libwapcaplet/include
 INCLUDE += $(SRCDIR)/netdepends/libxml2/include
 INCLUDE += $(SRCDIR)/netdepends/curl-7.21.1/include
