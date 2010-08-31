@@ -55,12 +55,12 @@ static gif_result nsgif_get_frame(struct content *c);
  * necessary for interaction with nsgiflib.
  */
 gif_bitmap_callback_vt gif_bitmap_callbacks = {
-	.bitmap_create = nsgif_bitmap_create,
-	.bitmap_destroy = bitmap_destroy,
-	.bitmap_get_buffer = bitmap_get_buffer,
-	.bitmap_set_opaque = bitmap_set_opaque,
-	.bitmap_test_opaque = bitmap_test_opaque,
-	.bitmap_modified = bitmap_modified
+	nsgif_bitmap_create,
+	bitmap_destroy,
+	bitmap_get_buffer,
+	bitmap_set_opaque,
+	bitmap_test_opaque,
+	bitmap_modified
 };
 
 

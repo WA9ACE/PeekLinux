@@ -1,33 +1,36 @@
-# Component settings
-COMPONENT := nsgif
-COMPONENT_VERSION := 0.0.2
-# Default to a static library
-COMPONENT_TYPE ?= lib-static
+VARIANT_DEFINE :=
 
-# Setup the tooling
-include build/makefiles/Makefile.tools
+DEFINE += $(EMO_SIM)
 
-# Toolchain flags
-WARNFLAGS := -Wall -W -Wundef -Wpointer-arith -Wcast-align \
-	-Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes \
-	-Wmissing-declarations -Wnested-externs -pedantic
-# BeOS/Haiku standard library headers create warnings
-ifneq ($(TARGET),beos)
-  WARNFLAGS := $(WARNFLAGS) -Werror
-endif
-CFLAGS := -D_BSD_SOURCE -I$(CURDIR)/include/ \
-	-I$(CURDIR)/src $(WARNFLAGS) $(CFLAGS)
-ifneq ($(GCCVER),2)
-  CFLAGS := $(CFLAGS) -std=c99
-else
-  # __inline__ is a GCCism
-  CFLAGS := $(CFLAGS) -Dinline="__inline__"
-endif
+INCLUDE  = $(SRCDIR)/netsurf/emoport
+INCLUDE += $(SRCDIR)/emobiix
+INCLUDE += $(SRCDIR)/netdepends/libnsgif/include
+INCLUDE += $(M23DIR)/csw-system/drv_app/kpd
+INCLUDE += $(M23DIR)/csw-system/drv_app
+INCLUDE += $(M23DIR)/config
+INCLUDE += $(M23DIR)/
+INCLUDE += $(M23DIR)/chipsetsw/riviera
+INCLUDE += $(M23DIR)/csw-system/drv_core
 
-include build/makefiles/Makefile.top
+SRC = src/libnsgif.c
 
-# Extra installation rules
-I := /include
-INSTALL_ITEMS := $(INSTALL_ITEMS) $(I):include/libnsgif.h
-INSTALL_ITEMS := $(INSTALL_ITEMS) /lib/pkgconfig:lib$(COMPONENT).pc.in
-INSTALL_ITEMS := $(INSTALL_ITEMS) /lib:$(OUTPUT)
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+TARGET = $(CURDIR)/libnsgif.a
+
+all: $(TARGET)
+OBJ  = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))
+DEPS = $(patsubst %.o,%.d,$(OBJ))
+
+$(TARGET): $(OBJ)
+	$(subst /cygdrive/c,C:,$(AR) $(ARFLAGS) $@ $?)
+
+clean:
+	$(RM) $(OBJ)
+	$(RM) $(TARGET)
+	$(RM) $(DEPS)
+	$(RM) $(patsubst %.o,%.pp,$(OBJ))
+	$(RM) $(patsubst %.o,%.pp_,$(OBJ))
+
+include $(BASEDIR)/Makefile.rules
+
