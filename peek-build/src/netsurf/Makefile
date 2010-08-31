@@ -3,14 +3,18 @@ DEFINE += nsframebuffer
 DEFINE += fprintf=emo_fprintf
 #DEFINE += NETSURF_HOMEPAGE="\"file:///home.html\""
 DEFINE += NETSURF_HOMEPAGE="\"file:///emo/index.html\""
+#DEFINE += NETSURF_HOMEPAGE="\"http://72.14.204.99\""
 DEFINE += NETSURF_FB_RESPATH="\"peekffs:/\""
 DEFINE += FB_USE_FREETYPE
 DEFINE += WITH_PNG
+DEFINE += WITH_GIF
+DEFINE += WITH_BMP
 
 INCLUDE  = $(SRCDIR)/netsurf/emoport
 INCLUDE += $(M23DIR)/gpf/inc
 INCLUDE += $(SRCDIR)/netsurf
 INCLUDE += $(SRCDIR)/netdepends/libcss/include
+INCLUDE += $(SRCDIR)/netdepends/libnsgif/include
 INCLUDE += $(SRCDIR)/netdepends/libwapcaplet/include
 INCLUDE += $(SRCDIR)/netdepends/libxml2/include
 INCLUDE += $(SRCDIR)/netdepends/curl-7.21.1/include
