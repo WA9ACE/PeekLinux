@@ -213,6 +213,8 @@ void fetch_curl_register(void)
 	SETOPT(CURLOPT_NOSIGNAL, 1L);
 	SETOPT(CURLOPT_CONNECTTIMEOUT, 30L);
 
+	curl_with_openssl = false;
+#if 0
 	if (option_ca_bundle && strcmp(option_ca_bundle, ""))
 		SETOPT(CURLOPT_CAINFO, option_ca_bundle);
 	if (option_ca_path && strcmp(option_ca_path, ""))
@@ -229,7 +231,7 @@ void fetch_curl_register(void)
 	LOG(("cURL %slinked against openssl", curl_with_openssl ? "" : "not "));
 
 	/* cURL initialised okay, register the fetchers */
-
+#endif
 	data = curl_version_info(CURLVERSION_NOW);
 
 	for (i = 0; data->protocols[i]; i++)
