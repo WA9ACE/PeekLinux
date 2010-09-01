@@ -469,6 +469,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 	SyncRequest *sreq;
 	const char *mapKey;
 	DataObjectField *field;
+	ListIterator iter;
 	/*Application *app;*/
 
 	EMO_ASSERT(ctx != NULL,
@@ -513,6 +514,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 						packet->packetTypeP.choice.dataObjectSyncFinishP.syncSequenceIDP);
 				break;
 			}
+			emo_printf("Finished %s" NL, sreq->url->all);
 			sreq->remoteResponse = packet->packetTypeP.choice.dataObjectSyncFinishP.responseP;
 			sreq->remoteFinished = 1;
 			if (sreq->isClient) {
@@ -550,6 +552,15 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 					/*renderman_clearQueue();*/
 					dataobject_setIsModifiedTree(sreq->dobj, 1);
 				}
+				if (list_findIter(ctx->inprogressRequests, sreq->url->all,
+						(ListComparitor)strcmp, &iter)) {
+					sreq = (SyncRequest *)listIterator_item(&iter);
+					listIterator_remove(&iter);
+					/* FIXME: delete sreq */
+				} /*else {
+					emo_printf("Finished a request that wasnt in-progress" NL);
+					emo_abort;
+				}*/
 				
 				/*dataobject_debugPrint(sreq->dobj);*/
 				
@@ -594,7 +605,7 @@ static void connectionContext_processSyncRequest(ConnectionContext *ctx,
 		if (!sreq->hasSentLocal) {
 			/* this is our first sync of this object so we dont have anything
 				to send back to the server */
-			if (!sreq->newObject)
+			if (!sreq->newObject && sreq->forcedObject != NULL)
 				connectionContext_outgoingSyncForced(ctx, sreq, &packet);
 			sreq->hasSentLocal = 1;
 		}
