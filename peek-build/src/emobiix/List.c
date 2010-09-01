@@ -85,21 +85,36 @@ void list_delete(List *l)
 void *list_find(List *l, void *obj, ListComparitor lc)
 {
 	ListIterator iter;
-	void *output;
+	int result;
 
 	EMO_ASSERT_NULL(l != NULL, "list find on NULL list")
 	EMO_ASSERT_NULL(lc != NULL, "list find missing comparitor")
 
-	list_begin(l, &iter);
-	while (!listIterator_finished(&iter)) {
-		output = listIterator_item(&iter);
+	result = list_findIter(l, obj, lc, &iter);
+	if (!result)
+		return NULL;
+
+	return listIterator_item(&iter);
+}
+
+int list_findIter(List *l, void *obj, ListComparitor lc, ListIterator *iter)
+{
+	void *output;
+
+	EMO_ASSERT_INT(l != NULL, 0, "list findIter on NULL list")
+	EMO_ASSERT_INT(lc != NULL, 0, "list findIter missing comparitor")
+	EMO_ASSERT_INT(iter != NULL, 0, "list findIter missing iterator")
+
+	list_begin(l, iter);
+	while (!listIterator_finished(iter)) {
+		output = listIterator_item(iter);
 		if (lc(obj, output) == 0) {
 			/*listIterator_delete(iter);*/
-			return output;
+			return 1;
 		}
-		listIterator_next(&iter);
+		listIterator_next(iter);
 	}
-	return NULL;
+	return 0;
 }
 
 int list_size(List *l)
