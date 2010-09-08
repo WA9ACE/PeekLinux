@@ -124,6 +124,7 @@ public:
 	PurpleSavedStatus *status;
 	GMutex *pushMutex;
 	std::list<IMMessage> pushList;
+	std::list<std::string> buddyList;
 	int messageID;
 };
   
@@ -385,9 +386,17 @@ static void received_im_msg(PurpleAccount *account, char *sender,
 
 static void buddy_signed_on(PurpleBuddy *buddy)
 {
+	IMUser *user;
+
 	printf("%s Buddy \"%s\" (%s) signed on\n", __F__,
 			purple_buddy_get_name(buddy),
 			purple_account_get_protocol_id(purple_buddy_get_account(buddy)));
+	user = user_by_account(purple_buddy_get_account(buddy));
+	if (user != NULL) {
+		if (std::find(user->buddyList.begin(), user->buddyList.end(),
+				purple_buddy_get_name(buddy)) == user->buddyList.end())
+		user->buddyList.push_back(purple_buddy_get_name(buddy));
+	}
 }
 
 static void buddy_signed_off(PurpleBuddy *buddy)
@@ -616,10 +625,23 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 			dataObjectURI.c_str());
 
 	if (dataObjectURI == "buddylist") {
+		IMUser *user;
+		std::list<std::string>::iterator iter;
+		user = e_users.find(deviceId)->second;
 		std::string res = "<data>";
+		for (iter = user->buddyList.begin(); iter != user->buddyList.end();
+				++iter) {
+			res += "<item user=\"";
+			res += (*iter);
+			res += "\" account=\"";
+			res += (*iter);
+			res += "\"/>";
+		}
+#if 0
 		res += "<item user=\"ryanemobiix\" account=\"ryanemobiix\"/>";
 		res += "<item user=\"arcx33\" account=\"arcx33\"/>";
 		res += "<item user=\"ankutter\" account=\"ankutter\"/>";
+#endif
 		res += "</data>";
 
 		treeData = base64BinaryFromString(soap, res.c_str());
