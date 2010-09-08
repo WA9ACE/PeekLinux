@@ -175,6 +175,31 @@ Style *RootStyle(void)
 	dataobject_setValue(gradientStop, "position", dataobjectfield_int(100));
 	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xDEDEDEFF));
 
+	/* Gradbox */
+	gradbox = widget_newTypeIdName("darkgradbox", NULL, NULL, defaultStyle);
+	dataobject_setValue(gradbox, "renderer", dataobjectfield_string("box"));
+	dataobject_setValue(gradbox, "fill", dataobjectfield_string("gradient"));
+	dataobject_setValue(gradbox, "background-color", dataobjectfield_uint(0x878787FF));
+
+	gradient = widget_newTypeIdName("gradient", NULL, NULL, gradbox);
+	
+	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
+	dataobject_setValue(gradientStop, "position", dataobjectfield_int(0));
+	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xC9C9C9FF));
+
+	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
+	dataobject_setValue(gradientStop, "position", dataobjectfield_int(50));
+	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0x999999FF));
+	
+	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
+	dataobject_setValue(gradientStop, "position", dataobjectfield_int(50));
+	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0x818181FF));
+
+	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
+	dataobject_setValue(gradientStop, "position", dataobjectfield_int(100));
+	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xAEAEAEFF));
+
+
 	/* Gradboxr */
 	gradbox = widget_newTypeIdName("gradboxr", NULL, NULL, defaultStyle);
 	dataobject_setValue(gradbox, "renderer", dataobjectfield_string("box"));
