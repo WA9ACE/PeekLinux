@@ -545,6 +545,25 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__AuthenticationRequest(struct soap*, std::string de
 
 SOAP_FMAC5 int SOAP_FMAC6 ns__BlockDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, std::vector<ns__KeyValue >*requestParam, xsd__base64Binary &binaryData)
 {
+	printf("%s deviceId(%s) URI(%s)\n", __F__, deviceId.c_str(),
+			dataObjectURI.c_str());
+
+	struct stat st;
+         if (stat(dataObjectURI.c_str(), &st) != 0)
+                 return 404;
+ 
+         ifstream file(dataObjectURI.c_str(), ios::in | ios::binary);
+         if (!file)
+                 return 404;
+ 
+         char *type = "unknown";
+         if (char *dot = strrchr(dataObjectURI.c_str(), '.'))
+                 type = dot + 1;
+ 
+         binaryData = xsd__base64Binary(soap, st.st_size, type);
+ 
+         file.read((char *)binaryData.getPtr(), binaryData.getSize());
+ 
 	return SOAP_OK;
 }
 
