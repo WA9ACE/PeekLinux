@@ -81,6 +81,19 @@ static void PushTask(Task *t)
 	g_mutex_unlock(masterLock);
 }
 
+class IMMessage {
+public:
+	IMMessage(const char *sender, const char *message, int id) {
+		m_sender = sender;
+		m_message = message;
+		m_id = id;
+	}
+
+	std::string m_message;
+	std::string m_sender;
+	int m_id;
+};
+
 class IMUser {
 public:
 	IMUser(const char *eID) {
@@ -88,11 +101,30 @@ public:
 		account = NULL;
 		status = NULL;
 		task = NULL;
+		messageID = 0;
+		pushMutex = g_mutex_new();
+	}
+	void pushMessage(const char *sender, const char *message) {
+		g_mutex_lock(pushMutex);
+		pushList.push_back(IMMessage(sender, message, messageID));
+		++messageID;
+		g_mutex_unlock(pushMutex);
+	}
+	std::list<IMMessage> getPushList(void) {
+		g_mutex_lock(pushMutex);
+		std::list<IMMessage> output = pushList;
+		pushList.clear();
+		g_mutex_unlock(pushMutex);
+
+		return output;
 	}
 	char *emobiixID;
 	Task *task;
 	PurpleAccount *account;
 	PurpleSavedStatus *status;
+	GMutex *pushMutex;
+	std::list<IMMessage> pushList;
+	int messageID;
 };
   
 typedef std::map<std::string, IMUser *> UserMap;
@@ -518,6 +550,34 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__BlockDataObjectRequest(struct soap* soap, std::str
 
 SOAP_FMAC5 int SOAP_FMAC6 ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::vector<ns__KeyValue >*requestParam, xsd__base64Binary &recordData)
 {
+	printf("%s deviceId(%s) URI(%s)\n", __F__, deviceId.c_str(),
+			dataObjectURI.c_str());
+
+	if (dataObjectURI == "messages") {
+		std::string res = "<array>";
+		std::list<IMMessage> msgs = e_users.find(deviceId)->second->getPushList();
+		std::list<IMMessage>::iterator iter;
+		for (iter = msgs.begin(); iter != msgs.end(); ++iter) {
+			char numstr[25];
+			res += "<item idminor=\"";
+			snprintf(numstr, 25, "%d", iter->m_id);
+			res += numstr;
+			res += "\" from=\"";
+			res += iter->m_sender;
+			res += "\" message=\"";
+			res += iter->m_message;
+			res += "\" conversation=\"";
+			res += iter->m_sender;
+			res += "\" mine=\"0\"/>";
+		}
+		res += "</array>";
+
+		recordData = base64BinaryFromString(soap, res.c_str());
+
+		printf("%s messages: %s\n", __F__, res.c_str());
+
+		return SOAP_OK;
+	}
 	return SOAP_OK;
 }
 
@@ -540,11 +600,33 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 		std::string res = "<data>";
 		res += "<item user=\"ryanemobiix\" account=\"ryanemobiix\"/>";
 		res += "<item user=\"arcx33\" account=\"arcx33\"/>";
+		res += "<item user=\"ankutter\" account=\"ankutter\"/>";
 		res += "</data>";
 
 		treeData = base64BinaryFromString(soap, res.c_str());
 
 		printf("%s buddylist: %s\n", __F__, res.c_str());
+
+		return SOAP_OK;
+	}
+	if (dataObjectURI == "messages") {
+		std::string res = "<array>";
+		std::list<IMMessage> msgs = e_users.find(deviceId)->second->getPushList();
+		std::list<IMMessage>::iterator iter;
+		for (iter = msgs.begin(); iter != msgs.end(); ++iter) {
+			res += "<item from=\"";
+			res += iter->m_sender;
+			res += "\" message=\"";
+			res += iter->m_message;
+			res += "\" conversation=\"";
+			res += iter->m_sender;
+			res += "\" mine=\"0\"/>";
+		}
+		res += "</array>";
+
+		treeData = base64BinaryFromString(soap, res.c_str());
+
+		printf("%s messages: %s\n", __F__, res.c_str());
 
 		return SOAP_OK;
 	}
@@ -632,6 +714,9 @@ void ms_newConnection(const char *emobiixID)
 {
 	IMUser *output;
 
+	if (e_users.find(emobiixID) != e_users.end())
+		return;
+
 	g_mutex_lock(masterLock);
 
 	output = new IMUser(emobiixID);
@@ -655,7 +740,7 @@ void ms_newAccount(Task *task)
 	}
 	output = (*iter).second;
 
-	if (1) {
+	if (0) {
 		output->task = task;
 		e_users[task->emobiixID] = output;
 		output->task->result = new Result("connected");
@@ -705,15 +790,51 @@ void ms_pushIM(IMUser *user, const char *sender, const char *message)
 {
 	printf("%s pushing IM from %s : %s\n", __F__, sender, message);
 
+	char *newbuf = new char[ strlen(message) ];
+	int len = strlen(message);
+	int j = 0;
+
+	// scan string
+	for( int i=0; i<len ; i++ )
+	{
+	   // found an open '<', scan for its close
+	   if ( message[i] == '<' )
+	   {
+		 // charge ahead in the string until it runs out or we find what we're looking for
+		 for( ; i<len && message[i] != '>'; i++ );
+	   }
+	   else
+	   {
+		  newbuf[j++] = message[i];
+	   }
+	}
+
+	newbuf[j] = 0;
+
+	user->pushMessage(sender, newbuf);
+	delete[] newbuf;
+
 	std::string data;
 	soap *s;
 	s = soap_new();
 
 	bool isDelivered = false;
-	data = "message sent";
+#if 0
+	data = "<array><element from=\"";
+	data += sender;
+	data += "\" message=\"";
+	/*data += message;*/
+	data += "hey";
+	data += "\" conversation=\"";
+	data += sender;
+	data += "\" mine=\"0\"/></array>";
+	printf("Pushing : %s\n", data.c_str());
+#else
+	data = "tcp://127.0.0.1:5533/messages";
+#endif
 
 	std::vector<ns__KeyValue> requestParams;
-	int ret = soap_call_ns__DataObjectPushRequest(s, "http://0.0.0.0:23456", NULL, "1", data, &requestParams, isDelivered);
+	int ret = soap_call_ns__DataObjectPushRequest(s, "http://127.0.0.1:5522", NULL, user->emobiixID, data, &requestParams, isDelivered);
 
 	soap_end(s);
 	soap_free(s);
