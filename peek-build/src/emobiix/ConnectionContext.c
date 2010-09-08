@@ -1024,14 +1024,16 @@ static void connectionContext_processAuthRequest(ConnectionContext *ctx,
 }
 
 #define IMEI_LEN  15
+extern char imei[IMEI_LEN+1];
+
 static void connectionContext_authUserPass(ConnectionContext *ctx)
 {
 	FRIPacketP_t packet;
 	AuthUserPassP_t *p;
 #ifndef SIMULATOR
-	static char deviceImei[IMEI_LEN + 1] = { 0 };
+	//static char deviceImei[IMEI_LEN + 1] = { 0 };
 
-	//if (!deviceImei[0])
+	//if (!imei[0])
 	//	BalGetImei(deviceImei);
 #endif
 
@@ -1045,8 +1047,8 @@ static void connectionContext_authUserPass(ConnectionContext *ctx)
 
 	/* add our extras */
 #ifndef SIMULATOR
-	//protocol_autUserPassExtra(p, "IMEI", deviceImei);
-	protocol_autUserPassExtra(p, "IMEI", "312000012345678");
+	protocol_autUserPassExtra(p, "IMEI", imei);
+	//protocol_autUserPassExtra(p, "IMEI", "312000012345678");
 #else
 	protocol_autUserPassExtra(p, "IMEI", "312000012345678");
 #endif

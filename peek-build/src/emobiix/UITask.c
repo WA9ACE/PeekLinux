@@ -177,17 +177,19 @@ void UITask(void)
 }
 
 extern BOOL powered_on;
+extern void mmi_imei_retrieve();
 
 int UIInit(void)
 {	
 	static int initd = 0;
-	char *argv = "emobiix";
 
 	if (!initd) {
 		screenBuf = (unsigned char *)p_malloc(320*240*2);
 		if(!screenBuf)
 			emo_printf("Failed to allocate screenBuf\n");
 
+		// This should be cleaned up after we move off mfw
+		mmi_imei_retrieve();
 		dataobject_platformInit();
 		renderman_init();
 
@@ -198,9 +200,9 @@ int UIInit(void)
 		manager_drawScreen();
 		updateScreen();
 
-		netsurf_main(1, &argv);
 	}
 
+	uiStatusSet();
 	return 1;
 }
 
