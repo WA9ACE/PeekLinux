@@ -1,7 +1,7 @@
 <application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
 <data name="mydata">0</data>
 <view name="mainview" width="320" height="220">
-	<box background-color="AFAFAFFF" id="solid" width="100%" height="100%" packing="horizontal">
+	<box background-color="#AFAFAF" id="solid" width="100%" height="100%" packing="horizontal">
 		<label>You have</label>
 		<set reference="mydata" fieldname="data">
 			<setitem fieldvalue="0">
@@ -17,7 +17,7 @@
 				<label reference="mydata"/>
 			</setitem>
 		</set>
-		<label color="FF7F00">Oranges</label>
+		<label font-color="#FF7F00">Oranges</label>
 	</box>
 </view>
 </application>

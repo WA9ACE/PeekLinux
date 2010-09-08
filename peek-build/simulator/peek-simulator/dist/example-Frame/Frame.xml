@@ -1,6 +1,6 @@
 <application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
 <view name="mainview" width="320" height="220">
-	<box background-color="FFFFFFFF" id="solid" width="100%" height="100%" packing="vertical">
+	<box background-color="#FFF" id="solid" width="100%" height="100%" packing="vertical">
 		<label alignemnt="center">Below is an external application</label>
 		<frame reference="xml://local/example-StackAndSet/CombinedSetStack.xml" width="100" height="100"/>
 	</box>

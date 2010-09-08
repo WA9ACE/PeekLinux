@@ -1,6 +1,6 @@
 <application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
 <view name="mainview" width="320" height="220">
-	<box background-color="FFFFFFFF" id="solid" width="100%" height="100%" packing="vertical">
+	<box background-color="#FFF" id="solid" width="100%" height="100%" packing="vertical">
 		<label>checkbox1</label>
 		<checkbox margin="5" canfocus="1"/>
 		<label>checkbox2</label>

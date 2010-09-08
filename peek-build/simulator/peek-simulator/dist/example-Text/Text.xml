@@ -1,10 +1,10 @@
 <application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
 <view name="mainview" width="320" height="220">
-	<box background-color="FFFFFFFF" id="solid" width="100%" height="100%" packing="vertical">
+	<box background-color="#FFF" id="solid" width="100%" height="100%" packing="vertical">
 		<label alignment="center">Plain text</label>
 		<label alignment="center" weight="bold">Bold text</label>
-		<text alignment="center" width="90%" height="20">This is some &lt;cFF000000&gt;red, &lt;b&gt;Bold, and &lt;u&gt;Underlined text</text>
-		<text alignment="center" width="90%" height="20">This is some &lt;i&gt;Italic text&lt;/i&gt; - Ugly</text>
+		<text alignment="center" width="90%">This is some &lt;cFF000000&gt;red, &lt;b&gt;Bold, and &lt;u&gt;Underlined text</text>
+		<text alignment="center" width="90%">This is some &lt;i&gt;Italic text&lt;/i&gt; - Ugly</text>
 	</box>
 </view>
 </application>

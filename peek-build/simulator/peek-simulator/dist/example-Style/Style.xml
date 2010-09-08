@@ -1,10 +1,10 @@
 <application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview" style="mystyle">
 <style name="mystyle">
-	<background renderer="box" background-color="7F3F0000" packing="vertical" fill="solid"/>
-	<tab renderer="box" background-color="FF7F0000" packing="vertical" fill="solid" rounded="12" border-corners="12" border="124" border-color="00000000" marginright="5"/>
-	<tabb renderer="box" background-color="DF5F0000" packing="vertical" fill="solid" rounded="12" border-corners="12" border="124" border-color="00000000" marginright="5"/>
-	<foreground renderer="box" background-color="FF7F0000" packing="vertical" fill="solid"/>
-	<label renderer="label" font-color="FFFFFFFF"/>
+	<background renderer="box" background-color="#7F3F00" packing="vertical" fill="solid"/>
+	<tab renderer="box" background-color="#FF7F00" packing="vertical" fill="solid" rounded="12" border-corners="12" border="124" border-color="#000" marginright="5"/>
+	<tabb renderer="box" background-color="#DF5F00" packing="vertical" fill="solid" rounded="12" border-corners="12" border="124" border-color="#000" marginright="5"/>
+	<foreground renderer="box" background-color="#FF7F00" packing="vertical" fill="solid"/>
+	<label renderer="label" font-color="#FFF"/>
 </style>
 <view name="mainview" width="320" height="220" packing="vertical">
 	<box id="background" width="100%">

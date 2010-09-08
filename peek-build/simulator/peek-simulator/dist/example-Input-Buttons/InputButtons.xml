@@ -1,7 +1,7 @@
 <application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
 <data name="mydata">Hello</data>
 <view name="mainview" width="320" height="220">
-	<box background-color="AFAFAFFF" id="solid" width="100%" height="100%" packing="vertical">
+	<box background-color="#AFAFAF" id="solid" width="100%" height="100%" packing="vertical">
 		<entry alignment="center" reference="mydata" canfocus="1" name="entry1" width="50%"/>
 		<button alignment="center" canfocus="1" onreturn="
 			e1 = DataObject.find(&quot;entry1&quot;)

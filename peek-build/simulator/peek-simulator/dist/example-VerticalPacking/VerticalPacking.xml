@@ -1,6 +1,6 @@
 <application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
 <view name="mainview" width="320" height="220">
-	<box background-color="FFFFFFFF" id="solid" width="100%" height="100%" packing="vertical">
+	<box background-color="#FFF" id="solid" width="100%" height="100%" packing="vertical">
 		<label alignment="left">Left</label>
 		<label alignment="center">center</label>
 		<label alignment="right">Right</label>
