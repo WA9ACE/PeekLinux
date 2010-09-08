@@ -17,8 +17,8 @@ void scrolled_autoscroll(Widget *w)
 	box = widget_getBox(w);
 	childBox = widget_getChildBox(w);
 
-	emo_printf("Height: %d, Child Height: %d, pos: %d" NL,
-			box->height, childBox->height, (childBox->height-box->height));
+	/*emo_printf("Height: %d, Child Height: %d, pos: %d" NL,
+			box->height, childBox->height, (childBox->height-box->height));*/
 
 	autoscroll = dataobject_getValue(w, "autoscroll");
 	if (dataobjectfield_isString(autoscroll, "bottom")) {
