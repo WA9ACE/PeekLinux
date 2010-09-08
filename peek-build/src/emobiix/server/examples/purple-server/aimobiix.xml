@@ -7,6 +7,24 @@
 				<stop position="100" color="#42bab5"/>
 			</gradient>
 			<label renderer="label" weight="bold" font-color="#FFF" margin="2"/>
+			<button renderer="box" border-color="#444" border="1234" fill="gradient">
+				<gradient>
+					<stop position="0" color="#F9F9F9FF"/>
+					<stop position="50" color="#C9C9C9FF"/>
+					<stop position="50" color="#B1B1B1FF"/>
+					<stop position="100" color="#DEDEDEFF"/>
+				</gradient>
+				<label renderer="label" font-color="#444" margin="2"/>
+			</button>
+			<button hasfocus="1" renderer="box" border-color="#000" border="1234" fill="gradient">
+				<gradient>
+					<stop position="0" color="#8cddde"/>
+					<stop position="50" color="#69ced6"/>
+					<stop position="50" color="#5cb6be"/>
+					<stop position="100" color="#85dfe0"/>
+				</gradient>
+				<label renderer="label" font-color="#000" margin="2"/>
+			</button>
 		</abox>
 		<dialogb renderer="box" fill="gradient" border="1234" border-color="#000" rounded="1234" border-corners="1234">
 			<gradient>
@@ -18,24 +36,6 @@
 		</dialogu>
 		<dialogl renderer="box" fill="solid" border="234" border-color="#000" rounded="34" border-corners="34" background-color="#ddf">
 		</dialogl>
-		<button renderer="box" border-color="#444" border="1234" fill="gradient">
-			<gradient>
-				<stop position="0" color="#F9F9F9FF"/>
-				<stop position="50" color="#C9C9C9FF"/>
-				<stop position="50" color="#B1B1B1FF"/>
-				<stop position="100" color="#DEDEDEFF"/>
-			</gradient>
-			<label renderer="label" weight="bold" font-color="#444" margin="2"/>
-		</button>
-		<button hasfocus="1" renderer="box" border-color="#000" border="1234" fill="gradient">
-			<gradient>
-				<stop position="0" color="#8cddde"/>
-				<stop position="50" color="#69ced6"/>
-				<stop position="50" color="#5cb6be"/>
-				<stop position="100" color="#85dfe0"/>
-			</gradient>
-			<label renderer="label" weight="bold" font-color="#000" margin="2"/>
-		</button>
 		<selbox/>
 		<selbox hasfocus="1" renderer="box" rounded="1234" fill="gradient" radius="7" border="1234" border-corners="1234" border-color="#000">
 			<gradient>
@@ -55,18 +55,29 @@ function alert(msg)
 	DataObject.showDialog("alert");
 end
 function login()
+print("login 1");
 	user = DataObject.find("user");
+print("login 2");
 	pass = DataObject.find("pass");
+print("login 3");
 	if user:getValue() == "" then
+print("login 4");
 		alert("Blank username field");
 	elseif pass:getValue() == "" then
+print("login 5");
 		alert("Blank password field");
 	else
+print("login 6");
 		request = DataObject.find("request");
+print("login 7");
 		request:setValue("user", user:getValue());
+print("login 8");
 		request:setValue("pass", pass:getValue());
+print("login 9");
 		request:setValue("action", "login");
+print("login 1");
 		request:sync();
+print("login 1");
 	end
 end
 function validate()
@@ -92,6 +103,8 @@ function buddyswitch()
 	title:setValue(val);
 	val = dobj:getValue("account");
 	activeBuddy = val;
+	arr = DataObject.find("messages");
+	arr:setValue("filtervalue", activeBuddy);
 end
 function send_im()
   entry = DataObject.find("IM");
@@ -109,20 +122,19 @@ function send_im()
 	localmsg = DataObject.new();
 	localmsg:setValue("from", "me");
 	localmsg:setValue("message", message);
+	localmsg:setValue("conversation", activeBuddy);
 	localmsg:setValue("mine", "1");
-	messages = DataObject.find("messageURL");
+	messages = DataObject.locate("tcp://127.0.0.1:5533/messages");
 	messages:append(localmsg);
 end
 	]]>
 	</script>
-	<data name="messageURL">
-	</data>
 	<view name="login" width="320" height="240">
-		<box packing="vertical" width="100%" height="100%">
-			<box renderer="box" fill="solid" background-color="#FFF" packing="vertical" width="100%">
+		<box width="100%" height="100%">
+			<box renderer="box" fill="solid" background-color="#FFF" width="100%" height="50">
 				<image src="aim/aimlogo1.png" margin="5" alignment="center"/>
 			</box>
-					<box packing="vertical" id="abox" width="100%">
+					<box id="abox" width="100%">
 						<label margin="20" alignment="center">Login</label>
 						<box packing="horizontal" alignment="center">
 							<label>Name</label>
@@ -132,44 +144,55 @@ end
 							<label>Pass  </label>
 							<entry name="pass" canfocus="1" margintop="5" width="200">emobiix123</entry>
 						</box>
-						<button packing="vertical" margin="10" alignment="center" canfocus="1" onreturn="login()">
+						<button margin="10" alignment="center" canfocus="1" onreturn="login()">
 							<label margin="5" alignment="center">Connect</label>
 						</button>
 					</box>
-			<box renderer="box" fill="solid" background-color="#FFF" packing="vertical" width="100%" height="35">
+			<box renderer="box" fill="solid" background-color="#FFF" width="100%" height="35">
 			</box>
 		</box>
 	</view>
 	<view name="chat">
-		<box alignment="center" packing="vertical" id="gradbox" width="320" height="240">
+		<box alignment="center" width="320" height="240">
 		<box packing="horizontal" id="abox" width="100%" height="100%">
-			<box packing="vertical" width="59%" height="100%" marginleft="10" margintop="5">
-				<box packing="vertical" id="dialogu" width="100%">
+			<box width="59%" height="100%" marginleft="10" margintop="5">
+				<box id="dialogu" width="100%">
 					<label name="msgtitle" alignment="center" font-color="#000">Messages</label>
 				</box>
-				<box alignment="center" width="100%" height="70%" id="dialogl" packing="vertical">
-					<array name="messages" reference="messageURL">
-						<box width="100%" packing="vertical">
-							<text width="100%" arraysource="1" datafield="from" font-color="#F00"/>
-							<text width="100%" arraysource="1" datafield="message" marginleft="5"/>
-						</box>
-					</array>
+				<box alignment="center" width="100%" height="70%" id="dialogl" packing="horizontal" rounded="4" border-corners="4">
+					<scrolled width="95%" height="100%" name="msgscroll" autoscroll="bottom">
+						<array name="messages" reference="tcp://127.0.0.1:5533/messages" filterfield="conversation" filtervalue="">
+							<box width="100%" >
+								<set arraysource="1" fieldname="mine">
+									<setitem fieldvalue="0">
+										<label width="100%" arraysource="1" datafield="from" font-color="#F00"/>
+									</setitem>
+									<setitem>
+										<label width="100%" arraysource="1" datafield="from" font-color="#00F"/>
+									</setitem>
+								</set>
+
+								<text width="100%" arraysource="1" datafield="message" marginleft="5"/>
+							</box>
+						</array>
+					</scrolled>
+					<scrollbar width="5%" height="100%" track-color="#AAA" thumb-color="#444" reference="msgscroll"/>
 				</box>
 				<box alignment="left" packing="horizontal" width="100%" margintop="5">
-					<entry name="IM" width="140" canfocus="1" alignment="center" />
-					<button packing="horizontal" alignment="center" canfocus="1" onreturn="send_im()">
-						<label alignment="center" margin="3">Send</label>
+					<entry name="IM" width="143" canfocus="1" alignment="center" rounded="14" border-corners="14" margin="0"/>
+					<button packing="horizontal" alignment="center" canfocus="1" onreturn="send_im()" border-corners="23" border="134" rounded="23" margin="0">
+						<label alignment="center" margintop="2" marginbottom="2" marginleft="2" marginright="5">Send</label>
 					</button>
 				</box>
 			</box>
-			<box packing="vertical" width="39%" marginleft="10" margintop="5">
-				<box packing="vertical" id="dialogu" width="100%">
+			<box width="39%" marginleft="10" margintop="5">
+				<box id="dialogu" width="100%">
 					<label alignment="center" font-color="#000">Buddy List</label>
 				</box>
-			  <box alignment="center" width="100%" height="70%" id="dialogl" packing="vertical">
-					<array width="100%" height="100%" name="buddylist" packing="vertical">
-						<box id="selbox" width="100%" packing="vertical" height="17" canfocus="1" onreturn="buddyswitch()" arraysource="1">
-							<label alignment="left" arraysource="1" datafield="user" onreturn="buddyswitch()" font-color="#000" weight="normal"/>
+			  <box alignment="center" width="100%" height="70%" id="dialogl" >
+					<array width="100%" height="100%" name="buddylist" >
+						<box id="selbox" width="100%" height="17" canfocus="1" onreturn="buddyswitch()" arraysource="1">
+							<label alignment="left" arraysource="1" datafield="user" onreturn="buddyswitch()" font-color="#000" weight="normal" name="buddyname"/>
 						</box>
 					</array>
 				</box>
@@ -178,9 +201,9 @@ end
 	</box>
 	</view>
 	<dialog name="alert" width="320" height="224">
-		<box packing="vertical" alignment="center" width="320" height="224">
+		<box alignment="center" width="320" height="224">
 			<box packing="horizontal" alignment="center" height="100%">
-				<box id="dialogb" packing="vertical" alignment="center">
+				<box id="dialogb" alignment="center">
 					<box id="dialogu" marginleft="10" marginright="10" margintop="10" width="200">
 						<label alignment="center" name="errormsg" margin="20"/>
 					</box>
