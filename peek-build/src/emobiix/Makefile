@@ -76,6 +76,7 @@ SRC += EntryWidget.c
 SRC += Script.c
 SRC += ProtocolUtils.c
 SRC += peek/Debug.c
+SRC += peek/Imei.c
 SRC += Mime.c
 #SRC += ffs.c
 SRC += FFSFile.c
