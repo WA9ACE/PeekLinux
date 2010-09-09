@@ -17,6 +17,7 @@
 
 #include "p_malloc.h"
 
+extern const char *EmoGetImei();
 extern void appProtocolStatus(int status);
 
 static const int CCTX_BUFLEN = 4096;
@@ -1023,32 +1024,22 @@ static void connectionContext_processAuthRequest(ConnectionContext *ctx,
 	connectionContext_authUserPass(ctx);
 }
 
-#define IMEI_LEN  15
-extern char imei[IMEI_LEN+1];
-
 static void connectionContext_authUserPass(ConnectionContext *ctx)
 {
 	FRIPacketP_t packet;
 	AuthUserPassP_t *p;
-#ifndef SIMULATOR
-	//static char deviceImei[IMEI_LEN + 1] = { 0 };
-
-	//if (!imei[0])
-	//	BalGetImei(deviceImei);
-#endif
 
 	EMO_ASSERT(ctx != NULL,
 			"connection context auth user/pass without context")
 
-	packet.packetTypeP.present = packetTypeP_PR_authUserPassP;
+		packet.packetTypeP.present = packetTypeP_PR_authUserPassP;
 	p = &packet.packetTypeP.choice.authUserPassP;
 
 	protocol_authUserPass(p, "peek", "peek123");
 
 	/* add our extras */
 #ifndef SIMULATOR
-	protocol_autUserPassExtra(p, "IMEI", imei);
-	//protocol_autUserPassExtra(p, "IMEI", "312000012345678");
+	protocol_autUserPassExtra(p, "IMEI", EmoGetImei());
 #else
 	protocol_autUserPassExtra(p, "IMEI", "312000012345678");
 #endif
