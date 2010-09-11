@@ -32,7 +32,7 @@ m23:
 	$(MAKE) -C $(M23DIR)/L1/layer1/tm_cust0 $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/dar -f Makefile_dar $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/dar -f Makefile_dar_gbl_var $(MAKECMDGOALS)
-	$(MAKE) -C $(M23DIR)/chipsetsw/Services/Audio -f Makefile_audio_int_ram $(MAKECMDGOALS)
+	#$(MAKE) -C $(M23DIR)/chipsetsw/Services/Audio -f Makefile_audio_int_ram $(MAKECMDGOALS)
 	#$(MAKE) -C $(M23DIR)/chipsetsw/Services/Audio -f Makefile_audio $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/as $(MAKECMDGOALS)
 	$(MAKE) -C $(M23DIR)/chipsetsw/Services/cst $(MAKECMDGOALS)
