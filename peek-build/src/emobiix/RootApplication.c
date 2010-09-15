@@ -9,6 +9,7 @@
 #include "Debug.h"
 
 #include "p_malloc.h"
+#include "system_battery.h"
 
 #include <stdio.h>
 
@@ -30,9 +31,13 @@ DataObject *dobjFromFile(const char *filename, DataObject *root)
 	EMO_ASSERT_NULL(filename != NULL, "load obj from file missing filename")
 	EMO_ASSERT_NULL(root != NULL, "load obj from file missing root")
 
+	emo_printf("____ LOADING %s ___", filename);
+
 	mimefile = file_openRead(filename);
 	dobj1 = widget_newTypeIdName("image", NULL, NULL, root);
 	if (mimefile != NULL) {
+		emo_printf("___ OPENED %s ___", filename);
+
 		mimedata_size = file_size(mimefile);
 		mimedata = (char *)p_malloc(mimedata_size);
 		file_read(mimefile, mimedata_size, mimedata);
@@ -53,6 +58,8 @@ DataObject *RootApplication(void)
 	DataObject *signalstack, *testgprs;
 	DataObject *batterystack, *testbattery, *testcharge;
 	DataObject *testweather, *testspkr;
+
+	URL *batteryURL, *signalURL;
 
     if (output != NULL)
         return output;
@@ -75,25 +82,20 @@ DataObject *RootApplication(void)
 	dataobject_setValue(dobj1, "height", dataobjectfield_string(BARHEIGHT));
 	widget_setPacking(dobj1, WP_HORIZONTAL);
 
-#ifdef SIMULATOR
 	testvalue = dataobject_locateStr("system://local/signal");
-	/*dataobject_setValue(testvalue, "data", dataobjectfield_string("5"));*/
-
 	testgprs = dataobject_locateStr("system://local/signal");
-	/*dataobject_setValue(testgprs, "data", dataobjectfield_string("1"));*/
 
-	testbattery = dataobject_locateStr("system://local/battery");
-	/*dataobject_setValue(testbattery, "data", dataobjectfield_string("4"));*/
-	testcharge = dataobject_locateStr("system://local/battery");
-	/*dataobject_setValue(testcharge, "data", dataobjectfield_string("1"));*/
+	batteryURL = url_parse(SYSTEM_BATTERY_URI, URL_ALL);
+	testcharge = dataobject_locate(batteryURL);
+	url_delete(batteryURL);
 
 	testweather = dataobject_new();
 	dataobject_setValue(testweather, "data", dataobjectfield_string("1"));
 
 	testspkr = dataobject_new();
 	dataobject_setValue(testspkr, "data", dataobjectfield_string("1"));
-#endif
-#ifdef SIMULATOR
+
+#if 0
 	signalstack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
 	/* GPRS set */
 	setw = widget_newTypeIdName("set", NULL, NULL, signalstack);
@@ -209,50 +211,42 @@ DataObject *RootApplication(void)
 	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
 	setc = dobjFromFile("spkr-off.png", setiw);
 	dataobject_setValue(setc, "color", dataobjectfield_string("00000000"));
-
+#endif
 
 	/* battery indicator */
 	batterystack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
-	setc = dobjFromFile("batterycase.png", batterystack);
-	dataobject_setValue(setc, "margintop", dataobjectfield_string("3"));
-	dataobject_setValue(setc, "color", dataobjectfield_int(0));
 
 	setw = widget_newTypeIdName("set", NULL, NULL, batterystack);
-	dataobject_setValue(setw, "fieldname", dataobjectfield_string("level"));
-	dataobject_setValue(setw, "margintop", dataobjectfield_string("3"));
-	widget_setDataObject(setw, testbattery);
+	dataobject_setValue(setw, "fieldname", dataobjectfield_string("charge-level"));
+	dataobject_setValue(setw, "reference", dataobjectfield_string("system://local/battery"));
 
 	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
-	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("1"));
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(0));
+	setc = dobjFromFile("battery0.png", setiw);
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(1));
 	setc = dobjFromFile("battery1.png", setiw);
 
 	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
-	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("2"));
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(2));
 	setc = dobjFromFile("battery2.png", setiw);
 
 	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
-	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("2"));
-	setc = dobjFromFile("battery2.png", setiw);
-
-	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
-	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("3"));
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(3));
 	setc = dobjFromFile("battery3.png", setiw);
 
 	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
-	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("4"));
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(4));
 	setc = dobjFromFile("battery4.png", setiw);
 
 	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
-	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("5"));
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(5));
 	setc = dobjFromFile("battery5.png", setiw);
 
 	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
-	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("6"));
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(6));
 	setc = dobjFromFile("battery6.png", setiw);
-
-	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
-	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("7"));
-	setc = dobjFromFile("batterycharge.png", setiw);
 
 	setiw = widget_newTypeIdName("box", NULL, NULL, setw);
 
@@ -266,7 +260,7 @@ DataObject *RootApplication(void)
 	setc = dobjFromFile("batterycharge.png", setiw);
 
 	setiw = widget_newTypeIdName("box", NULL, NULL, setw);
-#endif
+
 	/* application box */
 	dobj1 = widget_newTypeIdName("box", NULL, NULL, root);
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("320"));

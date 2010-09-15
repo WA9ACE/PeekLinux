@@ -16,6 +16,7 @@ static char *LEVEL[] = {"0", "1", "2", "3", "4", "5"};
 
 void HardwareInit(void)
 {
+#ifdef SIMULATOR
 	URL *url;
 
 	url = url_parse("system://local/battery", URL_ALL);
@@ -31,6 +32,7 @@ void HardwareInit(void)
 	dataobject_setValue(signalObject, "level", batteryLevel);
 	signalGPRS = dataobjectfield_string(LEVEL[0]);
 	dataobject_setValue(signalObject, "GPRS", signalGPRS);
+#endif
 }
 
 void peek_setSignalLevel(int i)

@@ -16,6 +16,24 @@
 </set>
 */
 
+static int setwidget_fieldCompare(DataObjectField *lhs, DataObjectField *rhs)
+{
+	if (!lhs || !rhs || lhs->type != rhs->type)
+		return 0;
+
+	switch (lhs->type)
+	{
+		case DOF_STRING:
+			return strcmp(lhs->field.string, rhs->field.string) == 0;
+		case DOF_INT:
+			return lhs->field.integer == rhs->field.integer;
+		case DOF_UINT:
+			return lhs->field.uinteger == rhs->field.uinteger;
+	}
+
+	return 0;
+}
+
 DataObject *setwidget_activeItem(DataObject *w)
 {
 	DataObject *dobj, *itemobj;
@@ -32,21 +50,20 @@ DataObject *setwidget_activeItem(DataObject *w)
 		return NULL;
 
 	fieldvalue = dataobject_getValue(dobj, fieldname->field.string);
+	if (!fieldvalue)
+		return NULL;
 
 	dataobject_childIterator(w, &iter);
 	while (!listIterator_finished(&iter)) {
 		itemobj = (DataObject *)listIterator_item(&iter);
 		itemvalue = dataobject_getValue(itemobj, "fieldvalue");
-		if (itemvalue != NULL && itemvalue->type == DOF_STRING &&
-				fieldvalue != NULL && fieldvalue->type == DOF_STRING &&
-				strcmp(itemvalue->field.string, fieldvalue->field.string) == 0) {
+		if (setwidget_fieldCompare(itemvalue, fieldvalue))
+		{
 			dataobject_childIterator(itemobj, &iter);
 			if (listIterator_finished(&iter))
 				return NULL;
 			return listIterator_item(&iter);
-		} else if (itemvalue == NULL) {
-			return listIterator_item(&iter);
-		}
+		} 
 		listIterator_next(&iter);
 	}
 

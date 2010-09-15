@@ -177,7 +177,7 @@ int UIInit(void)
     file_openWrite("test0");
     file_openWrite("test1");
     file_openWrite("test2");
-	netsurf_main(1, &argv);
+	//netsurf_main(1, &argv);
 	if (!initd) {
 		screenBuf = (unsigned char *)p_malloc(320*240*2);
 		if(!screenBuf)
