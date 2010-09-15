@@ -7,6 +7,7 @@
 #include "Debug.h"
 #include <stdint.h>
 #include "mfw_kbd.h"
+//#include <sys/socket.h>
 
 #define SOCK_BASE 0xFFFE9800
 #define SOCK_FD     0x0
@@ -30,6 +31,15 @@
 #define SOCK_CRET    0x18
 
 int bal_sock_api_inst;
+
+struct hostent
+{
+  char *h_name;                 /* Official name of host.  */
+  char **h_aliases;             /* Alias list.  */
+  int h_addrtype;               /* Host address type.  */
+  int h_length;                 /* Length of address.  */
+  char **h_addr_list;           /* List of addresses from name server.  */
+};
 
 typedef enum
 {
@@ -146,6 +156,78 @@ int bal_shutdown (int sock, int how) {
 int bal_bind(int sockfd, struct sockaddr_in *my_addr, int addrlen) {
     emo_printf("Bal_bind() \n");
     return 0;
+}
+
+typedef struct {
+    char addr_name[128];
+	unsigned int addr_in; // this is just 4 bytes
+} addrinfo;
+
+unsigned long bal_gethostbyname(const char *hostname) {
+    static unsigned int addr_ip;
+    static char *addr_ip_list[2] = { (char *)&addr_ip, NULL };
+    void *regaddr;
+    int i, __len;
+    char tbuf;
+    unsigned int x;
+	addrinfo addrb;
+	static struct hostent entry;
+	static char addr_name[128];
+
+	/* Send host string */
+	__len = strlen(hostname);
+    regaddr = (void*)((unsigned int)SOCK_BASE+0x40);
+    *(unsigned int*) regaddr = __len;
+    regaddr = (void*)((unsigned int)SOCK_BASE+0x44);
+
+    emo_printf("bal_gethostbyname() len %d\n", __len);
+
+    for(i=0; i < __len;i+=1) {
+            emo_printf("gethostbyname copying: 0x%08X\n", *(uint32_t *)(((char *)hostname) + i));
+            memcpy(((char *)regaddr), ((char *)hostname) +i, 1);
+    }
+	/* trigger gethostbyname */
+    regaddr = (void*)((unsigned int)SOCK_BASE+0x48);
+    *(unsigned int*) regaddr = 1;
+	/* Recv back hostent struct */
+
+    __len = *(unsigned int*) regaddr;
+
+    if (__len < 0) {
+        regaddr = (void*)((unsigned int)SOCK_BASE+0x4c);
+        *(unsigned int*) regaddr = 1;// Free Read buffer
+        return 0;
+    }
+
+	TCCE_Task_Sleep(10);
+    regaddr= (void*)((unsigned int)SOCK_BASE+0x50);
+	__len = *(unsigned int*) regaddr;
+
+    emo_printf("bal_gethostbyname() reading %d\n", __len);
+
+	regaddr = (void*)((unsigned int)SOCK_BASE+0x44);
+    for(i=0; i < __len;i++) {
+    	tbuf = *(unsigned int*)regaddr;
+        memcpy((char *)&addrb +i, &tbuf, 1); // 1 byte chunks
+		emo_printf("bal_gethostbyname() 0x%08X\n", tbuf);
+    }
+
+    regaddr = (void*)((unsigned int)SOCK_BASE+0x4c);
+    *(unsigned int*) regaddr = 1; // Free Read buffer
+    //TCCE_Task_Sleep(10);
+	emo_printf("bal_gethostbyname(): addr_name %s", addrb.addr_name);
+	emo_printf("bal_gethostbyname(): addr_in %d.%d.%d.%d", ((char *)(&addrb.addr_in))[0], ((char *)(&addrb.addr_in))[1], ((char *)(&addrb.addr_in))[2], ((char *)(&addrb.addr_in))[3]);
+	strncpy(addr_name, addrb.addr_name, 128);
+	addr_ip = *(unsigned int *)&addrb.addr_in;
+
+	memset(&entry, 0, sizeof(entry));
+	entry.h_name = addr_name;
+	entry.h_addr_list = addr_ip_list;
+	entry.h_addrtype = 2; /*AF_INET */
+
+	emo_printf("bal_gethostbyname() sizeof(struct hostent) = %d addrlist[0] = %08x, value= %08x", sizeof(struct hostent), (unsigned int *)entry.h_addr_list[0], *(unsigned int *)(entry.h_addr_list[0]));
+
+    return (unsigned long) &entry;
 }
 
 int bal_send (int s, const void *__buff, int __len, unsigned int __flags) {

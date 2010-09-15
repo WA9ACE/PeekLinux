@@ -1,6 +1,7 @@
 DEFINE +=
 
 INCLUDE += $(M23DIR)/g23m-aci/aci
+INCLUDE += $(M23DIR)/csw-system/drv_core/armio
 INCLUDE += $(M23DIR)/csw-system/os/nucleus/1_15/plus
 INCLUDE += $(M23DIR)/csw-system/os/nucleus/1_15
 INCLUDE += $(M23DIR)/gpf/inc
@@ -23,19 +24,47 @@ INCLUDE += $(SRCDIR)/bui
 INCLUDE += $(SRCDIR)/bui/uiex
 INCLUDE += $(SRCDIR)/bam
 INCLUDE += $(SRCDIR)/emobiix
+INCLUDE += $(SRCDIR)/tasks
+INCLUDE += $(SRCDIR)/tasks/hwtask
 INCLUDE += $(SRCDIR)/nmealib/include
+INCLUDE += $(M23DIR)/csw-system/drv_app
+INCLUDE += $(M23DIR)/csw-system/drv_app/kpd
+INCLUDE += $(M23DIR)/g23m-gsm/sim
+INCLUDE += $(M23DIR)/csw-system/drv_app/ffs
+INCLUDE += $(M23DIR)/csw-system/drv_core/abb
+INCLUDE += $(M23DIR)/csw-system/drv_core/i2c
+INCLUDE += $(M23DIR)/csw-system/drv_core/util
 
-SRC = emo_pei.c
-#SRC += ems_pei.c
-#SRC += trans_pei.c
-SRC += ui_pei.c
+#SRC = emo_pei.c
+SRC  = ui_pei.c
+SRC += trans_pei.c
+
+SRC += hwtask/at.c
+SRC += hwtask/hwevents.c
+SRC += hwtask/hwpei.c
+SRC += hwtask/hwtask.c
+SRC += hwtask/kbd.c
+SRC += hwtask/mmi.c
+SRC += hwtask/acie.c
+SRC += hwtask/tmr.c
+SRC += hwtask/sim.c
+SRC += hwtask/time.c
+SRC += hwtask/gprs.c
+SRC += hwtask/backlight.c
+SRC += hwtask/stub.c
+SRC += hwtask/vibrator.c
+
+
+BALOBJ  = hwtask/bal/kpd_drv_if.o
+BALOBJ += hwtask/bal/balkeypad.o
+BALOBJ += hwtask/bal/balmisc.o
+BALOBJ += hwtask/bal/bal_socket_api.o
 
 TARGET = $(CURDIR)/peitasks.a
-
 OBJ  = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))
 DEPS = $(patsubst %.o,%.d,$(OBJ))
 
-$(TARGET): $(OBJ)
+$(TARGET): $(OBJ) $(BALOBJ)
 	$(subst /cygdrive/c,C:,$(AR) $(ARFLAGS) $@ $?)
 
 clean:

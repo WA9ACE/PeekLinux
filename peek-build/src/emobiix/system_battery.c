@@ -1,4 +1,3 @@
-#include "sysdefs.h"
 #include "typedefs.h"
 
 #include "DataObject.h"
@@ -19,7 +18,7 @@ static DataObject* SYSTEM_BATTERY;
 static DataObjectField* BATTERY_CHARGE_LEVEL;
 static DataObjectField* BATTERY_CHARGE_STATE;
 
-static void system_battery_set_battery_level(uint32 level)
+static void system_battery_set_battery_level(unsigned int level)
 {
 	if (!SYSTEM_BATTERY)
 		return;
@@ -29,7 +28,7 @@ static void system_battery_set_battery_level(uint32 level)
 	dataobject_setValue(SYSTEM_BATTERY, "charge-level", BATTERY_CHARGE_LEVEL);
 }
 
-static void system_battery_set_charge_state(uint32 state)
+static void system_battery_set_charge_state(unsigned int state)
 {
 	if (!SYSTEM_BATTERY)
 		return;
@@ -40,19 +39,19 @@ static void system_battery_set_charge_state(uint32 state)
 }
 
 #if 0
-static void system_battery_callback(RegIdT RegId, uint32 MsgId, void* MsgBufferP)
+static void system_battery_callback(RegIdT RegId, unsigned int MsgId, void* MsgBufferP)
 {
 	switch (MsgId)
 	{
 		case BAL_BATT_CHARGE_STATE:
 		{
-			system_battery_set_charge_state((uint32)MsgBufferP);
+			system_battery_set_charge_state((unsigned int)MsgBufferP);
 		}
 		break;
 
 		case BAL_BATT_CAPACITY:
 		{
-			system_battery_set_battery_level((uint32)MsgBufferP);
+			system_battery_set_battery_level((unsigned int)MsgBufferP);
 		}
 		break;
 		
@@ -83,7 +82,8 @@ static BOOL mmePrimHandler (USHORT opc, void *data)
 {
      U8 level;
      U8 state;
-emo_printf("mmePrimHandler()");
+
+	emo_printf("mmePrimHandler()");
  
      switch (opc)
      {
@@ -92,16 +92,14 @@ emo_printf("mmePrimHandler()");
              state = ((T_MMI_BATTERY_IND *) data)->temp;
 	
 
-							system_battery_set_battery_level(level);
-							system_battery_set_charge_state(state);
+ 			 system_battery_set_battery_level(level);
+		     system_battery_set_charge_state(state);
 
-						 emo_printf("BATTERY_IND: %d %d", level, state);
-					break;
-				default:
-					emo_printf("BATTERY_JUNK");
+			 emo_printf("BATTERY_IND: %d %d", level, state);
+ 			 return TRUE;
+		default:
+		    return FALSE;
 	}
-
-	return TRUE;
 }
 
 void system_battery_init()
@@ -116,7 +114,7 @@ void system_battery_init()
 	system_battery_set_charge_state(1);
 
 	pwr_Init(pwrCb);
-	mmeBattInfo(10, 0);
+	//mmeBattInfo(10, 0);
 	aci_create((T_PRIM_HANDLER)mmePrimHandler,NULL);
 
 //	BalBattRegister(system_battery_callback);

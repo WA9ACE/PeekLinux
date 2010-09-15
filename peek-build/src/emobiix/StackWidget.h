@@ -15,3 +15,4 @@ DataObject *stackwidget_focusStackObject(DataObject *w);
 #endif
 
 #endif
+

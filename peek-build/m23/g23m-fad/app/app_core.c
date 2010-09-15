@@ -1599,6 +1599,7 @@ void app_connect(void)
 	app_connect_info("10.150.9.6", "12345");
 	app_socket(&proc_context_tcp, AP_TCPUL, SOCK_IPPROTO_TCP);
 #else
+#if 0
 	struct sockaddr_in connect_in;
 	emo_server_fd = bal_socket(0 /*AF_INET*/, 0 /*SOCK_STREAM*/, 0 /*IPPROTO_TCP*/);
 	if (emo_server_fd < 0)
@@ -1621,6 +1622,7 @@ void app_connect(void)
 	}
 
 	app_ui_send(EMOBIIX_SOCK_CONN);
+#endif
 #endif
 }
 

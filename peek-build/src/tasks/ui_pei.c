@@ -23,6 +23,7 @@
 #include "rvm/rvm_use_id_list.h"
 
 #include "emopei.h"
+#include "exeapi.h"
 
 #include "p_sim.h"
 #include "gprs.h"
@@ -51,7 +52,7 @@ static UINT32 uiIsReady = 0;
 
 T_HANDLE hCommAPP = VSI_ERROR;
 
-//extern NU_MEMORY_POOL  ExeSystemMemory;
+extern NU_MEMORY_POOL  ExeSystemMemory;
 
 /*===========================Function Definition================================*/
 /*
@@ -201,12 +202,11 @@ LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
   RVM_TRACE_DEBUG_HIGH("UI: pei_run");
 
   /* Wait for Main EMO task to start */
-  while(!EmoStatusGet())
+  while(!HwStatusGet())
  	TCCE_Task_Sleep(100);
 
   /* Start UI Task */
-  mmiInit();
-  //UITask();
+  UITask();
   
   return RV_OK;  
 
@@ -249,7 +249,6 @@ LOCAL SHORT pei_exit (void)
 |
 +------------------------------------------------------------------------------
 */
-/*
 extern ExeTaskCbT     *ExeTaskCb[];
 
 const MailQueueT UiMailQueueTable[] = {{UI_TASK_MAIL_QUEUE_1, BOS_MAILBOX_1_ID},
@@ -257,20 +256,17 @@ const MailQueueT UiMailQueueTable[] = {{UI_TASK_MAIL_QUEUE_1, BOS_MAILBOX_1_ID},
 				      {UI_TASK_MAIL_QUEUE_3, BOS_MAILBOX_3_ID},
 				      {UI_TASK_MAIL_QUEUE_4, BOS_MAILBOX_4_ID}};
 ExeTaskCbT UIExeTaskCb;
-*/
+
 LOCAL SHORT pei_init (T_HANDLE handle)
 {
     T_RV_RET ret = RV_OK;
-/*
     int i;
     void *rPtr;
     int qCstatus;
     ExeTaskCbT *task;
-*/
     RVM_TRACE_DEBUG_HIGH("UI: pei_init");
     UI_handle = handle;
 
-    /*
     ExeTaskCb[EXE_UI_ID] = &UIExeTaskCb;
     task = ExeTaskCb[EXE_UI_ID];
 
@@ -288,7 +284,6 @@ LOCAL SHORT pei_init (T_HANDLE handle)
                 }
 	}
     }
-    */
   if(hCommAPP < VSI_OK)
         if ((hCommAPP = vsi_c_open (VSI_CALLER APP_NAME)) < VSI_OK)
                 return PEI_ERROR;
@@ -327,9 +322,9 @@ static const T_PEI_INFO pei_info =
                   NULL,           /* NO pei_config */
                   NULL            /* NO pei_monitor */
                },
-               0x2000,            /* stack size */
+               0x3000,            /* stack size */
                1,                        /* queue entries */
-		BAL_UI_PRIORITY,     /* priority (1->low, 255->high) */
+			   EMO_UI_PRIORITY,     /* priority (1->low, 255->high) */
                0,                         /* number of timers */
                COPY_BY_REF	/* Flags Settings */
               };

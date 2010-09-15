@@ -18,7 +18,7 @@
 #include "p_malloc.h"
 
 extern const char *EmoGetImei();
-extern void appProtocolStatus(int status);
+//extern void appProtocolStatus(int status);
 
 static const int CCTX_BUFLEN = 4096;
 
@@ -1082,7 +1082,7 @@ static void connectionContext_processAuthResponse(ConnectionContext *ctx,
 	if (*p == RequestResponseP_responseOKP) {
 		emo_printf("Auth OK" NL);
 		ctx->hasAuth = 1;
-	        appProtocolStatus(1);
+	        // XXX appProtocolStatus(1);
 	} else {
 		emo_printf("Auth not OK with: %d" NL, *p);
 	}

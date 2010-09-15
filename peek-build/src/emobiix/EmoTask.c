@@ -23,20 +23,6 @@ SettingModeHelplerInfo stCurSettingMode;
 
 unsigned int timer_state = 0;
 
-void backlightInit() {
-         int i;
-         for (i=0;i<BL_LAST_OPTION;i++) {
-                mme_setBacklightEvent(i,BL_MAX_LIGHT);
-         }
-         mme_setBacklightEvent(BL_IDLE_TIMER,BL_SET_IDLE);
-         mme_setBacklightEvent(BL_KEY_PRESS,BL_MAX_LIGHT);
-         mme_setBacklightEvent(BL_INCOMING_CALL,BL_MAX_LIGHT);
-         mme_setBacklightEvent(BL_EXIT,BL_NO_LIGHT);
-
-         /*and tell the backlight that the init event has happened */
-         mme_backlightEvent(BL_INIT);
-}
-
 int gprsAttached = 0;
 extern void mmiInit(void);
 
@@ -61,7 +47,7 @@ void EmoTask(void) {
 	}
 #endif
 
-    	EmoStatusSet();
+   	EmoStatusSet();
 	//stCurSettingMode.eFlightMode = 0; // Set to normal mode
 	while(1) {
 #ifdef EMO_SIM

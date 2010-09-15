@@ -1,13 +1,12 @@
 #include "general.h"
 #include "typedefs.h"
+#include "nucleus.h"
 #include "Task.h"
 #include "UITask.h"
 #include "mfw_mfw.h"
 #include "mfw_mme.h"
 #include "Debug.h"
 #include "lgui.h"
-
-typedef char CHAR;
 
 #include "Transport.h"
 #include "ConnectionContext.h"
@@ -23,17 +22,7 @@ typedef char CHAR;
 #include "p_sim.h"
 
 #include "system_battery.h"
-
-#include "mfw_mfw.h"
-#include "mfw_tim.h"
-#include "mfw_win.h"
-#include "mfw_kbd.h"
-#include "mfw_sat.h"
-#include "mfw_icn.h"
-#include "mfw_mnu.h"
-#include "MmiDummy.h"
-#include "MmiDialogs.h"
-#include "MmiMenu.h"
+#include "exeapi.h"
 
 unsigned char *screenBuf; //[320*240*2];
 void updateScreen(void);
@@ -42,7 +31,7 @@ static int UIIteration(void);
 int UIWaitForActivity(void);
 static void UICleanup(void);
 ConnectionContext *connectionContext;
-extern void appProtocolStatus(int status);
+//extern void appProtocolStatus(int status);
 int netsurf_main(int argc, char** argv);
 
 Task UITask_s = {UIInit, UIIteration, UIWaitForActivity, UICleanup};
@@ -104,8 +93,10 @@ void uiAppRecv(void *recvData)
 	}
 
 	connectionContext_loopIteration(connectionContext);
+	/* mfw -> custom menu
 	if(emoMenu_get_window())
 		SEND_EVENT(emoMenu_get_window(), SCREEN_UPDATE, 0, 0);
+	*/
 }
 
 GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
@@ -139,7 +130,7 @@ GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 
 		case EMOBIIX_SOCK_DCON: // Sock disconnected
 			emo_printf("appdata_response_cb(): APP_DATA_DCON");
-			appProtocolStatus(0);
+			// XXX appProtocolStatus(0);
 			break;
 
 		default:
@@ -176,20 +167,22 @@ void UITask(void)
 	return;
 }
 
-extern BOOL powered_on;
-extern void mmi_imei_retrieve();
+extern void emobiixKbdInit();
 
 int UIInit(void)
 {	
+	char *argv = "emobiix";
 	static int initd = 0;
 
+    file_openWrite("test0");
+    file_openWrite("test1");
+    file_openWrite("test2");
+	netsurf_main(1, &argv);
 	if (!initd) {
 		screenBuf = (unsigned char *)p_malloc(320*240*2);
 		if(!screenBuf)
 			emo_printf("Failed to allocate screenBuf\n");
 
-		// This should be cleaned up after we move off mfw
-		mmi_imei_retrieve();
 		dataobject_platformInit();
 		renderman_init();
 
@@ -199,8 +192,14 @@ int UIInit(void)
 
 		manager_drawScreen();
 		updateScreen();
-
+#ifndef EMO_SIM
+		KeyPad_Init();
+#endif
+		//emobiixKbdInit();
 	}
+
+	//BOSMsgSend(EXE_BAL_ID, EXE_MAILBOX_1_ID, HW_KEY_MSG, 0x0, 0x0);
+    //netsurf_main(1, &argv);
 
 	uiStatusSet();
 	return 1;
@@ -213,7 +212,7 @@ static int UIIteration(void)
 
 int UIWaitForActivity(void)
 {
-	TCCE_Task_Sleep(100);
+	TCCE_Task_Sleep(10);
 	return 1;
 }
 

@@ -178,8 +178,7 @@ void EmoStatusSet(void) {
 +------------------------------------------------------------------------------
 */
 
-extern BOOL powered_on;
-
+extern unsigned int powered_on;
 LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
 {  
   RVM_TRACE_DEBUG_HIGH("EMO: pei_run");
@@ -342,7 +341,7 @@ static const T_PEI_INFO pei_info =
                },
                0x3000,            /* stack size */
                1,                        /* queue entries */
-	       BAL_PRIORITY,     /* priority (1->low, 255->high) */
+		       EMO_PRIORITY,     /* priority (1->low, 255->high) */
                0,                         /* number of timers */
                COPY_BY_REF	/* Flags Settings */
               };

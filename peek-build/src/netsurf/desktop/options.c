@@ -90,7 +90,7 @@ char *option_accept_language = 0;
 /** Accept-Charset header. */
 char *option_accept_charset = 0;
 /** Preferred maximum size of memory cache / bytes. */
-int option_memory_cache_size = 2 * 1024 * 1024;
+int option_memory_cache_size = 1024 * 500; //2 * 1024 * 1024;
 /** Preferred expiry age of disc cache / days. */
 int option_disc_cache_age = 28;
 /** Whether to block advertisements */
@@ -169,7 +169,7 @@ bool option_enable_PDF_password = false;
 
 /* Fetcher configuration */
 /** Maximum simultaneous active fetchers */
-int option_max_fetchers = 24;
+int option_max_fetchers = 1;
 /** Maximum simultaneous active fetchers per host.
  * (<=option_max_fetchers else it makes no sense)
  * Note that rfc2616 section 8.1.4 says that there should be no more than
@@ -177,7 +177,7 @@ int option_max_fetchers = 24;
  * as it slows page fetches down considerably.
  * See https://bugzilla.mozilla.org/show_bug.cgi?id=423377#c4
  */
-int option_max_fetchers_per_host = 5;
+int option_max_fetchers_per_host = 1;
 /** Maximum number of inactive fetchers cached.
  * The total number of handles netsurf will therefore have open
  * is this plus option_max_fetchers.

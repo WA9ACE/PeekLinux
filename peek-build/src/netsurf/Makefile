@@ -2,8 +2,9 @@ DEFINE  = strdup=p_strdup
 DEFINE += nsframebuffer
 DEFINE += fprintf=emo_fprintf
 #DEFINE += NETSURF_HOMEPAGE="\"file:///home.html\""
-DEFINE += NETSURF_HOMEPAGE="\"file:///emo/index.html\""
-#DEFINE += NETSURF_HOMEPAGE="\"http://72.14.204.99\""
+#DEFINE += NETSURF_HOMEPAGE="\"file:///emo/index.html\""
+#DEFINE += NETSURF_HOMEPAGE="\"http://72.20.1.6\""
+DEFINE += NETSURF_HOMEPAGE="\"http://www.cmw.me\""
 DEFINE += NETSURF_FB_RESPATH="\"peekffs:/\""
 DEFINE += FB_USE_FREETYPE
 DEFINE += WITH_PNG

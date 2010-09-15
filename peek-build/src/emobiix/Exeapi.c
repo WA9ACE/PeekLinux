@@ -1,9 +1,5 @@
 #include "nucleus.h"
 #include "exeapi.h"
-#include "exedefs.h"
-#include "monapi.h"
-#include "monids.h"
-#include "bal_os.h"
 
 typedef struct 
 {
@@ -457,7 +453,7 @@ int ExeMsgSend(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId, uint32 MsgId, void *M
 	}
 
 	if (TaskId != EXE_IOP_ID && TaskId != EXE_HWD_ID)
-		MonTrace(MON_CP_MSG_BUFF_STATS_SPY_ID, 3, msg.msgId, get_NU_Task_HISR_Pointer(), TaskId);
+		MonTrace(1, 3, msg.msgId, get_NU_Task_HISR_Pointer(), TaskId);
 
 	return retVal;
 }
@@ -543,7 +539,7 @@ int ExeMsgSendToFront(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId,
 	}
 
 	if (TaskId != EXE_IOP_ID && TaskId != EXE_HWD_ID)
-		MonTrace(MON_CP_MSG_BUFF_STATS_SPY_ID, 3, MsgId, get_NU_Task_HISR_Pointer(), TaskId);
+		MonTrace(1, 3, MsgId, get_NU_Task_HISR_Pointer(), TaskId);
 
 	return retVal;
 }

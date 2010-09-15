@@ -633,12 +633,6 @@ GLOBAL T_ATI_RSLT atPercentVER (char* cl, UBYTE srcId)
   sprintf(g_sa,"%s%s",me,smi_version());
   io_sendMessage(srcId, g_sa, ATI_NORMAL_OUTPUT);
 #endif
-#ifdef MFW
-  sprintf(g_sa,"%s%s",me,bmi_version());
-  io_sendMessage(srcId, g_sa, ATI_NORMAL_OUTPUT);
-  sprintf(g_sa,"%s%s",me,mfw_version());
-  io_sendMessage(srcId, g_sa, ATI_NORMAL_OUTPUT);
-#endif
 
 #ifdef FAX_AND_DATA
   sprintf(g_sa,"%s%s",me,l2r_version());

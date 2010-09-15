@@ -62,3 +62,4 @@ void peek_setCharging(int i)
 	else
 		batteryCharging->field.string = LEVEL[0];
 }
+

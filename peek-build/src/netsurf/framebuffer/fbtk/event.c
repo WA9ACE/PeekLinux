@@ -172,7 +172,20 @@ fbtk_warp_pointer(fbtk_widget_t *widget, int x, int y, bool relative)
 	fbtk_post_callback(moved, FBTK_CBT_POINTERMOVE, cloc.x0 - x, cloc.y0 - y);
 
 }
+#if  0
+bool fbtk_changefocus(fbtk_widget_t *root, nsfb_event_t *event) {
 
+    nsfb_bbox_t cloc;
+    int x, y;
+
+    /* ensure we have the root widget */
+    root = fbtk_get_root_widget(widget);
+
+    nsfb_cursor_loc_get(root->u.root.fb, &cloc);
+
+
+}
+#endif
 /* exported function documented in fbtk.h */
 bool
 fbtk_event(fbtk_widget_t *root, nsfb_event_t *event, int timeout)
@@ -191,7 +204,15 @@ fbtk_event(fbtk_widget_t *root, nsfb_event_t *event, int timeout)
 		if ((event->value.controlcode >= NSFB_KEY_MOUSE_1) &&
 		    (event->value.controlcode <= NSFB_KEY_MOUSE_5)) {
 			fbtk_click(root, event);
-		} else {
+		} else {	
+#if 0
+			if((event->value.keycode == NSFB_KEY_TAB) && (event->type == NSFB_EVENT_KEY_UP))
+			{
+				/* Shift input to next focusable widget */
+				fbtk_changefocus(root, event);
+				break;
+			}
+#endif
 			fbtk_input(root, event);
 		}
 		break;

@@ -259,15 +259,20 @@ Curl_he2ai(const struct hostent *he, int port)
   int i;
   char *curr;
 
+  emo_printf("Curl_he2ai(): he: %08x", he);
+
   if(!he)
     /* no input == no output! */
     return NULL;
 
   DEBUGASSERT((he->h_name != NULL) && (he->h_addr_list != NULL));
 
+  emo_printf("Curl_he2ai(): sizeof(struct hostent)=%d he: %08x he->h_name=%s he->h_addr_list=%08x", sizeof(struct hostent), he, he->h_name, he->h_addr_list);
+
   for(i=0; (curr = he->h_addr_list[i]) != NULL; i++) {
 
     size_t ss_size;
+  emo_printf("Curl_he2ai(): he->h_addr_list[i]=%08x he->h_addrtype=%d", *(unsigned int *)he->h_addr_list[i], he->h_addrtype);
 #ifdef ENABLE_IPV6
     if (he->h_addrtype == AF_INET6)
       ss_size = sizeof (struct sockaddr_in6);
@@ -330,7 +335,9 @@ Curl_he2ai(const struct hostent *he, int port)
     }
 
     prevai = ai;
-  }
+  } 
+
+  emo_printf("Curl_he2ai() returned %d", result);
 
   if(result != CURLE_OK) {
     Curl_freeaddrinfo(firstai);

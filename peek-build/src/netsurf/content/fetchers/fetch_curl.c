@@ -536,6 +536,98 @@ void fetch_curl_cache_handle(CURL *handle, char *host)
 	RING_INSERT(curl_handle_ring, h);
 }
 
+//#define DEBUG_CURL_STUFF
+#ifdef DEBUG_CURL_STUFF
+/* debug curl stuff */
+struct trace_data {
+	char trace_ascii;
+};
+
+static void dump(const char *text,
+          FILE *stream, unsigned char *ptr, size_t size,
+          char nohex)
+{
+  size_t i;
+  size_t c;
+
+  unsigned int width=0x10;
+
+  if(nohex)
+    /* without the hex output, we can fit more on screen */
+    width = 0x40;
+
+  emo_printf("%s, %010.10ld bytes (0x%08.8lx)\n",
+          text, (long)size, (long)size);
+
+  for(i=0; i<size; i+= width) {
+
+    emo_printf("%04.4lx: ", (long)i);
+
+    if(!nohex) {
+      /* hex not disabled, show it */
+      for(c = 0; c < width; c++)
+        if(i+c < size)
+          emo_printf("%02x ", ptr[i+c]);
+        else
+		  emo_printf("   ");
+    }
+
+    for(c = 0; (c < width) && (i+c < size); c++) {
+      /* check for 0D0A; if found, skip past and start a new line of output */
+      if (nohex && (i+c+1 < size) && ptr[i+c]==0x0D && ptr[i+c+1]==0x0A) {
+        i+=(c+2-width);
+        break;
+      }
+      emo_printf("%c", (ptr[i+c]>=0x20) && (ptr[i+c]<0x80)?ptr[i+c]:'.');
+      /* check again for 0D0A, to avoid an extra \n if it's at width */
+      if (nohex && (i+c+2 < size) && ptr[i+c+1]==0x0D && ptr[i+c+2]==0x0A) {
+        i+=(c+3-width);
+        break;
+      }
+    }
+    emo_printf("\n");
+  }
+}
+
+static
+int curl_trace(CURL *handle, curl_infotype type,
+             char *data, size_t size,
+             void *userp)
+{
+  struct trace_data *config = (struct trace_data *)userp;
+  const char *text;
+  (void)handle; /* prevent compiler warning */
+
+  switch (type) {
+  case CURLINFO_TEXT:
+    fprintf(stderr, "== Info: %s", data);
+  default: /* in case a new one is introduced to shock us */
+    return 0;
+
+  case CURLINFO_HEADER_OUT:
+    text = "=> Send header";
+    break;
+  case CURLINFO_DATA_OUT:
+    text = "=> Send data";
+    break;
+  case CURLINFO_SSL_DATA_OUT:
+    text = "=> Send SSL data";
+    break;
+  case CURLINFO_HEADER_IN:
+    text = "<= Recv header";
+    break;
+  case CURLINFO_DATA_IN:
+    text = "<= Recv data";
+    break;
+  case CURLINFO_SSL_DATA_IN:
+    text = "<= Recv SSL data";
+    break;
+  }
+
+  dump(text, stderr, (unsigned char *)data, size, config->trace_ascii);
+  return 0;
+}
+#endif
 
 /**
  * Set options specific for a fetch.
@@ -546,6 +638,11 @@ fetch_curl_set_options(struct curl_fetch_info *f)
 {
 	CURLcode code;
 	const char *auth;
+#ifdef DEBUG_CURL_STUFF
+	struct trace_data config;
+	config.trace_ascii = 1;
+#endif
+	
 
 #undef SETOPT
 #define SETOPT(option, value) { \
@@ -553,7 +650,11 @@ fetch_curl_set_options(struct curl_fetch_info *f)
 	if (code != CURLE_OK)					\
 		return code;					\
 	}
-
+#ifdef DEBUG_CURL_STUFF
+	SETOPT(CURLOPT_DEBUGFUNCTION, curl_trace);
+	SETOPT(CURLOPT_DEBUGDATA, &config);
+	SETOPT(CURLOPT_VERBOSE,	1);
+#endif
 	SETOPT(CURLOPT_URL, f->url);
 	SETOPT(CURLOPT_PRIVATE, f);
 	SETOPT(CURLOPT_WRITEDATA, f);

@@ -1,14 +1,40 @@
-#include "stddefs.h"
+#include "typedefs.h"
+#include "header.h"
 #include "cl_imei.h"
+#include "m_sms.h"
+#include "m_fac.h"
+#include "p_em.h"
+#include "p_mncc.h"
+#include "p_mmreg.h"
+#include "p_mnsms.h"
+#include "p_mmi.h"
+#include "aci_cmh.h"
 
 #include "Debug.h"
 
 extern BYTE cl_get_imeisv(USHORT imeiBufSize, UBYTE *imeiBufPtr, UBYTE imeiType);
-extern UBYTE getCdByteFromImei(UBYTE *imei);
+extern UBYTE cmhSS_getCdFromImei(T_ACI_IMEI* imei);
+
+UBYTE getCdByteFromImei(UBYTE *imei)
+{
+	T_ACI_IMEI aci_imei;
+
+	aci_imei.tac1 = imei[0];
+	aci_imei.tac2 = imei[1];
+	aci_imei.tac3 = imei[2];
+	aci_imei.fac  = imei[3];
+	aci_imei.snr1 = imei[4];
+	aci_imei.snr2 = imei[5];
+	aci_imei.snr3 = imei[6];
+	aci_imei.svn  = imei[7];
+
+	return cmhSS_getCdFromImei(&aci_imei);
+}
+
 
 const char* EmoGetImei()
 {
-  static UBYTE rawIMEI[CL_IMEI_SIZE];
+	static UBYTE rawIMEI[CL_IMEI_SIZE];
 	static char imei[32] = "";
 
 	if (!imei[0])

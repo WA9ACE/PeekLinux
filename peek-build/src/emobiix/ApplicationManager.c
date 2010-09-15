@@ -432,3 +432,4 @@ void manager_debugPrint(void)
 {
 	dataobject_debugPrint(appManager->rootApplicationObj);
 }
+

@@ -1,5 +1,3 @@
-VARIANT_DEFINE :=
-
 DEFINE  = HAVE_RECV
 DEFINE  += fprintf=emo_fprintf
 #DEFINE += RECV_TYPE_ARG1
@@ -21,12 +19,21 @@ DEFINE += NG_TIMEVAL
 DEFINE += Error=\#error
 DEFINE += ssize_t=int
 
+ifneq (,$(findstring EMO_SIM,$(VARIANT_DEFINE)))
+DEFINE += EMO_SIM
+endif
+
+VARIANT_DEFINE :=
+
 INCLUDE  = $(SRCDIR)/netsurf/emoport
 INCLUDE += $(SRCDIR)/emobiix
 INCLUDE += $(SRCDIR)/netdepends/curl-7.21.1/include
 INCLUDE += $(SRCDIR)/netdepends/curl-7.21.1/emoport
 INCLUDE += $(M23DIR)/g23m/nexgen/coreip
 INCLUDE += $(SRCDIR)/zlib
+INCLUDE += $(M23DIR)/g23m/condat/com/include
+INCLUDE += $(M23DIR)/gpf/inc
+INCLUDE += $(M23DIR)/cdginc
 
 SRC  = lib/base64.c
 SRC += lib/connect.c

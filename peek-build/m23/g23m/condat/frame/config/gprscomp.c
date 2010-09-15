@@ -58,8 +58,9 @@ extern SHORT cst_pei_create   (T_PEI_INFO const **Info);
 #ifdef FF_ESIM
 extern SHORT esim_pei_create  (T_PEI_INFO const **Info); /* esim module */
 #endif
-extern SHORT emo_pei_create   (T_PEI_INFO const **Info);
-//extern SHORT trans_pei_create   (T_PEI_INFO const **Info);
+//extern SHORT emo_pei_create   (T_PEI_INFO const **Info);
+extern SHORT hw_pei_create	  (T_PEI_INFO const **Info);
+extern SHORT trans_pei_create   (T_PEI_INFO const **Info);
 //extern SHORT ems_pei_create   (T_PEI_INFO const **Info);
 extern SHORT ui_pei_create   (T_PEI_INFO const **Info);
 extern SHORT sim_pei_create   (T_PEI_INFO const **Info);
@@ -433,18 +434,25 @@ const T_COMPONENT_ADDRESS l1_list[] =
   { NULL,                NULL,   0 }
 };
 
+const T_COMPONENT_ADDRESS hw_list[] =
+{
+  { hw_pei_create,       NULL,   ASSIGNED_BY_TI },
+  { NULL,                NULL,   0 }
+};
+
+/*
 const T_COMPONENT_ADDRESS emo_list[] =
 {
   { emo_pei_create,       NULL,   ASSIGNED_BY_TI },
   { NULL,                NULL,   0 }
 };
-/*
+*/
 const T_COMPONENT_ADDRESS trans_list[] =
 {
   { trans_pei_create,       NULL,   ASSIGNED_BY_TI },
   { NULL,                NULL,   0 }
 };
-*/
+
 const T_COMPONENT_ADDRESS ui_list[] =
 {
   { ui_pei_create,       NULL,   ASSIGNED_BY_TI },
@@ -1086,9 +1094,10 @@ upm_list,
 #endif
   l1_list,
 #endif  
-  emo_list,
+  //emo_list,
   ui_list,
-  //trans_list,
+  hw_list,
+  trans_list,
   //ems_list,
   NULL
 };

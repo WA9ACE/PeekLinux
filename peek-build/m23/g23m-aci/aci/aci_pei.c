@@ -2159,14 +2159,15 @@ EXTERN void hl_audio_drv_initForTest();
      */
 #endif
 
+/*
 #ifdef MFW
     if (!strncmp("MFWMOB ",s,7))
     {
-        mfwExtIn(s+7);
+        //mfwExtIn(s+7);
         return PEI_OK;
     }
 #endif
-
+*/
 #ifdef _SIMULATION_
 #ifdef MFW
     /*

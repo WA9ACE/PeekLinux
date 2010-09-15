@@ -205,15 +205,13 @@ LOCAL SHORT pei_exit (void)
 	 +------------------------------------------------------------------------------
  */
 
-extern BOOL powered_on;
-
 LOCAL SHORT pei_init (T_HANDLE handle)
 {
 	trans_handle = handle;
 
 	RVM_TRACE_DEBUG_HIGH("trans_pei_init");
 
-  	while(!EmoStatusGet())
+  	while(!HwStatusGet())
         	TCCE_Task_Sleep(100);
 
 	if (TranshComm < VSI_OK)
@@ -262,7 +260,7 @@ GLOBAL SHORT pei_create (T_PEI_INFO **info)
 		},
 		0xc00,            /* stack size */
 		0xA,                        /* queue entries */
-		BAL_TRANS_PRIORITY,     /* priority (1->low, 255->high) */
+		TRANS_PRIORITY,     /* priority (1->low, 255->high) */
 		1,                         /* number of timers */
 		COPY_BY_REF|PASSIVE_BODY   /* Flags Settings */
 	};

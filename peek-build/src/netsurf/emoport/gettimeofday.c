@@ -2,12 +2,12 @@
 #include "typedefs.h"
 #include "vsi.h"
 
-extern T_HANDLE EMO_handle;
+extern T_HANDLE UI_handle;
 
 int gettimeofday(struct timeval *tv, struct timezone *tz)
 {
 	T_TIME t;
-	vsi_t_time(EMO_handle, &t);
+	vsi_t_time(UI_handle, &t);
 	t = 1000;
 	tv->tv_sec = t / 1000;
 	tv->tv_usec = t % 1000 * 1000;

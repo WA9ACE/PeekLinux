@@ -554,7 +554,7 @@ typedef enum             /* AT command source identifier */
   CMD_SRC_ATI_5,           /* added in case of SAT run at cmd
                            THIS DOES NOT MEAN THIS IS THE SAT SOURCE THOUGH !!! */
 #endif /* SIM_TOOLKIT */
-#if defined FF_EOTD  OR  defined _SIMULATION_
+#if defined FF_EOTD  ||  defined _SIMULATION_
   CMD_SRC_ATI_6,           /* added in case of Location Service (test purposes) */
 #endif /* FF_EOTD  OR  _SIMULATION_ */
 #endif /* GOLITE */

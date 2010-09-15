@@ -23,7 +23,7 @@
 
 extern uint8_t* get_LCD_bitmap(void);
 extern void dspl_Enable(uint8_t);
-extern unsigned char kpd_key;
+//extern unsigned char kpd_key;
 
 
 enum nsfb_key_code_e peek_nsfb_map[] = {
@@ -122,6 +122,9 @@ static unsigned char state = 0;
 
 static bool peek_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
 {
+	int kpd_key;
+	struct nsfb_cursor_s *cursor = nsfb->cursor;
+
 #ifndef EMO_SIM
     kpd_retrieve_key_status(kpd_key, KPD_DEFAULT_MODE, &state);
 #else
@@ -159,7 +162,7 @@ static bool peek_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
             event->value.keycode = NSFB_KEY_MOUSE_3;
             event->type = state ? NSFB_EVENT_KEY_DOWN : NSFB_EVENT_KEY_UP;
 			break;
-		case 6:
+		case 8:
 			event->value.keycode = NSFB_KEY_SLASH;
             event->type = state ? NSFB_EVENT_KEY_DOWN : NSFB_EVENT_KEY_UP;
             break;
@@ -171,6 +174,37 @@ static bool peek_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
 			event->type = state ? NSFB_EVENT_KEY_DOWN : NSFB_EVENT_KEY_UP;
             event->value.keycode = NSFB_KEY_MOUSE_5;
             break;
+		case 53:// left
+			event->type = state ? NSFB_EVENT_KEY_DOWN : NSFB_EVENT_KEY_UP;
+			event->value.keycode = NSFB_KEY_LEFT;
+		case 54:// right
+			event->type = state ? NSFB_EVENT_KEY_DOWN : NSFB_EVENT_KEY_UP;
+			event->value.keycode = NSFB_KEY_RIGHT;
+			break;
+		case 4: /* cursor left */
+			event->type = NSFB_EVENT_MOVE_RELATIVE;
+            event->value.vector.x = -4;
+            event->value.vector.y = 0;
+            event->value.vector.z = 0;
+			break;
+        case 5: /* cursor right */
+            event->type = NSFB_EVENT_MOVE_RELATIVE;
+            event->value.vector.x = 4;
+            event->value.vector.y = 0;
+            event->value.vector.z = 0;
+			break;
+        case 6: /* cursor up */
+            event->type = NSFB_EVENT_MOVE_RELATIVE;
+            event->value.vector.x = 0;
+            event->value.vector.y = -4;
+            event->value.vector.z = 0;
+			break;
+        case 7: /* cusor down */
+            event->type = NSFB_EVENT_MOVE_RELATIVE;
+            event->value.vector.x = 0;
+            event->value.vector.y = 4;
+            event->value.vector.z = 0;
+			break;
 #endif
 		 default:
             event->type = state ? NSFB_EVENT_KEY_DOWN : NSFB_EVENT_KEY_UP;

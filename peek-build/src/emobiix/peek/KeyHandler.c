@@ -34,6 +34,22 @@ extern unsigned char *screenBuf;
 extern unsigned char pwr_PowerOffMobile   (void);
 extern U8* get_LCD_bitmap(void);
 
+#include "kpd_cfg.h"
+#include "hwtask.h"
+#include "emo_kbd.h"
+#include "ui_pei.h"
+
+typedef UINT16 RegIdT;
+void KeyPad_Init(void);
+
+typedef enum
+{
+    BAL_KEY_PRESS,
+    BAL_KEY_RELEASE,
+    BAL_KEY_HOLD,
+    BAL_KEY_STATUS_NUM
+}BalKeyStatusT;
+
 void emo_BitBltPartial(Rectangle *rect, U8 *bmp)
 {
 	U8 *dbmp = get_LCD_bitmap();
@@ -74,7 +90,7 @@ void updateScreen(void) {
 			emo_BitBltPartial(rect, screenBuf);
 		}
 	}
-	//dspl_Enable(1);
+	dspl_Enable(1);
 	lgui_blit_done();
 #endif
 }
@@ -157,3 +173,90 @@ void main_test(void)
 	}
 }
 #endif
+
+int kbdEmobiixCB(T_EMOBIIX_KBD_EVENT *event)
+{
+	switch (event->key)
+	{
+		//case KCD_CANCLE:
+	//		break;
+
+		case KPD_KEY_ENTER:
+			manager_handleKey(KPD_KEY_ENTER);
+			updateScreen();
+			break;
+
+		case KPD_KEY_UP:
+			manager_handleKey(KPD_KEY_UP);
+			updateScreen();
+			break;
+
+		case KPD_KEY_DOWN:
+			manager_handleKey(KPD_KEY_DOWN);
+			updateScreen();
+			break;
+
+		default:
+			manager_handleKey(MapKeyToInternal(event->key));
+			updateScreen();
+			break;
+	}
+
+	PFREE(event);
+	return 1;
+}
+
+static int kdbEventCB(hwEventType eventType, void *eventData, void *context)
+{
+	KBD_EVENT *keyEvent = (KBD_EVENT *)eventData;
+	PALLOC(event, EMOBIIX_KBD_EVENT);
+
+	event->context = context;
+	event->key = keyEvent->key;
+	event->state = keyEvent->state;
+
+	PSEND(hCommUI, event);
+	return 1;
+}
+
+void emobiixKbdInit()
+{
+	hwEventSubscribe(HW_KEYBOARD_EVENT, kdbEventCB, 0);
+}
+
+static void UiHandleKeyEvents(RegIdT RegId, UINT32 MsgId, void *MsgBufferP)
+{
+        int UiKeyId = *((int *)MsgBufferP);
+        emo_printf("UiHandleKeyEvents MsgId=%d KeyId=%d" NL, MsgId, UiKeyId);
+		switch(UiKeyId) {
+			case SYS_PWR_KEY:
+				emo_printf("Starting power off\n");
+				pwr_PowerOffMobile();
+				while(1); // Shouldn't get here
+			case SYS_SHIFT:
+				/* Dont pass through shift.. wait for combo */
+				break;
+			case SYS_WHEEL_BACK:
+			case SYS_WHEEL_FORWARD:
+				emo_printf("UiHandleKeyEvents() Passing to manager key [%c]", MapKeyToInternal(UiKeyId));
+				manager_handleKey(MapKeyToInternal(UiKeyId));
+				break;
+			default:
+				if (MsgId == BAL_KEY_PRESS)
+				{
+					emo_printf("UiHandleKeyEvents() Passing to manager key [%c]", MapKeyToInternal(UiKeyId));
+					manager_handleKey(MapKeyToInternal(UiKeyId));
+				}
+		}
+        updateScreen();
+}
+
+void KeyPad_Init(void) {
+
+     if(BalKeypadRegister(UiHandleKeyEvents) == -1) {
+        emo_printf("BalKeypadRegister() Failed to register handler" NL);
+        return;
+     }
+     emo_printf("BalKeypadRegister() registered" NL);
+}
+
