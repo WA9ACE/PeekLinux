@@ -8,9 +8,10 @@
 typedef long off_t;
 
 unsigned int mfwMmeDrvFlag;
+static  char buf[10000] = {0};
+
 void emo_printf( const char* fmt, ...) {
 #ifndef EMO_PROD
-        char buf[10000];
         va_list ap;
         NU_TASK *tp;
 
@@ -31,7 +32,6 @@ void emo_printf( const char* fmt, ...) {
 
 void emo_fprintf(FILE *file, const char* fmt, ...) {
 #ifndef EMO_PROD
-        char buf[10000];
         va_list ap;
         NU_TASK *tp;
 
@@ -56,7 +56,6 @@ void bal_trace(char *msg) {
 
 void bal_printf(const char* fmt, ...) {
 #ifndef EMO_PROD
-        char buf[10000];
         va_list ap;
         NU_TASK *tp;
 
