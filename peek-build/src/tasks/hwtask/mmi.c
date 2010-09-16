@@ -25,6 +25,7 @@ void mmi_main(void) {
 
  // Setup battery callbacks
  system_battery_init();
+ gprs_dataobject_init();
 
  /* Wait for HW task and UI task to complete */
  while(!HwStatusGet() && !uiStatusGet())

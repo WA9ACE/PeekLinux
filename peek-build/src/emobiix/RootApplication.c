@@ -31,13 +31,9 @@ DataObject *dobjFromFile(const char *filename, DataObject *root)
 	EMO_ASSERT_NULL(filename != NULL, "load obj from file missing filename")
 	EMO_ASSERT_NULL(root != NULL, "load obj from file missing root")
 
-	emo_printf("____ LOADING %s ___", filename);
-
 	mimefile = file_openRead(filename);
 	dobj1 = widget_newTypeIdName("image", NULL, NULL, root);
 	if (mimefile != NULL) {
-		emo_printf("___ OPENED %s ___", filename);
-
 		mimedata_size = file_size(mimefile);
 		mimedata = (char *)p_malloc(mimedata_size);
 		file_read(mimefile, mimedata_size, mimedata);
@@ -54,7 +50,7 @@ DataObject *RootApplication(void)
 {
     static DataObject *output = NULL;
 	DataObject *dobj1, *root, *dobj2, *frame;
-	DataObject *setw, *setiw, *setc, *testvalue;
+	DataObject *setw, *setiw, *setc;
 	DataObject *signalstack, *testgprs;
 	DataObject *batterystack, *testbattery, *testcharge;
 	DataObject *testweather, *testspkr;
@@ -67,12 +63,9 @@ DataObject *RootApplication(void)
     output = dataobject_new();
     dataobject_setValue(output, "type", dataobjectfield_string("application"));
     dataobject_setValue(output, "name", dataobjectfield_string("Boot Manager"));
-    dataobject_setValue(output, "description",
-            dataobjectfield_string(
-            "Construct program for loading other programs"));
+    dataobject_setValue(output, "description", dataobjectfield_string( "Construct program for loading other programs"));
     dataobject_setValue(output, "icon", dataobjectfield_string("appicon"));
-    dataobject_setValue(output, "startupview",
-            dataobjectfield_string("rootview"));
+    dataobject_setValue(output, "startupview", dataobjectfield_string("rootview"));
 
 	root = widget_newTypeIdName("view", NULL, "rootview", output);
 	widget_setPacking(root, WP_VERTICAL);
@@ -82,21 +75,20 @@ DataObject *RootApplication(void)
 	dataobject_setValue(dobj1, "height", dataobjectfield_string(BARHEIGHT));
 	widget_setPacking(dobj1, WP_HORIZONTAL);
 
-	testvalue = dataobject_locateStr("system://local/signal");
-	testgprs = dataobject_locateStr("system://local/signal");
-
 	batteryURL = url_parse(SYSTEM_BATTERY_URI, URL_ALL);
 	testcharge = dataobject_locate(batteryURL);
 	url_delete(batteryURL);
 
+#if 0
 	testweather = dataobject_new();
 	dataobject_setValue(testweather, "data", dataobjectfield_string("1"));
 
 	testspkr = dataobject_new();
 	dataobject_setValue(testspkr, "data", dataobjectfield_string("1"));
+#endif
 
-#if 0
 	signalstack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
+#if 0
 	/* GPRS set */
 	setw = widget_newTypeIdName("set", NULL, NULL, signalstack);
 	dataobject_setValue(setw, "fieldname", dataobjectfield_string("GPRS"));
@@ -111,54 +103,38 @@ DataObject *RootApplication(void)
 	dataobject_setValue(setc, "color", dataobjectfield_string("00000000"));
 
 	setiw = widget_newTypeIdName("box", NULL, NULL, setw);
-	
+#endif 
+
 	/* Signal set */
 	setw = widget_newTypeIdName("set", NULL, NULL, signalstack);
-	dataobject_setValue(setw, "fieldname", dataobjectfield_string("level"));
-	dataobject_setValue(setw, "margintop", dataobjectfield_string("3"));
-	dataobject_setValue(setw, "marginleft", dataobjectfield_string("3"));
-	widget_setDataObject(setw, testvalue);
+	dataobject_setValue(setw, "fieldname", dataobjectfield_string("signal-level"));
+	dataobject_setValue(setw, "reference", dataobjectfield_string("system://local/gprs"));
 
 	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
-	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("1"));
-	setc = dobjFromFile("signal1.png", setiw);
-	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
-	dataobject_setValue(setc, "color", dataobjectfield_string("0000FF00"));
-
-	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
-	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("2"));
-	setc = dobjFromFile("signal2.png", setiw);
-	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
-	dataobject_setValue(setc, "color", dataobjectfield_string("0000FF00"));
-
-	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
-	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("3"));
-	setc = dobjFromFile("signal3.png", setiw);
-	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
-	dataobject_setValue(setc, "color", dataobjectfield_string("0000FF00"));
-
-	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
-	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("4"));
-	setc = dobjFromFile("signal4.png", setiw);
-	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
-	dataobject_setValue(setc, "color", dataobjectfield_string("0000FF00"));
-
-	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
-	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("5"));
-	setc = dobjFromFile("signal5.png", setiw);
-	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
-	dataobject_setValue(setc, "color", dataobjectfield_string("0000FF00"));
-
-	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
-	/*dataobject_setValue(setiw, "fieldvalue", dataobjectfield_string("0"));*/
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(0));
 	setc = dobjFromFile("signal0.png", setiw);
-	dataobject_setValue(setc, "transparency", dataobjectfield_string("stencil"));
-	dataobject_setValue(setc, "color", dataobjectfield_string("FF555500"));
 
-	setw = widget_newTypeIdName("box", NULL, NULL, dobj1);
-	dataobject_setValue(setw, "width", dataobjectfield_string("64%"));
-	dataobject_setValue(setw, "height", dataobjectfield_string("100%"));
-	
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(1));
+	setc = dobjFromFile("signal1.png", setiw);
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(2));
+	setc = dobjFromFile("signal2.png", setiw);
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(3));
+	setc = dobjFromFile("signal3.png", setiw);
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(4));
+	setc = dobjFromFile("signal4.png", setiw);
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(5));
+	setc = dobjFromFile("signal5.png", setiw);
+
+#if 0
 	/* Weather set */
 	setw = widget_newTypeIdName("set", NULL, NULL, dobj1);
 	dataobject_setValue(setw, "fieldname", dataobjectfield_string("data"));

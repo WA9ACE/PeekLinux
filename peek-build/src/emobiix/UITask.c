@@ -177,7 +177,7 @@ int UIInit(void)
     file_openWrite("test0");
     file_openWrite("test1");
     file_openWrite("test2");
-	//netsurf_main(1, &argv);
+
 	if (!initd) {
 		screenBuf = (unsigned char *)p_malloc(320*240*2);
 		if(!screenBuf)
@@ -197,6 +197,8 @@ int UIInit(void)
 #endif
 		//emobiixKbdInit();
 	}
+
+////	netsurf_main(1, &argv);
 
 	//BOSMsgSend(EXE_BAL_ID, EXE_MAILBOX_1_ID, HW_KEY_MSG, 0x0, 0x0);
     //netsurf_main(1, &argv);

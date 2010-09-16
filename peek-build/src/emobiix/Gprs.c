@@ -18,9 +18,11 @@ static DataObjectField* GPRS_STATUS;
 static DataObjectField* GPRS_LOCATION_LAC;
 static DataObjectField* GPRS_LOCATION_CI;
 
-static void gprs_dataobject_init(void) 
+void gprs_dataobject_init(void) 
 {
 	URL *url;
+
+	emo_printf("gprs_dataobject_init()");
 
 	dataobject_platformInit();
 
