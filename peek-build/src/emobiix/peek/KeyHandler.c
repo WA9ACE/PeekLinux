@@ -224,6 +224,8 @@ void emobiixKbdInit()
 	hwEventSubscribe(HW_KEYBOARD_EVENT, kdbEventCB, 0);
 }
 
+int netsurf_start_flag = 0;
+
 static void UiHandleKeyEvents(RegIdT RegId, UINT32 MsgId, void *MsgBufferP)
 {
         int UiKeyId = *((int *)MsgBufferP);
@@ -236,6 +238,11 @@ static void UiHandleKeyEvents(RegIdT RegId, UINT32 MsgId, void *MsgBufferP)
 			case SYS_SHIFT:
 				/* Dont pass through shift.. wait for combo */
 				break;
+			case SYS_PERCENT_KEY:
+				emo_printf("STARTING NETSURF");
+				netsurf_start_flag = 1;
+			break;
+
 			case SYS_WHEEL_BACK:
 			case SYS_WHEEL_FORWARD:
 				emo_printf("UiHandleKeyEvents() Passing to manager key [%c]", MapKeyToInternal(UiKeyId));

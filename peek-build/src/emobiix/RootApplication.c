@@ -55,8 +55,6 @@ DataObject *RootApplication(void)
 	DataObject *batterystack, *testbattery, *testcharge;
 	DataObject *testweather, *testspkr;
 
-	URL *batteryURL, *signalURL;
-
     if (output != NULL)
         return output;
 
@@ -74,18 +72,6 @@ DataObject *RootApplication(void)
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("320"));
 	dataobject_setValue(dobj1, "height", dataobjectfield_string(BARHEIGHT));
 	widget_setPacking(dobj1, WP_HORIZONTAL);
-
-	batteryURL = url_parse(SYSTEM_BATTERY_URI, URL_ALL);
-	testcharge = dataobject_locate(batteryURL);
-	url_delete(batteryURL);
-
-#if 0
-	testweather = dataobject_new();
-	dataobject_setValue(testweather, "data", dataobjectfield_string("1"));
-
-	testspkr = dataobject_new();
-	dataobject_setValue(testspkr, "data", dataobjectfield_string("1"));
-#endif
 
 	signalstack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
 #if 0

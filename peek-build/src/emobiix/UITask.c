@@ -195,13 +195,7 @@ int UIInit(void)
 #ifndef EMO_SIM
 		KeyPad_Init();
 #endif
-		//emobiixKbdInit();
 	}
-
-////	netsurf_main(1, &argv);
-
-	//BOSMsgSend(EXE_BAL_ID, EXE_MAILBOX_1_ID, HW_KEY_MSG, 0x0, 0x0);
-    //netsurf_main(1, &argv);
 
 	uiStatusSet();
 	return 1;
@@ -212,9 +206,17 @@ static int UIIteration(void)
 	return 1;
 }
 
+extern int netsurf_start_flag;
+
 int UIWaitForActivity(void)
 {
+	char *argv = "emobiix";
+
 	TCCE_Task_Sleep(10);
+	
+	if (netsurf_start_flag)
+	   netsurf_main(1, &argv);
+
 	return 1;
 }
 

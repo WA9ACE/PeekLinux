@@ -67,12 +67,14 @@ static BOOL mmePrimHandler (USHORT opc, void *data)
 			level = ((T_MMI_BATTERY_IND *) data)->volt;
 			state = ((T_MMI_BATTERY_IND *) data)->temp;
 
-
 			system_battery_set_battery_level(level);
 			system_battery_set_charge_state(state);
 
 			emo_printf("BATTERY_IND: %d %d", level, state);
+			return TRUE;
 	}
+
+	return FALSE;
 }
 
 void system_battery_init()
@@ -98,4 +100,3 @@ void system_battery_init()
 	pwr_Init(pwrCb);
 	aci_create((T_PRIM_HANDLER)mmePrimHandler,NULL);
 }
-
