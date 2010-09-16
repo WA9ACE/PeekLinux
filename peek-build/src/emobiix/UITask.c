@@ -174,10 +174,6 @@ int UIInit(void)
 	char *argv = "emobiix";
 	static int initd = 0;
 
-    file_openWrite("test0");
-    file_openWrite("test1");
-    file_openWrite("test2");
-
 	if (!initd) {
 		screenBuf = (unsigned char *)p_malloc(320*240*2);
 		if(!screenBuf)
