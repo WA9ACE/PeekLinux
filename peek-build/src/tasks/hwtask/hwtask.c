@@ -51,7 +51,7 @@ void hwStart(void) {
             file_close(fp);
             while(1) {
                 lcd_led_onoff(1);
-                TCCE_Task_Sleep(10000);
+                TCCE_Task_Sleep(10);
                 lcd_led_onoff(0);
             }
         }
