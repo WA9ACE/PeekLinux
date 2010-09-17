@@ -15,8 +15,216 @@ int mimedata_size;
 FILE *mimefile;
 #endif
 
+extern DataObject *dobjFromFile(const char *filename, DataObject *root);
+
 DataObject *BootApplication(void)
 {
+	static Widget *w0 = NULL;
+	Widget *w1, *w2, *w3, *w4, *w5;
+
+	if (w0 != NULL)
+		return w0;
+
+	w0 = dataobject_new();
+	dataobject_setValue(w0, "type", dataobjectfield_string("application"));
+	dataobject_setValue(w0, "description", dataobjectfield_string("Construct program for loading other programs"));
+	dataobject_setValue(w0, "name", dataobjectfield_string("Boot Environment"));
+	dataobject_setValue(w0, "onload", dataobjectfield_string("onLoad()"));
+	dataobject_setValue(w0, "startupview", dataobjectfield_string("mainview"));
+	dataobject_setValue(w0, "style", dataobjectfield_string("bootstyle"));
+	w1 = dataobject_new();
+	dataobject_pack(w0, w1);
+	dataobject_setValue(w1, "type", dataobjectfield_string("script"));
+	dataobject_setValue(w1, "data", dataobjectfield_string(
+"	function onLoad()\n"
+"		print \"Boot application loaded\"\n"
+"	end\n"
+"	function helloworld()\n"
+"		DataObject.locate(\"tcp://69.114.111.9:12345/helloworld\");\n"
+"	end\n"
+"	function calculator()\n"
+"		DataObject.locate(\"tcp://69.114.111.9:12345/calc\");\n"
+"	end\n"
+"	function maps()\n"
+"		DataObject.locate(\"tcp://69.114.111.9:12345/whereami?40.702147,-74.015794\");\n"
+"	end\n"
+"	function aim()\n"
+"		DataObject.locate(\"tcp://69.114.111.9:12345/sample\");\n"
+"	end\n"
+"	function mail()\n"
+"		DataObject.locate(\"tcp://69.114.111.9:12345/mail\");\n"
+"	end\n"));
+	w1 = dataobject_new();
+	dataobject_pack(w0, w1);
+	dataobject_setValue(w1, "type", dataobjectfield_string("style"));
+	dataobject_setValue(w1, "name", dataobjectfield_string("bootstyle"));
+	w2 = dataobject_new();
+	dataobject_pack(w1, w2);
+	dataobject_setValue(w2, "type", dataobjectfield_string("selbox"));
+	w3 = dataobject_new();
+	dataobject_pack(w2, w3);
+	dataobject_setValue(w3, "type", dataobjectfield_string("label"));
+	dataobject_setValue(w3, "font-color", dataobjectfield_string("#FFF"));
+	dataobject_setValue(w3, "renderer", dataobjectfield_string("label"));
+	w2 = dataobject_new();
+	dataobject_pack(w1, w2);
+	dataobject_setValue(w2, "type", dataobjectfield_string("selbox"));
+	dataobject_setValue(w2, "border", dataobjectfield_string("1234"));
+	dataobject_setValue(w2, "border-color", dataobjectfield_string("#000"));
+	dataobject_setValue(w2, "border-corners", dataobjectfield_string("1234"));
+	dataobject_setValue(w2, "fill", dataobjectfield_string("gradient"));
+	dataobject_setValue(w2, "hasfocus", dataobjectfield_string("1"));
+	dataobject_setValue(w2, "radius", dataobjectfield_string("7"));
+	dataobject_setValue(w2, "renderer", dataobjectfield_string("box"));
+	dataobject_setValue(w2, "rounded", dataobjectfield_string("1234"));
+	w3 = dataobject_new();
+	dataobject_pack(w2, w3);
+	dataobject_setValue(w3, "type", dataobjectfield_string("gradient"));
+	w4 = dataobject_new();
+	dataobject_pack(w3, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("stop"));
+	dataobject_setValue(w4, "color", dataobjectfield_string("#F9F9F9FF"));
+	dataobject_setValue(w4, "position", dataobjectfield_string("0"));
+	w4 = dataobject_new();
+	dataobject_pack(w3, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("stop"));
+	dataobject_setValue(w4, "color", dataobjectfield_string("#59DFFEFF"));
+	dataobject_setValue(w4, "position", dataobjectfield_string("50"));
+	w4 = dataobject_new();
+	dataobject_pack(w3, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("stop"));
+	dataobject_setValue(w4, "color", dataobjectfield_string("#35dcfbFF"));
+	dataobject_setValue(w4, "position", dataobjectfield_string("50"));
+	w4 = dataobject_new();
+	dataobject_pack(w3, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("stop"));
+	dataobject_setValue(w4, "color", dataobjectfield_string("#b7f1ffFF"));
+	dataobject_setValue(w4, "position", dataobjectfield_string("100"));
+	w3 = dataobject_new();
+	dataobject_pack(w2, w3);
+	dataobject_setValue(w3, "type", dataobjectfield_string("label"));
+	dataobject_setValue(w3, "font-color", dataobjectfield_string("#000"));
+	dataobject_setValue(w3, "renderer", dataobjectfield_string("label"));
+	dataobject_setValue(w3, "weight", dataobjectfield_string("bold"));
+	w1 = dataobject_new();
+	dataobject_pack(w0, w1);
+	dataobject_setValue(w1, "type", dataobjectfield_string("view"));
+	dataobject_setValue(w1, "height", dataobjectfield_string("240"));
+	dataobject_setValue(w1, "name", dataobjectfield_string("mainview"));
+	dataobject_setValue(w1, "packing", dataobjectfield_string("vertical"));
+	dataobject_setValue(w1, "width", dataobjectfield_string("320"));
+	w2 = dobjFromFile("background.png", w1);
+	dataobject_setValue(w2, "packing", dataobjectfield_string("vertical"));
+	dataobject_setValue(w2, "width", dataobjectfield_int(320));
+	dataobject_setValue(w2, "height", dataobjectfield_int(240));
+	dataobject_setValue(w2, "pixelformat", dataobjectfield_int(0));
+	w3 = dataobject_new();
+	dataobject_pack(w2, w3);
+	dataobject_setValue(w3, "type", dataobjectfield_string("box"));
+	dataobject_setValue(w3, "alignment", dataobjectfield_string("center"));
+	dataobject_setValue(w3, "margintop", dataobjectfield_string("40"));
+	dataobject_setValue(w3, "packing", dataobjectfield_string("hgrid"));
+	dataobject_setValue(w3, "width", dataobjectfield_string("90%"));
+	w4 = dataobject_new();
+	dataobject_pack(w3, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("selbox"));
+	dataobject_setValue(w4, "canfocus", dataobjectfield_string("1"));
+	dataobject_setValue(w4, "margin", dataobjectfield_string("3"));
+	dataobject_setValue(w4, "onreturn", dataobjectfield_string("helloworld()"));
+	dataobject_setValue(w4, "packing", dataobjectfield_string("vertical"));
+	w5 = dobjFromFile("hello.png", w4);
+	dataobject_setValue(w5, "marginleft", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "marginright", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "margintop", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "width", dataobjectfield_int(32));
+	dataobject_setValue(w5, "height", dataobjectfield_int(32));
+	dataobject_setValue(w5, "pixelformat", dataobjectfield_int(5));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("label"));
+	dataobject_setValue(w5, "alignment", dataobjectfield_string("center"));
+	dataobject_setValue(w5, "data", dataobjectfield_string("Hello"));
+	w4 = dataobject_new();
+	dataobject_pack(w3, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("selbox"));
+	dataobject_setValue(w4, "canfocus", dataobjectfield_string("1"));
+	dataobject_setValue(w4, "margin", dataobjectfield_string("3"));
+	dataobject_setValue(w4, "onreturn", dataobjectfield_string("calculator()"));
+	dataobject_setValue(w4, "packing", dataobjectfield_string("vertical"));
+	w5 = dobjFromFile("calc.png", w4);
+	dataobject_setValue(w5, "marginleft", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "marginright", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "margintop", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "width", dataobjectfield_int(32));
+	dataobject_setValue(w5, "height", dataobjectfield_int(32));
+	dataobject_setValue(w5, "pixelformat", dataobjectfield_int(5));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("label"));
+	dataobject_setValue(w5, "alignment", dataobjectfield_string("center"));
+	dataobject_setValue(w5, "data", dataobjectfield_string("Calc"));
+	w4 = dataobject_new();
+	dataobject_pack(w3, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("selbox"));
+	dataobject_setValue(w4, "canfocus", dataobjectfield_string("1"));
+	dataobject_setValue(w4, "margin", dataobjectfield_string("3"));
+	dataobject_setValue(w4, "onreturn", dataobjectfield_string("maps()"));
+	dataobject_setValue(w4, "packing", dataobjectfield_string("vertical"));
+	w5 = dobjFromFile("maps.png", w4);
+	dataobject_setValue(w5, "marginleft", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "marginright", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "margintop", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "width", dataobjectfield_int(32));
+	dataobject_setValue(w5, "height", dataobjectfield_int(32));
+	dataobject_setValue(w5, "pixelformat", dataobjectfield_int(5));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("label"));
+	dataobject_setValue(w5, "alignment", dataobjectfield_string("center"));
+	dataobject_setValue(w5, "data", dataobjectfield_string("Maps"));
+	w4 = dataobject_new();
+	dataobject_pack(w3, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("selbox"));
+	dataobject_setValue(w4, "canfocus", dataobjectfield_string("1"));
+	dataobject_setValue(w4, "margin", dataobjectfield_string("3"));
+	dataobject_setValue(w4, "onreturn", dataobjectfield_string("aim()"));
+	dataobject_setValue(w4, "packing", dataobjectfield_string("vertical"));
+	w5 = dobjFromFile("aim.png", w4);
+	dataobject_setValue(w5, "marginleft", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "marginright", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "margintop", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "width", dataobjectfield_int(32));
+	dataobject_setValue(w5, "height", dataobjectfield_int(32));
+	dataobject_setValue(w5, "pixelformat", dataobjectfield_int(5));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("label"));
+	dataobject_setValue(w5, "alignment", dataobjectfield_string("center"));
+	dataobject_setValue(w5, "data", dataobjectfield_string("AIM"));
+	w4 = dataobject_new();
+	dataobject_pack(w3, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("selbox"));
+	dataobject_setValue(w4, "canfocus", dataobjectfield_string("1"));
+	dataobject_setValue(w4, "margin", dataobjectfield_string("3"));
+	dataobject_setValue(w4, "onreturn", dataobjectfield_string("web()"));
+	dataobject_setValue(w4, "packing", dataobjectfield_string("vertical"));
+	w5 = dobjFromFile("netsurf.png", w4);
+	dataobject_setValue(w5, "marginleft", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "marginright", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "margintop", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "width", dataobjectfield_int(32));
+	dataobject_setValue(w5, "height", dataobjectfield_int(32));
+	dataobject_setValue(w5, "pixelformat", dataobjectfield_int(5));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("label"));
+	dataobject_setValue(w5, "alignment", dataobjectfield_string("center"));
+	dataobject_setValue(w5, "data", dataobjectfield_string("Web"));
+
+	return w0;
+}
+
+#if 0
     static DataObject *output = NULL;
     DataObject *view, *root, *dobj1, *dobj2, *box;
 #ifdef SIMULATOR
@@ -269,3 +477,4 @@ DataObject *BootApplication(void)
 
     return output;
 }
+#endif
