@@ -817,6 +817,42 @@ static void dataobject_debugPrintR(DataObject *dobj, int level)
 	/*listIterator_delete(citer);*/
 }
 
+static void dataobject_codePrintR(DataObject *dobj, int level)
+{
+	MapIterator iter;
+	ListIterator citer;
+	DataObjectField *dof;
+	const char *key;
+	
+	EMO_ASSERT(dobj != NULL, "codePrintR on NULL DataObject")
+
+	emo_printf("w%d = dataobject_new();" NL, level);
+	if (level != 0)
+		emo_printf("dataobject_pack(w%d, w%d);" NL, level-1, level);
+
+	map_begin(dobj->data, &iter);
+	while (!mapIterator_finished(&iter)) {
+		dof = (DataObjectField *)mapIterator_item(&iter, (void **)&key);
+		switch (dof->type) {
+			case DOF_STRING:
+				emo_printf("dataobject_setValue(w%d, \"%s\", dataobjectfield_string(\"%s\"));" NL,
+						level, key, dof->field.string);
+				break;
+			case DOF_INT:
+				emo_printf("dataobject_setValue(w%d, \"%s\", dataobjectfield_int(%d));" NL,
+					level, key, dof->field.integer);
+				break;
+		}
+		mapIterator_next(&iter);
+	}
+
+	dataobject_childIterator(dobj, &citer);
+	/*list_begin(dobj->children, &citer);*/
+	while (!listIterator_finished(&citer)) {
+		dataobject_codePrintR((DataObject *)listIterator_item(&citer), level+1);
+		listIterator_next(&citer);
+	}
+}
 
 void dataobject_setScriptContext(DataObject *dobj, void *ctx)
 {
@@ -861,6 +897,14 @@ void dataobject_debugPrint(DataObject *dobj)
 	EMO_ASSERT(dobj != NULL, "debug print on NULL DataObject")
 
 	dataobject_debugPrintR(dobj, 0);
+}
+
+
+void dataobject_codePrint(DataObject *dobj)
+{
+	EMO_ASSERT(dobj != NULL, "code print on NULL DataObject")
+
+	dataobject_codePrintR(dobj, 0);
 }
 
 /*
@@ -1010,6 +1054,19 @@ void dataobjectfield_setBoolean(DataObjectField *field, int bval)
 			field->field.integer = bval;
 		}
     }
+}
+
+void dataobjectfield_setString(DataObjectField *field, const char *bval)
+{
+	EMO_ASSERT(field != NULL, "set string on NULL field")
+
+    if (field != NULL) {
+		if (field->type == DOF_STRING) {
+			p_free(field->field.string);
+		}
+		field->type = DOF_STRING;
+		field->field.string = p_strdup(bval);
+	}
 }
 
 int dataobjectfield_isString(DataObjectField *field, const char *str)

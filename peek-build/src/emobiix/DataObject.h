@@ -82,6 +82,7 @@ void dataobject_setLayoutClean(DataObject *dobj, unsigned int wh);
 void dataobject_setLayoutDirtyAll(DataObject *dobj);
 
 void dataobject_debugPrint(DataObject *dobj);
+void dataobject_codePrint(DataObject *dobj);
 
 /* temporary sync methods */
 void dataobject_forceSyncFlag(DataObject *dobj, int isFlag);
