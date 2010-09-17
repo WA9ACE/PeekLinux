@@ -2,10 +2,151 @@
 #include "Debug.h"
 #include "lgui.h"
 #include "Point.h"
+#include "RenderManager.h"
 
 #include "p_malloc.h"
 #include <stdio.h>
 #include <string.h>
+
+int scrolled_focusNext(Widget *w)
+{
+	Rectangle *box, *childBox;
+	DataObjectField *xtransField, *ytransField;
+	int xtrans, ytrans;
+
+	EMO_ASSERT_INT(w != NULL, 0, "scrolled focusNext on NULL")
+
+	box = widget_getBox(w);
+	childBox = widget_getChildBox(w);
+
+	xtransField = dataobject_getValueAsInt(w, "xoffset");
+	ytransField = dataobject_getValueAsInt(w, "yoffset");
+
+	xtrans = 0;
+	ytrans = 0;
+	if (xtransField != NULL) {
+		xtrans = xtransField->field.integer;
+	} else {
+		xtransField = dataobjectfield_int(0);
+		dataobject_setValue(w, "xoffset", xtransField);
+		xtrans = 0;
+	}
+	if (ytransField != NULL) {
+		ytrans = ytransField->field.integer;
+	} else {
+		ytransField = dataobjectfield_int(0);
+		dataobject_setValue(w, "yoffset", ytransField);
+		ytrans = 0;
+	}
+
+	if (childBox->height <= box->height)
+		return 0;
+	if (ytrans + box->height >= childBox->height)
+		return 0;
+	ytrans += box->height/3;
+	if (ytrans > childBox->height - box->height)
+		ytrans = childBox->height - box->height;
+	ytransField->field.integer = ytrans;
+	
+	/*dataobject_setIsModified(w, 1);*/
+
+	return 1;
+}
+
+int scrolled_focusPrev(Widget *w)
+{
+	Rectangle *box, *childBox;
+	DataObjectField *xtransField, *ytransField;
+	int xtrans, ytrans;
+
+	EMO_ASSERT_INT(w != NULL, 0, "scrolled focusNext on NULL")
+
+	box = widget_getBox(w);
+	childBox = widget_getChildBox(w);
+
+	xtransField = dataobject_getValueAsInt(w, "xoffset");
+	ytransField = dataobject_getValueAsInt(w, "yoffset");
+
+	xtrans = 0;
+	ytrans = 0;
+	if (xtransField != NULL) {
+		xtrans = xtransField->field.integer;
+	} else {
+		xtransField = dataobjectfield_int(0);
+		dataobject_setValue(w, "xoffset", xtransField);
+		xtrans = 0;
+	}
+	if (ytransField != NULL) {
+		ytrans = ytransField->field.integer;
+	} else {
+		ytransField = dataobjectfield_int(0);
+		dataobject_setValue(w, "yoffset", ytransField);
+		ytrans = 0;
+	}
+
+	if (childBox->height <= box->height)
+		return 0;
+	if (ytrans <= 0)
+		return 0;
+	ytrans -= box->height/3;
+	if (ytrans < 0)
+		ytrans = 0;
+	ytransField->field.integer = ytrans;
+	
+	/*dataobject_setIsModified(w, 1);*/
+
+	return 1;
+}
+
+void scrolled_forceVisible(Widget *w)
+{
+	Widget *scrolled;
+	Rectangle *box, *childBox, *widgetBox;
+	DataObjectField *xtransField, *ytransField;
+	int xtrans, ytrans;
+
+	EMO_ASSERT(w != NULL, "scrolled forceVisible on NULL")
+
+	scrolled = widget_findStringFieldParent(w, "type", "scrolled");
+	if (scrolled == NULL)
+		return;
+
+	box = widget_getBox(scrolled);
+	childBox = widget_getChildBox(scrolled);
+	widgetBox = widget_getBox(w);
+
+	xtransField = dataobject_getValueAsInt(scrolled, "xoffset");
+	ytransField = dataobject_getValueAsInt(scrolled, "yoffset");
+
+	xtrans = 0;
+	ytrans = 0;
+	if (xtransField != NULL) {
+		xtrans = xtransField->field.integer;
+	} else {
+		xtransField = dataobjectfield_int(0);
+		dataobject_setValue(scrolled, "xoffset", xtransField);
+		xtrans = 0;
+	}
+	if (ytransField != NULL) {
+		ytrans = ytransField->field.integer;
+	} else {
+		ytransField = dataobjectfield_int(0);
+		dataobject_setValue(scrolled, "yoffset", ytransField);
+		ytrans = 0;
+	}
+
+	if (ytrans+box->y > widgetBox->y) {
+		ytrans = widgetBox->y-box->y;
+		ytransField->field.integer = ytrans;
+		dataobject_setIsModified(scrolled, 1);
+		emo_printf("Scrolled move up" NL);
+	} else if (ytrans+box->y+box->height < widgetBox->y+widgetBox->height) {
+		ytrans = widgetBox->y+widgetBox->height - (box->y+box->height);
+		ytransField->field.integer = ytrans;
+		dataobject_setIsModified(scrolled, 1);
+		emo_printf("Scrolled move down" NL);
+	}
+}
 
 void scrolled_autoscroll(Widget *w)
 {
@@ -26,7 +167,7 @@ void scrolled_autoscroll(Widget *w)
 			dataobject_setValue(w, "yoffset", dataobjectfield_int(0));
 		else
 			dataobject_setValue(w, "yoffset", dataobjectfield_int((childBox->height-box->height)));
-	} else {
+	} else if (autoscroll != NULL) {
 		dataobject_setValue(w, "yoffset", dataobjectfield_int(0));
 	}
 }
@@ -59,6 +200,8 @@ static void scrolled_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	lgui_clip_push();
 	lgui_clip_and(box);
 
+	emo_printf("Scrolled redraw at %d" NL, ytrans);
+
 	lgui_translate(-xtrans, -ytrans);
 }
 
@@ -86,6 +229,9 @@ static void scrolled_postrenderer(WidgetRenderer *wr, Style *s, Widget *w,
 	lgui_clip_pop();
 
 	lgui_translate(xtrans, ytrans);
+
+	emo_printf("Scrolled postdraw" NL);
+
 }
 
 static void scrolled_margin(WidgetRenderer *wr, Style *s, Widget *w,
