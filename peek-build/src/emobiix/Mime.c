@@ -151,7 +151,7 @@ static int load_png(DataObject *dobj)
     /* 
      * Only allow 8 bits per component images
      */
-    if (bitDepth != 8) {
+    if (bitDepth > 8) {
         png_destroy_read_struct(&pngPtr, &infoPtr, (png_infopp)NULL);
         return 0;
     }
