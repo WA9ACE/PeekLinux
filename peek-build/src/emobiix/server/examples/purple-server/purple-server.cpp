@@ -28,7 +28,10 @@
 #include "emobiix_rpc_emobiixObject.h" // get server object
 #include "emobiix.nsmap" // get namespace bindings
 
+#include "user.h"
+
 using namespace std;
+using namespace IM;
 
 /**
  * The following eventloop functions are used in both pidgin and purple-text. If your
@@ -41,112 +44,7 @@ using namespace std;
 
 static PurpleBuddyList *pblist = NULL;
 
-GMutex *masterLock = NULL;
-class Result {
-public:
-	Result(std::string str) : status(str) {};
-	std::string status;
-};
-class Task {
-public:
-	Task() {
-		result = NULL;
-	}
-	std::string event;
-	std::string emobiixID;
-	std::string username;
-	std::string password;
-	Result *result;
-};
-static std::queue<Task *> tasks;
-
-static Task *GetTask(void)
-{
-	Task *output = NULL;
-
-	g_mutex_lock(masterLock);
-	if (!tasks.empty()) {
-		output = tasks.front();
-		tasks.pop();
-	}
-	g_mutex_unlock(masterLock);
-
-	return output;
-}
-
-static void PushTask(Task *t)
-{
-	g_mutex_lock(masterLock);
-	tasks.push(t);
-	g_mutex_unlock(masterLock);
-}
-
-class IMMessage {
-public:
-	IMMessage(const char *sender, const char *message, int id) {
-		m_sender = sender;
-		m_message = message;
-		m_id = id;
-	}
-
-	std::string m_message;
-	std::string m_sender;
-	int m_id;
-};
-
-class IMUser {
-public:
-	IMUser(const char *eID) {
-		emobiixID = strdup(eID);
-		account = NULL;
-		status = NULL;
-		task = NULL;
-		messageID = 0;
-		pushMutex = g_mutex_new();
-	}
-	void pushMessage(const char *sender, const char *message) {
-		g_mutex_lock(pushMutex);
-		pushList.push_back(IMMessage(sender, message, messageID));
-		++messageID;
-		g_mutex_unlock(pushMutex);
-	}
-	std::list<IMMessage> getPushList(void) {
-		g_mutex_lock(pushMutex);
-		std::list<IMMessage> output = pushList;
-		pushList.clear();
-		g_mutex_unlock(pushMutex);
-
-		return output;
-	}
-	char *emobiixID;
-	Task *task;
-	PurpleAccount *account;
-	PurpleSavedStatus *status;
-	GMutex *pushMutex;
-	std::list<IMMessage> pushList;
-	std::list<std::string> buddyList;
-	int messageID;
-};
-  
-typedef std::map<std::string, IMUser *> UserMap;
-static UserMap e_users;
-
-void ms_pushIM(IMUser *user, const char *sender, const char *message);
-
-static IMUser *user_by_account(PurpleAccount *account)
-{
-	UserMap::iterator iter;
-	IMUser  *output;
-
-	for (iter = e_users.begin(); iter != e_users.end(); ++iter) {
-		output = (*iter).second;
-		if (output->account == account)
-			return output;
-	}
-
-	return NULL;
-}
-
+void ms_pushIM(User *user, const char *sender, const char *message);
 void ms_newAccount(const char *emobiixID, const char *protocol,
 		const char *username, const char *password);
 void ms_newConnection(const char *emobiixID);
@@ -350,15 +248,20 @@ signed_on(PurpleConnection *gc, gpointer null)
 	printf("%s Account connected: %s %s\n", __F__, account->username,
 			account->protocol_id);
 
-	IMUser *user;
-	user = user_by_account(account);
+	User *user;
+	user = GetUserByAccount(account);
 	if (user == NULL) {
 		printf("%s account connected for NULL user\n", __F__);
 		return;
 	}
-	user->task->result = new Result("connected");
+	user->m_task->m_result = new Result("connected");
 	printf("%s account connected for user : %s\n", __F__,
-			user->emobiixID);
+			user->m_emobiixID);
+	user->addAccount(
+			user->m_task->m_username.c_str(),
+			user->m_task->m_password.c_str(),
+			user->m_task->m_protocol.c_str(),
+			account);
 }
 
 static void received_im_msg(PurpleAccount *account, char *sender,
@@ -375,27 +278,37 @@ static void received_im_msg(PurpleAccount *account, char *sender,
 			purple_utf8_strftime("%H:%M:%S", NULL),
 			sender, purple_conversation_get_name(conv), message);
 
-	IMUser *user;
-	user = user_by_account(account);
+	User *user;
+	user = GetUserByAccount(account);
 	if (user == NULL) {
 		printf("%s account connected for NULL user\n", __F__);
 		return;
 	}
-	ms_pushIM(user, sender, message);
+
+	std::string senderStr;
+	senderStr = sender;
+	size_t spos;
+	spos = senderStr.find("gmail.com/");
+	if (spos != std::string::npos)
+		senderStr = senderStr.substr(0, spos+9);
+
+	ms_pushIM(user, senderStr.c_str(), message);
 }
 
 static void buddy_signed_on(PurpleBuddy *buddy)
 {
-	IMUser *user;
+	User *user;
 
 	printf("%s Buddy \"%s\" (%s) signed on\n", __F__,
 			purple_buddy_get_name(buddy),
 			purple_account_get_protocol_id(purple_buddy_get_account(buddy)));
-	user = user_by_account(purple_buddy_get_account(buddy));
+	user = GetUserByAccount(purple_buddy_get_account(buddy));
 	if (user != NULL) {
-		if (std::find(user->buddyList.begin(), user->buddyList.end(),
-				purple_buddy_get_name(buddy)) == user->buddyList.end())
-		user->buddyList.push_back(purple_buddy_get_name(buddy));
+		if (std::find(user->m_buddyList.begin(), user->m_buddyList.end(),
+				Buddy(purple_buddy_get_name(buddy),
+				purple_buddy_get_account(buddy))) == user->m_buddyList.end())
+		user->m_buddyList.push_back(Buddy(purple_buddy_get_name(buddy),
+                purple_buddy_get_account(buddy)));
 	}
 }
 
@@ -453,21 +366,21 @@ static void account_error_changed(PurpleAccount *acc,
 		const PurpleConnectionErrorInfo *current_error) {
 	if (current_error) {
     	printf("new account error : <%s>\n", current_error->description);
-		IMUser *user;
-		user = user_by_account(acc);
+		User *user;
+		user = GetUserByAccount(acc);
 		if (user == NULL) {
 			printf("%s account error for NULL user\n", __F__);
 			return;
 		}
 		printf("%s account connected for user : %s\n", __F__,
-				user->emobiixID);
+				user->m_emobiixID);
 		if (strstr(current_error->description, "frequently") != NULL) {
-			user->task->result = new Result("Too Frequent");
+			user->m_task->m_result = new Result("Too Frequent");
 		} else if (strstr(current_error->description,
 				"Incorrect password") != NULL) {
-			user->task->result = new Result("Incorrect password");
+			user->m_task->m_result = new Result("Incorrect password");
 		} else {
-			user->task->result = new Result("Unknown Error");
+			user->m_task->m_result = new Result("Unknown Error");
 		}
     }
  }
@@ -582,9 +495,13 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__RecordDataObjectRequest(struct soap* soap, std::st
 			dataObjectURI.c_str());
 
 	if (dataObjectURI == "messages") {
+		User *user;
+		user = GetUser(deviceId.c_str());
+		if (user == NULL)
+			return SOAP_OK;
 		std::string res = "<array>";
-		std::list<IMMessage> msgs = e_users.find(deviceId)->second->getPushList();
-		std::list<IMMessage>::iterator iter;
+		MessageList msgs = user->getPushList();
+		MessageList::iterator iter;
 		for (iter = msgs.begin(); iter != msgs.end(); ++iter) {
 			char numstr[25];
 			res += "<item idminor=\"";
@@ -625,23 +542,33 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 			dataObjectURI.c_str());
 
 	if (dataObjectURI == "buddylist") {
-		IMUser *user;
-		std::list<std::string>::iterator iter;
-		user = e_users.find(deviceId)->second;
+		User *user;
+		BuddyList::iterator iter;
+		user = GetUser(deviceId.c_str());
+		if (user == NULL)
+			return SOAP_OK;
 		std::string res = "<data>";
-		for (iter = user->buddyList.begin(); iter != user->buddyList.end();
+		for (iter = user->m_buddyList.begin(); iter != user->m_buddyList.end();
 				++iter) {
+			PurpleAccount *pacc = (*iter).second;
+			std::string aproto = "prpl-aim";
+			AccountList::iterator ali;
+
+			for (ali = user->m_account.begin(); ali != user->m_account.end();
+					++ali) {
+				if ((*ali).m_account == pacc) {
+					aproto = (*ali).m_protocol;
+					break;
+				}
+			}
 			res += "<item user=\"";
-			res += (*iter);
+			res += (*iter).first;
 			res += "\" account=\"";
-			res += (*iter);
+			res += (*iter).first;
+			res += "\" protocol=\"";
+			res += aproto;
 			res += "\"/>";
 		}
-#if 0
-		res += "<item user=\"ryanemobiix\" account=\"ryanemobiix\"/>";
-		res += "<item user=\"arcx33\" account=\"arcx33\"/>";
-		res += "<item user=\"ankutter\" account=\"ankutter\"/>";
-#endif
 		res += "</data>";
 
 		treeData = base64BinaryFromString(soap, res.c_str());
@@ -651,9 +578,13 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 		return SOAP_OK;
 	}
 	if (dataObjectURI == "messages") {
-		std::string res = "<array>";
-		std::list<IMMessage> msgs = e_users.find(deviceId)->second->getPushList();
-		std::list<IMMessage>::iterator iter;
+		User *user;
+		user = GetUser(deviceId.c_str());
+		if (user == NULL)
+			return SOAP_OK;
+		std::string res = "<data>";
+		MessageList msgs = user->getPushList();
+		MessageList::iterator iter;
 		for (iter = msgs.begin(); iter != msgs.end(); ++iter) {
 			res += "<item from=\"";
 			res += iter->m_sender;
@@ -663,11 +594,34 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 			res += iter->m_sender;
 			res += "\" mine=\"0\"/>";
 		}
-		res += "</array>";
+		res += "</data>";
 
 		treeData = base64BinaryFromString(soap, res.c_str());
 
 		printf("%s messages: %s\n", __F__, res.c_str());
+
+		return SOAP_OK;
+	}
+	if (dataObjectURI == "accounts") {
+		User *user;
+		user = GetUser(deviceId.c_str());
+		if (user == NULL)
+			return SOAP_OK;
+		std::string res = "<data>";
+		AccountList::iterator iter;
+		for (iter = user->m_account.begin(); iter != user->m_account.end();
+				++iter) {
+			res += "<item protocol=\"";
+			res += iter->m_protocol;
+			res += "\" username=\"";
+			res += iter->m_username;
+			res += "\" />";
+		}
+		res += "</data>";
+
+		treeData = base64BinaryFromString(soap, res.c_str());
+
+		printf("%s accounts: %s\n", __F__, res.c_str());
 
 		return SOAP_OK;
 	}
@@ -681,15 +635,16 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 			param[(*requestParam)[i].key] = (*requestParam)[i].value;
 		}
 
-		if (param["action"] == "login") {
+		if (param["action"] == "addacc") {
 			Task *task = new Task();
-			task->event = "login";
-    		task->emobiixID = deviceId;
-    		task->username = param["user"];
-			task->password = param["pass"];
-			PushTask(task);
+			task->m_event = "addacc";
+    		task->m_emobiixID = deviceId;
+    		task->m_username = param["user"];
+			task->m_password = param["pass"];
+			task->m_protocol = param["proto"];
+			Task::Push(task);
 			int loop = 0;
-			while (task->result == NULL) {
+			while (task->m_result == NULL) {
 				usleep(100);
 				++loop;
 				if (loop > 5000) {
@@ -700,10 +655,10 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 				}
 			}
 			printf("%s login result: %s\n", __F__,
-					task->result->status.c_str());
+					task->m_result->status.c_str());
 
 			std::string res = "<data reply=\"";
-			res += task->result->status.c_str();
+			res += task->m_result->status.c_str();
 			res += "\"/>";
 
 			treeData = base64BinaryFromString(soap, res.c_str());
@@ -712,11 +667,11 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 
 		if (param["action"] == "im") {
 			Task *task = new Task();
-			task->event = "im";
-    		task->emobiixID = deviceId;
-    		task->username = param["user"];
-			task->password = param["pass"];
-			PushTask(task);
+			task->m_event = "im";
+    		task->m_emobiixID = deviceId;
+    		task->m_username = param["user"];
+			task->m_password = param["pass"];
+			Task::Push(task);
 
 			std::string res = "<data reply=\"";
 			res += "im sent";
@@ -753,81 +708,91 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 
 void ms_newConnection(const char *emobiixID)
 {
-	IMUser *output;
+	User *output;
 
-	if (e_users.find(emobiixID) != e_users.end())
+	if (GetUser(emobiixID) != NULL)
 		return;
 
-	g_mutex_lock(masterLock);
+	output = new User(emobiixID);
+	AddUser(output);
+}
 
-	output = new IMUser(emobiixID);
-	
-	e_users[emobiixID] = output;
+void ms_newAccount(User *user, const char *username, const char *password,
+		const char *protocol)
+{
+	/* Create the account */
+	PurpleAccount *account;
+	if (strcmp(protocol, "prpl-gtalk") == 0) {
+		std::string uname = username;
+		uname += "@gmail.com";
+		account = purple_account_new(uname.c_str(), "prpl-jabber");
+	} else {
+		account = purple_account_new(username, protocol);
+	}
+	purple_account_set_password(account, password);
 
-	g_mutex_unlock(masterLock);
+	user->addAccountRef(account);
+
+	/* It's necessary to enable the account first. */
+	purple_account_set_enabled(account, UI_ID, TRUE);
+
+	/* Now, to connect the account(s), create a status and activate it. */
+	user->m_status = purple_savedstatus_new(NULL, PURPLE_STATUS_AVAILABLE);
+	purple_savedstatus_activate(user->m_status);
 }
 
 void ms_newAccount(Task *task)
 {
-	IMUser *output;
-	UserMap::iterator iter;
+	User *output;
 
 	printf("%s Initiating new account\n", __F__);
 
-	iter = e_users.find(task->emobiixID);
-	if (iter == e_users.end()) {
-		printf("newAccount: couldnt find user %s\n", task->emobiixID.c_str());
+	output = GetUser(task->m_emobiixID.c_str());
+	if (output == NULL) {
+		printf("newAccount: couldnt find user %s\n", task->m_emobiixID.c_str());
 		return;
 	}
-	output = (*iter).second;
+	output->m_task = task;
 
-	if (0) {
-		output->task = task;
-		e_users[task->emobiixID] = output;
-		output->task->result = new Result("connected");
-		return;
-	}
-
-	/* Create the account */
-	output->account = purple_account_new(task->username.c_str(), "prpl-aim");
-	purple_account_set_password(output->account, task->password.c_str());
-
-	/* It's necessary to enable the account first. */
-	purple_account_set_enabled(output->account, UI_ID, TRUE);
-
-	/* Now, to connect the account(s), create a status and activate it. */
-	output->status = purple_savedstatus_new(NULL, PURPLE_STATUS_AVAILABLE);
-	purple_savedstatus_activate(output->status);
-
-	output->task = task;
-	e_users[task->emobiixID] = output;
+	ms_newAccount(output, task->m_username.c_str(), task->m_password.c_str(),
+			task->m_protocol.c_str());
 }
+
 
 void ms_sendIM(Task *task)
 {
-	IMUser *output;
-	UserMap::iterator iter;
+	User *output;
 
 	printf("%s sending im\n", __F__);
 
-	iter = e_users.find(task->emobiixID);
-	if (iter == e_users.end()) {
-		printf("sendIM: couldnt find user %s\n", task->emobiixID.c_str());
+	output = GetUser(task->m_emobiixID.c_str());
+	if (output == NULL) {
+		printf("sendIM: couldnt find user %s\n", task->m_emobiixID.c_str());
 		return;
 	}
-	output = (*iter).second;
 
 	PurpleConversation *gconv; 
     PurpleConvIm *im; 
+	PurpleAccount *account;
+	BuddyList::iterator iter;
 
-    gconv = purple_conversation_new(PURPLE_CONV_TYPE_IM, output->account, 
-			task->username.c_str()); 
+	for (iter = output->m_buddyList.begin(); iter != output->m_buddyList.end();
+			++iter) {
+		if ((*iter).first == task->m_username)
+			break;
+	}
+	if (iter == output->m_buddyList.end())
+		return;
+	account = (*iter).second;
+
+    gconv = purple_conversation_new(PURPLE_CONV_TYPE_IM,
+			account, task->m_username.c_str()); 
 
     im = purple_conversation_get_im_data(gconv); 
-    purple_conv_im_send(im, task->password.c_str()); 
+    purple_conv_im_send(im, task->m_password.c_str()); 
 }
 
-void ms_pushIM(IMUser *user, const char *sender, const char *message)
+void ms_pushIM(User *user, const char *sender, const char *message)
 {
 	printf("%s pushing IM from %s : %s\n", __F__, sender, message);
 
@@ -875,7 +840,7 @@ void ms_pushIM(IMUser *user, const char *sender, const char *message)
 #endif
 
 	std::vector<ns__KeyValue> requestParams;
-	int ret = soap_call_ns__DataObjectPushRequest(s, "http://127.0.0.1:5522", NULL, user->emobiixID, data, &requestParams, isDelivered);
+	int ret = soap_call_ns__DataObjectPushRequest(s, "http://127.0.0.1:5522", NULL, user->m_emobiixID, data, &requestParams, isDelivered);
 
 	soap_end(s);
 	soap_free(s);
@@ -911,13 +876,13 @@ static gboolean event_processor(gpointer not_used)
 {
 	Task *task;
 
-	task = GetTask();
+	task = Task::Get();
 	if (task == NULL)
 		return TRUE;
 
-	if (task->event == "login") {
+	if (task->m_event == "addacc") {
 		ms_newAccount(task);
-	} else if (task->event == "im") {
+	} else if (task->m_event == "im") {
 		ms_sendIM(task);
 	}
 
@@ -939,7 +904,7 @@ int main(int argc, char *argv[])
 
 	g_thread_init(NULL);
 
-	masterLock = g_mutex_new();
+	Init();
 
 	init_libpurple();
 
