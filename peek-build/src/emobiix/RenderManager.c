@@ -78,8 +78,9 @@ void renderman_markLayoutChanged(void)
 void renderman_flush(void)
 {
 	Application *app;
-	DataObject *appObj;
+	DataObject *appObj, *scrolled;
 	DataObject *sparent, *widget;
+	DataObjectField *ytrans;
 	Rectangle rect;
 	Rectangle *before;
 	int len, i, needsLayout;
@@ -104,6 +105,14 @@ void renderman_flush(void)
 		for (i = 0; i < len; ++i) {
 			widget = *(DataObject **)array_item(renderman->queue, i);
 			widget_getClipRectangle(widget, &rect);
+			scrolled = widget_findStringFieldParent(widget, "type", "scrolled");
+			if (scrolled != NULL) {
+				ytrans = dataobject_getValueAsInt(scrolled, "yoffset");
+				if (ytrans != NULL) {
+					emo_printf("YTrans %d -> %d" NL, rect.y, rect.y-ytrans->field.integer);
+					rect.y -= ytrans->field.integer;
+				}
+			}
 			array_append(renderman->rectBefore, &rect);
 		}
 
@@ -119,6 +128,14 @@ void renderman_flush(void)
 		widget_markDirty(widget);
 		lgui_clip_identity();
 		widget_getClipRectangle(widget, &rect);
+		scrolled = widget_findStringFieldParent(widget, "type", "scrolled");
+		if (scrolled != NULL) {
+			ytrans = dataobject_getValueAsInt(scrolled, "yoffset");
+			if (ytrans != NULL) {
+				emo_printf("YTrans %d -> %d" NL, rect.y, rect.y-ytrans->field.integer);
+				rect.y -= ytrans->field.integer;
+			}
+		}
 		if (needsLayout) {
 			before = (Rectangle *)array_item(renderman->rectBefore, i);
 			rectangle_union(&rect, before);
