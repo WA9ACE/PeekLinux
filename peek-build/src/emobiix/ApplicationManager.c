@@ -171,7 +171,7 @@ void manager_handleKey(unsigned int key)
 	/*int isDirty = 0;*/
 	Widget *focus, *accessKey;
 	static Rectangle clip = {0, 0, 320, 240};
-	char keyStr[2];
+	char keyStr[10];
 	Style *style;
 
 	emo_printf("manager_handleKey() key=%d" NL, key);
@@ -201,8 +201,12 @@ void manager_handleKey(unsigned int key)
 	}
 
 	/* access key */
-	((unsigned char *)keyStr)[0] = (unsigned char)key;
-	keyStr[1] = 0;
+	if (key == EKEY_BACK) {
+		strcpy(keyStr, "BACK");
+	} else {
+		((unsigned char *)keyStr)[0] = (unsigned char)key;
+		keyStr[1] = 0;
+	}
 	accessKey = widget_findStringField(appManager->rootApplicationWindow, "accesskey", keyStr);
 	if (accessKey != NULL) {
 		widget_forceFocus(appManager->rootApplicationWindow, accessKey, style);
