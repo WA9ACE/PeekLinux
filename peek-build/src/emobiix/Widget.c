@@ -291,6 +291,9 @@ void widget_setFocus(Widget *w, int isFocus)
 		dataobject_setValue(w, "hasfocus", dataobjectfield_int(isFocus));
 	else
 		field->field.integer = isFocus;
+
+	if (isFocus)
+		scrolled_forceVisible(w);
 }
 
 int widget_isParent(Widget *wParent, Widget *w)
@@ -432,8 +435,19 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 	/*printf("Widget(%p) %d, %d, %d\n", w, parentRedraw, alreadyUnset, alreadySet);*/
 
 	thisUnset = 0;
+	type = dataobject_getValue(w, "type");
 	if (!*alreadyUnset && widget_hasFocus(w)) {
 		/*printf("UnFocus(%d)\n", w);*/
+
+		if (dataobjectfield_isString(type, "scrolled")) {
+			if (scrolled_focusNext(w) == 1) {
+				list_append(l, w);
+				*alreadyUnset = 1;
+				*alreadySet = 1;
+				return 2;
+			}
+		}
+
 		widget_setFocus(w, 0);
 #if 0
 		if (!parentRedraw) {
@@ -465,7 +479,6 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 		}
 	}
 
-	type = dataobject_getValue(w, "type");
 #if 0
 	if (widget_typeNoChildRender(type)) {
 		result = 0;
@@ -778,15 +791,25 @@ void widget_focusPrev(Widget *tree, Style *s)
 {
 	Widget *oldW, *newW;
 	/*int result;*/
-	/*DataObjectField *type;*/
+	DataObjectField *type;
 
 	EMO_ASSERT(tree != NULL, "widget focus prev missing widget")
 
 	oldW = widget_focusWhichOne(tree);
 	if (oldW == NULL) {
-		/*emo_printf("Focus didnt find any widget" NL);*/
+		emo_printf("Focus didnt find any widget" NL);
 		/*return;*/
 		goto focus_last;
+	}
+
+	type = dataobject_getValue(oldW, "type");
+	if (dataobjectfield_isString(type, "scrolled")) {
+		if (scrolled_focusPrev(oldW) == 1) {
+			/* focus WhichOne unsets focus so reset it */
+			widget_setFocus(oldW, 1);
+			dataobject_setIsModified(oldW, 1);
+			return;
+		}
 	}
 
 #if 0
@@ -1152,6 +1175,25 @@ Widget *widget_findStringField(Widget *w, const char *key, const char *value)
 
 	return NULL;
 }
+
+Widget *widget_findStringFieldParent(Widget *w, const char *key, const char *value)
+{
+	DataObjectField *field;
+
+	EMO_ASSERT_NULL(w != NULL, "widget find string field missing widget")
+	EMO_ASSERT_NULL(key != NULL, "widget find string field missing key")
+	EMO_ASSERT_NULL(value != NULL, "widget find string field missing value")
+
+	field = dataobject_getValue(w, key);
+	if (dataobjectfield_isString(field, value))
+		return w;
+
+	if (w->parent == NULL)
+		return NULL;
+
+	return widget_findStringFieldParent(w->parent, key, value);
+}
+
 static void widget_layoutMeasureFinal(Widget *w, Style *s)
 {
 	DataObjectField *type;
