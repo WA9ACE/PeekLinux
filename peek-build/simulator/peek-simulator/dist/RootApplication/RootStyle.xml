@@ -1,0 +1,52 @@
+<style>
+	<entry renderer="entry" font-color="#000" margin="2" multiline="0" box-renderer="box" rounded="1234" background-color="#FFF" border-corners="1234" border-color="#696969FF" border="1234" fill="solid"/>
+	<entry hasfocus="1" renderer="entry" font-color="0" margin="2" multiline="0" box-renderer="box" rounded="1234" background-color="#b7f1ff" border-corners="1234" border-color="#696969FF" border="1234" fill="solid" cursor-color="#0000FFFF"/>
+	<label renderer="label" font-color="#000"/>
+	<checkbox renderer="checkbox" box-renderer="box" background-color="#FFFFFFFF" border-color="#000" border="1234" fill="solid" check-color="#5050FFFF"/>
+	<checkbox hasfocus="1" renderer="checkbox" box-renderer="box" background-color="#CCF" border-color="#000" border="1234" fill="solid" check-color="#5050FF00"/>
+	<scrolled renderer="scrolled"/>
+	<scrollbar renderer="scrollbar" thumb-color="#444" track-color="#AAA"/>
+	<text renderer="text" font-color="#000"/>
+	<image renderer="image"/>
+	<solid renderer="box" fill="solid"/>
+	<gradbox renderer="box" fill="gradient">
+		<gradient>
+			<stop position="0" color="#F9F9F9FF"/>
+			<stop position="50" color="#C9C9C9FF"/>
+			<stop position="50" color="#B1B1B1FF"/>
+			<stop position="100" color="#DEDEDEFF"/>
+		</gradient>
+	</gradbox>
+	<gradboxr renderer="box" fill="gradient" radius="7" border="1234" border-corners="1234" rounded="1234" border-color="#696969FF">
+		<gradient>
+			<stop position="0" color="#F9F9F9FF"/>
+			<stop position="50" color="#C9C9C9FF"/>
+			<stop position="50" color="#B1B1B1FF"/>
+			<stop position="100" color="#DEDEDEFF"/>
+		</gradient>
+	</gradboxr>
+	<gradboxr hasfocus="1" renderer="box" fill="gradient" radius="7" border="1234" border-corners="1234" rounded="1234" border-color="#696989FF">
+		<gradient>
+			<stop position="0" color="#F9F9F9FF"/>
+			<stop position="50" color="#59DFFEFF"/>
+			<stop position="50" color="#35dcfbFF"/>
+			<stop position="100" color="#b7f1ffFF"/>
+		</gradient>
+	</gradboxr>
+	<button renderer="box" fill="gradient" radius="7" border="1234" border-corners="1234" border-color="#696969FF" rounded="1234" margin="2">
+		<gradient>
+			<stop position="0" color="#F9F9F9FF"/>
+			<stop position="50" color="#C9C9C9FF"/>
+			<stop position="50" color="#B1B1B1FF"/>
+			<stop position="100" color="#DEDEDEFF"/>
+		</gradient>
+	</button>
+	<button hasfocus="1" renderer="box" fill="gradient" radius="7" border="1234" border-corners="1234" border-color="#696989FF" rounded="1234" margin="2">
+		<gradient>
+			<stop position="0" color="#F9F9F9FF"/>
+			<stop position="50" color="#59DFFEFF"/>
+			<stop position="50" color="#35dcfbFF"/>
+			<stop position="100" color="#b7f1ffFF"/>
+		</gradient>
+	</button>
+</style>

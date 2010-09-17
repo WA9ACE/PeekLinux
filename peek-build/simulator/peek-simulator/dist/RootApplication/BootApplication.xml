@@ -1,0 +1,73 @@
+<application name="Boot Environment" description="Construct program for loading other programs" startupview="mainview" onload="onLoad()" style="bootstyle">
+	<script><![CDATA[
+function onLoad()
+	print "Boot application loaded"
+end
+function helloworld()
+	DataObject.locate("tcp://69.114.111.9:12345/helloworld");
+end
+function calculator()
+	DataObject.locate("tcp://69.114.111.9:12345/calc");
+end
+function maps()
+	DataObject.locate("tcp://69.114.111.9:12345/whereami?40.702147,-74.015794");
+end
+function aim()
+	DataObject.locate("tcp://69.114.111.9:12345/sample");
+end
+function mail()
+	DataObject.locate("tcp://69.114.111.9:12345/mail");
+end
+]]></script>
+	<style name="bootstyle">
+		<selbox>
+			<label renderer="label" font-color="#FFF"/>
+		</selbox>
+		<selbox hasfocus="1" renderer="box" rounded="1234" fill="gradient" radius="7" border="1234" border-corners="1234" border-color="#000">
+			<gradient>
+				<stop position="0" color="#F9F9F9FF"/>
+				<stop position="50" color="#59DFFEFF"/>
+				<stop position="50" color="#35dcfbFF"/>
+				<stop position="100" color="#b7f1ffFF"/>
+			</gradient>
+			<label renderer="label" weight="bold" font-color="#000"/>
+		</selbox>
+	</style>
+	<view name="mainview" width="320" height="240" packing="vertical">
+		<image src="background.png" mime-type="png" width="100%" height="100%" packing="vertical">
+			<box packing="hgrid" alignment="center" width="90%" margintop="40">
+
+				<!-- Hello World -->
+				<selbox canfocus="1" packing="vertical" onreturn="helloworld()" margin="3">
+					<image src="RootApplication/hello.png" mime-type="png" margintop="4" marginleft="4" marginright="4"/>
+					<label alignment="center">Hello</label>
+				</selbox>
+
+				<!-- Calculator -->
+				<selbox canfocus="1" packing="vertical" onreturn="calculator()" margin="3">
+					<image src="RootApplication/calc.png" mime-type="png" margintop="4" marginleft="4" marginright="4"/>
+					<label alignment="center">Calc</label>
+				</selbox>
+
+				<!-- Maps -->
+				<selbox canfocus="1" packing="vertical" onreturn="maps()" margin="3">
+					<image src="RootApplication/maps.png" mime-type="png" margintop="4" marginleft="4" marginright="4"/>
+					<label alignment="center">Maps</label>
+				</selbox>
+
+				<!-- AIM -->
+				<selbox canfocus="1" packing="vertical" onreturn="aim()" margin="3">
+					<image src="RootApplication/aim.png" mime-type="png" margintop="4" marginleft="4" marginright="4"/>
+					<label alignment="center">AIM</label>
+				</selbox>
+
+				<!-- Web -->
+				<selbox canfocus="1" packing="vertical" onreturn="web()" margin="3">
+					<image src="RootApplication/netsurf.png" mime-type="png" margintop="4" marginleft="4" marginright="4"/>
+					<label alignment="center">Web</label>
+				</selbox>
+
+			</box>
+		</image>
+	</view>
+</application>

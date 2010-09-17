@@ -1,0 +1,105 @@
+<application name="Root Environment" description="Controlling application for all other applications" startupview="rootview">
+	<view name="rootview" packing="vertical">
+		<!-- top area for notification icons -->
+		<box id="gradbox" width="320" height="16" packing="horizontal">
+			<!-- Signal icon -->
+			<stack>
+				<set fieldname="GPRS" margin="3" reference="system://local/signal">
+					<setitem fieldvalue="1">
+						<image src="gprs.png" mime-type="png" transparency="stencil" color="#000"/>
+					</setitem>
+				</set>
+				<set fieldname="level" margin="3" reference="system://local/signal">
+					<setitem fieldvalue="1">
+						<image src="signal1.png" mime-type="png" transparency="stencil" color="#00F"/>
+					</setitem>
+					<setitem fieldvalue="2">
+						<image src="signal2.png" mime-type="png" transparency="stencil" color="#00F"/>
+					</setitem>
+					<setitem fieldvalue="3">
+						<image src="signal3.png" mime-type="png" transparency="stencil" color="#00F"/>
+					</setitem>
+					<setitem fieldvalue="4">
+						<image src="signal4.png" mime-type="png" transparency="stencil" color="#00F"/>
+					</setitem>
+					<setitem fieldvalue="5">
+						<image src="signal5.png" mime-type="png" transparency="stencil" color="#00F"/>
+					</setitem>
+					<setitem>
+						<image src="signal0.png" mime-type="png" transparency="stencil" color="#F55"/>
+					</setitem>
+				</set>
+			</stack>
+
+			<!-- spacer -->
+			<box height="16" width="64%"/>
+
+			<!-- Weather icon -->
+			<set fieldname="status" reference="xml://local/RootApplication/WeatherStatus.xml">
+				<setitem fieldvalue="1">
+					<image src="wi-cloud.png" mime-type="png" color="#000" margintop="3"/>
+				</setitem>
+				<setitem fieldvalue="2">
+					<image src="wi-rain.png" mime-type="png" color="#000"/>
+				</setitem>
+				<setitem fieldvalue="3">
+					<image src="wi-storm.png" mime-type="png" color="#000"/>
+				</setitem>
+				<setitem fieldvalue="4">
+					<image src="wi-snow.png" mime-type="png" color="#000"/>
+				</setitem>
+				<setitem>
+					<image src="wi-sun.png" mime-type="png" color="#000"/>
+				</setitem>
+			</set>
+			<label reference="xml://local/RootApplication/WeatherStatus.xml" margintop="1"/>
+
+			<!-- Volume Icon -->
+			<set fieldname="data" reference="system://local/volume" margintop="1" marginleft="3">
+				<setitem fieldvalue="1">
+					<image src="spkr-on.png" mime-type="png" color="#000"/>
+				</setitem>
+				<setitem>
+					<image src="spkr-off.png" mime-type="png" color="#000"/>
+				</setitem>
+			</set>
+
+			<!-- Battery icon -->
+			<stack>
+				<image src="batterycase.png" mime-type="png" margintop="3" color="0"/>
+				<set fieldname="level" margintop="3" reference="system://local/battery">
+					<setitem fieldvalue="1">
+						<image src="battery1.png" mime-type="png"/>
+					</setitem>
+					<setitem fieldvalue="2">
+						<image src="battery2.png" mime-type="png"/>
+					</setitem>
+					<setitem fieldvalue="3">
+						<image src="battery3.png" mime-type="png"/>
+					</setitem>
+					<setitem fieldvalue="4">
+						<image src="battery4.png" mime-type="png"/>
+					</setitem>
+					<setitem fieldvalue="5">
+						<image src="battery5.png" mime-type="png"/>
+					</setitem>
+					<setitem fieldvalue="6">
+						<image src="battery6.png" mime-type="png"/>
+					</setitem>
+				</set>
+				<set fieldname="charging" margin-top="3" reference="system://local/battery">
+					<setitem fieldvalue="1">
+						<image src="batterycharge.png" mime-type="png"/>
+					</setitem>
+				</set>
+			</stack>
+		</box>
+		<box width="320" height="224" packing="vertical">
+			<stack width="100%" height="100%" packing="vertical">
+				<frame name="placeholder" width="100%" height="100%" packing="vertical"/>
+				<box name="menuholder" width="100%" height="100%" packing="vertical"/>
+				<reference name="dialogholder" width="100%" height="100%" packing="vertical"/>
+			</stack>
+		</box>
+	</view>
+</application>
