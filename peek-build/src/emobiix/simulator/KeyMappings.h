@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #define EKEY_ACTIVATE		13
+#define EKEY_BACK			12
 #define EKEY_FOCUSPREV		0xFFFFFF01
 #define EKEY_FOCUSNEXT		0xFFFFFF02
 #define EKEY_ALTTAB			42
