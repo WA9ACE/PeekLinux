@@ -1,0 +1,11 @@
+<application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
+	<data f1="test" f2="value" onsyncfinished="print &quot;test&quot;"/>
+<view name="mainview" width="320" height="220">
+	<box background-color="#FFF" id="solid" width="100%" height="100%" packing="vertical">
+		<label>sync button</label>
+		<button margin="5" canfocus="1">
+			<label>sync</label>
+		</button>
+	</box>
+</view>
+</application>
