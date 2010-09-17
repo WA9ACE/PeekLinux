@@ -1,13 +1,26 @@
-<application name="AIMOBIIX" description="emobiix AIM demo application" startupview="login" style="aimstyle">
+<application name="AIMOBIIX" description="emobiix AIM demo application" startupview="welcome" style="aimstyle">
 	<data name="request" onsyncfinished="validate()" />
+	<image name="aimicon" src="aim/proto/aim.png"/>
+	<image name="googleicon" src="aim/proto/google-talk.png"/>
+	<image name="icqicon" src="aim/proto/icq.png"/>
+	<image name="msnicon" src="aim/proto/msn.png"/>
+	<image name="bgimg" src="aim/aimbg1.png"/>
+	<image name="msgrlogo" src="aim/msgr.png"/>
   <style name="aimstyle">
-		<abox renderer="box" fill="gradient">
+		<bbg renderer="box" fill="gradient">
+			<gradient>
+				<stop position="0" color="#5dcbf7"/>
+				<stop position="100" color="#5d00f7"/>
+			</gradient>
+		</bbg>
+		<zbox renderer="box" fill="gradient">
 			<gradient>
 				<stop position="0" color="#089eb5"/>
 				<stop position="100" color="#42bab5"/>
 			</gradient>
+		</zbox>
 			<label renderer="label" weight="bold" font-color="#FFF" margin="2"/>
-			<button renderer="box" border-color="#444" border="1234" fill="gradient">
+			<button renderer="box" border-color="#444" border="1234" fill="gradient" margin="3">
 				<gradient>
 					<stop position="0" color="#F9F9F9FF"/>
 					<stop position="50" color="#C9C9C9FF"/>
@@ -16,7 +29,7 @@
 				</gradient>
 				<label renderer="label" font-color="#444" margin="2"/>
 			</button>
-			<button hasfocus="1" renderer="box" border-color="#000" border="1234" fill="gradient">
+			<button hasfocus="1" renderer="box" border-color="#000" border="1234" fill="gradient" margin="3">
 				<gradient>
 					<stop position="0" color="#8cddde"/>
 					<stop position="50" color="#69ced6"/>
@@ -25,7 +38,6 @@
 				</gradient>
 				<label renderer="label" font-color="#000" margin="2"/>
 			</button>
-		</abox>
 		<dialogb renderer="box" fill="gradient" border="1234" border-color="#000" rounded="1234" border-corners="1234">
 			<gradient>
 				<stop position="0" color="#cb5bcd"/>
@@ -37,7 +49,7 @@
 		<dialogl renderer="box" fill="solid" border="234" border-color="#000" rounded="34" border-corners="34" background-color="#ddf">
 		</dialogl>
 		<selbox/>
-		<selbox hasfocus="1" renderer="box" rounded="1234" fill="gradient" radius="7" border="1234" border-corners="1234" border-color="#000">
+		<selbox hasfocus="1" renderer="box" fill="gradient" radius="7">
 			<gradient>
 				<stop position="0" color="#F9F9F9FF"/>
 				<stop position="50" color="#59DFFEFF"/>
@@ -54,30 +66,25 @@ function alert(msg)
 	error:setValue(msg);
 	DataObject.showDialog("alert");
 end
-function login()
-print("login 1");
+function goscreen(scrname)
+	scr = DataObject.find(scrname);
+	scr:toScreen();
+end
+function addacc()
 	user = DataObject.find("user");
-print("login 2");
 	pass = DataObject.find("pass");
-print("login 3");
+	proto = DataObject.find("accproto");
 	if user:getValue() == "" then
-print("login 4");
 		alert("Blank username field");
 	elseif pass:getValue() == "" then
-print("login 5");
 		alert("Blank password field");
 	else
-print("login 6");
 		request = DataObject.find("request");
-print("login 7");
 		request:setValue("user", user:getValue());
-print("login 8");
 		request:setValue("pass", pass:getValue());
-print("login 9");
-		request:setValue("action", "login");
-print("login 1");
+		request:setValue("proto", proto:getValue("accproto"));
+		request:setValue("action", "addacc");
 		request:sync();
-print("login 1");
 	end
 end
 function validate()
@@ -85,10 +92,11 @@ function validate()
 	reply = request:getValue("reply");
 	print("Replay is " .. reply);
 	if reply == "connected" then
-		chat = DataObject.find("chat");
-		chat:toScreen();
-		buddies = DataObject.find("buddylist");
-		buddies:setValue("reference", "tcp://127.0.0.1:5533/buddylist");
+		localmsg = DataObject.new();
+		localmsg:setValue("protocol", request:getValue("proto"));
+		localmsg:setValue("username", request:getValue("user"));
+		accs = DataObject.locate("tcp://127.0.0.1:5533/accounts");
+		accs:append(localmsg);
 	elseif reply == "im sent" then
 		print("IM sent");
 	else	
@@ -129,31 +137,82 @@ function send_im()
 end
 	]]>
 	</script>
-	<view name="login" width="320" height="240">
-		<box width="100%" height="100%">
-			<box renderer="box" fill="solid" background-color="#FFF" width="100%" height="50">
-				<image src="aim/aimlogo1.png" margin="5" alignment="center"/>
+	<view name="welcome" width="320" height="240">
+		<stack width="320" height="240">
+			<box width="320" height="240">
+				<imager renderer="image" reference="bgimg"/>
+				<box width="320" height="145" id="bbg"/>
 			</box>
-					<box id="abox" width="100%">
-						<label margin="20" alignment="center">Login</label>
-						<box packing="horizontal" alignment="center">
-							<label>Name</label>
-							<entry name="user" canfocus="1" margintop="5" width="200">ryanpeekster@aim.com</entry>
-						</box>
-						<box packing="horizontal" alignment="center">
-							<label>Pass  </label>
-							<entry name="pass" canfocus="1" margintop="5" width="200">emobiix123</entry>
-						</box>
-						<button margin="10" alignment="center" canfocus="1" onreturn="login()">
-							<label margin="5" alignment="center">Connect</label>
-						</button>
-					</box>
-			<box renderer="box" fill="solid" background-color="#FFF" width="100%" height="35">
+			<box width="320" height="240">
+				<imager renderer="image" reference="msgrlogo" alignment="center" margintop="50"/>
+				<label alignment="center" font-color="#FFF" weight="bold">Welcome to Messenger!</label>
+				<label alignment="center" font-color="#FFF">Sign in to your accounts here</label>
+				<box packing="horizontal" alignment="center">
+					<button canfocus="1" onreturn="goscreen(&quot;accounts&quot;)"><label>Accounts</label></button>
+					<button canfocus="1" marginleft="20" onreturn="goscreen(&quot;chat&quot;)"><label>Buddies</label></button>
+				</box>
+				<label alignment="center" font-color="#FFF">Message you buddies here</label>
 			</box>
-		</box>
+		</stack>
+	</view>
+	<view name="accounts" width="320" height="240">
+		<stack width="320" height="240" accesskey="BACK" onreturn="goscreen(&quot;welcome&quot;)">
+			<box width="320" height="240">
+				<imager renderer="image" reference="bgimg"/>
+				<box width="320" height="145" id="bbg"/>
+			</box>
+			<box width="320" height="240">
+				<box id="dialogu" width="80%" alignment="center" margintop="20">
+					<label alignment="center" font-color="#000">Accounts</label>
+				</box>
+				<box alignment="center" width="80%" height="40%" id="dialogl" rounded="4" border-corners="4" packing="horizontal">
+					<scrolled width="96%" height="100%" name="accscroll">
+						<array reference="tcp://127.0.0.1:5533/accounts">
+							<box width="100%" packing="horizontal">
+								<set arraysource="1" fieldname="protocol" margin="5">
+									<setitem fieldvalue="prpl-aim">
+										<imager renderer="image" reference="aimicon"/>
+									</setitem>
+									<setitem fieldvalue="prpl-msn">
+										<imager renderer="image" reference="msnicon"/>
+									</setitem>
+									<setitem fieldvalue="prpl-icq">
+										<imager renderer="image" reference="icqicon"/>
+									</setitem>
+									<setitem fieldvalue="prpl-gtalk">
+										<imager renderer="image" reference="googleicon"/>
+									</setitem>
+									<setitem>
+										<imager renderer="image" reference="googleicon"/>
+									</setitem>
+								</set>
+								<label width="83%" arraysource="1" datafield="username" marginleft="5" font-color="#000" weight="normal" allignment="center"/>
+								<button canfocus="1"><label>x</label></button>
+							</box>
+						</array>
+					</scrolled>
+					<scrollbar width="4%" height="100%" track-color="#AAA" thumb-color="#444" reference="accscroll"/>
+				</box>
+				<box margintop="5" packing="horizontal" alignment="center"><label>User </label><entry width="226" canfocus="1" name="user"></entry></box>
+				<box packing="horizontal" alignment="center"><label>Pass </label><entry width="224" canfocus="1" name="pass"></entry></box>
+				<box packing="horizontal" alignment="center" name="accproto" accproto="prpl-aim">
+				<checkbox canfocus="1" alignment="center" marginright="4" checkfield="accproto" checkvalue="prpl-aim" reference="accproto"/><imager renderer="image" reference="aimicon" marginright="15"/>
+				<checkbox canfocus="1" alignment="center" marginright="4" checkfield="accproto" checkvalue="prpl-msn" reference="accproto"/><imager renderer="image" reference="msnicon" marginright="15"/>
+				<checkbox canfocus="1" alignment="center" marginright="4" checkfield="accproto" checkvalue="prpl-gtalk" reference="accproto"/><imager renderer="image" reference="googleicon" marginright="15"/>
+				<checkbox canfocus="1" alignment="center" marginright="4" checkfield="accproto" checkvalue="prpl-icq" reference="accproto"/><imager renderer="image" reference="icqicon" marginright="15"/>
+				<button canfocus="1" onreturn="addacc()"><label>Add</label></button>
+				</box>
+			</box>
+		</stack>
 	</view>
 	<view name="chat">
-		<box alignment="center" width="320" height="240">
+		<box alignment="center" width="320" height="240" accesskey="BACK" onreturn="goscreen(&quot;welcome&quot;)">
+		<stack width="320" height="240">
+			<box width="320" height="240">
+				<imager renderer="image"  reference="bgimg"/>
+				<box width="320" height="145" id="bbg"/>
+			</box>
+			<box width="320" height="240">
 		<box packing="horizontal" id="abox" width="100%" height="100%">
 			<box width="59%" height="100%" marginleft="10" margintop="5">
 				<box id="dialogu" width="100%">
@@ -179,7 +238,7 @@ end
 					<scrollbar width="5%" height="100%" track-color="#AAA" thumb-color="#444" reference="msgscroll"/>
 				</box>
 				<box alignment="left" packing="horizontal" width="100%" margintop="5">
-					<entry name="IM" width="143" canfocus="1" alignment="center" rounded="14" border-corners="14" margin="0"/>
+					<entry name="IM" width="143" canfocus="1" alignment="center" rounded="14" border-corners="14" margin="0" onreturn="send_im()"/>
 					<button packing="horizontal" alignment="center" canfocus="1" onreturn="send_im()" border-corners="23" border="134" rounded="23" margin="0">
 						<label alignment="center" margintop="2" marginbottom="2" marginleft="2" marginright="5">Send</label>
 					</button>
@@ -189,15 +248,37 @@ end
 				<box id="dialogu" width="100%">
 					<label alignment="center" font-color="#000">Buddy List</label>
 				</box>
-			  <box alignment="center" width="100%" height="70%" id="dialogl" >
-					<array width="100%" height="100%" name="buddylist" >
-						<box id="selbox" width="100%" height="17" canfocus="1" onreturn="buddyswitch()" arraysource="1">
-							<label alignment="left" arraysource="1" datafield="user" onreturn="buddyswitch()" font-color="#000" weight="normal" name="buddyname"/>
-						</box>
-					</array>
+			  <box alignment="center" width="100%" height="70%" id="dialogl" packing="horizontal">
+					<scrolled width="92%" height="100%" name="buddyscroll">
+						<array width="100%" height="100%" reference="tcp://127.0.0.1:5533/buddylist">
+							<box id="selbox" width="100%" canfocus="1" onreturn="buddyswitch()" arraysource="1" packing="horizontal" marginleft="1">
+								<set arraysource="1" fieldname="protocol" margin="5">
+									<setitem fieldvalue="prpl-aim">
+										<imager renderer="image" reference="aimicon"/>
+									</setitem>
+									<setitem fieldvalue="prpl-msn">
+										<imager renderer="image" reference="msnicon"/>
+									</setitem>
+									<setitem fieldvalue="prpl-icq">
+										<imager renderer="image" reference="icqicon"/>
+									</setitem>
+									<setitem fieldvalue="prpl-gtalk">
+										<imager renderer="image" reference="googleicon"/>
+									</setitem>
+									<setitem>
+										<imager renderer="image" reference="googleicon"/>
+									</setitem>
+								</set>
+								<label alignment="center" arraysource="1" datafield="user" onreturn="buddyswitch()" font-color="#000" weight="normal"/>
+							</box>
+						</array>
+					</scrolled>
+					<scrollbar width="8" height="100%" track-color="#AAA" thumb-color="#444" reference="buddyscroll"/>
 				</box>
 			</box>
 		</box>
+		</box>
+		</stack>
 	</box>
 	</view>
 	<dialog name="alert" width="320" height="224">
@@ -205,7 +286,7 @@ end
 			<box packing="horizontal" alignment="center" height="100%">
 				<box id="dialogb" alignment="center">
 					<box id="dialogu" marginleft="10" marginright="10" margintop="10" width="200">
-						<label alignment="center" name="errormsg" margin="20"/>
+						<label alignment="center" name="errormsg" margin="20" font-color="#000"/>
 					</box>
 					<box id="dialogl" marginleft="10" marginright="10" marginbottom="10" width="200">
 						<button canfocus="1" alignment="center" onreturn="DataObject.finishDialog();" margin="10">
