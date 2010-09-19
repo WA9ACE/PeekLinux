@@ -16,10 +16,14 @@ static DataObject* SYSTEM_BATTERY;
 static DataObjectField* BATTERY_CHARGE_LEVEL;
 static DataObjectField* BATTERY_CHARGE_STATE;
 
+#define hCommACI aci_hCommACI
+typedef  BOOL (*T_PRIM_HANDLER)(ULONG, void *);
+EXTERN T_HANDLE         hCommACI; 
+
 static void system_battery_set_battery_level(unsigned int level)
 {
 	if (!SYSTEM_BATTERY)
-		return;
+		system_battery_init();
 
 	emo_printf("Battery Charge Level Update: %d", level);
 	BATTERY_CHARGE_LEVEL->field.uinteger = level;
@@ -30,7 +34,7 @@ static void system_battery_set_battery_level(unsigned int level)
 static void system_battery_set_charge_state(unsigned int state)
 {
 	if (!SYSTEM_BATTERY)
-		return;
+		system_battery_init();
 
 	emo_printf("Battery Charge State Update: %d", state);
 	BATTERY_CHARGE_STATE->field.uinteger = state;
@@ -38,12 +42,7 @@ static void system_battery_set_charge_state(unsigned int state)
 	dataobject_setIsModified(SYSTEM_BATTERY, 1);
 }
 
-#define hCommACI aci_hCommACI
-
-typedef  BOOL (*T_PRIM_HANDLER)(ULONG, void *);
-EXTERN T_HANDLE         hCommACI; 
-
-static void pwrCb (drv_SignalID_Type *signal_params)
+static void pwrCb(drv_SignalID_Type *signal_params)
 {
 	pwr_Status_Type *para;
 	PALLOC(battery_ind, MMI_BATTERY_IND);
@@ -100,3 +99,4 @@ void system_battery_init()
 	pwr_Init(pwrCb);
 	aci_create((T_PRIM_HANDLER)mmePrimHandler,NULL);
 }
+

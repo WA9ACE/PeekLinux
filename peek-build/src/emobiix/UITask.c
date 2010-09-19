@@ -209,7 +209,7 @@ int UIWaitForActivity(void)
 	char *argv = "emobiix";
 
 	TCCE_Task_Sleep(10);
-	
+
 	if (netsurf_start_flag)
 	   netsurf_main(1, &argv);
 

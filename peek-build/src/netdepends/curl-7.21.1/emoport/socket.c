@@ -6,11 +6,11 @@ typedef int socklen_t;
 
 extern unsigned long bal_gethostbyname(const char *hostname);
 
-int peek_tcp_can_read(int n) 
+int peek_tcp_can_read_curl(int n) 
 { 
 #ifdef EMO_SIM
 	int hasData = SimReadReg();
-	emo_printf("SOCKET: peek_tcp_can_read()");
+	emo_printf("SOCKET: peek_tcp_can_read_curl()");
 #else
 	int hasData = *(int *)(((char *)0x0074a600) + 0x28);
 #endif
@@ -170,7 +170,7 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struc
 	for (n = 0; n < nfds; ++n)
 	{
 		if (FD_ISSET(n, readfds))
-			if (!peek_tcp_can_read(n)) // XXX this is the context hack here
+			if (!peek_tcp_can_read_curl(n)) // XXX this is the context hack here
 				FD_CLR(n, readfds);
 			else
 				hasData++;

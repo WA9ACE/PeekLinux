@@ -17,6 +17,8 @@ EXTRACT  = $(BASEDIR)/tools/extractBin.sh
 LCFSRC     = $(BASEDIR)/tools/lcfgen.c
 CMD_OPT_PP = $(BUILDDIR)/lcfgen.pp
 
+STR2IND_C  = $(BUILDDIR)/trace/str2ind.c
+
 UNDEFINE += 
 
 SRCSUBDIR  = netdepends/hubbub-0.0.2 
@@ -100,8 +102,9 @@ CMD_MAP += $(M23DIR)/csw-system/rtslib/v2_70/rts16le_int_ram.lib
 CMD_MAP += $(M23DIR)/gpf/LIB/remu_na7_db_ts3.lib 
 CMD_MAP += $(M23DIR)/gpf/LIB/frame_na7_db_fl_ts3.lib
 
-LINK_OBJ  = $(BUILDDIR)/str2ind.o 
-LINK_OBJ += $(M23DIR)/CS_ThirdParty/Emuzed/jpeg_codec.a 
+STR2IND_OBJ  = $(BUILDDIR)/trace/str2ind.o 
+
+LINK_OBJ  = $(M23DIR)/CS_ThirdParty/Emuzed/jpeg_codec.a 
 LINK_OBJ += $(M23DIR)/CS_ThirdParty/Emuzed/jpeg_intram.a
 LINK_OBJ += $(LIBSDIR)/layer1/l1_ext.a
 #LINK_OBJ += $(M23DIR)/m23libs/l1_ext.a
@@ -219,8 +222,8 @@ $(MOTOROLA): $(TARGETOUT)
 $(TARGETOUT): $(LINKOUT)
 	$(MERGE) $(LINKOUT) $(BASEBAND) $@
 
-$(LINKOUT) $(LINKMAP): $(SUBDIRS) $(LINKCMD)
-	$(LD) $(LDFLAGS) -o $@ -m $(LINKMAP) $(LINKCMD) $(LINK_OBJ)
+$(LINKOUT) $(LINKMAP): $(SUBDIRS) $(LINKCMD) $(STR2IND_OBJ)
+	$(LD) $(LDFLAGS) -o $@ -m $(LINKMAP) $(LINKCMD) $(STR2IND_OBJ) $(LINK_OBJ)
 
 $(LINKCMD): $(CMD_OPT_PP) $(SUBDIRS)
 	$(PERL) $(CMD_TOOL) $(CMD_OPT_PP) $@ 3 $(CMD_MAP)
@@ -229,10 +232,14 @@ $(CMD_OPT_PP): $(LCFSRC)
 	$(CC) -ppl $(CFLAGS) $<
 	$(MV) $(patsubst %.c,%.pp,$(LCFSRC)) $(CMD_OPT_PP)
 
+$(STR2IND_OBJ): $(STR2IND_C)
+	$(CC) $(CFLAGS_BASE) -eoo -fr $(@D) $<
+
 $(SUBDIRS):
 	$(MAKE) -C $@ $(MAKECMDGOALS)
 
 clean: $(SUBDIRS)
+	$(RM) $(STR2IND_OBJ)
 	$(RM) $(TARGET)
 	$(RM) $(MOTOROLA)
 	$(RM) $(TARGETOUT)

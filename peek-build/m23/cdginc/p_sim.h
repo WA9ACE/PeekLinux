@@ -1208,6 +1208,28 @@ typedef struct
 	U8 sent;
 } T_EMOBIIX_SOCK_SENT;
 
+#define EMOBIIX_NETSURF_SOCKET 0xB00BB
+typedef struct
+{
+  U8 protocol;
+} T_EMOBIIX_NETSURF_SOCKET;
+
+#define EMOBIIX_NETSURF_CONNECT 0xB00BC
+typedef struct
+{
+  U32 fd;
+       char host[32];
+       U16 port;
+} T_EMOBIIX_NETSURF_CONNECT;
+
+#define EMOBIIX_NETSURF_SEND 0xB00BD
+typedef struct
+{
+  U32 fd;
+       char *buf;
+       U32 len;
+} T_EMOBIIX_NETSURF_SEND;
+
 
 #include "CDG_LEAVE.h"
 

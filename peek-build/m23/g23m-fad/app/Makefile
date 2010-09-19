@@ -4,21 +4,6 @@ DEFINE += RVM_RNET_RT_SWE
 UNDEFINE += RELEASE99
 UNDEFINE += L1
 
-DEFINE += EMO_DBG
-DEFINE +=TRACE_FUNCTION=emo_printf
-DEFINE +=TRACE_ERROR=emo_printf
-DEFINE +=TRACE_EVENT=emo_printf
-DEFINE +=TRACE_EVENT_P1=emo_printf
-DEFINE += TRACE_EVENT_P2=emo_printf
-DEFINE += TRACE_EVENT_P3=emo_printf
-DEFINE += TRACE_EVENT_P4=emo_printf
-DEFINE += TRACE_EVENT_P5=emo_printf
-DEFINE += TRACE_EVENT_P6=emo_printf
-DEFINE += TRACE_EVENT_P7=emo_printf
-DEFINE += TRACE_FUNCTION_P1=emo_printf
-DEFINE += TRACE_FUNCTION_P2=emo_printf
-
-
 INCLUDE += $(M23DIR)/config
 INCLUDE += $(M23DIR)/gpf/inc
 INCLUDE += $(M23DIR)/g23m/condat/com/inc
@@ -34,7 +19,6 @@ INCLUDE += $(M23DIR)/g23m-fad/app
 INCLUDE += $(M23DIR)/g23m-aci/bat
 INCLUDE += $(M23DIR)/g23m-aci/gdd_dio
 INCLUDE += $(M23DIR)/g23m-aci/l2p
-
 
 SRC  = app_cmds.c
 SRC += app_core.c
