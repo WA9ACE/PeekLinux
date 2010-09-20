@@ -169,6 +169,14 @@ typedef enum {
   PS_INVALID
 } PROC_STAT_T ;
 
+enum 
+{
+	WAITING_FOR_NONE,
+	WAITING_FOR_CONNECT,
+	WAITING_FOR_READ,
+	WAITING_FOR_WRITE
+};
+
 /* The data a process holds. May be dynamically allocated in the future. */
 typedef struct PROCESS_CONTEXT_S {
   APP_PROCTYPE_T ptype ;        /* Type of application process */
@@ -205,6 +213,7 @@ typedef struct PROCESS_CONTEXT_S {
                                  * connection. */
   int psocket_is_open ;         /* Non-zero iff we have an open psocket. */
   BOOL bearer_only;             /* if set, only a Bearer will be opened */ 
+	int waiting_for;
 } PROC_CONTEXT_T ;
 
 /*==== Callbacks =============================================================*/

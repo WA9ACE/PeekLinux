@@ -102,6 +102,7 @@ void uiAppRecv(void *recvData)
 GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 {
 	//emo_printf("appdata_response_cb(): %d (%08X)", opc, opc);
+	char *argv = "emobiix";
 
 	switch(opc) 
 	{
@@ -132,6 +133,10 @@ GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 			emo_printf("appdata_response_cb(): APP_DATA_DCON");
 			// XXX appProtocolStatus(0);
 			break;
+		case EMOBIIX_NETSURF_START:
+			emo_printf("appdata_response_cb(): start_netsurf");
+			netsurf_main(1, &argv);
+			return TRUE;
 
 		default:
 			break;
@@ -202,16 +207,11 @@ static int UIIteration(void)
 	return 1;
 }
 
-extern int netsurf_start_flag;
-
 int UIWaitForActivity(void)
 {
 	char *argv = "emobiix";
 
 	TCCE_Task_Sleep(10);
-
-	if (netsurf_start_flag)
-	   netsurf_main(1, &argv);
 
 	return 1;
 }

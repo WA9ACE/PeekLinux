@@ -16,6 +16,7 @@
 #include "KeyMappings.h"
 #include "RenderManager.h"
 
+#include "List.h"
 #include "p_malloc.h"
 
 #include <stdlib.h>
@@ -38,9 +39,33 @@ extern U8* get_LCD_bitmap(void);
 #include "hwtask.h"
 #include "emo_kbd.h"
 #include "ui_pei.h"
+#include "p_sim.h"
+
+List *netsurf_get_queue()
+{
+	static List *netsurf_key_queue = NULL;
+	if (!netsurf_key_queue)
+		netsurf_key_queue = list_new();
+
+	return netsurf_key_queue;
+}
+
+static void netsurf_key_enqueue(unsigned short key, unsigned short state)
+{
+	List *keyqueue = netsurf_get_queue();
+	unsigned int keystate = state << 16 | key;
+
+	list_append(keyqueue, (void *)keystate);
+}
 
 typedef UINT16 RegIdT;
 void KeyPad_Init(void);
+
+#ifdef TI_PS_HCOMM_CHANGE
+#define PSENDX(A,B) PSEND(_hComm##A,B)
+#else
+#define PSENDX(A,B) PSEND(hComm##A,B)
+#endif /* TI_PS_HCOMM_CHANGE */
 
 typedef enum
 {
@@ -226,10 +251,17 @@ void emobiixKbdInit()
 
 int netsurf_start_flag = 0;
 
+
 static void UiHandleKeyEvents(RegIdT RegId, UINT32 MsgId, void *MsgBufferP)
 {
         int UiKeyId = *((int *)MsgBufferP);
+		T_EMOBIIX_NETSURF_START *netStart;
+
         emo_printf("UiHandleKeyEvents MsgId=%d KeyId=%d" NL, MsgId, UiKeyId);
+		if(netsurf_start_flag) {
+			netsurf_key_enqueue(UiKeyId, MsgId);
+			return;
+		}
 		switch(UiKeyId) {
 			case SYS_PWR_KEY:
 				emo_printf("Starting power off\n");
@@ -240,7 +272,10 @@ static void UiHandleKeyEvents(RegIdT RegId, UINT32 MsgId, void *MsgBufferP)
 				break;
 			case SYS_PERCENT_KEY:
 				emo_printf("STARTING NETSURF");
-				netsurf_start_flag = 1;
+				netsurf_start_flag = TRUE;
+				netStart = P_ALLOC(EMOBIIX_NETSURF_START);
+				P_OPC(netStart) = EMOBIIX_NETSURF_START;
+				PSENDX(UI, netStart);
 			break;
 
 			case SYS_WHEEL_BACK:

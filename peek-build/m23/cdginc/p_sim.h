@@ -1230,6 +1230,13 @@ typedef struct
        U32 len;
 } T_EMOBIIX_NETSURF_SEND;
 
+#define EMOBIIX_NETSURF_START 0xB00BE
+typedef struct
+{
+  U32 fd;
+       char *buf;
+       U32 len;
+} T_EMOBIIX_NETSURF_START;
 
 #include "CDG_LEAVE.h"
 

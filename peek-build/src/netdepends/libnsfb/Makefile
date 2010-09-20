@@ -4,11 +4,13 @@ DEFINE += $(EMO_SIM)
 
 INCLUDE  = $(SRCDIR)/netsurf/emoport
 INCLUDE += $(SRCDIR)/emobiix
+INCLUDE += $(SRCDIR)/emobiix/peek
 INCLUDE += $(SRCDIR)/netdepends/libnsfb/include
 INCLUDE += $(M23DIR)/csw-system/drv_app/kpd
 INCLUDE += $(M23DIR)/csw-system/drv_app
 INCLUDE += $(M23DIR)/config
 INCLUDE += $(M23DIR)/
+INCLUDE += $(M23DIR)/gpf/inc
 INCLUDE += $(M23DIR)/chipsetsw/riviera
 INCLUDE += $(M23DIR)/csw-system/drv_core
 

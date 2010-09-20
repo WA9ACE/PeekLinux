@@ -12,6 +12,8 @@ INCLUDE += $(M23DIR)/cdginc
 INCLUDE += $(M23DIR)/csw-system/drv_app
 INCLUDE += $(M23DIR)/chipsetsw/riviera
 INCLUDE += $(M23DIR)/csw-system/drv_core
+INCLUDE += $(M23DIR)/csw-system/os/nucleus/1_15
+INCLUDE += $(M23DIR)/csw-system/os/nucleus/1_15/plus
 INCLUDE += $(M23DIR)/g23m-aci/bat
 INCLUDE += $(M23DIR)/g23m-fad/tcpip
 INCLUDE += $(M23DIR)/g23m-fad/tcpip/include
@@ -27,6 +29,7 @@ SRC += app_bat_atcmds.c
 SRC += app_util.c
 SRC += app_gdd.c
 SRC += app_bat.c
+SRC += app_peek.c
 SRC += bat_cfg.c
 
 OBJ = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))

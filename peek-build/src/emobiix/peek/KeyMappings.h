@@ -18,7 +18,6 @@ typedef enum
 {
     SYS_KEY_ID_START  = 0,          /* do not modify it */
     SYS_SHIFT ,                     /*do not modify this position,zhangfanghui*/
-   // SYS_0_KEY = SYS_KEY_ID_START,    /* '0' key */
     SYS_0_KEY,
     SYS_1_KEY,              /* '1' key */
     SYS_2_KEY,              /* '2' key */
@@ -29,7 +28,7 @@ typedef enum
     SYS_7_KEY,              /* '7' key */
     SYS_8_KEY,              /* '8' key */
     SYS_9_KEY,              /* '9' key */
-/* add keydefine for qwert */
+
     SYS_a_KEY,
     SYS_b_KEY,
     SYS_c_KEY,
@@ -61,20 +60,16 @@ typedef enum
     SYS_ENTER,
     SYS_DOT,     // .
     SYS_AT,      // @
-    //SYS_SHIFT,
     SYS_QUOTE,    // '
     SYS_LOCK,
     SYS_REDUCE,//-
     SYS_SPACE,
-    //SYS_MINUS,   // -
     SYS_COMMA,   // ,
     SYS_WHEEL,
     SYS_CANCEL_KEY,
     SYS_BACKSPACE,
     SYS_PWR_KEY,            /* Power key */
 
-
-//zhangfanghui add new interface for append keys.
     SYS_A_KEY,
     SYS_B_KEY,
     SYS_C_KEY,
@@ -106,20 +101,12 @@ typedef enum
     SYS_QUESTION_KEY,         //question mark,?
     SYS_POUND_KEY,          // '#' key
     SYS_DOLLAR_KEY,         //$ key
-    //SYS_ENTER,
-    //SYS_DOT,     // .
-    //SYS_AT,      // @
     SYS_PERCENT_KEY,            //% key
     SYS_SLASH_KEY,          // '/' key
     SYS_AND_KEY,            // & key
-    //SYS_QUOTE,    // '
-    //SYS_LOCK,
-    //SYS_REDUCE,//-
     SYS_STAR_KEY,           // '*' key
     SYS_LEFT_BRACKET_KEY,   //( key
     SYS_RIGHT_BRACKET_KEY,  //) key
-    //SYS_MINUS,   // -
-    //SYS_COMMA,   // ,
 
     SYS_WHEEL_FORWARD,
     SYS_WHEEL_BACK,
@@ -133,15 +120,11 @@ typedef enum
     SYS_WHEEL_FORWARD_SHIFT,     //shift + wheel forward
     SYS_WHEEL_BACK_SHIFT,       //shift + wheel back
     SYS_WHEEL_SHIFT,            //shift +wheel press
-    //SYS_PWR_KEY,            /* Power key */
     SYS_RIGHT_KEY,          /* Right key */
     SYS_LEFT_KEY,           /* Left key  */
     SYS_UP_KEY,             /* Up key */
     SYS_DOWN_KEY,           /* Down key */
-/* end of add keydefine for qwert */
 
-  //  SYS_POUND_KEY,          /* '#' key */
-   // SYS_STAR_KEY,           /* '*' key */
     SYS_SEND_KEY,           /* Send key */
     SYS_END_KEY,            /* End key */
 

@@ -46,7 +46,8 @@
 #include "app.h"                /* Global entity definitions. */
 #include "p_8010_137_nas_include.h"
 #include "p_sim.h"
-
+	
+extern void* p_malloc(int);
 #ifdef EMO_SIM
 
 #define bal_htons(a)          SOCK_HTONS(a)
@@ -151,7 +152,9 @@ static T_SOCK_BEARER_TYPE bearer_select    = SOCK_BEARER_AS_SPECIFIED;
 static T_SOCK_BEARER_TYPE sock_bearer_type = SOCK_BEARER_GPRS;
 EXTERN BOOL custom_apn_valid;
 
-void app_ui_send(U32 event_type);
+void app_ui_send(PROC_CONTEXT_T *pcont, U32 event_type);
+extern void peek_initialize_sockets();
+extern void peek_process_socket_event(PROC_CONTEXT_T *context, unsigned int event);
 
 /* The cache for DNS queries is RNET_RT_RESOLV_CACHE_MAX queries big, i. e. 8
  * in the current configuration. We need to overflow this cache in order to
@@ -178,6 +181,8 @@ static char *domain_name[] = {
   0
 } ;
 
+static int s_tcp_socket_bearar_open = 0;
+static int s_udp_socket_bearer_open = 0;
 
 
 /*==== Local functions =======================================================*/
@@ -1082,7 +1087,7 @@ static void proc_shutdown(PROC_CONTEXT_T *pcont)
 {
   TRACE_FUNCTION("proc_shutdown()") ;
 
-	app_ui_send(EMOBIIX_SOCK_DCON);
+  app_ui_send(pcont, EMOBIIX_SOCK_DCON);
 
   if(pcont->in_shutdown)
   {
@@ -1160,6 +1165,7 @@ static void proc_close_conn(PROC_CONTEXT_T *pcont)
   {
     proc_finish(pcont);
   }
+  app_ui_send(pcont, EMOBIIX_SOCK_DCON);
 }
 
 
@@ -1336,12 +1342,17 @@ static void proc_hostinfo_recvd(PROC_CONTEXT_T *pcont)
 
 /*==== Exported functions ====================================================*/
 
-void app_ui_send(U32 event_type)
+void app_ui_send(PROC_CONTEXT_T *pcont, U32 event_type)
 {
 	void *msg;
-        PROC_CONTEXT_T *pcont = &proc_context_tcp;
 
 	emo_printf("app_ui_send() generating event: %d (%08X)", event_type, event_type);
+	
+    if (pcont != &proc_context_tcp && pcont != &proc_context_udp)
+	{
+		peek_proc_socket_event(pcont, event_type);
+		return;
+	}
 
 	switch (event_type)
 	{
@@ -1354,8 +1365,8 @@ void app_ui_send(U32 event_type)
   			//trace_dump_data((U8 *) pcont->eventBuf, pcont->data_rcvd);//MIN(APP_DATA_DUMP_LENGTH, pcont->data_rcvd));
 			//((T_EMOBIIX_SOCK_RECV *)msg)->data = (U32)pcont->eventBuf;
 			((T_EMOBIIX_SOCK_RECV *)msg)->size = pcont->data_rcvd;
-			((T_EMOBIIX_SOCK_RECV *)msg)->data = (U32)p_malloc(pcont->data_rcvd);
-			memcpy((void *)((T_EMOBIIX_SOCK_RECV *)msg)->data, pcont->eventBuf, pcont->data_rcvd);
+			((T_EMOBIIX_SOCK_RECV *)msg)->data = (U32)pcont->eventBuf;
+			//memcpy((void *)((T_EMOBIIX_SOCK_RECV *)msg)->data, pcont->eventBuf, pcont->data_rcvd);
 			break;
 
 		case EMOBIIX_SOCK_SENT:
@@ -1382,7 +1393,7 @@ int app_socket (PROC_CONTEXT_T *pcont, int __type, int __protocol) {
 	T_SOCK_BEARER_INFO bearer_info;
 	int bearerRet;
 
-	memset(pcont, 0, sizeof(*pcont));
+//	memset(pcont, 0, sizeof(*pcont));
 	pcont->bearer_only = FALSE;
 	pcont->ptype = (APP_PROCTYPE_T)__type;
 	pcont->ipproto = (T_SOCK_IPPROTO)__protocol;
@@ -1396,47 +1407,56 @@ int app_socket (PROC_CONTEXT_T *pcont, int __type, int __protocol) {
 	
 	if(pcont->ipproto == SOCK_IPPROTO_UDP)	
 		return 0;
-	bearer_info.bearer_handle = sock_bearer_handle;
-	bearer_info.app_handle    = APP_handle;
-	bearer_info.bearer_type   = sock_bearer_type;
 
-	if(!custom_apn_valid) {
-		TRACE_EVENT("Socket() Error No APN information given");
-		return -1;
-	}
+  if (!s_tcp_socket_bearar_open)
+  {
+    bearer_info.bearer_handle = sock_bearer_handle;
+    bearer_info.app_handle    = APP_handle;
+    bearer_info.bearer_type   = sock_bearer_type;
 
-	bearer_info.apn_valid = TRUE;
-	bearer_info.phone_nr_valid = FALSE;
-	bearer_info.cid = 1;
+    if(!custom_apn_valid) {
+      TRACE_EVENT("Socket() Error No APN information given");
+      return -1;
+    }
 
-        strcpy(bearer_info.apn, custom_apn);
-        strcpy(bearer_info.user_id, custom_user_id);
-        strcpy(bearer_info.password, custom_password);
+    bearer_info.apn_valid = TRUE;
+    bearer_info.phone_nr_valid = FALSE;
+    bearer_info.cid = 1;
 
-	bearer_info.ip_address = SOCK_IPADDR_ANY;
-	bearer_info.dns1 = SOCK_IPADDR_ANY;
-	bearer_info.dns2 = SOCK_IPADDR_ANY;
-	bearer_info.gateway = SOCK_IPADDR_ANY;
-	bearer_info.authtype = SOCK_AUTH_NO;
-	bearer_info.data_compr = FALSE;
-	bearer_info.header_comp = FALSE;
-	bearer_info.precedence = 0;
-	bearer_info.delay = 0;
-	bearer_info.reliability = 0;
-	bearer_info.peak_throughput = 0;
-	bearer_info.mean_througput = 0;
-	bearer_info.shareable = FALSE;
+    strcpy(bearer_info.apn, custom_apn);
+    strcpy(bearer_info.user_id, custom_user_id);
+    strcpy(bearer_info.password, custom_password);
 
-	bearerRet = sock_open_bearer(sock_api_inst,bearer_select,0,&bearer_info,app_sock_callback,pcont);
+    bearer_info.ip_address = SOCK_IPADDR_ANY;
+    bearer_info.dns1 = SOCK_IPADDR_ANY;
+    bearer_info.dns2 = SOCK_IPADDR_ANY;
+    bearer_info.gateway = SOCK_IPADDR_ANY;
+    bearer_info.authtype = SOCK_AUTH_NO;
+    bearer_info.data_compr = FALSE;
+    bearer_info.header_comp = FALSE;
+    bearer_info.precedence = 0;
+    bearer_info.delay = 0;
+    bearer_info.reliability = 0;
+    bearer_info.peak_throughput = 0;
+    bearer_info.mean_througput = 0;
+    bearer_info.shareable = FALSE;
 
-	if(bearerRet > 0) {
-		TRACE_EVENT_P1("app_socket(): sock_open_bearer returned error code %d", bearerRet);
-		return -1;
-	}
+    bearerRet = sock_open_bearer(sock_api_inst,bearer_select,0,&bearer_info,app_sock_callback,pcont);
 
-	proc_new_state(pcont, PS_W_DCM_OPEN);
+    if(bearerRet > 0) {
+      TRACE_EVENT_P1("app_socket(): sock_open_bearer returned error code %d", bearerRet);
+      return -1;
+    }
 
-	return 0;
+    proc_new_state(pcont, PS_W_DCM_OPEN);
+  }
+  else
+  {
+    pcont->network_is_open = TRUE;
+    proc_open_socket(pcont);
+  }
+
+  return 0;
 
 }
 
@@ -1484,9 +1504,10 @@ static void app_comm_recv(PROC_CONTEXT_T *pcont)
   if(recv_ind->data_length > 0) {
 
 	  pcont->data_rcvd = recv_ind->data_length;
-	  pcont->eventBuf = recv_ind->data_buffer;
+	  pcont->eventBuf = p_malloc(recv_ind->data_length);
+      memcpy(pcont->eventBuf, recv_ind->data_buffer, recv_ind->data_length);
 
-	  app_ui_send(EMOBIIX_SOCK_RECV);
+	  app_ui_send(pcont, EMOBIIX_SOCK_RECV);
   }
 
 }
@@ -1508,7 +1529,7 @@ static void app_comm_event(PROC_CONTEXT_T *pcont)
       break ;
     case SOCK_FLOW_READY_IND:
       // XXX: Event notify ready to send again
-      app_ui_send(EMOBIIX_SOCK_SENT);
+      app_ui_send(pcont, EMOBIIX_SOCK_SENT);
       break ;
     case SOCK_HOSTINFO_CNF: // result event of sock_gethostbyname
       /*
@@ -1553,13 +1574,13 @@ void app_set_profile(char *apn, char *userid, char *password)
         strncpy(custom_password, password, SOCK_MAX_PASSWORD_LEN);
 }
 
-void app_connect_info(char *server, char *port)
+void app_connect_info(const char *server, unsigned short port)
 {
 	strncpy(server_name, server, FQDN_LENGTH);
-	port_number = (U16) atoi(port);
+	port_number = port;
 }
 
-static BOOL app_send_buf(PROC_CONTEXT_T *pcont, char *buffer, int size)
+BOOL app_send_buf(PROC_CONTEXT_T *pcont, char *buffer, int size)
 {
   T_SOCK_RESULT result ;        /* Result of send call. */
 
@@ -1596,7 +1617,7 @@ void app_connect(void)
 {
 #ifndef EMO_SIM
 	app_set_profile("track.t-mobile.com", "getpeek", "txtbl123");
-	app_connect_info("10.150.9.6", "12345");
+	app_connect_info("10.150.9.6", 12345);
 	app_socket(&proc_context_tcp, AP_TCPUL, SOCK_IPPROTO_TCP);
 #else
 #if 0
@@ -1608,7 +1629,7 @@ void app_connect(void)
 		return;
 	}
 
-	app_ui_send(EMOBIIX_SOCK_CREA);
+	app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_CREA);
 
 	memset(&connect_in, 0, sizeof(struct sockaddr_in));
 	connect_in.sin_family = 0; /*AF_INET*/
@@ -1621,7 +1642,7 @@ void app_connect(void)
 		return;
 	}
 
-	app_ui_send(EMOBIIX_SOCK_CONN);
+	app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_CONN);
 #endif
 #endif
 }
@@ -1645,10 +1666,10 @@ void app_send(void *data)
 	if (bal_send(emo_server_fd, writeMessage->data, writeMessage->size, 0) < 0)
 	{
 		emo_printf("app_send() Failed to send message");
-		app_ui_send(EMOBIIX_SOCK_DCON);
+		app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_DCON);
 	}
 	else
-		app_ui_send(EMOBIIX_SOCK_SENT);
+		app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_SENT);
 #endif
 
 	p_free(writeMessage->data);
@@ -1662,28 +1683,33 @@ void app_recv()
 	if (ret < 0)
 	{
 		emo_printf("Failed to read data");
-		app_ui_send(EMOBIIX_SOCK_DCON);
+		app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_DCON);
 		return;
 	}
 	
 	proc_context_tcp.eventBuf = eventBuf;
 	proc_context_tcp.data_rcvd = ret;
-	app_ui_send(EMOBIIX_SOCK_RECV);
+	app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_RECV);
 }
 #endif
 
 void app_bind_udp_server()
 {
-	T_SOCK_RESULT result ;
-	app_socket(&proc_context_udp, AP_UDPFORK, SOCK_IPPROTO_UDP);
-	result = sock_create(sock_api_inst, 17, app_sock_callback, &proc_context_udp);
-	if (result NEQ SOCK_RESULT_OK)
-    	{
-      		sock_trace_result(&proc_context_udp, "app_bind_udp_server() - sock_create()", result) ;
-      		proc_shutdown(&proc_context_udp) ;
-      		return;
-    	}
-        proc_new_state(&proc_context_udp, PS_W_CREAT) ;
+  T_SOCK_RESULT result ;
+
+  if (!s_udp_socket_bearer_open)
+  {
+    app_socket(&proc_context_udp, AP_UDPFORK, SOCK_IPPROTO_UDP);
+    result = sock_create(sock_api_inst, 17, app_sock_callback, &proc_context_udp);
+    if (result NEQ SOCK_RESULT_OK)
+    {
+      sock_trace_result(&proc_context_udp, "app_bind_udp_server() - sock_create()", result) ;
+      proc_shutdown(&proc_context_udp) ;
+      return;
+    }
+
+    proc_new_state(&proc_context_udp, PS_W_CREAT) ;
+  }
 }
 // End of emobiix socket stuff
 
@@ -1698,6 +1724,7 @@ BOOL app_initialize_tcpip(T_HANDLE app_handle)
   memset(&proc_context_tcp, 0, sizeof(proc_context_tcp)) ;
   memset(&proc_context_udp, 0, sizeof(proc_context_udp)) ;
 
+peek_initialize_sockets();
 #ifdef EMO_SIM
 	app_connect();
 #endif
@@ -1747,10 +1774,21 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
                     event->result) ;
   if (event->result != SOCK_RESULT_OK)
   {
-    pcont->errors++ ;
-    if(event->result == SOCK_RESULT_NETWORK_LOST)
+    switch (event->result)
     {
-      pcont->network_is_open = FALSE;
+      case SOCK_RESULT_NOT_READY:
+      {
+        pcont->errors++ ;
+        if(event->result == SOCK_RESULT_NETWORK_LOST)
+          pcont->network_is_open = FALSE;
+      }
+      break;
+
+      default:
+      {
+        emo_printf("app_sock_callback() ignoring error %d (%08X)", event->result, event->result);
+        return;
+      }
     }
   }
   switch (pcont->pstate)        /* Do a preliminary check of the event. */
@@ -1776,6 +1814,7 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
       octets = ip.ip_address.ipv4_addr.a4;
       TRACE_EVENT_P4("app_sock_callback(): Received IP address: %d.%d.%d.%d", octets[0], octets[1], octets[2], octets[3]);
 
+	  s_tcp_socket_bearar_open = 1;
       pcont->network_is_open = TRUE;
       proc_open_socket(pcont);
       break;
@@ -1814,7 +1853,7 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
 
       if(pcont->ipproto == SOCK_IPPROTO_TCP)
       {
-      	app_ui_send(EMOBIIX_SOCK_CREA);
+      	app_ui_send(pcont, EMOBIIX_SOCK_CREA);
         proc_connect_socket(pcont) ;
 	TRACE_EVENT("app_sock_callback() PS_W_CREAT event tcp");
 	//bind UDP once TCP socket is established
@@ -1829,6 +1868,7 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
         // proc_begin_comm(pcont);
         //proc_connect_socket(pcont) ;
         TRACE_EVENT("app_sock_callback() PS_W_CREAT event udp");	
+		 s_udp_socket_bearer_open = 1;
         app_bind_socket(pcont);
       }
       break ;
@@ -1868,7 +1908,7 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
     case PS_W_SCONN:            /* Waiting for socket connect confirmation. */
       CHECK_SOCK_EVT(SOCK_CONNECT_CNF) ;
       /* Notify UI of socket connection */
-      app_ui_send(EMOBIIX_SOCK_CONN);
+      app_ui_send(pcont, EMOBIIX_SOCK_CONN);
 
       //proc_begin_comm(pcont) ;
       proc_new_state(pcont, PS_COMM); // advance to read/write state
@@ -2126,7 +2166,6 @@ void app_pstat(PROC_CONTEXT_T *pcont)
 }
 
 
-#if 0
 /** Make the application stop or continue receiving data from the network by
  * calling the xoff or xon function, respectively.
  *
@@ -2147,7 +2186,6 @@ void app_switch_flow(PROC_CONTEXT_T *pcont, int flow_on)
     sock_flow_xoff(pcont->psocket) ;
   }
 }
-#endif
 
 LOCAL void app_print_conn_info(T_SOCK_BEARER_INFO_CNF *info)
 {
@@ -2174,11 +2212,15 @@ void app_open_bearer(int prov, int size, int reps)
   
 }
 
-void app_close_bearer()
-{
-  app_shutdown();
-}
 #endif
+
+void app_close_tcp_bearer(PROC_CONTEXT_T *context)
+{
+	context->in_shutdown = TRUE;
+	sock_close_bearer(sock_api_inst, sock_bearer_handle, app_sock_callback, context);
+	s_tcp_socket_bearar_open = 0;
+}
+
 
 #endif /* FF_GPF_TCPIP */
 
