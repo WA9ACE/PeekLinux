@@ -375,6 +375,7 @@ GLOBAL void rAT_PercentCSTAT ( T_ACI_STATE_MSG msgType )
   if( (msgType.entityId EQ STATE_MSG_EONS ) AND 
         (msgType.entityState EQ ENTITY_STATUS_Ready) )
   {
+	emo_printf("rAT_PercentCSTAT() - nm_get_COPN");
     nm_get_COPN(&plmn_eons_data);  
 
     //send E_NM_OPN event 

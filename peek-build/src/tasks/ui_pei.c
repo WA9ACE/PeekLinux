@@ -159,11 +159,30 @@ LOCAL SHORT pei_signal (ULONG opc, void *data)
 */
 LOCAL SHORT pei_primitive (void * primptr)
 {
-  T_RV_HDR* msg_p;
+    T_PRIM *prim = (T_PRIM *) primptr;
+    unsigned long opc = prim->custom.opc;
 
-   RVM_TRACE_DEBUG_HIGH("UI: pei_primitive");
 
-   return PEI_OK;
+    if (!prim)
+        return PEI_OK;
+
+    RVM_TRACE_DEBUG_HIGH("UI: pei_primitive");
+	
+	if(appdata_response_cb(opc, (void*)(&(prim->data))))
+		return PEI_OK;
+
+    switch (opc)
+    {
+        default:
+        {
+            if (opc & SYS_MASK)
+                vsi_c_primitive (VSI_CALLER prim);
+        }
+        break;
+    }
+
+    return PEI_OK;
+
 }/* End pei_primitive(..) */
 
 UINT32 uiStatusGet(void) 
@@ -201,6 +220,8 @@ LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
 
   RVM_TRACE_DEBUG_HIGH("UI: pei_run");
 
+  return RV_OK;
+#if 0
   /* Wait for Main EMO task to start */
   while(!HwStatusGet())
  	TCCE_Task_Sleep(100);
@@ -209,7 +230,7 @@ LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
   UITask();
   
   return RV_OK;  
-
+#endif
 }/* End pei_run(..) */
 
 
@@ -249,6 +270,7 @@ LOCAL SHORT pei_exit (void)
 |
 +------------------------------------------------------------------------------
 */
+/*
 extern ExeTaskCbT     *ExeTaskCb[];
 
 const MailQueueT UiMailQueueTable[] = {{UI_TASK_MAIL_QUEUE_1, BOS_MAILBOX_1_ID},
@@ -256,17 +278,20 @@ const MailQueueT UiMailQueueTable[] = {{UI_TASK_MAIL_QUEUE_1, BOS_MAILBOX_1_ID},
 				      {UI_TASK_MAIL_QUEUE_3, BOS_MAILBOX_3_ID},
 				      {UI_TASK_MAIL_QUEUE_4, BOS_MAILBOX_4_ID}};
 ExeTaskCbT UIExeTaskCb;
-
+*/
 LOCAL SHORT pei_init (T_HANDLE handle)
 {
     T_RV_RET ret = RV_OK;
+	/*
     int i;
     void *rPtr;
     int qCstatus;
     ExeTaskCbT *task;
+    */
     RVM_TRACE_DEBUG_HIGH("UI: pei_init");
     UI_handle = handle;
 
+	/*
     ExeTaskCb[EXE_UI_ID] = &UIExeTaskCb;
     task = ExeTaskCb[EXE_UI_ID];
 
@@ -284,11 +309,15 @@ LOCAL SHORT pei_init (T_HANDLE handle)
                 }
 	}
     }
+  */
   if(hCommAPP < VSI_OK)
         if ((hCommAPP = vsi_c_open (VSI_CALLER APP_NAME)) < VSI_OK)
                 return PEI_ERROR;
 
-    return (PEI_OK);
+  while(!HwStatusGet())
+    TCCE_Task_Sleep(100);
+  UIInit();
+  return (PEI_OK);
 } /* End pei_init(..) */
 
 /*
@@ -315,18 +344,18 @@ static const T_PEI_INFO pei_info =
                {              /* pei-table */
                   pei_init,
                   pei_exit,
-                  NULL,           /* NO pei_primitive */
+                  pei_primitive,           /* NO pei_primitive */
                   NULL,           /* NO pei_timeout */
                   NULL,           /* NO pei_signal */   
                   pei_run,        /*-- ACTIVE Entity--*/
                   NULL,           /* NO pei_config */
                   NULL            /* NO pei_monitor */
                },
-               0x3000,            /* stack size */
-               1,                        /* queue entries */
+               0xc800,            /* stack size */
+               10,                        /* queue entries */
 			   EMO_UI_PRIORITY,     /* priority (1->low, 255->high) */
                0,                         /* number of timers */
-               COPY_BY_REF	/* Flags Settings */
+               COPY_BY_REF|PASSIVE_BODY	/* Flags Settings */
               };
 
   RVM_TRACE_DEBUG_HIGH("UI: pei_create");

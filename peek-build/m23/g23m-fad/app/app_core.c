@@ -78,9 +78,9 @@ struct sockaddr_in
 int emo_server_fd = -1;
 #endif
 
-#define hCommACI _ENTITY_PREFIXED (hCommACI)
+#define hCommUI _ENTITY_PREFIXED (hCommUI)
 
-extern T_HANDLE hCommACI;
+extern T_HANDLE hCommUI;
 
 /*==== Local data ============================================================*/
 
@@ -1375,7 +1375,7 @@ void app_ui_send(U32 event_type)
 			return;
 	}
 
-	PSENDX(ACI, msg);
+	PSENDX(UI, msg);
 }
 
 int app_socket (PROC_CONTEXT_T *pcont, int __type, int __protocol) {

@@ -23,7 +23,7 @@
 #define ENTITY_APP
 /* this #define SAP_TCPIP and #define SAP_DCM in prim.h - */
 
-#define APP_STACK_SIZE    1500
+#define APP_STACK_SIZE    0x3000
 #define APP_QUEUE_SIZE    10   /* queue entries */
 #define APP_PRIORITY      90   /* priority (1->low, 255->high) */
 #define APP_NUM_TIMER     10   /* number of timers */
@@ -52,9 +52,9 @@
 #include "p_sim.h"
 #include "gprs.h"
 
-#define hCommACI _ENTITY_PREFIXED (hCommACI)
+#define hCommUI _ENTITY_PREFIXED (hCommUI)
 
-extern T_HANDLE hCommACI;
+extern T_HANDLE hCommUI;
 
 /*==== EXTERNAL FUNCTIONS ====================================================*/
 
@@ -83,7 +83,7 @@ static  BOOL          first_access  = TRUE;
 static  BOOL          exit_flag = FALSE;
 static  T_MONITOR     app_mon;
 
-T_HANDLE hCommACI = VSI_ERROR;
+T_HANDLE hCommUI = VSI_ERROR;
 
 #ifdef FF_GPF_TCPIP
 T_SOCK_API_INSTANCE   sock_api_inst = 0 ; /* Also needed by the appl. core. */
@@ -156,7 +156,7 @@ static short pei_primitive (void * ptr)
 			emo_printf("app_conn()");
 			app_connect();
 
-			PFREE(prim);
+			PFREE(P2D(prim));
 			return PEI_OK;
 		}
 
@@ -165,7 +165,7 @@ static short pei_primitive (void * ptr)
 			emo_printf("app_send()");
 			app_send((void*)(&(prim->data)));
 
-			PFREE(prim);
+			PFREE(P2D(prim));
 			return PEI_OK;
 		}
 
@@ -210,10 +210,9 @@ static short pei_init (T_HANDLE handle)
    */
   app_data = &app_data_base;
 
-  if(hCommACI < VSI_OK)
-  	if ((hCommACI = vsi_c_open (VSI_CALLER ACI_NAME)) < VSI_OK)
-      		return PEI_ERROR;
-
+  if(hCommUI < VSI_OK)
+    if ((hCommUI = vsi_c_open (VSI_CALLER "UI")) < VSI_OK)
+            return PEI_ERROR;
 
 #ifdef FF_GPF_TCPIP
   /* initialize socket API */
@@ -305,8 +304,8 @@ static short pei_exit (void)
   sock_api_deinitialize(sock_api_inst) ;
 #endif /* FF_GPF_TCPIP */
 
-  vsi_c_close (VSI_CALLER hCommACI);
-  hCommACI = VSI_ERROR;
+  vsi_c_close (VSI_CALLER hCommUI);
+  hCommUI = VSI_ERROR;
 
   exit_flag = TRUE;
 

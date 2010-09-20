@@ -44,6 +44,7 @@ void hwStart(void) {
 	peek_file_init();
 
 #ifdef DAR_HALT
+#error
     fp = file_openRead("/var/dbg/dar");
     if(fp){
         if(file_size(fp) > 0) {
