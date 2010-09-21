@@ -1238,6 +1238,13 @@ typedef struct
        U32 len;
 } T_EMOBIIX_NETSURF_START;
 
+#define EMOBIIX_NETSURF_DNS	0xB00BF
+typedef struct
+{
+ 	U32 data;
+	char *buf;
+} T_EMOBIIX_NETSURF_DNS;
+
 #include "CDG_LEAVE.h"
 
 

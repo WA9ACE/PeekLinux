@@ -1,5 +1,5 @@
-1284879194
-     11219
+1285101073
+     11227
          0,,primitive_not_supported
          1,,tmrInit()
          2,,tmrExit()
@@ -11219,3 +11219,11 @@
      11216,,send_sn_deactivate_req
      11217,,send_sn_modify_req
      11218,,send_sn_sequence_req
+     11219,,app_switch_flow()
+     11220,,switching socket to xon
+     11221,,switching socket to xoff
+     11222,,comm_dns_result()
+     11223,iii,lookup error %d in %d/%d queries
+     11224,s,Answer for host %s
+     11225,sii,has address %s (%d/%d)
+     11226,,app_open_bearer_tcp() Error No APN information given

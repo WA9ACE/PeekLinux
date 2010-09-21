@@ -178,6 +178,7 @@ int netsurf_main_loop(void)
 	while (!netsurf_quit) {
 		gui_poll(fetch_active);
 		hlcache_poll();
+		TCCE_Task_Sleep(2);
 	}
 
 	return 0;

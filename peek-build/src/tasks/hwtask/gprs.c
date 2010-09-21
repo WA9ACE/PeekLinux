@@ -67,13 +67,14 @@ void gprs_ok(T_ACI_AT_CMD cmdId)
 
   emo_printf("gprs_ok");
 
+  /*
   gprs_signal(E_HW_GPRS_OK, &cmdId);
 
   attachMessage = P_ALLOC(EMOBIIX_MESSAGE);
   attachMessage->attach = 1;
   P_OPC(attachMessage) = EMOBIIX_SOCK_CREA;
   PSENDX(APP, attachMessage);
-
+  */
   return;
 }
 

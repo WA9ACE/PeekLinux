@@ -174,7 +174,8 @@ enum
 	WAITING_FOR_NONE,
 	WAITING_FOR_CONNECT,
 	WAITING_FOR_READ,
-	WAITING_FOR_WRITE
+	WAITING_FOR_WRITE,
+	WAITING_FOR_DNS
 };
 
 /* The data a process holds. May be dynamically allocated in the future. */
@@ -185,7 +186,7 @@ typedef struct PROCESS_CONTEXT_S {
   T_SOCK_EVENTSTRUCT *last_evt; /* Last event passed from the Socket API. */
   T_SOCK_IPPROTO ipproto ;      /* IP protocol number for this process (TCP or
                                  * UDP); unused with dq. */
-  char *server_name ;           /* May be a domain name or an IP address in
+  char server_name[256];           /* May be a domain name or an IP address in
                                  * dotted decimal notation. */
   T_SOCK_IPADDR server_ipaddr ; /* Server IP address. (Will be IPADDR_ANY in
                                  * case of AP_TCPSRV.) */

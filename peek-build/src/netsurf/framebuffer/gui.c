@@ -584,7 +584,7 @@ gui_quit(void)
 	framebuffer_finalise();
 
 	/* We don't care if this fails as we're about to exit, anyway */
-	hubbub_finalise(ns_realloc, NULL);
+	//hubbub_finalise(ns_realloc, NULL);
 }
 
 /* called back when click in browser window */

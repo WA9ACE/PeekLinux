@@ -221,6 +221,7 @@ static int peek_initialise(nsfb_t *nsfb)
 
 static int peek_finalise(nsfb_t *nsfb)
 {
+	emo_printf("peek_finalise()");
 	return 0;
 }
 

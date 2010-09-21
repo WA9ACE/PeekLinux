@@ -37,3 +37,27 @@ void nm_plmn_get_running(void) {
 
 
 }
+
+void bmi_version(void) {
+
+}
+
+void mfwExtIn(void) {
+
+}
+
+void mfw_version(void) {
+
+}
+
+void rAT_PercentCPNUMS(void) {
+
+}
+
+void rAT_PercentCPROAM(void) {
+
+}
+
+void rAT_PercentCPVWI(void) {
+
+}

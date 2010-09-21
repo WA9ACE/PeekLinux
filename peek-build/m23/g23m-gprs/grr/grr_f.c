@@ -285,6 +285,8 @@ LOCAL BOOL grr_check_glob_tfi ( T_glob_tfi * glob_tfi_i, UBYTE tn )
   {
     if(glob_tfi_i->v_ul_tfi)
     {
+	  TRACE_FUNCTION("grr_check_glob_tfi failed: UL addressed");
+#if 0
       TRACE_EVENT_P7("grr_check_glob_tfi failed: UL addressed tfi=%d, ul_tfi=%d, dl_tfi=%d || tn=%d ->mask=%x curr_mask=%x, st_mask=%x ",
                                         glob_tfi_i->ul_tfi,
                                         grr_data->uplink_tbf.tfi,
@@ -293,9 +295,12 @@ LOCAL BOOL grr_check_glob_tfi ( T_glob_tfi * glob_tfi_i, UBYTE tn )
                                         0x80>>tn,
                                         grr_data->uplink_tbf.ts_mask,
                                         grr_data->uplink_tbf.ts_usage);
+#endif
     }
     else if(glob_tfi_i->v_dl_tfi)
     {
+	TRACE_FUNCTION("grr_check_glob_tfi failed: DL addressed");
+#if 0
       TRACE_EVENT_P7("grr_check_glob_tfi failed: DL addressed tfi=%d, ul_tfi=%d, dl_tfi=%d|| tn=%d ->mask=%x curr_mask=%x, st_mask=%x ",
                                         glob_tfi_i->dl_tfi,
                                         grr_data->uplink_tbf.tfi,
@@ -304,6 +309,7 @@ LOCAL BOOL grr_check_glob_tfi ( T_glob_tfi * glob_tfi_i, UBYTE tn )
                                         0x80>>tn,
                                         grr_data->downlink_tbf.ts_mask,
                                         grr_data->downlink_tbf.ts_usage);
+#endif
 
     }
     else

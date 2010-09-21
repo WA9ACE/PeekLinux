@@ -159,8 +159,50 @@ static short pei_primitive (void * ptr)
 			PFREE(P2D(prim));
 			return PEI_OK;
 		}
+		else if (opc == EMOBIIX_SOCK_RECV)
+		{
+      		T_EMOBIIX_SOCK_RECV *m = (T_EMOBIIX_SOCK_RECV *)(&prim->data);
 
-		if(opc == EMOBIIX_WRITEMSG) 
+			peek_tcp_enable_read(m->data);
+
+      		PFREE(P2D(prim));
+      		return PEI_OK;
+		}
+   		else if (opc == EMOBIIX_NETSURF_SOCKET)
+    	{
+      		peek_tcp_socket();
+
+      		PFREE(P2D(prim));
+      		return PEI_OK;
+    	}
+    	else if (opc == EMOBIIX_NETSURF_CONNECT)
+    	{
+      		T_EMOBIIX_NETSURF_CONNECT *m = (T_EMOBIIX_NETSURF_CONNECT *)(&prim->data);
+
+      		peek_tcp_connect(m->fd, m->host, m->port);
+
+      		PFREE(P2D(prim));
+      		return PEI_OK;
+    	}
+    	else if (opc == EMOBIIX_NETSURF_SEND)
+    	{
+      		T_EMOBIIX_NETSURF_SEND *m = (T_EMOBIIX_NETSURF_SEND *)(&prim->data);
+
+      		peek_tcp_write(m->fd, m->buf, m->len);
+
+      		PFREE(P2D(prim));
+      		return PEI_OK;
+    	}
+		else if (opc == EMOBIIX_NETSURF_DNS)
+		{
+			T_EMOBIIX_NETSURF_DNS *m = (T_EMOBIIX_NETSURF_DNS *)(&prim->data);
+
+			peek_tcp_dns_request(m->buf);
+
+			PFREE(P2D(prim))
+			return PEI_OK;
+		}
+		else if(opc == EMOBIIX_WRITEMSG) 
 		{
 			emo_printf("app_send()");
 			app_send((void*)(&(prim->data)));
@@ -169,15 +211,15 @@ static short pei_primitive (void * ptr)
 			return PEI_OK;
 		}
 
-    else if(opc & SYS_MASK)
-    {
-      vsi_c_primitive (VSI_CALLER prim);
-    }
-    else
-    {
-      primitive_not_supported (P2D(prim));
-      return PEI_ERROR;
-    }
+    	else if(opc & SYS_MASK)
+    	{
+      		vsi_c_primitive (VSI_CALLER prim);
+    	}
+    	else
+    	{
+      		primitive_not_supported (P2D(prim));
+      		return PEI_ERROR;
+    	}
   }
   return PEI_OK;
 }

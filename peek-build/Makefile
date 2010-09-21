@@ -78,6 +78,7 @@ CMD_MAP += $(LIBSDIR)/csw-system/init.a
 #CMD_MAP += $(M23DIR)/m23libs/init.a
 CMD_MAP += $(M23DIR)/chipsetsw/Services/dar/dar_gbl_var.a 
 CMD_MAP += $(M23DIR)/chipsetsw/Services/Audio/audio_int_ram.o
+#CMD_MAP += $(M23DIR)/m23libs/audio_int_ram.o
 CMD_MAP += $(M23DIR)/CS_ThirdParty/Beatnik/bae_sram.a 
 CMD_MAP += $(M23DIR)/CS_ThirdParty/Beatnik/bae_sram.a 
 CMD_MAP += $(M23DIR)/CS_ThirdParty/Emuzed/jpeg_intram.a 

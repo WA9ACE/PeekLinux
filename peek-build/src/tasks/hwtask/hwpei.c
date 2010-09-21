@@ -330,7 +330,7 @@ static const T_PEI_INFO pei_info =
                {              /* pei-table */
                   pei_init,
                   pei_exit,
-                  pei_primitive, 
+                  NULL, 
                   NULL,           /* NO pei_timeout */
                   NULL,           /* NO pei_signal */   
                   pei_run,      
