@@ -119,7 +119,7 @@ static char *proc_type_name[] = {
 /* Strings for the process states; used for debugging and MUST correspond
  * strictly to the process state enum labels defined above, as the array is
  * indexed by those. */
-static char *proc_state_name[] = {
+static char *proc_state_name[PS_INVALID + 1] = {
 	"PS_IDLE",
 	"PS_W_DCM_OPEN",
 	"PS_W_DCM_OPEN_ONLY",
@@ -251,16 +251,10 @@ void trace_dump_data(U8 *data, int size)
  */
 char *proc_string(PROC_CONTEXT_T *pcont)
 {
-	/* This string must fit the longest possible process string. */
-	static char procstring[sizeof("AP_UDPFORK99(PS_W_DCM_OPEN_ONLY)")] ;
-
-	/*lint -e685 (Warning -- Relational operator always evaluates to true) */
-	sprintf(procstring, "%s%d(%s)",
-			pcont->ptype <= AP_INVALID  ? proc_type_name[pcont->ptype] : "AP_UNKNOWN",
-			pcont->ptype == AP_UDPFORK  ? pcont->f_id : 0,
-			pcont->pstate <= PS_INVALID ? proc_state_name[pcont->pstate] : "PS_UNKNOWN") ;
-	/*lint +e685 (Warning -- Relational operator always evaluates to true) */
-	return procstring ;
+	static char procstring[128] = { 0 };
+	unsigned int pstate = pcont->pstate;
+	sprintf(procstring, "%d (%s)", pstate, (pstate <= PS_INVALID ? proc_state_name[pstate] : "PS_UNKNOWN")) ;
+	return procstring;
 }
 
 
@@ -1325,6 +1319,8 @@ void app_gethostbyname(const char *hostname)
 	}
 
 	strcpy(proc_context_dns.server_name, hostname);
+	proc_new_state(&proc_context_dns, PS_W_DNS);
+
 	result = sock_gethostbyname(sock_api_inst, proc_context_dns.server_name, app_sock_callback, &proc_context_dns) ;
 
 	sock_trace_result(&proc_context_dns, "sock_gethostbyname()", result) ;
@@ -1415,11 +1411,11 @@ int app_open_bearer_tcp(PROC_CONTEXT_T *pcont)
 	bearer_info.dns2 = inet_aton("67.199.130.4");
 	bearer_info.gateway = SOCK_IPADDR_ANY;
 	bearer_info.authtype = SOCK_AUTH_NO;
-	bearer_info.data_compr = FALSE;
-	bearer_info.header_comp = FALSE;
+	bearer_info.data_compr = FALSE; // compression?
+	bearer_info.header_comp = FALSE; // compression?
 	bearer_info.precedence = 0;
 	bearer_info.delay = 0;
-	bearer_info.reliability = 0;
+	bearer_info.reliability = 0;  // what does this do??
 	bearer_info.peak_throughput = 0;
 	bearer_info.mean_througput = 0;
 	bearer_info.shareable = FALSE;
@@ -1772,18 +1768,14 @@ BOOL app_initialize_tcpip(T_HANDLE app_handle)
  */
 void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
 {
-	PROC_CONTEXT_T *pcont ;
-	T_SOCK_BEARER_INFO_CNF *info;
-	T_NAS_ip ip;
-	U8 *octets;
+	PROC_CONTEXT_T *pcont = (PROC_CONTEXT_T *)context;
 
-	TRACE_FUNCTION("app_sock_callback()") ;
+	emo_printf("app_sock_callback() %s", proc_string(pcont)) ;
 
-	pcont = (PROC_CONTEXT_T *)context ;
 	pcont->last_evt = event ;     /* Save event in process context. */
 
-	sock_trace_result(pcont, sock_event_string(event->event_type),
-			event->result) ;
+	sock_trace_result(pcont, sock_event_string(event->event_type), event->result);
+
 	if (event->result != SOCK_RESULT_OK)
 	{
 		switch (event->result)
@@ -1807,7 +1799,9 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
 				}
 		}
 	}
-	emo_printf("app_sock_callback() event %d", pcont->pstate);
+
+	emo_printf("app_sock_callback() processing state %s", proc_string(pcont));
+
 	switch (pcont->pstate)        /* Do a preliminary check of the event. */
 	{
 		case PS_W_DCM_OPEN:            /* Waiting for DCM to open connection. */
@@ -1827,9 +1821,14 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
 				return ;
 			}
 
-			cmhSM_get_pdp_addr_for_CGPADDR(1, &ip);
-			octets = ip.ip_address.ipv4_addr.a4;
-			TRACE_EVENT_P4("app_sock_callback(): Received IP address: %d.%d.%d.%d", octets[0], octets[1], octets[2], octets[3]);
+			{
+				T_NAS_ip ip;
+				U8 *octets;
+
+				cmhSM_get_pdp_addr_for_CGPADDR(1, &ip);
+				octets = ip.ip_address.ipv4_addr.a4;
+				TRACE_EVENT_P4("app_sock_callback(): Received IP address: %d.%d.%d.%d", octets[0], octets[1], octets[2], octets[3]);
+			}
 
 			s_tcp_socket_bearar_open = 1;
 			pcont->network_is_open = TRUE;
@@ -1842,7 +1841,6 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
 			//proc_new_state(pcont, PS_DCM_OPEN);
 			s_tcp_socket_bearar_open = 1;
 			app_ui_send(pcont, EMOBIIX_SOCK_CREA);
-			proc_new_state(pcont, PS_W_DNS);
 			break;
 
 		case PS_W_DCLOS:            /* Waiting for DCM to close connection. */
@@ -1858,13 +1856,16 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
 			break;
 
 		case PS_W_CONN_INFO:
-			CHECK_SOCK_EVT(SOCK_BEARER_INFO_CNF);
-
-			info = (T_SOCK_BEARER_INFO_CNF *)event;
-			app_print_conn_info(info);
+		{
+			T_SOCK_BEARER_INFO_CNF *info = (T_SOCK_BEARER_INFO_CNF *)event;
 
 			TRACE_EVENT("SOCK_BEARER_INFO_CNF received");
-			break;
+
+			CHECK_SOCK_EVT(SOCK_BEARER_INFO_CNF);
+
+			app_print_conn_info(info);
+		}
+		break;
 
 		case PS_W_CREAT:            /* Waiting for socket create confirmation. */
 			CHECK_SOCK_EVT(SOCK_CREATE_CNF) ;
@@ -1917,8 +1918,6 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
 		case PS_W_DNS:
 			CHECK_SOCK_EVT(SOCK_HOSTINFO_CNF) ;
 			comm_dns_result(pcont);
-			proc_new_state(pcont, PS_IDLE);
-			//proc_hostinfo_recvd(pcont) ;
 			break ;
 
 		case PS_W_SCONN:            /* Waiting for socket connect confirmation. */
