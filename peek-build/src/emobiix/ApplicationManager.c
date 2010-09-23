@@ -118,6 +118,11 @@ void manager_init(void)
 	cache_commit();
 }
 
+void manager_focusBootApp(void) {
+	manager_focusApplication(manager_getBootApp());
+	updateScreen();
+}
+
 void manager_drawScreen(void)
 {
 	DataObject *toload;
@@ -138,17 +143,21 @@ void manager_drawScreenPartial(void)
 {
 	DataObject *view;
 
+/*
 #ifndef SIMULATOR
     emo_printf("manager_drawScreenPartial()0");
 #endif
+*/
 
 	if (appManager->rootApplication == NULL)
 		return;
 
 	view = application_getCurrentScreen(appManager->rootApplication);
+/*
 #ifndef SIMULATOR
 	emo_printf("manager_drawScreenPartial()1");
 #endif
+*/
 	if (view != NULL) {
 		style_renderWidgetTree(appManager->style, view);
 	} else {
@@ -174,7 +183,9 @@ void manager_handleKey(unsigned int key)
 	char keyStr[10];
 	Style *style;
 
+/*
 	emo_printf("manager_handleKey() key=%d" NL, key);
+*/
 
 	if (key == EKEY_ALTTAB) { /* lock symbol */
 		manager_focusNextApplication();

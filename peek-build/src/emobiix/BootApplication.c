@@ -206,7 +206,7 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w4, "type", dataobjectfield_string("selbox"));
 	dataobject_setValue(w4, "canfocus", dataobjectfield_string("1"));
 	dataobject_setValue(w4, "margin", dataobjectfield_string("3"));
-	dataobject_setValue(w4, "onreturn", dataobjectfield_string("web()"));
+	dataobject_setValue(w4, "onreturn", dataobjectfield_string("DataObject.netsurf();"));
 	dataobject_setValue(w4, "packing", dataobjectfield_string("vertical"));
 	w5 = dobjFromFile("netsurf.png", w4);
 	dataobject_setValue(w5, "marginleft", dataobjectfield_string("4"));

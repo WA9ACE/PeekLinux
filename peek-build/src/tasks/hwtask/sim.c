@@ -738,7 +738,7 @@ void simDecodeIMSI (UBYTE * imsi_field,
 
 GLOBAL BOOL sima_response_cb (ULONG opc, void * data)
 {
-  emo_printf("sim_response_cb()");
+  //emo_printf("sim_response_cb()");
 
   switch (opc)
   {

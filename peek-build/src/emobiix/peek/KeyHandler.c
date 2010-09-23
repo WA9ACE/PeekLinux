@@ -104,14 +104,14 @@ void updateScreen(void) {
 
 	upper = lgui_index_count();
 	if (upper == 0) {
-		emo_printf("Flipping entire screen" NL);
+		//emo_printf("Flipping entire screen" NL);
 		emo_BitBltFull(screenBuf);
 	} else {
 		Rectangle *rect;
 		int i;
 		for (index = 0; index < upper; ++index) {
 			rect = lgui_get_region(index);
-			emo_printf("Flipping partial screen: %d, %d %d %d %d" NL, index, rect->x, rect->y, rect->width, rect->height);
+			//emo_printf("Flipping partial screen: %d, %d %d %d %d" NL, index, rect->x, rect->y, rect->width, rect->height);
 			emo_BitBltPartial(rect, screenBuf);
 		}
 	}
@@ -251,47 +251,48 @@ void emobiixKbdInit()
 
 int netsurf_start_flag = 0;
 
-
 static void UiHandleKeyEvents(RegIdT RegId, UINT32 MsgId, void *MsgBufferP)
 {
         int UiKeyId = *((int *)MsgBufferP);
 		T_EMOBIIX_NETSURF_START *netStart;
 
-        emo_printf("UiHandleKeyEvents MsgId=%d KeyId=%d" NL, MsgId, UiKeyId);
+        //emo_printf("UiHandleKeyEvents MsgId=%d KeyId=%d" NL, MsgId, UiKeyId);
 		if(netsurf_start_flag) {
 			netsurf_key_enqueue(UiKeyId, MsgId);
 			return;
 		}
 		switch(UiKeyId) {
 			case SYS_PWR_KEY:
-				emo_printf("Starting power off\n");
+				//emo_printf("Starting power off\n");
 				pwr_PowerOffMobile();
 				while(1); // Shouldn't get here
 			case SYS_SHIFT:
 				/* Dont pass through shift.. wait for combo */
 				break;
-			case SYS_PERCENT_KEY:
-				emo_printf("STARTING NETSURF");
-				netsurf_start_flag = TRUE;
-				netStart = P_ALLOC(EMOBIIX_NETSURF_START);
-				P_OPC(netStart) = EMOBIIX_NETSURF_START;
-				PSENDX(UI, netStart);
-			break;
-
 			case SYS_WHEEL_BACK:
 			case SYS_WHEEL_FORWARD:
-				emo_printf("UiHandleKeyEvents() Passing to manager key [%c]", MapKeyToInternal(UiKeyId));
+				//emo_printf("UiHandleKeyEvents() Passing to manager key [%c]", MapKeyToInternal(UiKeyId));
 				manager_handleKey(MapKeyToInternal(UiKeyId));
 				break;
 			default:
 				if (MsgId == BAL_KEY_PRESS)
 				{
-					emo_printf("UiHandleKeyEvents() Passing to manager key [%c]", MapKeyToInternal(UiKeyId));
+					//emo_printf("UiHandleKeyEvents() Passing to manager key [%c]", MapKeyToInternal(UiKeyId));
 					manager_handleKey(MapKeyToInternal(UiKeyId));
 				}
 		}
         updateScreen();
 }
+
+void netsurfStart(void) {
+     T_EMOBIIX_NETSURF_START *netStart;
+
+     netsurf_start_flag = TRUE;
+     netStart = P_ALLOC(EMOBIIX_NETSURF_START);
+     P_OPC(netStart) = EMOBIIX_NETSURF_START;
+     PSENDX(UI, netStart);
+}
+
 
 void KeyPad_Init(void) {
 
@@ -299,6 +300,6 @@ void KeyPad_Init(void) {
         emo_printf("BalKeypadRegister() Failed to register handler" NL);
         return;
      }
-     emo_printf("BalKeypadRegister() registered" NL);
+     //emo_printf("BalKeypadRegister() registered" NL);
 }
 

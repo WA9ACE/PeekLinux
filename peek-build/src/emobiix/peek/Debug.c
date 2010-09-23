@@ -21,12 +21,13 @@ void emo_printf( const char* fmt, ...) {
         if(!tp) {
                 vsprintf(buf, fmt, ap);
         } else {
-                sprintf(buf, "Task [%s] ", tp->tc_name);
+                sprintf(buf, "[%s] ", tp->tc_name);
                 vsprintf(buf+strlen(buf), fmt, ap);
         }
+		buf[64] = '\0';
         rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
         va_end(ap);
-        TCCE_Task_Sleep(2);
+//        TCCE_Task_Sleep(2);
 #endif
 }
 
@@ -41,21 +42,23 @@ void emo_fprintf(FILE *file, const char* fmt, ...) {
         if(!tp) {
                 vsprintf(buf, fmt, ap);
         } else {
-                sprintf(buf, "Task [%s] ", tp->tc_name);
+                sprintf(buf, "[%s] ", tp->tc_name);
                 vsprintf(buf+strlen(buf), fmt, ap);
         }
+		buf[64] = '\0';
         rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
         va_end(ap);
-        TCCE_Task_Sleep(2);
+//        TCCE_Task_Sleep(2);
 #endif
 }
 
 void bal_trace(char *msg) {
-	emo_printf("%s", msg);
+	//emo_printf("%s", msg);
 }
 
 void bal_printf(const char* fmt, ...) {
 #ifndef EMO_PROD
+/* only used for kpd stuff and we know its working
         va_list ap;
         NU_TASK *tp;
 
@@ -71,6 +74,7 @@ void bal_printf(const char* fmt, ...) {
         rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
         va_end(ap);
         TCCE_Task_Sleep(2);
+*/
 #endif
 }
 

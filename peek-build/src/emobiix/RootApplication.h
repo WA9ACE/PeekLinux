@@ -9,6 +9,8 @@ extern "C" {
 
 DataObject *RootApplication(void);
 
+extern char* hw_td_get_clock_str();
+
 #ifdef __cplusplus
 }
 #endif

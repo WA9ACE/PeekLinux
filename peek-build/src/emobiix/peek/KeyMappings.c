@@ -103,6 +103,6 @@ unsigned int MapKeyToInternal(unsigned int key)
 			break;
 	}
 
-	emo_printf("Mapping key %d to %d", key, mappedKey);
+	//emo_printf("Mapping key %d to %d", key, mappedKey);
 	return mappedKey;
 }

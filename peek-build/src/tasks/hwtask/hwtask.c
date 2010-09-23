@@ -64,39 +64,44 @@ void hwStart(void) {
  backlightInit();
 #endif
  display_init();
- // Unlock UI
- HwStatusSet();
  // Start animation
  // Setup keypad/jog
  BalKeypadInit(0,0,4);
  // Setup Sound
 
+ // Setup time/date
+ hw_td_init();
+
+ // Unlock UI
+ HwStatusSet();
+
+ emo_printf("hwStart() time: %s", hw_td_get_clock_str());
  // Enter main notify loop
     while(1) {
         EvtStatus = BOSEventWait(EXE_BAL_ID, BOS_SIGNAL_TRUE, BOS_MESSAGE_TRUE,BOS_TIMEOUT_FALSE);//BOSCalMsec(10000)
         if(EvtStatus & BOS_MESSAGE_TYPE)
         {
-			emo_printf("hwStart() got MSG");
+			//emo_printf("hwStart() got MSG");
             for(MailBoxIndex=BOS_MAILBOX_1,MailBoxId = BOS_MAILBOX_1_ID; MailBoxId<2; MailBoxId++)
             {
                 if(EvtStatus & MailBoxIndex)
                 {
                     //get the Msg value
                     MsgStatus = BOSMsgRead(EXE_BAL_ID, (BOSMailboxIdT)MailBoxId, &MsgId, &MsgBufferP, &MsgSize);
-            		emo_printf("hwStart() read MSG for mailbox %d", MailBoxId);
+            		//emo_printf("hwStart() read MSG for mailbox %d", MailBoxId);
 
                     if(MsgStatus)
                     {	
-                        emo_printf("hwStart() handling msg id[%d]", MsgId);
+                        //emo_printf("hwStart() handling msg id[%d]", MsgId);
 						switch(MsgId) {
 							case HW_KEY_MSG:
-                                emo_printf("hwStart(): Got HW_KEY_MSG press");
+                                //emo_printf("hwStart(): Got HW_KEY_MSG press");
 								BalKeypadProcess(MsgId, MsgBufferP, MsgSize);
 								break;
 						}
                         if (MsgBufferP != NULL)
                         {
-                            //free the Msg buffer.
+                            //XXX: should we free buffer?
                             BOSMsgBufferFree(MsgBufferP);
                             MsgBufferP = NULL;
                         }

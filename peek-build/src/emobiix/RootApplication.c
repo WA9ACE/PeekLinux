@@ -50,7 +50,7 @@ DataObject *RootApplication(void)
 {
     static DataObject *output = NULL;
 	DataObject *dobj1, *root, *dobj2, *frame;
-	DataObject *setw, *setiw, *setc;
+	DataObject *setw, *setiw, *setc, *settd;
 	DataObject *signalstack, *testgprs;
 	DataObject *batterystack, *testbattery, *testcharge;
 	DataObject *testweather, *testspkr;
@@ -72,6 +72,14 @@ DataObject *RootApplication(void)
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("320"));
 	dataobject_setValue(dobj1, "height", dataobjectfield_string(BARHEIGHT));
 	widget_setPacking(dobj1, WP_HORIZONTAL);
+
+//    settd = widget_newTypeIdName("label", "labelw", NULL, dobj1);
+//    dataobject_setValue(settd, "data", dataobjectfield_string(hw_td_get_clock_str()));
+//    dataobject_setValue(settd, "weight", dataobjectfield_string("bold"));
+//    dataobject_setValue(settd, "width", dataobjectfield_string("100"));
+//    dataobject_setValue(settd, "height", dataobjectfield_string(BARHEIGHT));
+//    dataobject_setValue(settd, "marginleft", dataobjectfield_string("20"));
+//    dataobject_setValue(settd, "margintop", dataobjectfield_string("4"));
 
 	signalstack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
 #if 0

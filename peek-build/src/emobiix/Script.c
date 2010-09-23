@@ -398,12 +398,21 @@ static int __dataobject_append(lua_State *L)
 	return 0;
 }
 
+extern void netsurfStart(void);
+
+static int __dataobject_netsurf(lua_State *L)
+{
+	 netsurfStart();
+	 return 0;
+}
+
 static const luaL_reg meta_methods[] = {
 {0,0}
 };
 
 static const luaL_reg script_methods[] = {
 {"locate",           __dataobject_locate},
+{"netsurf",		 	 __dataobject_netsurf},
 {"toScreen", __toScreen},
 {"find", 	     __dataobject_find},
 {"getValue",	__dataobject_getValue},

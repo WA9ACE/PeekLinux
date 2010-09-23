@@ -558,7 +558,7 @@ void * ExeMsgBufferGet(uint32 MsgBufferSize)
                 }
         }
 
-	emo_printf("ExeMsgBufferGet - 0x%08x - MaxBuffersize 0x%08x\n", MsgBufferSize, ExeMsgBuffInfo[EXE_MSG_BUFF_TYPE_4].BuffSize);	
+	//emo_printf("ExeMsgBufferGet - 0x%08x - MaxBuffersize 0x%08x\n", MsgBufferSize, ExeMsgBuffInfo[EXE_MSG_BUFF_TYPE_4].BuffSize);	
 	if(MsgBufferSize <= ExeMsgBuffInfo[EXE_MSG_BUFF_TYPE_4].BuffSize) {
 		for(i=0;i < EXE_NUM_DIFF_MSG_BUFFS;i++) {
 			if(MsgBufferSize > ExeMsgBuffInfo[i].BuffSize) 

@@ -23,6 +23,13 @@
 #include "psa_sim.h"
 #include "p_gmmreg.h"
 #include "hwat.h"
+#include "rtc.h"
+
+static T_RTC_TIME current_time;
+static T_RTC_DATE current_date;
+
+static char time_string[15];
+static char date_string[15];
 
 /* defines */
 #define E_NM_OPN 0x4000
@@ -210,7 +217,7 @@ static int nm_sign_exec (int event, void * para)
            memcpy(&nm_data->para.net_info,para, sizeof(T_MFW_NET_IND));
            break;
        case E_MFW_TIME_IND:
-           memcpy(&nm_data->para.tim_info,para, sizeof(T_MFW_TIME_IND));
+           memcpy(&nm_data->para.tim_info,para, sizeof(T_RTC_TIME_IND));
            break;
      default:	
    	 	return FALSE;
@@ -299,7 +306,7 @@ GLOBAL BOOL nma_response_cb (ULONG opc, void * data)
   T_MMR_INFO_IND  mmr_nitz_ind;
   T_GMMREG_INFO_IND *gmmreg_info_ind;
 
-  emo_printf("nma_response_cb()");
+  //emo_printf("nma_response_cb()");
 
   switch (opc)
   {
@@ -576,5 +583,88 @@ GLOBAL void sAT_PlusCOPSE(UBYTE *oper, UBYTE format,
       }
       break;
   }
+}
+
+T_RTC_DATE* hw_td_get_date()
+{
+        emo_printf("hw_td_get_date");
+        rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT); 
+        return &current_date;
+}
+
+T_RTC_TIME* hw_td_get_time()
+{
+        emo_printf("hw_td_get_time");
+        rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT); 
+		return &current_time;
+}
+
+char* hw_td_get_clock_str()
+{       
+		emo_printf("hw_td_get_clock_str");
+
+        rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT); 
+
+        if(current_time.PM_flag==1)
+        	sprintf(time_string, "%02d:%02d pm ", current_time.hour, current_time.minute);
+        else
+        	sprintf(time_string, "%02d:%02d am ", current_time.hour, current_time.minute);
+
+        return time_string;
+}
+
+char* hw_td_get_date_str()
+{      
+		emo_printf("hw_td_get_date_str");
+        sprintf(date_string, "%02d/%02d/%04d", current_date.month, current_date.day, current_date.year);
+        return date_string;
+}
+
+void hw_td_set_time(T_RTC_TIME* time)
+{       
+		int result;
+        emo_printf("hw_td_set_time");
+        result = rtc_set_time_date(&current_date, time);
+        if (result == 0)
+        {       memcpy(&current_time, time, sizeof(T_RTC_TIME));
+                return;
+        }
+		emo_printf("RTC driver error");
+        return;
+}
+
+void hw_td_set_date(T_RTC_DATE* date)
+{     	int result;
+        emo_printf("hw_td_set_date");
+        result = rtc_set_time_date(date, &current_time);
+        if (result == 0)
+        {
+                memcpy(&current_date, date, sizeof(T_RTC_DATE));
+				return;
+        }
+		emo_printf("RTC driver error");
+        return;
+}
+
+void hw_td_init(void) {
+
+    if(!rtc_clock_cleared())
+    {
+        rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT);
+    } else {
+        rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT);
+        current_time.second = 0;
+        current_time.minute = 0;
+        current_time.hour = 0;
+
+        current_date.year = 2010;
+        current_date.month = 9;
+        current_date.day = 22;
+
+        hw_td_set_time(&current_time);
+        hw_td_set_date(&current_date);
+    }
+
+
 }
 

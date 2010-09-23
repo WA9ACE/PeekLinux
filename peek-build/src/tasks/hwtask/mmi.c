@@ -25,7 +25,7 @@ void mmi_main(void) {
 
  // Setup battery callbacks
 //	system_battery_init();
-//	gprs_dataobject_init();
+	gprs_dataobject_init();
 
  // while(1)
  //	TCCE_Task_Sleep(1000);
