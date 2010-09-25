@@ -24,7 +24,7 @@ extern BOOL appdata_response_cb (ULONG opc, void * data);
 void mmi_main(void) {
 
  // Setup battery callbacks
-//	system_battery_init();
+	system_battery_init();
 	gprs_dataobject_init();
 
  // while(1)
