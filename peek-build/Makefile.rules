@@ -37,13 +37,13 @@ STR2IND_C   = $(BUILDDIR)/trace/str2ind.c
 %.o: %.cpp
 	@echo "  Compiling: $< => $@"
 	@$(CC) -ppl $(CFLAGS) $<
-	@$(STR2IND) -a -t$(STR2IND_TAB) -l$(STR2IND_LOG) -v$(STR2IND_C) -f$(patsubst %.o,%.pp,$@)
+	@#$(STR2IND) -a -t$(STR2IND_TAB) -l$(STR2IND_LOG) -v$(STR2IND_C) -f$(patsubst %.o,%.pp,$@)
 	@$(CC) $(CFLAGS_BASE) -eoo -fr $(@D) -fp $(patsubst %.o,%.pp,$@)
 
 %.o: %.c
 	@echo "  Compiling: $< => $@"
 	@$(CC) -ppl $(CFLAGS) $<
-	@$(STR2IND) -a -t$(STR2IND_TAB) -l$(STR2IND_LOG) -v$(STR2IND_C) -f$(patsubst %.o,%.pp,$@)
+	@#$(STR2IND) -a -t$(STR2IND_TAB) -l$(STR2IND_LOG) -v$(STR2IND_C) -f$(patsubst %.o,%.pp,$@)
 	@$(CC) $(CFLAGS_BASE) -eoo -fr $(@D) -fc $(patsubst %.o,%.pp,$@)
 
 %.o: %.s

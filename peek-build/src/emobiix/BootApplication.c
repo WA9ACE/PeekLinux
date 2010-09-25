@@ -37,7 +37,7 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w1, "type", dataobjectfield_string("script"));
 	dataobject_setValue(w1, "data", dataobjectfield_string(
 "	function onLoad()\n"
-"		print \"Boot application loaded\"\n"
+"		print \"Boot application loaded\""
 "	end\n"
 "	function helloworld()\n"
 "		DataObject.locate(\"tcp://69.114.111.9:12345/helloworld\");\n"

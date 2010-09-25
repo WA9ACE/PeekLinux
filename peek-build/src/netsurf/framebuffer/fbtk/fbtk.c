@@ -519,6 +519,8 @@ fbtk_widget_new(fbtk_widget_t *parent,
 	}
 	parent->first_child = neww;
 
+	LOG(("fbtk_widget_new end"));
+
 	return neww;
 }
 

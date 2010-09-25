@@ -29,6 +29,9 @@
  * 
  */
 
+#ifdef EMO_SIM
+extern int recvProcess;
+#endif
 void hwStart(void) {
     BOSEventWaitT EvtStatus;
     bool          MsgStatus;
@@ -38,6 +41,9 @@ void hwStart(void) {
     uint8         MailBoxId;
     BOSEventWaitT MailBoxIndex;
     int i;
+#ifdef EMO_SIM
+	int key,state, hasData;
+#endif
 #ifdef DAR_HALT
     File *fp;
 #endif
@@ -72,10 +78,14 @@ void hwStart(void) {
  // Setup time/date
  hw_td_init();
 
+ // Register battery
+ //system_battery_init();
+
  // Unlock UI
  HwStatusSet();
 
  emo_printf("hwStart() time: %s", hw_td_get_clock_str());
+#ifndef EMO_SIM
  // Enter main notify loop
     while(1) {
         EvtStatus = BOSEventWait(EXE_BAL_ID, BOS_SIGNAL_TRUE, BOS_MESSAGE_TRUE,BOS_TIMEOUT_FALSE);//BOSCalMsec(10000)
@@ -113,8 +123,30 @@ void hwStart(void) {
 
 	}
 
-}
+#else 
 
+while(1) {
+    if(uiStatusGet()) {
+            key = SimReadKey();
+			state = SimReadKeyState();
+
+			if(!recvProcess) {
+            hasData = SimReadReg();
+            	if (hasData > 0) {
+					app_recv();
+					recvProcess = 1;
+				}
+			}
+
+            if(key) {
+            	UiHandleKeyEvents(NULL, state, &key);
+			}
+
+    }
+    TCCE_Task_Sleep(20);
+}
+#endif
+}
 /* 
  * Shutdown Peek
  *

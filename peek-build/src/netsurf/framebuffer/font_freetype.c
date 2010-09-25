@@ -168,7 +168,7 @@ bool fb_font_init(void)
 
         fb_faces[FB_FACE_SANS_SERIF] = NULL;
         fb_faces[FB_FACE_SANS_SERIF] = 
-                fb_new_face(option_fb_face_sans_serif, "DroidSans.ttf", "DroidSans.ttf");
+                fb_new_face(option_fb_face_sans_serif, "DroidSans.ttf", "peekffs://DroidSans.ttf");
         if (fb_faces[FB_FACE_SANS_SERIF] == NULL) {
                 LOG(("Could not find default font (code %d)\n", error));
                 FTC_Manager_Done(ft_cmanager );

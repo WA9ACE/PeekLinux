@@ -454,7 +454,7 @@ gui_init(int argc, char** argv)
 	char buf[PATH_MAX];
 	nsfb_t *nsfb;
 
-	fb_find_resource(buf, "Aliases", "/Aliases");
+	fb_find_resource(buf, "Aliases", "peekffs:/Aliases");
 	LOG(("Using '%s' as Aliases file", buf));
 	if (hubbub_initialise(buf, ns_realloc, NULL) != HUBBUB_OK)
 		die("Unable to initialise HTML parsing library.\n");
@@ -462,21 +462,21 @@ gui_init(int argc, char** argv)
 	option_core_select_menu = true;
 
 	/* set up stylesheet urls */
-	fb_find_resource(buf, "default.css", "/default.css");
+	fb_find_resource(buf, "default.css", "peekffs:/default.css");
 	default_stylesheet_url = path_to_url(buf);
 	LOG(("Using '%s' as Default CSS URL", default_stylesheet_url));
 
-	fb_find_resource(buf, "quirks.css", "/quirks.css");
+	fb_find_resource(buf, "quirks.css", "peekffs:/quirks.css");
 	quirks_stylesheet_url = path_to_url(buf);
 
 	if (option_cookie_file == NULL) {
-		fb_find_resource(buf, "Cookies", "/Cookies");
+		fb_find_resource(buf, "Cookies", "peekffs:/Cookies");
 		LOG(("Using '%s' as Cookies file", buf));
 		option_cookie_file = strdup(buf);
 	}
 
 	if (option_cookie_jar == NULL) {
-		fb_find_resource(buf, "Cookies", "/Cookies");
+		fb_find_resource(buf, "Cookies", "peekffs:/Cookies");
 		LOG(("Using '%s' as Cookie Jar file", buf));
 		option_cookie_jar = strdup(buf);
 	}

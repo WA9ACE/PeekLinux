@@ -65,7 +65,6 @@ void uiAppConn(void *connData)
 		emo_printf("uiAppConn() Failed to allocate connectionContext");
 		return;
 	}
-
 	//connectionContext_syncRequest(connectionContext, url);
 	//connectionContext_loopIteration(connectionContext);
 }
@@ -76,6 +75,9 @@ void uiAppSent()
 	emo_printf("uiAppSent() Looping...");
 	connectionContext_loopIteration(connectionContext);
 }
+#ifdef EMO_SIM
+int recvProcess = 0;
+#endif
 
 void uiAppRecv(void *recvData)
 {
@@ -93,10 +95,14 @@ void uiAppRecv(void *recvData)
 	}
 
 	connectionContext_loopIteration(connectionContext);
+	updateScreen();
 	/* mfw -> custom menu
 	if(emoMenu_get_window())
 		SEND_EVENT(emoMenu_get_window(), SCREEN_UPDATE, 0, 0);
 	*/
+#ifdef EMO_SIM
+	recvProcess = 0;
+#endif
 }
 
 GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)

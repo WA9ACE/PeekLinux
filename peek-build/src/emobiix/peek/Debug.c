@@ -24,7 +24,7 @@ void emo_printf( const char* fmt, ...) {
                 sprintf(buf, "[%s] ", tp->tc_name);
                 vsprintf(buf+strlen(buf), fmt, ap);
         }
-		buf[64] = '\0';
+		buf[75] = '\0';
         rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
         va_end(ap);
 //        TCCE_Task_Sleep(2);
@@ -36,6 +36,12 @@ void emo_fprintf(FILE *file, const char* fmt, ...) {
         va_list ap;
         NU_TASK *tp;
 
+		if(file->fd > 2) {
+			emo_printf("______EMO_FPRINTF USED FOR FILE______");
+			while(1) {
+				TCCE_Task_Sleep(2);
+			}
+		}
         va_start(ap, fmt);
         tp =  TCC_Current_Task_Pointer();
 
@@ -45,10 +51,10 @@ void emo_fprintf(FILE *file, const char* fmt, ...) {
                 sprintf(buf, "[%s] ", tp->tc_name);
                 vsprintf(buf+strlen(buf), fmt, ap);
         }
-		buf[64] = '\0';
+		buf[75] = '\0';
         rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
         va_end(ap);
-//        TCCE_Task_Sleep(2);
+ //       TCCE_Task_Sleep(2);
 #endif
 }
 
@@ -81,9 +87,7 @@ void bal_printf(const char* fmt, ...) {
 /* Default streams for stdlib */
 int DStreamopen(const char *path, unsigned flags, int llv_fd) {
 
-	emo_printf("DStreamopen()");
-
-	return 0;
+	return -1;
 }
 
 int DStreamclose(int dev_fd) {
@@ -91,12 +95,11 @@ int DStreamclose(int dev_fd) {
 }
 
 int DStreamread(int dev_fd, char *buf, unsigned count) {
-	return 0;
+	return -1;
 }
 
 int DStreamwrite(int dev_fd, const char *buf, unsigned count) {
-	emo_printf("Stream write: fd %d - buf %s - count %d", dev_fd, buf, count);
-	return count;
+	return -1;
 }
 
 int DStreamunlink(const char *path) {

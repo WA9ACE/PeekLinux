@@ -93,6 +93,7 @@ unsigned int MapKeyToInternal(unsigned int key)
 		case SYS_BACKSPACE: mappedKey = '\b'; break;
 		case SYS_ENTER: /* Map to down click for now */
 		case SYS_WHEEL: mappedKey = EKEY_ACTIVATE; break;
+		case SYS_WHEEL_SHIFT: mappedKey = EKEY_BACK; break;
 		case SYS_WHEEL_BACK: mappedKey = EKEY_FOCUSPREV; break;
 		case SYS_WHEEL_FORWARD: mappedKey = EKEY_FOCUSNEXT; break;
 		case SYS_CANCEL_KEY: /* Map to App switch for now */
