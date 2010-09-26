@@ -81,9 +81,11 @@ LOCAL T_SOCK_SOCKET_DATA* FindSocketData(T_SOCK_API_INSTANCE_DATA* api_data,
      return NULL;
   }
   
+  TRACE_EVENT_P2("FindSocketData() cached: %08X, search: %08X", socket_data, tcpip_socket);
   while((socket_data != NULL) && (tcpip_socket != socket_data->tcpip_socket))
   {
     socket_data = socket_data->next_socket_data;
+    TRACE_EVENT_P2("FindSocketData() next: %08X, search: %08X", socket_data, tcpip_socket);
   }
 
   TRACE_EVENT_P2("FindSocketData: tcpip_data=%x, ret=%x",tcpip_socket,socket_data );

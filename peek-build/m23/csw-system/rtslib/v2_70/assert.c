@@ -12,8 +12,8 @@
 /****************************************************************************/
 void _abort_msg(const char *string)
 {
-   emo_printf("ASSERT");
-   emo_printf(string);
+   //emo_printf("ASSERT");
+   //emo_printf(string);
    abort();
 }
 

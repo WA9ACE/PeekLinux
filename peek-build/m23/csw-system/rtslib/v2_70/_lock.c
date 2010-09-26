@@ -8,6 +8,8 @@
 static NU_SEMAPHORE mutex_file;
 static int init = 0;
 
+extern void emo_printlock(char *msg);
+
 void mutex_file_init()
 {
 	NU_Create_Semaphore(&mutex_file, "peek_file_mutex", 1, NU_PRIORITY);
@@ -19,9 +21,9 @@ _CODE_ACCESS void mutex_file_lock()
 		mutex_file_init();
 		init=1;
 	}
-	//emo_printf("mutex_file_lock() BEGIN");
+	emo_printlock("mutex_file_lock() BEGIN");
 	NU_Obtain_Semaphore(&mutex_file, NU_SUSPEND); 
-    //emo_printf("mutex_file_lock() END");
+    emo_printlock("mutex_file_lock() END");
 }
 
 _CODE_ACCESS void mutex_file_unlock()
@@ -30,9 +32,9 @@ _CODE_ACCESS void mutex_file_unlock()
         mutex_file_init();
         init=1;
     }
-	//emo_printf("mutex_file_unlock() BEGIN");
+	emo_printlock("mutex_file_unlock() BEGIN");
 	NU_Release_Semaphore(&mutex_file); 
-    //emo_printf("mutex_file_unlock() END");
+    emo_printlock("mutex_file_unlock() END");
 }
 
 _CODE_ACCESS void _nop()

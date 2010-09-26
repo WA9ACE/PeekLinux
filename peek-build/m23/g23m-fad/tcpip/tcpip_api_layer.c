@@ -1802,7 +1802,9 @@ void tcpip_hostinfo_req(void *primdata)
   /* Trick: We use the primitive itself as user data for the RNET call. This
    * way we do not have to allocate extra memory to save the request_id and
    * the app_handle. */
-  
+ 
+	emo_printf("TRICKYDICKY: %08X", primdata);
+ 
   TRACE_FUNCTION("tcpip_hostinfo_req()") ;
   
   switch (rnet_get_host_info((char *) prim->hostname, ngNTOHL(prim->ipaddr),

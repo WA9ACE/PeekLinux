@@ -172,10 +172,12 @@ typedef enum {
 enum 
 {
 	WAITING_FOR_NONE,
+	WAITING_FOR_SOCKET,
 	WAITING_FOR_CONNECT,
 	WAITING_FOR_READ,
 	WAITING_FOR_WRITE,
-	WAITING_FOR_DNS
+	WAITING_FOR_DNS,
+	RECEIVED_DISCONNECT
 };
 
 /* The data a process holds. May be dynamically allocated in the future. */

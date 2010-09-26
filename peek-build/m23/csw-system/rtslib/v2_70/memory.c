@@ -554,7 +554,7 @@ void memmap()
     int used_block_space	= 0;
     int used_block_max		= 0;
 
-    //_lock();
+    _lock();
     current = _sys_memory;
 
     /*-----------------------------------------------------------------------*/
@@ -583,12 +583,13 @@ void memmap()
         current = (PACKET *)((char *)current + size + BLOCK_OVERHEAD);
     }
 
+    _unlock();
+
     emo_printf("free_block_num:%d free_block_space:%d free_block_max:%d used_block_num:%d used_block_space:%d used_block_max:%d overhead:%d\n\n", 
 	    free_block_num, free_block_space, free_block_max,
 	    used_block_num, used_block_space, used_block_max,
 	    (free_block_num + used_block_num) * BLOCK_OVERHEAD);
 
-    //_unlock();
     //fflush(stdout);
 }
 #endif

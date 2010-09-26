@@ -135,6 +135,7 @@ static _CODE_ACCESS _DEVICE *finddevice(const char *devname)
 
 static _CODE_ACCESS _DEVICE *getdevice (const char **path)
 {
+#if 0
    char devname[9];
    char *colon = strchr(*path, ':');
    _DEVICE *dev;
@@ -153,6 +154,8 @@ static _CODE_ACCESS _DEVICE *getdevice (const char **path)
    //dev = finddevice("peekffs");
 
    return stdevice; /* the "standard" device - host I/O */
+#endif
+	return finddevice("peekffs");
 }
 
 

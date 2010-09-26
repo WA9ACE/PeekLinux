@@ -772,6 +772,7 @@ static void comm_query(PROC_CONTEXT_T *pcont)
  *
  * @param pcont        Pointer to process context.
  */
+#if 0
 static void comm_send(PROC_CONTEXT_T *pcont)
 {
 	TRACE_EVENT_P1("comm_send() %s", proc_string(pcont)) ;
@@ -848,6 +849,7 @@ static void comm_send(PROC_CONTEXT_T *pcont)
 		}
 	}
 }
+#endif
 
 #endif
 /** Handle an incoming DNS result. Called for AP_DNSQRY in state PS_COMM.
@@ -1075,36 +1077,21 @@ static void proc_shutdown(PROC_CONTEXT_T *pcont)
 	}
 }
 
-
-/** Create a socket after the network connection has been established.
- *
- * @param pcont       Pointer to process context.
- */
-static void proc_open_socket(PROC_CONTEXT_T *pcont)
+void app_open_socket(PROC_CONTEXT_T *pcont)
 {
-	T_SOCK_RESULT result ;
+	T_SOCK_RESULT result;
 
-	TRACE_FUNCTION("proc_open_socket()") ;
-#if 0
-	/* We don't need to do this for the DNS query process. */
-	if (pcont->ptype EQ AP_DNSQRY)
+	emo_printf("app_open_socket(pcont=%08X)", pcont);
+
+	result = sock_create(sock_api_inst, pcont->ipproto, app_sock_callback, pcont);
+	if (result NEQ SOCK_RESULT_OK)
 	{
-		proc_begin_comm(pcont) ;
+		sock_trace_result(pcont, "sock_create()", result) ;
+		proc_shutdown(pcont) ;
+		return;
 	}
-	else
-	{
-#endif
-		result = sock_create(sock_api_inst, pcont->ipproto, app_sock_callback, pcont);
-		if (result NEQ SOCK_RESULT_OK)
-		{
-			sock_trace_result(pcont, "sock_create()", result) ;
-			proc_shutdown(pcont) ;
-			return;
-		}
-		proc_new_state(pcont, PS_W_CREAT) ;
-#if 0
-	}
-#endif
+
+	proc_new_state(pcont, PS_W_CREAT) ;
 }
 
 
@@ -1139,11 +1126,14 @@ static void proc_connect_socket(PROC_CONTEXT_T *pcont)
 {
 	T_SOCK_RESULT result ;
 
+	if (pcont != &proc_context_tcp && pcont != &proc_context_udp)
+		return;
+
 	TRACE_FUNCTION("proc_connect_socket()") ;
 	/* If we do not yet have an IP address to connect to, look it up first. */
 	if (pcont->server_ipaddr EQ SOCK_IPADDR_ANY)
 	{
-		result = sock_gethostbyname(sock_api_inst, pcont->server_name,app_sock_callback, pcont);
+		result = sock_gethostbyname(sock_api_inst, pcont->server_name, app_sock_callback, pcont);
 		if (result NEQ SOCK_RESULT_OK)
 		{
 			sock_trace_result(pcont, "sock_gethostbyname()", result) ;
@@ -1163,6 +1153,8 @@ static void proc_connect_socket(PROC_CONTEXT_T *pcont)
 	}
 	proc_new_state(pcont, PS_W_SCONN) ;
 }
+
+
 
 #if 0
 /** Begin communicating after the socket has been created.
@@ -1304,6 +1296,19 @@ static void proc_hostinfo_recvd(PROC_CONTEXT_T *pcont)
 
 /*==== Exported functions ====================================================*/
 
+void app_sock_callback_DNS(T_SOCK_EVENTSTRUCT *event, void *context)
+{
+	emo_printf("__DNS__(event_type=%d, result=%d, socket=%d, context=%08X)", event->event_type, event->result, event->socket, context);
+	
+	if (event->event_type != SOCK_HOSTINFO_CNF)
+	{
+		emo_printf("__DNS__ wrong event type");
+	}
+
+	((PROC_CONTEXT_T *)context)->last_evt = event ;     /* Save event in process context. */
+	comm_dns_result((PROC_CONTEXT_T *)context);
+}
+
 void app_gethostbyname(const char *hostname)
 {
 	T_SOCK_RESULT result ;        /* Result of query call. */
@@ -1312,6 +1317,7 @@ void app_gethostbyname(const char *hostname)
 
 	if (!s_tcp_socket_bearar_open)
 	{
+		memset(&proc_context_dns, 0, sizeof(proc_context_dns));
 		strcpy(proc_context_dns.server_name, hostname);
 		app_open_bearer_tcp(&proc_context_dns);
 		proc_new_state(&proc_context_dns, PS_W_DCM_OPEN_ONLY);
@@ -1321,7 +1327,7 @@ void app_gethostbyname(const char *hostname)
 	strcpy(proc_context_dns.server_name, hostname);
 	proc_new_state(&proc_context_dns, PS_W_DNS);
 
-	result = sock_gethostbyname(sock_api_inst, proc_context_dns.server_name, app_sock_callback, &proc_context_dns) ;
+	result = sock_gethostbyname(sock_api_inst, proc_context_dns.server_name, app_sock_callback_DNS, &proc_context_dns) ;
 
 	sock_trace_result(&proc_context_dns, "sock_gethostbyname()", result) ;
 	if (result != SOCK_RESULT_OK)
@@ -1399,23 +1405,22 @@ int app_open_bearer_tcp(PROC_CONTEXT_T *pcont)
 	bearer_info.phone_nr_valid = FALSE;
 	bearer_info.cid = 1;
 
-/*
-	strcpy(bearer_info.apn, "track.t-mobile.com");
-	strcpy(bearer_info.user_id, "getpeek");
-	strcpy(bearer_info.password, "txtbl123");
-*/
-    strcpy(bearer_info.apn, "wap.cingular");
-    strcpy(bearer_info.user_id, "WAP@CINGULARGPRS.COM");
-    strcpy(bearer_info.password, "CINGULAR1");
+//	strcpy(bearer_info.apn, "track.t-mobile.com");
+//	strcpy(bearer_info.user_id, "getpeek");
+//	strcpy(bearer_info.password, "txtbl123");
+
+	strcpy(bearer_info.apn, "wap.cingular");
+	strcpy(bearer_info.user_id, "WAP@CINGULARGPRS.COM");
+	strcpy(bearer_info.password, "CINGULAR1");
 
 	bearer_info.user_id_valid = TRUE;
 	bearer_info.password_valid = TRUE;
 
 	bearer_info.ip_address = SOCK_IPADDR_ANY;
-	//bearer_info.dns1 = inet_aton("67.199.130.4");
-	//bearer_info.dns2 = inet_aton("67.199.130.4");
-    bearer_info.dns1 = inet_aton("66.209.10.201");
-    bearer_info.dns2 = inet_aton("66.209.10.202");
+//	bearer_info.dns1 = inet_aton("67.199.130.4");
+//	bearer_info.dns2 = inet_aton("67.199.130.4");
+	bearer_info.dns1 = inet_aton("66.209.10.201");
+	bearer_info.dns2 = inet_aton("66.209.10.202");
 	bearer_info.gateway = SOCK_IPADDR_ANY;
 	bearer_info.authtype = SOCK_AUTH_NO;
 	bearer_info.data_compr = FALSE; // compression?
@@ -1439,11 +1444,10 @@ int app_open_bearer_tcp(PROC_CONTEXT_T *pcont)
 	return 0;
 }
 
-int app_socket (PROC_CONTEXT_T *pcont, int __type, int __protocol) {
+int app_socket_emobiix (PROC_CONTEXT_T *pcont, int __type, int __protocol) {
 
-	emo_printf("app_socket() connecting to %s on %d", server_name, port_number);
+	emo_printf("app_socket_emobiix() connecting to %s on %d", server_name, port_number);
 
-	//	memset(pcont, 0, sizeof(*pcont));
 	pcont->bearer_only = FALSE;
 	pcont->ptype = (APP_PROCTYPE_T)__type;
 	pcont->ipproto = (T_SOCK_IPPROTO)__protocol;
@@ -1466,10 +1470,74 @@ int app_socket (PROC_CONTEXT_T *pcont, int __type, int __protocol) {
 	else
 	{
 		pcont->network_is_open = TRUE;
-		proc_open_socket(pcont);
+		app_open_socket(pcont);
 	}
 
 	return 0;
+}
+
+int app_socket(PROC_CONTEXT_T *pcont, int type, int proto) 
+{
+	T_SOCK_RESULT result;
+
+	pcont->bearer_only = FALSE;
+	pcont->ptype = (APP_PROCTYPE_T)type;
+	pcont->ipproto = (T_SOCK_IPPROTO)proto;
+	pcont->in_shutdown = FALSE;
+	pcont->psocket = 0;
+	pcont->network_is_open = FALSE;
+	pcont->psocket_is_open = FALSE;
+	//pcont->server_port = (__type EQ AP_UDPFORK) ? 0x700 : HTONS(port_number); // 0x700 some how maps to port 7
+	//strcpy(pcont->server_name,  (__type EQ AP_UDPFORK) ? "<myself>" : server_name);
+	//pcont->server_ipaddr = (__type EQ AP_UDPFORK) ?  SOCK_IPADDR_ANY : inet_aton(pcont->server_name) ;
+
+	if (!s_tcp_socket_bearar_open)
+	{
+		if (app_open_bearer_tcp(pcont) < 0)
+			return 0;
+		
+		proc_new_state(pcont, PS_W_DCM_OPEN);
+		return 1;
+	}
+
+	pcont->network_is_open = TRUE;
+
+	emo_printf("app_open_socket(pcont=%08X)", pcont);
+
+	result = sock_create(sock_api_inst, pcont->ipproto, app_sock_callback, pcont);
+	if (result NEQ SOCK_RESULT_OK)
+	{
+		sock_trace_result(pcont, "sock_create()", result) ;
+		proc_shutdown(pcont) ;
+		return 0;
+	}
+
+	proc_new_state(pcont, PS_W_CREAT);
+	return 1;
+}
+
+int app_connect(PROC_CONTEXT_T *pcont, const char *host, int port)
+{
+	T_SOCK_RESULT result;
+
+	emo_printf("app_connect(pcont=%08X, host=%s, port=%d)", pcont, host, port);
+
+	//AP_TCPUL, SOCK_IPPROTO_TCP)
+
+	strcpy(pcont->server_name, host);
+	pcont->server_port = HTONS(port);
+	pcont->server_ipaddr = inet_aton(pcont->server_name);
+
+	result = sock_connect(pcont->psocket, pcont->server_ipaddr, pcont->server_port);
+	if (result NEQ SOCK_RESULT_OK)
+	{
+		sock_trace_result(pcont, "sock_connect()", result) ;
+		proc_shutdown(pcont) ;
+		return 0;
+	}
+
+	proc_new_state(pcont, PS_W_SCONN);
+	return 1;
 }
 
 static void app_bind_socket(PROC_CONTEXT_T *pcont)
@@ -1625,15 +1693,14 @@ BOOL app_send_buf(PROC_CONTEXT_T *pcont, char *buffer, int size)
 	}
 }
 
-void app_connect(void)
+void app_connect_emobiix(void)
 {
 #ifndef EMO_SIM
-	//app_set_profile("track.t-mobile.com", "getpeek", "txtbl123");
-	//app_connect_info("10.150.9.6", 12345);
-	app_set_profile("wap.cingular", "WAP@CINGULARGPRS.COM", "CINGULAR1");
-	app_connect_info("69.114.111.9", 8444);
-	app_socket(&proc_context_tcp, AP_TCPUL, SOCK_IPPROTO_TCP);
+	app_set_profile("track.t-mobile.com", "getpeek", "txtbl123");
+	app_connect_info("10.150.9.6", 8444);
+	app_socket_emobiix(&proc_context_tcp, AP_TCPUL, SOCK_IPPROTO_TCP);
 #else
+#if 0
 	struct sockaddr_in connect_in;
 	emo_server_fd = bal_socket(0 /*AF_INET*/, 0 /*SOCK_STREAM*/, 0 /*IPPROTO_TCP*/);
 	if (emo_server_fd < 0)
@@ -1646,7 +1713,7 @@ void app_connect(void)
 
 	memset(&connect_in, 0, sizeof(struct sockaddr_in));
 	connect_in.sin_family = 0; /*AF_INET*/
-	connect_in.sin_addr.s_addr = bal_inet_addr("192.168.1.20");
+	connect_in.sin_addr.s_addr = bal_inet_addr("69.114.111.9");
 	connect_in.sin_port = bal_htons(12345);
 
 	if (bal_connect(emo_server_fd, &connect_in, sizeof(connect_in)) < 0)
@@ -1656,6 +1723,7 @@ void app_connect(void)
 	}
 
 	app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_CONN);
+#endif
 #endif
 }
 
@@ -1711,7 +1779,7 @@ void app_bind_udp_server()
 
 	if (!s_udp_socket_bearer_open)
 	{
-		app_socket(&proc_context_udp, AP_UDPFORK, SOCK_IPPROTO_UDP);
+		app_socket_emobiix(&proc_context_udp, AP_UDPFORK, SOCK_IPPROTO_UDP);
 		result = sock_create(sock_api_inst, 17, app_sock_callback, &proc_context_udp);
 		if (result NEQ SOCK_RESULT_OK)
 		{
@@ -1740,7 +1808,7 @@ BOOL app_initialize_tcpip(T_HANDLE app_handle)
 	peek_initialize_sockets();
 
 #ifdef EMO_SIM
-	app_connect();
+	app_connect_emobiix();
 #endif
 	return PEI_OK ;
 }
@@ -1781,7 +1849,8 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
 
 	pcont->last_evt = event ;     /* Save event in process context. */
 
-	sock_trace_result(pcont, sock_event_string(event->event_type), event->result);
+	emo_printf("app_sock_callback(event_type=%d, result=%d, socket=%d, context=%08X)", event->event_type, event->result, event->socket, context);
+    sock_trace_result(pcont, sock_event_string(event->event_type), event->result);
 
 	if (event->result != SOCK_RESULT_OK)
 	{
@@ -1839,7 +1908,7 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
 
 			s_tcp_socket_bearar_open = 1;
 			pcont->network_is_open = TRUE;
-			proc_open_socket(pcont);
+			app_open_socket(pcont);
 			break;
 
 		case PS_W_DCM_OPEN_ONLY:
@@ -1885,7 +1954,7 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
 				proc_connect_socket(pcont) ;
 				TRACE_EVENT("app_sock_callback() PS_W_CREAT event tcp");
 				//bind UDP once TCP socket is established
-				app_bind_udp_server();
+				//	app_bind_udp_server();
 			}
 			else
 			{
@@ -1957,7 +2026,7 @@ void app_sock_callback(T_SOCK_EVENTSTRUCT *event, void *context)
 				pcont->data_rcvd = 0 ;
 				pcont->items_sent = 0 ;
 				pcont->items_rcvd = 0 ;
-				proc_open_socket(pcont) ;
+				app_open_socket(pcont) ;
 			}
 			break ;
 

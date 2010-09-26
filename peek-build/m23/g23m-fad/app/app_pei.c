@@ -261,10 +261,10 @@ static short pei_init (T_HANDLE handle)
   ret = sock_api_initialize(&sock_api_inst, handle, ENTITY_NAME_APP); 
   if (FALSE == ret)
   {
-    TRACE_ERROR("sock_api_initialize() failed") ;
+    emo_printf("sock_api_initialize() failed") ;
     return PEI_ERROR ;
   }
-  TRACE_EVENT("sock_api_initialize()d successfully") ;
+  emo_printf("sock_api_initialize()d successfully") ;
   ret_value = app_initialize_tcpip(handle) ;
 #endif /* FF_GPF_TCPIP */
 
