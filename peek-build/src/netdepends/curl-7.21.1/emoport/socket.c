@@ -5,6 +5,9 @@
 #include "pei.h"
 #include "p_sim.h"
 
+#include "errno.h"
+#include "peekerrno.h"
+
 #define _ENTITY_PREFIXED(N) ui_##N
 
 #define hCommAPP _ENTITY_PREFIXED(hCommAPP)
@@ -24,9 +27,6 @@ typedef int socklen_t;
 extern void peek_obtain_socket_semaphore();
 extern int peek_tcp_get_socket_result();
 
-extern void peek_obtain_connect_semaphore();
-extern int peek_tcp_get_connect_result();
-
 extern void peek_obtain_write_semaphore();
 extern int peek_tcp_get_send_result();
 
@@ -34,30 +34,33 @@ extern void peek_obtain_dns_semaphore();
 extern unsigned int peek_tcp_get_dns_result();
 
 extern int peek_tcp_can_read(int fd);
+extern int peek_tcp_can_write(int fd);
 extern void peek_sleep(int ms);
 
 int bind(int fd, const struct sockaddr * addr, socklen_t len)
 {
-//  emo_printf("SOCKET bind(fd=%d, addr=%08X, len=%d)", fd, addr, len);
-  return 0;
+	errno = 0;
+	//emo_printf("SOCKET bind(fd=%d, addr=%08X, len=%d)", fd, addr, len);
+	return 0;
 }
 
 struct hostent *gethostbyname(const char *name)
 {
+	T_EMOBIIX_NETSURF_DNS *msg;
+
 	static unsigned int addr_ip;
     static char *addr_ip_list[2] = { (char *)&addr_ip, NULL };
     static char addr_name[256];
     static struct hostent entry;
 
+	errno = 0;
+
 	emo_printf("SOCKET gethostbyname(name=%s)", name);
 
-	{ // take taht piece of shit c-style declares ;)
-		T_EMOBIIX_NETSURF_DNS *msg;
-		msg = P_ALLOC(EMOBIIX_NETSURF_DNS);
-		msg->buf = p_malloc(strlen(name) + 1);
-		strcpy(msg->buf, name);
-		PSENDX(APP, msg);
-	}
+	msg = P_ALLOC(EMOBIIX_NETSURF_DNS);
+	msg->buf = p_malloc(strlen(name) + 1);
+	strcpy(msg->buf, name);
+	PSENDX(APP, msg);
 
 	peek_obtain_dns_semaphore();
 
@@ -79,19 +82,30 @@ struct hostent *gethostbyname(const char *name)
 
 int getpeername(int fd, struct sockaddr * addr, socklen_t * len) 
 {
+	errno = 0;
 //  emo_printf("SOCKET getpeername(fd=%d, addr=%08X, len=%d)", fd, addr, *len);
 	return 0;
 }
 
 int getsockname(int fd, struct sockaddr * addr, socklen_t * len) 
 {
+	errno = 0;
 //  emo_printf("SOCKET getsockname(fd=%d, addr=%08X, len=%d)", fd, addr, *len);
 	return 0;
 }
 
 int getsockopt(int fd, int level, int optname, void * optval, socklen_t * optlen) 
 {
- // emo_printf("SOCKET getsockopt(fd=%d, level=%d, optname=%d, optval=%08X, optlen=%d)", fd, level, optname, optval, *optlen);
+	emo_printf("SOCKET getsockopt(fd=%d, level=%d, optname=%d)", fd, level, optname);
+	
+	errno = 0;
+
+	if (level == SOL_SOCKET && optname == SO_ERROR)
+	{
+		emo_printf("SOCKET getsockopt() returned 0");
+		*((int *)optval) = 0;
+	}
+
 	return 0;
 }
 
@@ -99,6 +113,8 @@ int socket(int domain, int type, int protocol)
 {
 	T_EMOBIIX_NETSURF_SOCKET *msg;
 	int ret;
+
+	errno = 0;
 
 	emo_printf("SOCKET socket(domain=%d, type=%d, protocol=%d)", domain, type, protocol);
 
@@ -133,13 +149,11 @@ int connect(int fd, const struct sockaddr * addr, socklen_t len)
 	msg->port = ntohs(sockin->sin_port);
 	PSENDX(APP, msg);
 
-	peek_obtain_connect_semaphore();
+	errno = EINPROGRESS;
 
-	ret = peek_tcp_get_connect_result();
+	emo_printf("SOCKET connect() returned %d", errno);
 
-	emo_printf("SOCKET connect() returned %d", ret);
-
-	return ret;
+	return -1;
 }
 
 int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout)
@@ -147,21 +161,69 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struc
 	int n;
 	int hasData = 0;
 
+	errno = 0;
+
 	emo_printf("SOCKET select(fd=%d)", nfds); 
-	for (n = 0; n < nfds; ++n)
+	if (readfds)
 	{
-		if (FD_ISSET(n, readfds))
-			if (!peek_tcp_can_read(n))
-				FD_CLR(n, readfds);
-			else
-				hasData++;
+		for (n = 0; n < nfds; ++n)
+		{
+			if (FD_ISSET(n, readfds))
+			{
+				int ret = peek_tcp_can_read(n);
+
+				if (exceptfds) 
+					FD_CLR(n, exceptfds);
+
+				emo_printf("SOCKET select() readfd(%d) = %d", n, ret);
+				switch (ret)
+				{
+				case 0:
+					FD_CLR(n, readfds);
+					break;
+				case 1:
+					hasData++;
+					break;
+				default:
+					if (exceptfds) 
+						FD_SET(n, exceptfds);
+				}
+			}
+		}
+	}
+
+	if (writefds)
+	{
+		for (n = 0; n < nfds; ++n)
+		{
+			if (FD_ISSET(n, writefds))
+			{
+				int ret = peek_tcp_can_write(n);
+
+				if (exceptfds) 
+					FD_CLR(n, exceptfds);
+
+				emo_printf("SOCKET select() writefd(%d) = %d", n, ret);
+				switch (ret)
+				{
+				case 0:
+					FD_CLR(n, writefds);
+					break;
+				case 1:
+					hasData++;
+					break;
+				default:
+					if (exceptfds) 
+						FD_SET(n, exceptfds);
+				}
+			}
+		}
 	}
 
 	if (!hasData && timeout)
-		TCCE_Task_Sleep(timeout->tv_sec * 1000 + timeout->tv_usec / 1000);
+		TCCE_Task_Sleep(250);
 
 	emo_printf("SOCKET select() returned %d", hasData);
-
 	return hasData;
 }
 
@@ -170,6 +232,8 @@ int send(int s, const void *buf, unsigned int len, int flags)
 	T_EMOBIIX_NETSURF_SEND *msg;
 	int ret;
 
+	errno = 0;
+
 	emo_printf("SOCKET send(s=%d, buf=%08X, len=%d, flags=%d)", s, buf, len, flags);
 
 	msg = P_ALLOC(EMOBIIX_NETSURF_SEND);
@@ -177,8 +241,8 @@ int send(int s, const void *buf, unsigned int len, int flags)
 	msg->buf = p_malloc(len);
 	if(!msg->buf)  {
 		emo_printf("send() failed to malloc buffer");
-		return -1;
-	}
+			return -1;
+		}
 	memcpy(msg->buf, buf, len);
 	msg->len = len;
 	PSENDX(APP, msg);
@@ -196,6 +260,8 @@ int recv(int fd, void * buf, int n, int flags)
 {
 	T_EMOBIIX_SOCK_RECV *msg;
 	int ret;
+
+	errno = 0;
 
 	emo_printf("SOCKET recv(fd=%d, buf=%08X, n=%d, flags=%d)", fd, buf, n, flags);
 

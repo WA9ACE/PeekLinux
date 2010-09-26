@@ -18,14 +18,13 @@ struct in_addr {
 	unsigned int s_addr; /* 32 bits IP address, net byte order */
 };
 
-#define FD_MAX	32
-#define FD_SETSIZE ((FD_MAX+31)/32)
+#define FD_SETSIZE 32
 
 typedef struct {
-	unsigned long fds[FD_SETSIZE];
+	unsigned long fds[(FD_SETSIZE+31)/32];
 } fd_set;
 
-#define FD_ZERO( fdset) { int i; for( i=0; i<((FD_MAX+31)/32); i++) (fdset)->fds[i] = 0; }
+#define FD_ZERO( fdset) { int i; for( i=0; i<((FD_SETSIZE+31)/32); i++) (fdset)->fds[i] = 0; }
 #define FD_SET( fd, fdset) ((fdset)->fds[(fd)>>5] |= 1UL<<((fd) & 0x1f))
 #define FD_CLR( fd, fdset)  ((fdset)->fds[(fd)>>5] &= ~(1UL<<((fd) & 0x1f)))
 #define FD_ISSET( fd, fdset) (((fdset)->fds[(fd)>>5] & (1UL<<((fd) & 0x1f))) != 0UL)
