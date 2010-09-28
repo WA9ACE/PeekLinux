@@ -543,10 +543,10 @@
 #define HAVE_SETRLIMIT 1
 
 /* Define to 1 if you have the setsockopt function. */
-#define HAVE_SETSOCKOPT 1
+//#define HAVE_SETSOCKOPT 1
 
 /* Define to 1 if you have a working setsockopt SO_NONBLOCK function. */
-/* #undef HAVE_SETSOCKOPT_SO_NONBLOCK */
+//#define HAVE_SETSOCKOPT_SO_NONBLOCK
 
 /* Define to 1 if you have the <sgtty.h> header file. */
 //#define HAVE_SGTTY_H 1

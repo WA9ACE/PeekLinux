@@ -258,6 +258,7 @@ static CURLcode file_connect(struct connectdata *conn, bool *done)
   fd = open_readonly(actual_path, O_RDONLY|O_BINARY); /* no CR/LF translation */
   file->path = actual_path;
 #else
+  emo_printf("file_connect() %s", real_path);
   fd = open_readonly(real_path, O_RDONLY);
   file->path = real_path;
 #endif

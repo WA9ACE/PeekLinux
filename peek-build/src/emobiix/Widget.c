@@ -76,7 +76,9 @@ void widget_setDataObject(Widget *w, DataObject *dobj)
 	}
 	w->widgetData = dobj;
 	if (dobj != NULL)
+	{
 		list_append(dobj->referenced, w);
+	}
 	/*w->self = dobj;*/
 }
 
@@ -98,13 +100,15 @@ void widget_setDataObjectArray(Widget *w, DataObject *dobj)
 	EMO_ASSERT(dobj != NULL, "widget set array missing array")
 
 	if (widget_isArraySource(w))
+	{
+		EMO_ASSERT(dobj->referenced != NULL, "set data ref is null");
 		widget_setDataObject(w, dobj);
+	}
 	
-	for (dataobject_childIterator(w, &iter);
-			!listIterator_finished(&iter);
-			listIterator_next(&iter)) {
-		widget_setDataObjectArray((Widget *)listIterator_item(&iter),
-				dobj);
+	for (dataobject_childIterator(w, &iter); !listIterator_finished(&iter); listIterator_next(&iter)) 
+	{
+		Widget *widg = (Widget *)listIterator_item(&iter);
+		widget_setDataObjectArray(widg, dobj);
 	}
 }
 

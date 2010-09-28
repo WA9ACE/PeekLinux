@@ -18,11 +18,8 @@ bool nsfb_cursor_init(nsfb_t *nsfb)
     nsfb->cursor = calloc(1, sizeof(struct nsfb_cursor_s));
     if (nsfb->cursor == NULL) 
         return false;
-// XXX: hack to switch focus to url box by default
     nsfb->cursor->loc.x0 = nsfb->width / 2;
     nsfb->cursor->loc.y0 = nsfb->height / 2;
-//	  nsfb->cursor->loc.x0 = 134;
-//	  nsfb->cursor->loc.y0 = 2;
     return true;
 }
 

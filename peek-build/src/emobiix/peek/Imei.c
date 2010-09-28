@@ -31,15 +31,17 @@ UBYTE getCdByteFromImei(UBYTE *imei)
 	return cmhSS_getCdFromImei(&aci_imei);
 }
 
+extern void BalGetImei(char *ImeiBuffer);
 
 const char* EmoGetImei()
 {
+#if 0
 	static UBYTE rawIMEI[CL_IMEI_SIZE];
 	static char imei[32] = "";
 
 	if (!imei[0])
 	{
-		cl_get_imeisv(sizeof(rawIMEI), rawIMEI, CL_IMEI_GET_STORED_IMEI);
+		cl_get_imeisv(sizeof(rawIMEI), rawIMEI, CL_IMEI_GET_SECURE_IMEI);
 
 		imei[0]  = ((rawIMEI [0] >> 4) & 0x0F)+0x30;
 		imei[1]  = ( rawIMEI [0] & 0x0F) +0x30;
@@ -62,6 +64,9 @@ const char* EmoGetImei()
 
 		emo_printf("%s(): got imei=%s", __FUNCTION__, imei);
 	}
+#endif
+	static char ImeiBuffer[15];
+	BalGetImei(ImeiBuffer);
 
-	return imei;
+	return ImeiBuffer;
 }

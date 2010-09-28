@@ -20,7 +20,7 @@
 #  elif defined(__CC_NORCROFT)
 #    define LOG(x) do { printf x, fputc('\n', stdout)); } while (0)
 #  else
-#    define LOG(x) do { printf x, fputc('\n', stdout)); } while (0)
+#    define LOG(x) do { emo_printf x, emo_printf('\n')); } while (0)
 #  endif
 #endif
 

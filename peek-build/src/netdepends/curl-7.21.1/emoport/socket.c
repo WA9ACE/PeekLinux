@@ -185,6 +185,7 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struc
 					hasData++;
 					break;
 				default:
+					FD_CLR(n, readfds);
 					if (exceptfds) 
 						FD_SET(n, exceptfds);
 				}
@@ -213,6 +214,7 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struc
 					hasData++;
 					break;
 				default:
+					FD_CLR(n, writefds);
 					if (exceptfds) 
 						FD_SET(n, exceptfds);
 				}
@@ -221,7 +223,7 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struc
 	}
 
 	if (!hasData && timeout)
-		TCCE_Task_Sleep(250);
+		TCCE_Task_Sleep(timeout->tv_sec * 1000 + timeout->tv_usec / 1000);
 
 	emo_printf("SOCKET select() returned %d", hasData);
 	return hasData;
@@ -268,10 +270,6 @@ int recv(int fd, void * buf, int n, int flags)
 	ret = peek_tcp_read(fd, buf, n);
 
 	emo_printf("SOCKET recv() returned %d", ret);
-
-	msg = P_ALLOC(EMOBIIX_SOCK_RECV);
-    msg->data = fd;
-	PSENDX(APP, msg);
 
 	return ret;
 }

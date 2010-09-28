@@ -1,5 +1,5 @@
 DEFINE  = HAVE_RECV
-DEFINE  += fprintf=emo_fprintf
+#DEFINE  += fprintf=emo_fprintf
 #DEFINE += RECV_TYPE_ARG1
 #DEFINE += RECV_TYPE_ARG2
 #DEFINE += RECV_TYPE_ARG3

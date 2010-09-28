@@ -49,7 +49,7 @@ DataObject *LoadingApplication(void)
 DataObject *LockApplication(void)
 {
 	static DataObject *output = NULL;
-	DataObject *dobj1, *root;
+	DataObject *dobj1, *root, *setw;
 
 	if (output != NULL)
         return output;
@@ -76,7 +76,7 @@ DataObject *LockApplication(void)
 	dataobject_setValue(setw, "margintop", dataobjectfield_string("15"));
 
 	setw = widget_newTypeIdName("label", "labelw", NULL, dobj1);
-	dataobject_setValue(setw, "data", dataobjectfield_string("Friday, Dec 17 2009"));
+	dataobject_setValue(setw, "data", dataobjectfield_string(hw_td_get_clock_str()));
 	dataobject_setValue(setw, "weight", dataobjectfield_string("bold"));
 	dataobject_setValue(setw, "marginleft", dataobjectfield_string("20"));
 	dataobject_setValue(setw, "margintop", dataobjectfield_string("4"));

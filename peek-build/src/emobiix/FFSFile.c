@@ -134,12 +134,13 @@ DIR *opendir(const char *name)
 
 struct dirent *readdir (DIR *dirp)
 {
-//int FEXPORT ffs_readdir(struct dir_s *dir, char *name, int size);
-	
-
+  emo_printf("readdir NOT IMPLEMENTED!!!!!!");
+  return NULL;
 }
 
 int closedir(DIR *dir) {
+  emo_printf("closedir() NOT IMPLEMENTED!!!");
+  return -1;
 //	ffs_closedir(&dir);
 }
 

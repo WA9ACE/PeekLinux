@@ -180,6 +180,9 @@ int Curl_socket_ready(curl_socket_t readfd, curl_socket_t writefd,
 
   if((readfd == CURL_SOCKET_BAD) && (writefd == CURL_SOCKET_BAD)) {
     r = wait_ms(timeout_ms);
+
+    emo_printf("Curl_socket_ready() - r=%d", r);
+
     return r;
   }
 
@@ -258,6 +261,7 @@ int Curl_socket_ready(curl_socket_t readfd, curl_socket_t writefd,
   FD_ZERO(&fds_read);
   if(readfd != CURL_SOCKET_BAD) {
     VERIFY_SOCK(readfd);
+    emo_printf("Curl_socket_ready() verify_sock(readfd) failed");
     FD_SET(readfd, &fds_read);
     FD_SET(readfd, &fds_err);
     maxfd = readfd;
@@ -266,6 +270,7 @@ int Curl_socket_ready(curl_socket_t readfd, curl_socket_t writefd,
   FD_ZERO(&fds_write);
   if(writefd != CURL_SOCKET_BAD) {
     VERIFY_SOCK(writefd);
+	emo_printf("Curl_socket_ready() verify_sock(writefd) failed");
     FD_SET(writefd, &fds_write);
     FD_SET(writefd, &fds_err);
     if(writefd > maxfd)

@@ -295,8 +295,8 @@ int dataobject_getRecordType(DataObject *dobj)
 void dataobject_appendRecord(DataObject *dobj, DataObject *robj)
 {
 	EMO_ASSERT(dobj != NULL, "appending record on NULL DataObject")
-	EMO_ASSERT(dobj != NULL, "appending NULL record")
-		
+	EMO_ASSERT(robj != NULL, "appending NULL record") 
+
 	list_append(dobj->children, robj);
 }
 
@@ -1142,20 +1142,25 @@ void dataobject_resolveReferences(DataObject *dobj)
 				connectionContext_syncRequest(connectionContext, url);
 				ref = dataobject_locate(url);
 			}
+			EMO_ASSERT(dobj->referenced != NULL, "resolve ref 1 is null");
 			widget_setDataObject(dobj, ref);
 		} else {
 			parent = dataobject_superparent(dobj);
 			ref = dataobject_findByName(parent, field->field.string);
+			EMO_ASSERT(dobj->referenced != NULL, "resolve ref 2 is null");
 			widget_setDataObject(dobj, ref);
 		}
 	} else {
+		EMO_ASSERT(dobj->referenced != NULL, "resolve ref 3 is null");
 		widget_setDataObject(dobj, NULL);
 	}
 	/*}*/
 
 	list_begin(dobj->children, &iter);
 	while (!listIterator_finished(&iter)) {
-		dataobject_resolveReferences((DataObject *)listIterator_item(&iter));
+		DataObject *obj = (DataObject *)listIterator_item(&iter);
+		EMO_ASSERT(obj != NULL, "got null item from child iter");
+		dataobject_resolveReferences(obj);
 		listIterator_next(&iter);
 	}
 	/*listIterator_delete(iter);*/
@@ -1169,7 +1174,9 @@ void dataobject_resolveReferences(DataObject *dobj)
 
 	list_begin(dobj->arrayChildren, &iter);
 	while (!listIterator_finished(&iter)) {
-		dataobject_resolveReferences((DataObject *)listIterator_item(&iter));
+		DataObject *obj = (DataObject *)listIterator_item(&iter);
+		EMO_ASSERT(obj != NULL, "got null item from array child iter");
+		dataobject_resolveReferences(obj);
 		listIterator_next(&iter);
 	}
 }

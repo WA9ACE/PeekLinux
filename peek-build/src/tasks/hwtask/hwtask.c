@@ -32,6 +32,9 @@
 #ifdef EMO_SIM
 extern int recvProcess;
 #endif
+
+extern void BalGetImei(char *ImeiBuffer);
+
 void hwStart(void) {
     BOSEventWaitT EvtStatus;
     bool          MsgStatus;
@@ -40,6 +43,7 @@ void hwStart(void) {
     void          *MsgBufferP;
     uint8         MailBoxId;
     BOSEventWaitT MailBoxIndex;
+    char ImeiBuffer[15];
     int i;
 #ifdef EMO_SIM
 	int key,state, hasData;
@@ -50,7 +54,6 @@ void hwStart(void) {
 	peek_file_init();
 
 #ifdef DAR_HALT
-#error
     fp = file_openRead("/var/dbg/dar");
     if(fp){
         if(file_size(fp) > 0) {
@@ -85,6 +88,12 @@ void hwStart(void) {
  HwStatusSet();
 
  emo_printf("hwStart() time: %s", hw_td_get_clock_str());
+
+ /* Needed for Imei decoding */
+ BalMiscInit();
+
+ emo_printf("IMEI: %s", EmoGetImei());
+
 #ifndef EMO_SIM
  // Enter main notify loop
     while(1) {

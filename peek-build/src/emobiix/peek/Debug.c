@@ -8,7 +8,7 @@
 typedef long off_t;
 
 unsigned int mfwMmeDrvFlag;
-static  char buf[10000] = {0};
+static char buf[76] = {0};
 
 void emo_printf( const char* fmt, ...) {
 #ifndef EMO_PROD
@@ -27,8 +27,24 @@ void emo_printf( const char* fmt, ...) {
 		buf[75] = '\0';
         rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
         va_end(ap);
-//        TCCE_Task_Sleep(2);
+        //TCCE_Task_Sleep(2);
 #endif
+}
+
+void emo_printlock(char *msg) {
+        NU_TASK *tp;
+
+        tp =  TCC_Current_Task_Pointer();
+	
+		buf[0] = 0;
+        if(tp) {
+			strcpy(buf, "[");
+			strcat(buf, tp->tc_name);
+			strcat(buf, "] ");
+        } 
+		strncat(buf, msg, 75 - strlen(buf));
+        buf[75] = '\0';
+        rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID );
 }
 
 void emo_fprintf(FILE *file, const char* fmt, ...) {
@@ -39,7 +55,7 @@ void emo_fprintf(FILE *file, const char* fmt, ...) {
 		if(file->fd > 2) {
 			emo_printf("______EMO_FPRINTF USED FOR FILE______");
 			while(1) {
-				TCCE_Task_Sleep(2);
+				TCCE_Task_Sleep(200);
 			}
 		}
         va_start(ap, fmt);
@@ -86,7 +102,7 @@ void bal_printf(const char* fmt, ...) {
 
 /* Default streams for stdlib */
 int DStreamopen(const char *path, unsigned flags, int llv_fd) {
-
+	emo_printlock("______________DStreamopen_______________");
 	return -1;
 }
 

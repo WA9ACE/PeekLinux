@@ -485,6 +485,9 @@ static bool verifyconnect(curl_socket_t sockfd, int *error)
   if(error)
     *error = SOCKERRNO;
 #endif
+ 
+  emo_printf("verifyconnect() returned rc=%d", rc);
+
   return rc;
 }
 
@@ -662,6 +665,9 @@ CURLcode Curl_is_connected(struct connectdata *conn,
 
   if(WAITCONN_CONNECTED == rc) {
     int error;
+	
+	emo_printf("XXXX verifyconnect called");
+
     if(verifyconnect(sockfd, &error)) {
       /* we are connected, awesome! */
       conn->bits.tcpconnect = TRUE;
@@ -685,6 +691,9 @@ CURLcode Curl_is_connected(struct connectdata *conn,
 
     /* nope, not connected  */
     if(WAITCONN_FDSET_ERROR == rc) {
+
+	emo_printf("YYYY verifyconnect called");
+
       (void)verifyconnect(sockfd, &error);
       data->state.os_errno = error;
       infof(data, "%s\n",Curl_strerror(conn,error));
@@ -968,7 +977,10 @@ singleipconnect(struct connectdata *conn,
     return CURLE_OK;
   }
 
+
   isconnected = verifyconnect(sockfd, &error);
+
+	emo_printf("ZZZZ verifyconnect called rc = %d isconnected = %d", rc, isconnected);
 
   if(!rc && isconnected) {
     /* we are connected, awesome! */

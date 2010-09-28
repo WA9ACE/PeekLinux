@@ -101,6 +101,7 @@ int atexit(void (*fun)())
 /****************************************************************************/
 void abort(void)
 {
-    loader_exit();
-    for (;;);   /* SPINS FOREVER */
+    //loader_exit();
+    while(1)    /* SPINS FOREVER */
+		TCCE_Task_Sleep(2);
 }

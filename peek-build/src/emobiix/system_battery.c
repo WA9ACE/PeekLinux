@@ -29,6 +29,9 @@ static void system_battery_set_battery_level(unsigned int level)
 	BATTERY_CHARGE_LEVEL->field.uinteger = level;
 	dataobjectfield_setIsModified(BATTERY_CHARGE_LEVEL, 1);
 	dataobject_setIsModified(SYSTEM_BATTERY, 1);
+
+    lgui_set_dirty();
+	updateScreen();
 }
 
 static void system_battery_set_charge_state(unsigned int state)
@@ -67,7 +70,7 @@ static BOOL mmePrimHandler (USHORT opc, void *data)
 
 			emo_printf("BATTERY_IND: %d %d", level, state);
 
-			system_battery_set_battery_level(level + 1);
+			system_battery_set_battery_level(level);
 			system_battery_set_charge_state(state);
 
 			return TRUE;

@@ -199,7 +199,7 @@ unsigned long bal_gethostbyname(const char *hostname) {
         return 0;
     }
 
-	TCCE_Task_Sleep(10);
+	//TCCE_Task_Sleep(10);
     regaddr= (void*)((unsigned int)SOCK_BASE+0x50);
 	__len = *(unsigned int*) regaddr;
 

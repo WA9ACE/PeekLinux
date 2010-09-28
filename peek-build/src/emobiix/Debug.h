@@ -21,13 +21,8 @@ void script_emo_printf(const char *fmt, ...);
 
 void emo_printf(const char *fmt, ...);
 
-#ifdef SIMULATOR
 #define emo_abort abort()
-#else
-#define emo_abort
-#endif
 
-#ifdef SIMULATOR
 #define EMO_ASSERT(__ast, __msg) \
 if (!(__ast)) { \
 	emo_printf("ASSERT:" __FILE__ ":%d: " __msg NL, __LINE__); \
@@ -48,11 +43,6 @@ if (!(__ast)) { \
 	emo_abort; \
 	return (__ival); \
 }
-#else
-#define EMO_ASSERT(__ast, __msg)
-#define EMO_ASSERT_NULL(__ast, __msg)
-#define EMO_ASSERT_INT(__ast, __ival, __msg)
-#endif
 
 #ifdef __cplusplus
 }

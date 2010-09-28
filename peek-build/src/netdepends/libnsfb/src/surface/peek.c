@@ -351,8 +351,16 @@ static bool peek_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
 			return;
 		case SYS_LOCK:
 			/* Invert wheel mode */
-			if(state)
+			if(state) {
 				wheel_mode = wheel_mode ? 0 : 1;	
+				/*
+				if(!wheel_mode) {
+					nsfb_cursor_clear(nsfb, cursor);
+				} else {
+					nsfb_cursor_plot(nsfb, cursor);
+				}
+				*/
+			}
 			break;
 		case SYS_CANCEL_KEY:
 			event->type = NSFB_EVENT_CONTROL;
@@ -368,10 +376,12 @@ static bool peek_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
             	event->value.keycode = NSFB_KEY_MOUSE_4;
             	event->type = state ? NSFB_EVENT_KEY_DOWN : NSFB_EVENT_KEY_UP;
 			} else { // cursor mode
-            	event->type = NSFB_EVENT_MOVE_RELATIVE;
-            	event->value.vector.x = 0;
-            	event->value.vector.y = -8;
-            	event->value.vector.z = 0;
+				if(cursor->loc.y0 >= 8) {
+					event->type = NSFB_EVENT_MOVE_RELATIVE;
+					event->value.vector.x = 0;
+					event->value.vector.y = -8;
+					event->value.vector.z = 0;
+				}
 			}
             break;
         case SYS_WHEEL_FORWARD: // down
@@ -379,10 +389,12 @@ static bool peek_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
             	event->type = state ? NSFB_EVENT_KEY_DOWN : NSFB_EVENT_KEY_UP;
             	event->value.keycode = NSFB_KEY_MOUSE_5;
 			} else {
-            	event->type = NSFB_EVENT_MOVE_RELATIVE;
-            	event->value.vector.x = 0;
-            	event->value.vector.y = 8;
-            	event->value.vector.z = 0;
+				if(cursor->loc.y1 < (240 - 8)) {
+					event->type = NSFB_EVENT_MOVE_RELATIVE;
+					event->value.vector.x = 0;
+					event->value.vector.y = 8;
+					event->value.vector.z = 0;
+				}
 			}
             break;
         case SYS_WHEEL_BACK_SHIFT: // left
@@ -390,10 +402,12 @@ static bool peek_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
             	event->type = state ? NSFB_EVENT_KEY_DOWN : NSFB_EVENT_KEY_UP;
             	event->value.keycode = NSFB_KEY_LEFT;
 			} else {
-            	event->type = NSFB_EVENT_MOVE_RELATIVE;
-            	event->value.vector.x = -8;
-            	event->value.vector.y = 0;
-            	event->value.vector.z = 0;
+                if(cursor->loc.x0 >= 8) {
+					event->type = NSFB_EVENT_MOVE_RELATIVE;
+					event->value.vector.x = -8;
+					event->value.vector.y = 0;
+					event->value.vector.z = 0;
+				}
 			}
 			break;
         case SYS_WHEEL_FORWARD_SHIFT: // right
@@ -401,10 +415,12 @@ static bool peek_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
             	event->type = state ? NSFB_EVENT_KEY_DOWN : NSFB_EVENT_KEY_UP;
             	event->value.keycode = NSFB_KEY_RIGHT;
 			} else {
-            	event->type = NSFB_EVENT_MOVE_RELATIVE;
-            	event->value.vector.x = 8;
-            	event->value.vector.y = 0;
-            	event->value.vector.z = 0;
+				if(cursor->loc.x1 < (320 - 8)) {
+					event->type = NSFB_EVENT_MOVE_RELATIVE;
+					event->value.vector.x = 8;
+					event->value.vector.y = 0;
+					event->value.vector.z = 0;
+				}
 			}
             break;
 		default: /* Pass through the rest to the key map */
@@ -471,7 +487,7 @@ static int peek_cursor(nsfb_t *nsfb, struct nsfb_cursor_s *cursor)
 static int peek_update(nsfb_t *nsfb, nsfb_bbox_t *box)
 {
 	struct nsfb_cursor_s *cursor = nsfb->cursor;
-	emo_printf("peek_update()\n");
+	emo_printf("peek_update()");
 	dspl_Enable(0);
 
 	if ((cursor != NULL) && (cursor->plotted == false)) {

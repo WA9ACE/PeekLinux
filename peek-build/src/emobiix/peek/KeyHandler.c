@@ -96,11 +96,17 @@ void emo_BitBltFull(U8* bmp)
 void updateScreen(void) {
 #ifndef SIMULATOR
 	int index, upper;
+	extern int netsurf_start_flag;
+
+	if(netsurf_start_flag) 
+		return;
+
 	renderman_flush();
 	manager_drawScreen();
-	dspl_Enable(0);
+
 	if (!lgui_is_dirty())
 		return;
+    dspl_Enable(0);
 
 	upper = lgui_index_count();
 	if (upper == 0) {

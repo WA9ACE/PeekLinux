@@ -1,14 +1,19 @@
-BalDispInitFontInfo(void) {}
-BalMemoryPoolBufferGet(void) {}
-BalMemoryPoolSizeGet(void) { }
+int BalDispInitFontInfo(void) {return 0;}
+int BalMemoryPoolBufferGet(void) {return 0;}
+int BalMemoryPoolSizeGet(void) {return 0;}
 BalPswProtocolStackEnable(void) {}
 BalTurnOnLight(void) { }
 HwdPwrOffBoard(void) { }  
 SysTime2Secs(void) {}       
 SysTimeDataGet(void) { }     
-int bget(void) {return 0; }
+
+extern void *malloc(unsigned int size);
+
+void *bget(long size) { return malloc(size); }
 int bpool(void) {return 0; }            
-int brel(void) {return 0; }                      
+
+void brel(void *ptr) {free(ptr); return; }                      
+
 int bstats(void) {return 0;}            
 void MonPrintf(void) {}
 
@@ -23,6 +28,11 @@ SettingModeHelplerInfo stCurSettingMode = {0,0,0,0};
 
 unsigned int timer_state = 0;
 unsigned int http_error_counter = 0;
+
+int fResumeSettingFromConfigFile(void) {
+
+
+}
 
 /* cant see where they used in bal_socket.o so we might have to investigate */
 void ata_nm_set_gprs_reg_status(void) {

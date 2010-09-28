@@ -54,6 +54,8 @@ SRC += hwtask/vibrator.c
 BALOBJ  = hwtask/bal/kpd_drv_if.o
 BALOBJ += hwtask/bal/balkeypad.o
 BALOBJ += hwtask/bal/balmisc.o
+BALOBJ += hwtask/bal/bal_ffs.o
+BALOBJ += hwtask/bal/balimeiapi.o
 
 TARGET = $(CURDIR)/peitasks.a
 OBJ  = $(addprefix $(CURDIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))

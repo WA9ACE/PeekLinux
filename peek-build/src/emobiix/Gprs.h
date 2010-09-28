@@ -18,6 +18,7 @@ void gprs_dataobject_init(void);
 void gprs_set_status(BOOL status);
 void gprs_set_signal_level(U32 level);
 void gprs_set_location(U32 lac, U32 ci);
+void gprs_set_on(BOOL status);
 
 #endif /* _GPRS_H_ */
 

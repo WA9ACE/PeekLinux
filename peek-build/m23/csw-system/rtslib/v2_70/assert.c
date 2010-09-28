@@ -12,9 +12,13 @@
 /****************************************************************************/
 void _abort_msg(const char *string)
 {
-   //emo_printf("ASSERT");
-   //emo_printf(string);
-   abort();
+   emo_printf("ASSERT");
+   emo_printf(string);
+   while(1) {
+   		TCCE_Task_Sleep(1000);
+   }
+
+   //abort();
 }
 
 /****************************************************************************/

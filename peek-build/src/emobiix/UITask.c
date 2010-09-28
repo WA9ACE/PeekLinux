@@ -198,12 +198,13 @@ int UIInit(void)
 		initd = 1;
 
 		manager_drawScreen();
-		updateScreen();
 #ifndef EMO_SIM
 		KeyPad_Init();
 #endif
 	}
 
+	lgui_set_dirty();
+	updateScreen();
 	uiStatusSet();
 	return 1;
 }
