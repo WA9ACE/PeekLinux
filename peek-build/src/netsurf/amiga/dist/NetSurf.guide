@@ -1,0 +1,234 @@
+@database NetSurf.guide
+@author Chris Young
+@wordwrap
+
+@node Main "NetSurf"
+@{b}NetSurf@{ub} Amiga-specific documentation
+http://www.netsurf-browser.org
+
+@{"Change Log          " link ChangeLog/Main}
+
+@{"Licence             " link COPYING/Main}
+@{"Command line options" link CLI}
+@{"Options file        " link Options}
+@{"Fonts               " link Fonts}
+@{"ARexx port          " link ARexx}
+@{"OpenURL/URL Prefs   " link OpenURL}
+@{"Hotlist menu        " link Hotlist}
+@{"Local MIME types    " link MIMETypes}
+
+@{"Optimising for speed" link Speed}
+
+@{"Credits             " link Contact}
+@endnode
+
+@node cli "Command line options"
+NetSurf URL/K,FORCE/S
+
+Where:
+
+URL   = Address of page to open on startup
+FORCE = Force new instance of NetSurf to open (has some limitations, use for debugging only)
+
+Note that there may be other generic options which can also be specified.
+@endnode
+
+@node options "Options file"
+The options file is stored in @{"Resources/Options" link Resources/Options/Main} by default.  Most of the settings can be changed from within NetSurf by selecting Edit preferences from the Settings menu.
+
+There are a couple of Amiga-specific options which can only be changed directly in the file.  These are:
+
+@{b}kiosk_mode@{ub} No gadgets
+@{b}no_iframes@{ub} Disable IFrames
+@{b}printer_unit@{ub} Specifies which printer.device unit to print to
+@{b}drag_save_icons@{ub} Enables displaying Workbench-style transparent icons under the pointer when performing drag saves (ctrl-drag of objects available if NetSurf is running on the Workbench screen) and text selection drags.  If set to 0 the pointer style will change instead.  OS 4.0 users may want to set this to 0 as icons will appear opaque and obscure the drop position.
+
+@{b}url_file@{ub} Path to URL database file
+@{b}hotlist_file@{ub} Path to Hotlist file
+@{b}arexx_dir@{ub} Path to ARexx scripts dir
+@{b}arexx_startup@{ub} ARexx script to run at startup (in above dir)
+@{b}arexx_shutdown@{ub} ARexx script to run on quit (in above dir)
+@endnode
+
+@node Fonts
+The font to use for each font type can be defined in NetSurf's options.  OS4 NetSurf does not currently support soft styles for bold and italic, so a designed font for these will need to be specified as follows:
+
+Within @{"TypeManager" system "SYS:System/TypeManager"} select a font being used by NetSurf and click on Modify.
+On the Files tab, Font family section, choose the @{b}bold@{ub}, @{i}italic@{ui} and @{b}@{i}bold-italic@{ui}@{ub} version of the font.
+Click Save.
+
+@{b}Unicode fallback font@{ub}
+
+If the font NetSurf is trying to use does not contain a specific character used on a web page, it will try the Unicode/fallback font.  It is recommended to use a font which either:
+(a) Contains as complete a Unicode character set as possible or
+(b) Is complete for the pages you are likely to visit (eg. if you visit a lot of Japanese pages, set the Unicode fallback font to one with a complete Japanese character set)
+
+For most users, installing and selecting @{"Code2000" rxs "address netsurf 'open http://www.code2000.net'"} or @{"Bitstream Cyberbit" rxs "address netsurf 'open http://ftp.netscape.com/pub/communicator/extras/fonts/windows/'"} is the best option.
+
+@endnode
+
+@node Themes
+AmigaOS NetSurf supports basic theming of gadget imagery.  Themes live in the Resources/Themes directory, and two are included by default:
+
+Default - default theme with no external dependencies.
+AISS - theme using Mason's AISS images for buttons, and the def_pointers package for 32-bit pointer images.
+
+The file "Theme" in the theme directory contains the files used for that theme.  See @{"Default Theme file" link Resources/Themes/Default/Theme/Main} for more details.
+
+Theme directories should be copied and renamed if themes are modified, as update installation of NetSurf will overwrite any changes.  AmigaOS NetSurf themes are not compatible with NetSurf for other platforms.
+@endnode
+
+@node arexx "ARexx port"
+NetSurf's ARexx port is called NETSURF.
+
+Commands are:
+
+@{b}OPEN URL/A,NEW=NEWWINDOW/S,NEWTAB/S,SAVEAS/K,W=WINDOW/K/N,T=TAB/K/N@{ub}
+Opens URL in current window or a new window/tab if NEWWINDOW/NEWTAB is specified.  Saves the location without displaying if SAVEAS and a filename is specified (SAVEAS available in 2.6325)
+
+@{b}SAVE FILENAME/A,W=WINDOW/K/N,T=TAB/K/N@{ub} (2.6027)
+Saves current page source to FILENAME
+
+@{b}QUIT@{ub}
+Quits NetSurf
+
+@{b}TOFRONT@{ub}
+Brings NetSurf's screen to the front
+
+@{b}GETURL W=WINDOW/K/N,T=TAB/K/N@{ub}
+Puts the URL displayed in the current window/tab into RESULT
+
+@{b}GETTITLE W=WINDOW/K/N,T=TAB/K/N@{ub}
+Puts the title of the page displayed in the current window/tab into RESULT
+
+@{b}GETSCREENNAME@{ub} (2.8303)
+Puts the name of the screen NetSurf is running on into RESULT.
+
+@{b}BACK W=WINDOW/K/N,T=TAB/K/N@{ub} (2.10626)
+Move back one page in history.
+
+@{b}FORWARD W=WINDOW/K/N,T=TAB/K/N@{ub} (2.10626)
+Move forward one page in history.
+
+@{b}HOME W=WINDOW/K/N,T=TAB/K/N@{ub} (2.10626)
+Move back to the home page.
+
+@{b}RELOAD FORCE/S,W=WINDOW/K/N,T=TAB/K/N@{ub} (2.10626)
+Reload the current page, FORCE will do a full reload.
+
+@{b}CLOSE W=WINDOW/K/N,T=TAB/K/N@{ub} (2.10718)
+Close the current page.  A window or window and tab can be specified.  Note that when a tab is closed, the tab number of tabs to the right of it will change, and the currently active tab may also change.  If the last tab or window is closed, NetSurf will usually exit.  Make sure you account for these situations in your code.
+
+@{b}VERSION VERSION/N REVISION/N RELEASE/S@{ub}
+Returns the current version of NetSurf in RESULT.  You can also do version checking by supplying a VERSION and optional REVISION to check against.  If the version of NetSurf is the same or higher 1 will be returned, if it is older 0.  If RELEASE is specified, the command operates on the release version rather than the internal version number.
+
+@{b}ACTIVE T=TAB/S@{ub} (2.10718)
+Returns the active window (or tab if TAB is specified).  Commands automatically operate on the active window/tab so you do not normally need to use this.
+
+@{b}WINDOWS W=WINDOW/K/N@{ub} (2.10656)
+Puts the number of windows into RESULT.  If the WINDOW keyword is specified, will put the number of tabs in that window into RESULT.
+
+The W=WINDOW/K/N,T=TAB/K/N parameters were added in 2.10656 and allow targetting a window other than the current one.  Both WINDOW and TAB must be specified (TAB=1 for tabless window) except in the special case of the CLOSE command.
+
+The ARexx menu will be populated with scripts named #?.nsrx in @{"arexx_dir" link options 12}, up to a maximum of 20 entries.  The titles of these entries will be the comments field of the file (or the filename if comments field is empty).
+
+Special scripts @{"arexx_startup" link options 13} and @{"arexx_shutdown" link options 14} will be run at startup and shutdown of NetSurf.  These will execute after NetSurf has fully initialised with the initial window and before NetSurf frees resources (ie. at the last stage of startup, and the first stage of shutdown)
+@endnode
+
+@node OpenURL
+@{b}OpenURL configuration@{ub}
+
+Click Add on the Browsers page and fill in the details as follows:
+Name: NetSurf
+Path: NetSurf URL="%u"
+ARexx port: NETSURF
+Show:
+To front: TOFRONT
+Open URL: OPEN "%u"
+New window: OPEN "%u" NEW
+
+On the Misc tab, please ensure "Send mailto: URLs to email application" is set.
+
+@{b}URL Prefs (OS4.1)@{ub}
+Under OS4.1 Update 1, launch-handler is used in preference to OpenURL.  The
+Installer script can add the relevant configuration to launch URLs in NetSurf.
+Please ensure your email application is configured in URL Prefs for mailto:
+links clicked within NetSurf.
+@endnode
+
+@node hotlist "Hotlist menu"
+Items from the hotlist can be added to the Hotlist menu as follows:
+
+Select Hotlist => Show hotlist...
+Add a folder called Menu.  This must not be placed within any other folder.
+
+Items in this folder node up to a maximum (currently) of 40 items will be added to the Hotlist menu, within the limits of the Intuition menu system.
+
+Items in folders within the Menu folder node will be converted to subitems in the menu.
+
+Folders more than one level down in the heirarchy will become menu items with no action.  Items deeper will not be included in the menu at all.
+
+Folders with no items in them will show up disabled in the menu.  If they are named "--" they will be displayed as separator bars.
+
+eg.
+
+- Menu
+    |
+    +- Netsurf
+    |     |
+    |     +- NetSurf Homepage
+    |     |
+    |     +- More NetSurf links
+    |                |
+    |                +- NetSurf bugtracker
+    |
+    +- --
+    |
+    +- Google
+
+Will look something like the following within the menu:
+
+|NetSurf »| - |NetSurf Homepage  |
+|---------|   |More NetSurf links|
+|Google   |
+
+@endnode
+
+@node mimetypes "Local MIME Types"
+NetSurf determines the MIME types of local files primarily by checking the icon of the file.  If the icon is not found it will check the default icon for the file type.
+
+It looks for a tooltype MIMETYPE and, if found, will use the contents as the filetype of the file.  If not found it makes a guess at the MIME type using datatypes.library, however this will not be very accurate.
+
+The Installer script will set the MIMETYPE tooltype on basic relevant default filetype icons.  If you get problems:
+* If the file has a real icon, add MIMETYPE=<MIME type of file> to the tooltypes.
+* If the file does not have an icon, check:
+1. The file type is showing in DefIcons Prefs editor
+2. The icon ENVARC:Sys/def_<filetype> contains the MIMETYPE tooltype.
+@endnode
+
+@node Speed "Optimising for speed"
+There are a number of options which can be changed that will affect the speed of NetSurf's rendering.  Here are a list of the fastest settings which may help decrease rendering time on slower platforms:
+
+@{lindent 2}* Ensure NetSurf is running on a @{b}32-bit screen@{ub} if possible.  NetSurf down-converts from 32-bit ARGB for display, which can impact performance.@{lindent}
+
+@{lindent 2}* In preferences, General tab, enable @{b}Fast scrolling@{ub}.@{lindent}
+
+@{lindent 2}* In preferences, Rendering tab set:
+@{b}Cache native versions@{ub} to @{b}Scaled@{ub} (or preferably @{b}All@{ub}, but this will use more graphics mem, and scaling images is a bigger performance hit)
+Deselect @{b}Higher quality scaling@{ub}, this will be very slow if not done in hardware.@{lindent}
+@endnode
+
+@node contact "Credits"
+NetSurf was ported to AmigaOS 4 by Chris Young
+chris@unsatisfactorysoftware.co.uk
+
+The pointer images, AISS theme icon and Throbber were drawn by Martin 'Mason' Merz.
+http://www.masonicons.de
+
+The default theme icon was adapted from the NetSurf logo by Marko K. Seppänen.
+
+All other code and files are the same for all platforms and credited in the files and/or on the NetSurf website.
+http://www.netsurf-browser.org
+
+The source code can be obtained from http://www.netsurf-browser.org SVN or (in the event the service is unavailable) chris@unsatisfactorysoftware.co.uk or any other of the NetSurf developers.
+@endnode

@@ -1,0 +1,526 @@
+--------------------------------------------------------------------------------
+                              NetSurf Change Log
+--------------------------------------------------------------------------------
+
+NetSurf 2.6
+===========
+
+	Core / All
+	----------
+
+	* Improvements to float positioning.
+	* Fix absolute positioned inlines.
+	* Improve handling of percentage margins and paddings on floats.
+	* Fix several memory leaks.
+	* Rationalised memory allocation functions.
+	* Updated SSL root certificates.
+	* Fix handling of PNGs with zero data.
+	* Moved input handling into content handlers.
+	* Simplified browser window module.
+	* Fix table borders specified in em/ex units.
+	* Improved CSS content handling.
+	* Don't try to draw zero size images.
+	* Simplified and fixed save complete feature.
+	* Reduce frequency of cache clean attempts.
+	* Improve and optimise rendering of borders in HTML.
+	* Fix URL comparison issue.
+	* Improve object handling in HTML.
+	* Fix absolute positioned root element.
+	* Rewritten file: fetch handler for local URLs.
+	* Much improved directory listings for local file: paths.
+	* Improve handling of binary data in plain text renderer.
+	* Fixed cache expiry problems.
+
+	* LibCSS library (CSS parser and selection engine):
+		+ Allow stylesheets to be used in multiple contexts
+		  simultaneously.
+		+ Fix possible stylesheet reuse crash.
+
+	RISC OS-specific
+	----------------
+
+	* Increased maximum allowed value for memory cache size option.
+	* Update 'about' page to include licences for linked components.
+	* Fix layout to paper width when printing.
+	* Fix screen redraw after printing.
+	* Enable sideways print option.
+
+	GTK-specific
+	------------
+
+	* Avoid potential use of NULL pointer.
+	* Fix for old versions of GTK.
+	* Improve internationalisation support.
+	* Improve handling of bitmap opacity.
+	* Fix redraw issues with non-HTML content.
+	* Cleaned up menu generation and handling.
+
+	BeOS/Haiku-specific
+	-------------------
+
+	* Fix build.
+	* Fix mimetype acquisition for local files.
+	* Improve handling of bitmap opacity.
+	* Enable knockout rendering optimisation.
+	* Improved polygon plotter accuracy.
+	* Fix colours on copy to clipboard.
+
+	AmigaOS-specific
+	----------------
+
+	* Fixed menus when switching tabs.
+	* Improved font handling.
+	* Text kerning.
+	* Update for OS4.1 Update 2.
+	* Simplify building of Cairo and non-Cairo versions.
+	* Fixed scrollbar handling.
+	* Better NetSurf icon.
+	* Improve installer.
+	* Better support for ARexx commands.
+	* Context sensitive cut/copy/paste.
+	* Fix clipping for non-HTML contents.
+	* Option to show icon under drag saves.
+	* Bitmap plot optimisations.
+	* Now uses core fetcher for file: URLs.
+
+	Framebuffer-specific
+	--------------------
+
+	* Framebuffer toolkit rationalised.
+	* Improved scrollbar support.
+	* Added X surface handler.
+	* Improved scheduling.
+	* Fixed redraw issues.
+	* Improved keypress handling.
+	* On screen keyboard.
+	* History window.
+	* Configurable window furniture size.
+	* Support for scaled bitmap plotting.
+	* Factored out common plot code for rendering at different bpp.
+	* Load and save cookies file on start and quit.
+	* Improve handling of bitmap opacity.
+
+	Also included are many smaller bug fixes, improvements and
+	documentation enhancements.
+
+
+NetSurf 2.5
+===========
+
+	Core / All
+	----------
+
+	* Fetch improvements.
+	* Fix fetching from https sites with http authentication.
+	* Handle http authentication with no realm.
+	* Cookie handling improvements.
+	* Improved support for {min|max}-{width|height} CSS properties.
+	* HTML redraw optimisations.
+	* Improved mouse tracking over browser windows.
+	* Browser window status bar update rationalisation.
+	* Better handling of memory exhaustion.
+	* Made text export more robust.
+	* Fix relative positioning of floats.
+	* Align baselines of text on a line.
+	* HTML layout optimisations.
+	* Fixed HTML based box alignment behaviour.
+	* Sorted out default table borders.
+	* Updated Italian translation.
+	* Updated German translation.
+	* Allow any name for frame targets.
+	* Allow sending of referer when moving from http hosts to https.
+	* Improved stability.
+	* Simplified plotter API.
+	* Fixed memory leak in imagemap handler.
+	* Optimised debug rendering of box model outlines.
+	* Activity is indicated by 'progress' pointer. 
+	* Ensure debug rendering outlines are plotted on top of other content.
+	* Now using LibCSS for CSS parsing and selection.
+	* Many CSS related bugs fixed.
+	* Rewritten cache and internal content handling.
+	* Fixes for file: URL handling.
+	* Don't try to access file: URLs through the configured proxy.
+	* Core widget for handling SELECT element menus.
+	* Core scrollbar widget used for CSS overflow and SELECT menu widget.
+	* Very basic quirks mode support.
+	* Cleaned up how the initial rendering of a content occurs.
+	* Command line argument handling and initialisation cleanup.
+	* Clearer build configuration messages.
+	* Favicon retrieval.
+	* Full page saves, including CSS and image files.
+	* PDF export disabled.
+	* Search-as-you-type page search support.
+
+	* Hubbub library (HTML parser):
+		+ Fixed locale problem.
+		+ Various improvements.
+
+	* LibCSS library (CSS parser and selection engine):
+		+ First release.
+
+	* LibNSBMP library (NetSurf BMP decoder):
+		+ Fix ICO decoding on big-endian platforms.
+		+ Improve inverse height calculation.
+
+	* LibNSGIF library (NetSurf GIF decoder):
+		+ Improve Palette entry handling.
+
+	* LibParserUtils library (parser building utility functions):
+		+ Fixed charset problem.
+		+ Various improvements.
+
+	* LibSVGTiny library (SVG support):
+		+ Colour component ordering fix.
+		+ Support arcs in paths.
+		+ Improve circle element handling.
+		+ Add ellipse element support.
+		+ Improve stroke width rounding.
+
+	* LibWapcaplet library (String internment):
+		+ First release.
+
+	RISC OS-specific
+	----------------
+
+	* Theme code cleanup.
+	* Fix possible HTTP autentication crash.
+	* Fix potential problem with URL completion.
+	* Better handling of WIMP errors.
+	* Fixed memory leak in path plotting. (Used for SVG display.)
+	* Improve launching of URIs NetSurf doesn't handle.
+	* New guide to building NetSurf on RISC OS.
+	* Simplified native build process for NetSurf and libraries.
+	* Multitasking behaviour changed to be kinder to other apps.
+	* Fixed problem loading content served locally from WebJames.
+	* Improved stability.
+	* Save complete now implemented in the core.
+	* Find text moved to core and crash bug fixed.
+
+	* RUfl library (RISC OS Unicode support):
+		+ Fixed font scan crash.
+		+ Faster font scanning with FontManager 3.64 or later.
+
+	GTK-specific
+	------------
+
+	* Give drawing area input focus on click.
+	* Added local history toolbar button.
+	* Improve dot and dash line patterns.
+	* Made throbber loading more robust.
+	* Improved tab handling.
+	* Improved status bar control.
+	* Faster plotting of clipped and scaled images for smooth scrolling.
+	* Favicon display.
+	* Added view source code feature.
+	* Added search box on toolbar.
+	* Theme handling.
+	* Toolbar customisation.
+	* Context sensitive menu updated.
+	* Improved menu structure.
+	* Updated for compatibility with latest GTK versions.
+
+	BeOS/Haiku-specific
+	-------------------
+
+	* Complete save support.
+
+	AmigaOS-specific
+	----------------
+
+	* Faster and more robust page plotting.
+	* Better clipping of plot actions.
+	* Smoother scrolling.
+	* Improved handling of tabs.
+	* Added UI for SSL certificate inspection.
+	* Improved stability.
+	* Better font handling.
+	* Added a preferences GUI.
+	* Better pointer handling.
+	* Better handling of bitmap alpha channels.
+	* Improved status bar.
+	* Added scale support.
+	* Improved mouse click handling.
+	* Keyboard shortcuts added.
+	* Added search bar.
+	* Added HelpHints.
+	* Theme and icon improvements.
+	* Handle more exotic formats dropped on text boxes, using DataTypes.
+	* Favicon display.
+	* Added search box on toolbar.
+
+	Framebuffer-specific
+	--------------------
+
+	* Framebuffer handling abstracted into libnsfb library.
+	* Fixed throbber to show inactivity correctly.
+	* Improved handling of text entry into URL bar.
+	* Fixed redraw issues while scrolled from top and while scrolling.
+	* Fixed redraw issues with animated GIFs and text areas.
+	* Improved mouse handling.
+	* Fixed zero size iframe crash.
+	* Added full range of pointer sprites.
+	* Better keyboard input handling.
+	* Fix continual reload on pages with meta refresh.
+	* Improve look and placement of toolbar, icons and scrollbars.
+	* Internal font changed.  Includes more glyphs and bold/italic.
+	* Improved stability.
+
+	* LibNSFB library (NetSurf Framebuffer):
+		+ New library.
+
+	Windows-specific
+	----------------
+
+	* New front end, considered pre-alpha.
+
+	Also included are many smaller bug fixes, improvements and
+	documentation enhancements.
+
+
+NetSurf 2.1
+===========
+
+	Core / All
+	----------
+
+	* Fix detection of active link areas (avoids entire page being treated
+	  as a link in certain cases).
+	* Support height on TR.
+	* Fix numbering of floated list items.
+	* Make borders/margins/padding on form elements match other browsers.
+	* Updated Italian translation.
+	* German welcome page.
+	* Fix handling of percentage height on HTML and BODY.
+	* Partially handle percentage heights on TABLE
+
+	RISC OS-specific
+	----------------
+
+	* Set bit 4 of extended window flags byte.
+
+	GTK-specific
+	------------
+
+	* Fix buffer overflows in options code.
+
+	BeOS/Haiku-specific
+	-------------------
+
+	* Implement path plotter for SVG rendering.
+
+	AmigaOS-specific
+	----------------
+
+	* Improved packaging and installation rules.
+	* Speed up scrollwheel scrolling.
+	* Cache scaled bitmaps in memory by default.
+	* Support exporting of images as IFF.
+
+	Also included are many smaller bug fixes, improvements and
+	documentation enhancements.
+
+
+NetSurf 2.0
+===========
+
+	Core / All
+	----------
+
+	* Completely new HTML parser (Hubbub).
+	* SVG support. (Can be used as normal images and background images.)
+	* PDF export support.
+	* Many improvements to page layout and rendering.
+	* More CSS properties supported.
+	* Improved text selection behaviour.
+	* Charset fixes.
+	* Portability improvements.
+	* Configurable multi-platform build system.
+	* Tabbed browsing awareness.
+	* Corrected behaviour of backgrounds on root element.
+	* Many fixes related to floated content.
+	* More lenient meta refresh delay handling.
+	* Improvements to cut, copy and paste behaviour.
+	* Better cookie handling.
+	* Improved form functionality.
+	* Improved form control display.
+	* Stability fixes for handling nonsense data.
+	* Better handling of HTML attributes.
+	* Fix broken layout on systems which don't use '.' as the decimal
+	  separator.
+	* Fix inline height not affecting line height.
+	* Handle whitespace in URL bar.
+	* New throbber animation.
+	* Fixed occasional white flicker of page area during layout.
+	* New default homepage.
+
+	RISC OS-specific
+	----------------
+
+	* Restructured menu with access to more functionality.
+	* Remembers save / download paths.
+	* Improved style-guide compliance.
+	* Wimpslot size adjusted at build time.
+	* Alt+click on close icon closes all NetSurf windows.
+	* Escape aborts drag save.
+	* New object > link submenu.
+	* SVG to Drawfile conversion.
+	* Zoom/scale with shift+scrollwheel.
+	* Improved drawfile export.
+
+	GTK-specific
+	------------
+
+	* Tabbed browsing.
+	* Global history.
+	* Download manager.
+	* Enhanced interface.
+	* Text selection.
+	* Print support.
+	* Improved context menu.
+	* Handle desktop DPI setting.
+	* Can support RISC OS Sprite bitmap format via librosprite.
+	* View source.
+	* Content language selection option.
+
+	BeOS/Haiku-specific
+	-------------------
+
+	* First release.
+
+	AmigaOS-specific
+	----------------
+
+	* First release.
+
+	Framebuffer-specific
+	--------------------
+
+	* First release.
+
+	Also included are many smaller bug fixes, improvements and
+	documentation enhancements.
+
+
+NetSurf 1.2
+===========
+
+	Core / All
+	----------
+
+	* Overhaul documentation in line with new website.
+	* Many improvements to cookie handling.
+	* Minimum font size option is now obeyed by form elements.
+	* Add support for periodic reflow during fetching.
+	* Fixes for positioning of floated elements -- NetSurf now passes Acid1.
+	* Bring support for <center> and align= in line with specification.
+	* Updated SSL root certificate bundle.
+	* Various fixes for form element default styling and interaction with
+	  CSS.
+	* Rewritten, more tolerant, HTTP redirect handling.
+	* Fix crash when tabbing into hidden form fields.
+	* Fix background handling on <body> and <html>.
+	* Permit <style> in <body>.
+	* Relax restriction on location of @import rules.
+	* Improve CSS colour handling.
+	* Fix positioning of horizontal scrollbars within page.
+	* Fixes for inline-block boxes.
+	* Minor fixes to CSS parsing.
+	* NetBSD support.
+	* Fix GIF decoding to work correctly on big-endian processors.
+	* New build system and many compiler warnings fixed.
+
+	RISC OS-specific
+	----------------
+
+	* Fix crashes on 'images.google.com'.
+	* Fix intermittent crashing when clicking in URL-completion menu.
+	* Fix search when input is '*'.
+	* Fix Shift+Adjust clicks.
+	* Permit disabling of interactive help.
+
+	GTK-specific
+	------------
+
+	* Improve form widget support.
+	* Improve support for core configuration options (memory cache size,
+	  proxy, etc).
+	* Fix unsightly flickering to white.
+	* Fix non-ASCII text input handling.
+	* Fix for caret positioning when clicking after the end of text in
+	  form inputs.
+	
+	Also included are many and various smaller bug fixes, documentation
+	enhancements and updated translations.
+
+
+NetSurf 1.1
+===========
+
+	Core / All
+	----------
+
+	* Fix charset detection bugs, fixes #1726341 (WightLink).
+	* Add -v command line option to enable debugging output.
+	  (This is enabled by default in the RISC OS build via the !Run file).
+	* Rationalise header file includes.
+	* Various portability fixes to BSD and Solaris.
+	* Abstraction of schemes for fetchers.
+	* More encoding detection fixes.
+	* Fix cookie domain matching in unverifiable transactions.
+	* Fix cookie issues with 'launchpad.net'.
+	* Fix deadlock when fetching stylesheets.
+	* Fix bug where the referer header was being sent regardless.
+	* Fix bug where strange Accept-Language and other headers could be
+	  sent.
+	* Fix crash when building error page.
+	* Content scaling is now handled centrally, such that both GTK and
+	  RISC OS versions act in the same way.
+	* Licence for NetSurf changed to GPLv2 only with clause allowing
+	  linking to OpenSSL.
+
+	RISC OS-specific
+	----------------
+
+	* Tweak default hotlist entries to be more up-to-date.
+	* Fix interaction between failed drag saves and pointer
+	  tracking (including page scrolling).
+	* Scroll wheel support on hotlist and history windows.
+	* Use proper background colour for AW files using transparency.
+	* Fix AWRenderer clipping issue (#1756230) and improve rendering
+	  performance.
+
+	GTK-specific
+	------------
+	
+	* Add local file browsing MIME type guessing.  Also fixes
+	  directory browsing.
+	* Fix destruction of windows involving frames, fixes crashes
+	  on sites such as 'news.bbc.co.uk'.
+	* Reduce flicker when periodically reflowing during fetch.
+	* Fix bug that caused 100% CPU usage on some sites with frames.
+	* Fix scroll-position setting, allowing anchors and
+	  back/forward positions to be set/remembered.
+	* Fix problems with closing windows with fetches still in progress.
+	* New Window menu entry now functions.
+	* Open File... menu entry now functions.
+	* Fix reentrancy issues with event scheduling.
+	* Support for setting the path to find CA certificates (fixes SSL
+	  sites).
+	* Stop referer header being sent with URLs entered in the URL bar.
+	* Use default homepage if homepage option is blank.
+	* Full screen mode now functions.
+	* Popup version of the main menu.
+	* Removal of menubar/toolbar/statusbar now functions.
+	* Fix corruption on some animated GIFs due to new images not being
+	  created blank.
+	* Fix issues with scrolling from the keyboard.
+	* Add simple SSL certificate verification window.
+
+	Also included are many and various smaller bug fixes, documentation
+	enhancements and updated translations.
+
+
+NetSurf 1.0
+===========
+
+	* First release.
