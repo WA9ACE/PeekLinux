@@ -5,6 +5,7 @@
 #include "socket_api.h"
 #include "p_sim.h"
 #include "app.h"
+#include "p_malloc.h"
 
 extern int errno;
 
@@ -19,7 +20,6 @@ extern BOOL app_send_buf(PROC_CONTEXT_T *pcont, char *buffer, int size);
 extern void app_switch_flow(PROC_CONTEXT_T *pcont, int flow_on);
 extern void app_close_tcp_bearer(PROC_CONTEXT_T *context);
 extern void app_gethostbyname(const char *hostname);
-void peek_tcp_enable_read(int fd);
 
 #define MAX_TCP_SOCKETS 	30
 static PROC_CONTEXT_T s_tcp_sockets[MAX_TCP_SOCKETS];
@@ -29,6 +29,12 @@ static NU_SEMAPHORE mutex_socket;
 static NU_SEMAPHORE mutex_write;
 static NU_SEMAPHORE mutex_close;
 static NU_SEMAPHORE mutex_dns;
+
+typedef struct _ReadData
+{
+	int nbytes;
+	char *bytes;
+} ReadData;
 
 static int s_tcp_fd = -1;
 int peek_tcp_get_socket_result()
@@ -124,12 +130,17 @@ void peek_tcp_socket()
 
 	for (i = 0; i < MAX_TCP_SOCKETS; i++)
 	{
-		if (!s_tcp_sockets[i].psocket)
+		if (!s_tcp_sockets[i].psocket && !(s_tcp_sockets[i].recv_list && list_size(s_tcp_sockets[i].recv_list) > 0))
 		{
 			PROC_CONTEXT_T *context = &s_tcp_sockets[i];
+
+			if (context->recv_list)
+				list_delete(context->recv_list);
+
 			memset(context, 0, sizeof(*context));
 
 			context->waiting_for = WAITING_FOR_SOCKET;
+			context->recv_list = list_new();
 
 			if (!app_socket(context, AP_TCPUL, SOCK_IPPROTO_TCP))
 			{
@@ -178,32 +189,48 @@ void peek_tcp_write(int fd, const void *buf, int len)
 int peek_tcp_read(int fd, void *buf, int len)
 {
 	PROC_CONTEXT_T *context = &s_tcp_sockets[fd];
-	int nread = (len > context->data_rcvd ? context->data_rcvd : len);
-
-	if (!nread)
+	int nitems = list_size(context->recv_list);
+	int nread;
+	ListIterator it;
+	ReadData *data;
+	
+	if (!nitems)
 	{
 		errno = EAGAIN;
 		return -1;
 	}
 
-	emo_printf("peek_tcp_read(fd=%d, buf=%08X, len=%d, nread=%d)", fd, buf, len, nread);
+	list_begin(context->recv_list, &it);
+	data = (ReadData *)listIterator_item(&it);
 
-	memmove(buf, context->eventBuf, nread); 
-//	memcpy(buf, context->eventBuf, nread); // FIXME this is not correct! should be memmove
-	context->data_rcvd -= nread;
+	nread = (len > data->nbytes ? data->nbytes : len);
+
+	emo_printf("peek_tcp_read(fd=%d, buf=%08X, len=%d, nread=%d, items=%d)", fd, buf, len, nread, nitems);
+
+	memmove(buf, data->bytes, nread); 
+	data->nbytes -= nread;
+
+	if (data->nbytes <= 0)
+	{
+		p_free(data->bytes);
+		p_free(data);
+		listIterator_remove(&it);
+	}
+		
 	return nread;
 }
 
 int peek_tcp_can_read(int fd)
 {
 	PROC_CONTEXT_T *context = &s_tcp_sockets[fd];
+	int nread = list_size(context->recv_list);
 
-	emo_printf("peek_tcp_can_read(fd=%d) = %d", fd, context->data_rcvd);
+	emo_printf("peek_tcp_can_read(fd=%d) = %d", fd, nread);
 
-	if (context->waiting_for == RECEIVED_DISCONNECT && context->data_rcvd <= 0)
+	if (context->waiting_for == RECEIVED_DISCONNECT && nread <= 0)
 		return -1;
 
-	return (context->data_rcvd > 0);
+	return nread > 0;
 }
 
 int peek_tcp_can_write(int fd)
@@ -218,29 +245,6 @@ int peek_tcp_can_write(int fd)
 	return (context->pstate == PS_COMM);
 }
 
-void peek_tcp_enable_read(int fd)
-{
-	PROC_CONTEXT_T *context = &s_tcp_sockets[fd];
-
-	emo_printf("peek_tcp_enable_read(fd=%d)", fd);
-
-	if (context->data_rcvd <= 0)
-	{
-		context->data_rcvd = 0;
-		if (context->eventBuf)
-		{
-			p_free(context->eventBuf);
-			context->eventBuf = 0;
-		}
-	}
-
-	if (context->psocket)
-	{
-		//emo_printf("peek_tcp_enable_read() enable XON");
-		//app_switch_flow(context, 1);
-	}
-}
-
 void peek_tcp_dns_request(char *hostname)
 {
 	app_gethostbyname(hostname);
@@ -252,20 +256,29 @@ void peek_sleep(int ms)
 	TCCE_Task_Sleep(ms);
 }
 
+const char *emo_event_to_str(int event)
+{
+#define EVENT_2_CASE_STR(a) case a: return #a
+	switch (event)
+	{
+		EVENT_2_CASE_STR(EMOBIIX_SOCK_CREA);
+		EVENT_2_CASE_STR(EMOBIIX_SOCK_CONN);
+		EVENT_2_CASE_STR(EMOBIIX_SOCK_RECV);
+		EVENT_2_CASE_STR(EMOBIIX_SOCK_DCON);
+		EVENT_2_CASE_STR(EMOBIIX_WRITEMSG);
+		EVENT_2_CASE_STR(EMOBIIX_NETSURF_SOCKET);
+		EVENT_2_CASE_STR(EMOBIIX_NETSURF_CONNECT);
+		EVENT_2_CASE_STR(EMOBIIX_NETSURF_SEND);
+		EVENT_2_CASE_STR(EMOBIIX_NETSURF_START);
+		EVENT_2_CASE_STR(EMOBIIX_NETSURF_DNS);
+		default: return "??? EVENT";
+	}
+#undef EVENT_2_CASE_STR
+}
+
 void peek_proc_socket_event(PROC_CONTEXT_T *context, unsigned int event)
 {
-	static int init = 0;
-	static NU_SEMAPHORE mutex_event;
-
-	if (!init)
-	{
-		NU_Create_Semaphore(&mutex_event, "peek_proc_socket_event", 1, NU_PRIORITY);
-		init = 1;
-	}
-	
-    NU_Obtain_Semaphore(&mutex_event, NU_SUSPEND);
-
-	emo_printf("peek_proc_socket_event() %d", event);
+	emo_printf("peek_proc_socket_event() %s", emo_event_to_str(event));
 	switch (event)
 	{
 		case EMOBIIX_SOCK_CREA:
@@ -314,14 +327,22 @@ void peek_proc_socket_event(PROC_CONTEXT_T *context, unsigned int event)
 			break;
 
 		case EMOBIIX_SOCK_RECV:
-			//if (context->psocket)
-				app_switch_flow(context, 0);
-			break;
+		{
+			ReadData *data = (ReadData *)p_malloc(sizeof(ReadData));
+			data->nbytes = context->data_rcvd;
+			data->bytes = context->eventBuf;
+
+			context->eventBuf = NULL;
+			context->data_rcvd = 0;
+
+			list_append(context->recv_list, (void *)data);
+
+			app_switch_flow(context, 1);
+		}
+		break;
 
 		default:
 			break;
 	}
-
-    NU_Release_Semaphore(&mutex_event);
 }
 

@@ -131,18 +131,20 @@ static void lcc_cb_function(void *ptr)
 	memcpy(&curBatInfo, event, sizeof(T_PWR_MMI_INFO_IND_EVENT));
 #endif
 	emo_printf("lcc_cb_function() voltage - %d - msg_id %d", event->Vbat, event->header.msg_id);
-  if ((event->Vbat  <  3500) AND (event->Vbat > 1000))
-    calculated_level = 0;
-  else if ( (event->Vbat  < 3650) AND (event->Vbat  >=  3500) )
+  if ((event->Vbat  <  3200) AND (event->Vbat > 1000))
     calculated_level = 1;
-  else if ( ( event->Vbat  < 3800) AND (event->Vbat  >= 3650) )
+  else if ((event->Vbat  <  3500) AND (event->Vbat >= 3200))
     calculated_level = 2;
-  else if ( ( event->Vbat  < 3950) AND (event->Vbat  >= 3800) )
+  else if ( (event->Vbat  < 3650) AND (event->Vbat  >=  3500) )
     calculated_level = 3;
-  else if (event->Vbat > 3950)
+  else if ( ( event->Vbat  < 3800) AND (event->Vbat  >= 3650) )
     calculated_level = 4;
-  else /* Status unknown */
+  else if ( ( event->Vbat  < 3950) AND (event->Vbat  >= 3800) )
     calculated_level = 5;
+  else if (event->Vbat > 3950)
+    calculated_level = 6;
+  else /* Status unknown */
+    calculated_level = 0;
 
 
 //	pwr_Status.ChargeLevel = event->header->;

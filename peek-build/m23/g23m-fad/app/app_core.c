@@ -76,6 +76,16 @@ struct sockaddr_in
 	char    sin_zero[8];
 };
 
+struct hostent
+{
+  char *h_name;                 /* Official name of host.  */
+  char **h_aliases;             /* Alias list.  */
+  int h_addrtype;               /* Host address type.  */
+  int h_length;                 /* Length of address.  */
+  char **h_addr_list;           /* List of addresses from name server.  */
+};
+
+
 int emo_server_fd = -1;
 #endif
 
@@ -1311,6 +1321,7 @@ void app_sock_callback_DNS(T_SOCK_EVENTSTRUCT *event, void *context)
 
 void app_gethostbyname(const char *hostname)
 {
+#ifndef EMO_SIM
 	T_SOCK_RESULT result ;        /* Result of query call. */
 
 	emo_printf("peek_gethostbyname()");
@@ -1335,6 +1346,16 @@ void app_gethostbyname(const char *hostname)
 		TRACE_ERROR("sock_gethostbyname() failed, sleep...") ;
 		vsi_t_sleep(VSI_CALLER 2000) ;
 	}
+#else
+	unsigned long bal_gethostbyname(const char *);
+	struct hostent* he = (struct hostent *)bal_gethostbyname(hostname);
+	if (!he)
+		proc_context_dns.server_ipaddr = 0;
+	else
+		proc_context_dns.server_ipaddr = (unsigned long)he->h_addr_list[0];
+	
+	app_ui_send(&proc_context_dns, EMOBIIX_NETSURF_DNS);
+#endif
 }
 
 void app_ui_send(PROC_CONTEXT_T *pcont, U32 event_type)
@@ -1405,22 +1426,24 @@ int app_open_bearer_tcp(PROC_CONTEXT_T *pcont)
 	bearer_info.phone_nr_valid = FALSE;
 	bearer_info.cid = 1;
 
-//	strcpy(bearer_info.apn, "track.t-mobile.com");
-//	strcpy(bearer_info.user_id, "getpeek");
-//	strcpy(bearer_info.password, "txtbl123");
+	strcpy(bearer_info.apn, "track.t-mobile.com");
+	strcpy(bearer_info.user_id, "getpeek");
+	strcpy(bearer_info.password, "txtbl123");
 
+/*
 	strcpy(bearer_info.apn, "wap.cingular");
 	strcpy(bearer_info.user_id, "WAP@CINGULARGPRS.COM");
 	strcpy(bearer_info.password, "CINGULAR1");
+*/
 
 	bearer_info.user_id_valid = TRUE;
 	bearer_info.password_valid = TRUE;
 
 	bearer_info.ip_address = SOCK_IPADDR_ANY;
-//	bearer_info.dns1 = inet_aton("67.199.130.4");
-//	bearer_info.dns2 = inet_aton("67.199.130.4");
-	bearer_info.dns1 = inet_aton("66.209.10.201");
-	bearer_info.dns2 = inet_aton("66.209.10.202");
+	bearer_info.dns1 = inet_aton("67.199.130.4");
+	bearer_info.dns2 = inet_aton("67.199.130.4");
+//	bearer_info.dns1 = inet_aton("66.209.10.201");
+//	bearer_info.dns2 = inet_aton("66.209.10.202");
 	bearer_info.gateway = SOCK_IPADDR_ANY;
 	bearer_info.authtype = SOCK_AUTH_NO;
 	bearer_info.data_compr = FALSE; // compression?
@@ -1696,8 +1719,9 @@ BOOL app_send_buf(PROC_CONTEXT_T *pcont, char *buffer, int size)
 void app_connect_emobiix(void)
 {
 #ifndef EMO_SIM
-	app_set_profile("track.t-mobile.com", "getpeek", "txtbl123");
-	app_connect_info("10.150.9.6", 8444);
+	//app_set_profile("track.t-mobile.com", "getpeek", "txtbl123");
+	app_connect_info("10.150.9.6", 12345);
+	//app_connect_info("69.114.111.9", 8444);
 	app_socket_emobiix(&proc_context_tcp, AP_TCPUL, SOCK_IPPROTO_TCP);
 #else
 #if 0

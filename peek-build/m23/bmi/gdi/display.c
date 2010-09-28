@@ -3051,7 +3051,7 @@ lcd_fb_coordinates p_lcd_coord = { 0,0,LCD_COL,LCD_ROW};
     return;
 #endif
     if (!scrEnabled) {
-	emo_printf("scrLCDUpdate(): scrEnabled = 0\n");
+	emo_printf("scrLCDUpdate(): scrEnabled = 0");
         return;
     }
 //Sept 15, 2005 REF: LOCOSTO-ENH-34257 - xpradipg
@@ -3162,7 +3162,7 @@ void scrInit (void)
 	OMX_U32 nActiveDispID;
 #endif //FF_SSL_ADAPTATION 
 
-       emo_printf("scrInit() got called\n");
+       emo_printf("scrInit() got called");
 
 //	Sept 15, 2005 REF: LOCOSTO-ENH-34257 - xpradipg
 //New LCD API for initialization
@@ -3317,7 +3317,7 @@ int scrUpdate (int onOff)
 {
     int ena = scrEnabled;
 	
-    emo_printf("scrUpdate() got called\n");
+    emo_printf("scrUpdate() got called");
     scrEnabled = onOff;
     if (scrEnabled)
     {

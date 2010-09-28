@@ -69,6 +69,6 @@ EXTERN char * getFileName(char * file);
 #else
 #define ACI_ASSERT(exp) \
   if(!(exp)) {            \
-    TRACE_EVENT_P2("[ERROR] Assertion Failed in %s:%i: "#exp,getFileName(__FILE__),__LINE__); \
+    emo_printf("[ERROR] Assertion Failed in %s:%i: "#exp,getFileName(__FILE__),__LINE__); \
   }
 #endif

@@ -21,6 +21,7 @@
 #define APP_H
 
 /*==== INCLUDES =============================================================*/
+#include "List.h"
 
 /*==== CONSTS ===============================================================*/
 
@@ -204,7 +205,7 @@ typedef struct PROCESS_CONTEXT_S {
   int spec_reps ;               /* Specified number of repetitions. */
   char *eventBuf;
   int data_sent ;               /* Total amount of data sent (ul, te, ue). */
-  int data_rcvd ;               /* Total amount of data recvd (dl, te, ue). */
+  int data_rcvd;                /* Total amount of data recvd (dl, te, ue). */
   int items_sent ;              /* Number of blocks/packets/queries sent (ul,
                                  * te, ue, dq). */
   int items_rcvd ;              /* Number of blocks/packets/responses received
@@ -216,7 +217,8 @@ typedef struct PROCESS_CONTEXT_S {
                                  * connection. */
   int psocket_is_open ;         /* Non-zero iff we have an open psocket. */
   BOOL bearer_only;             /* if set, only a Bearer will be opened */ 
-	int waiting_for;
+  int waiting_for;
+  List *recv_list;
 } PROC_CONTEXT_T ;
 
 /*==== Callbacks =============================================================*/

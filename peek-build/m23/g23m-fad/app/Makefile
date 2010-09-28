@@ -21,6 +21,7 @@ INCLUDE += $(M23DIR)/g23m-fad/app
 INCLUDE += $(M23DIR)/g23m-aci/bat
 INCLUDE += $(M23DIR)/g23m-aci/gdd_dio
 INCLUDE += $(M23DIR)/g23m-aci/l2p
+INCLUDE += $(SRCDIR)/emobiix
 
 SRC  = app_cmds.c
 SRC += app_core.c

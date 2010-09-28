@@ -153,20 +153,14 @@ static short pei_primitive (void * ptr)
 		// process emobiix primitive data here
 		if (opc == EMOBIIX_SOCK_CREA)
 		{
+			extern void app_connect_emobiix(void);
+
 			emo_printf("app_conn()");
-			app_connect();
+
+			app_connect_emobiix();
 
 			PFREE(P2D(prim));
 			return PEI_OK;
-		}
-		else if (opc == EMOBIIX_SOCK_RECV)
-		{
-      		T_EMOBIIX_SOCK_RECV *m = (T_EMOBIIX_SOCK_RECV *)(&prim->data);
-
-			peek_tcp_enable_read(m->data);
-
-      		PFREE(P2D(prim));
-      		return PEI_OK;
 		}
    		else if (opc == EMOBIIX_NETSURF_SOCKET)
     	{
