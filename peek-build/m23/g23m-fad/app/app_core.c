@@ -1720,8 +1720,9 @@ void app_connect_emobiix(void)
 {
 #ifndef EMO_SIM
 	//app_set_profile("track.t-mobile.com", "getpeek", "txtbl123");
-	app_connect_info("10.150.9.6", 12345);
+	//app_connect_info("10.150.9.6", 12345);
 	//app_connect_info("69.114.111.9", 8444);
+	app_connect_info("10.150.9.6", 8444);
 	app_socket_emobiix(&proc_context_tcp, AP_TCPUL, SOCK_IPPROTO_TCP);
 #else
 #if 0

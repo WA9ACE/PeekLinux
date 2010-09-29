@@ -198,7 +198,7 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 
 	EMO_ASSERT_INT(ctx != NULL, 0,
 			"connection context loop iteration without context")
-
+	emo_printf("connectionContext_loopIteration()");
 #ifdef SIMULATOR
 	transport = endpoint_getTransport(ctx->endpoint);
 
@@ -348,6 +348,7 @@ int connectionContext_syncRequestForce(ConnectionContext *ctx, URL *url,
 
 int connectionContext_syncRequest(ConnectionContext *ctx, URL *url)
 {
+	emo_printf("connectionContext_syncRequest()");
 	return connectionContext_syncRequestForce(ctx, url, NULL);
 }
 
@@ -1082,7 +1083,9 @@ static void connectionContext_processAuthResponse(ConnectionContext *ctx,
 	if (*p == RequestResponseP_responseOKP) {
 		emo_printf("Auth OK" NL);
 		ctx->hasAuth = 1;
-	        // XXX appProtocolStatus(1);
+#ifndef SIMULATOR
+		gprs_set_emobiix_on(1);
+#endif
 	} else {
 		emo_printf("Auth not OK with: %d" NL, *p);
 	}

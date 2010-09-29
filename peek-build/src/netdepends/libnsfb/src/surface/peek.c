@@ -353,13 +353,13 @@ static bool peek_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
 			/* Invert wheel mode */
 			if(state) {
 				wheel_mode = wheel_mode ? 0 : 1;	
-				/*
+				dspl_Enable(0);
 				if(!wheel_mode) {
 					nsfb_cursor_clear(nsfb, cursor);
 				} else {
 					nsfb_cursor_plot(nsfb, cursor);
 				}
-				*/
+				dspl_Enable(1);
 			}
 			break;
 		case SYS_CANCEL_KEY:
@@ -437,6 +437,9 @@ static int peek_claim(nsfb_t *nsfb, nsfb_bbox_t *box)
 	struct nsfb_cursor_s *cursor = nsfb->cursor;
 
 	dspl_Enable(0);
+	
+	emo_printf("peek_claim()");
+
 	if ((cursor != NULL) && 
 			(cursor->plotted == true) && 
 			(nsfb_plot_bbox_intersect(box, &cursor->loc))) {
@@ -451,7 +454,7 @@ static int peek_claim(nsfb_t *nsfb, nsfb_bbox_t *box)
 		cursor->plotted = false;
 	}
 
-	dspl_Enable(1);
+	//dspl_Enable(1);
 	return 0;
 }
 
@@ -461,7 +464,9 @@ static int peek_cursor(nsfb_t *nsfb, struct nsfb_cursor_s *cursor)
 
 	dspl_Enable(0);
 
-	if ((cursor != NULL) && (cursor->plotted == true)) {
+	emo_printf("peek_cursor()");
+
+	if ((cursor != NULL) && (cursor->plotted == true) && (wheel_mode == true)) {
 		sclip = nsfb->clip;
 
 		nsfb->plotter_fns->set_clip(nsfb, NULL);
@@ -488,9 +493,9 @@ static int peek_update(nsfb_t *nsfb, nsfb_bbox_t *box)
 {
 	struct nsfb_cursor_s *cursor = nsfb->cursor;
 	emo_printf("peek_update()");
-	dspl_Enable(0);
+	//dspl_Enable(0);
 
-	if ((cursor != NULL) && (cursor->plotted == false)) {
+	if ((cursor != NULL) && (cursor->plotted == false) && (wheel_mode == true)) {
 		nsfb_cursor_plot(nsfb, cursor);
 	}
 

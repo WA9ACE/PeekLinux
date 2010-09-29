@@ -117,32 +117,37 @@ GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 			uiAppRecv(data);
 			/* Free the p_malloc'd buffer that we created in app_core */
 			p_free(((T_EMOBIIX_SOCK_RECV *)data)->data);
-			//PFREE(data);
 			return TRUE;
 
 		case EMOBIIX_SOCK_CREA: // Sock created
-			emo_printf("appdata_response_cb(): APP_DATA_CREA");
-			break;
+			emo_printf("appdata_response_cb(): APP_DATA_CREA");	
+			return TRUE;
 
 		case EMOBIIX_SOCK_SENT: // Sock data sent
 			emo_printf("appdata_response_cb(): APP_DATA_SENT");
 			uiAppSent();
-			break;
+			return TRUE;
 
 		case EMOBIIX_SOCK_CONN: // Sock connected
 			emo_printf("appdata_response_cb(): APP_DATA_CONN");
 			uiAppConn(data);
-			//PFREE(data);
 			return TRUE;
 
 		case EMOBIIX_SOCK_DCON: // Sock disconnected
 			emo_printf("appdata_response_cb(): APP_DATA_DCON");
-			// XXX appProtocolStatus(0);
-			break;
+			return TRUE;
+
 		case EMOBIIX_NETSURF_START:
+		{
+			extern unsigned char *get_LCD_bitmap();
+			unsigned char *dbmp = get_LCD_bitmap();
+			dspl_Enable(0);
+			memset(dbmp, 0xFF, 320 * 240 * 2);
+
 			emo_printf("appdata_response_cb(): start_netsurf");
 			netsurf_main(1, &argv);
 			return TRUE;
+		}
 
 		default:
 			break;

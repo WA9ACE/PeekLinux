@@ -531,7 +531,6 @@ void *memalign(size_t alignment, size_t size)
 }
        
 
-#ifdef MALLOC_DEBUG
 /*****************************************************************************/
 /*									     */
 /*  MEMMAP -  Print dynamic memory allocation statistics                     */
@@ -592,4 +591,3 @@ void memmap()
 
     //fflush(stdout);
 }
-#endif

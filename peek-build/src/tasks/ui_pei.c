@@ -53,6 +53,7 @@ static UINT32 uiIsReady = 0;
 T_HANDLE hCommAPP = VSI_ERROR;
 
 extern NU_MEMORY_POOL  ExeSystemMemory;
+extern void memmap(void);
 
 /*===========================Function Definition================================*/
 /*
@@ -84,7 +85,6 @@ LOCAL SHORT pei_monitor (void ** out_monitor)
 | Description : This function is called by the frame when a primitive is
 |               received indicating dynamic configuration.
 |
-|               This function is not used in this entity.
 |
 |Parameters   :  in_string   - configuration string
 |
@@ -95,9 +95,14 @@ LOCAL SHORT pei_monitor (void ** out_monitor)
 */
 LOCAL SHORT pei_config (char *inString)
 {
-  RVM_TRACE_DEBUG_HIGH ("UI: pei_config");
+	emo_printf("pei_config: <%s>", inString);
 
-  return PEI_OK;
+	if(!strncmp("MEMMAP", inString, 6)) {
+		/* Print Malloc Heap info */
+		memmap();
+	}
+
+	return PEI_OK;
 
 }/* End pei_config(..) */
 
@@ -168,8 +173,10 @@ LOCAL SHORT pei_primitive (void * primptr)
 
     RVM_TRACE_DEBUG_HIGH("UI: pei_primitive");
 	
-	if(appdata_response_cb(opc, (void*)(&(prim->data))))
+	if(appdata_response_cb(opc, (void*)(&(prim->data)))) {
+		PFREE(P2D(prim));
 		return PEI_OK;
+	}
 
     switch (opc)
     {
@@ -348,7 +355,7 @@ static const T_PEI_INFO pei_info =
                   NULL,           /* NO pei_timeout */
                   NULL,           /* NO pei_signal */   
                   pei_run,        /*-- ACTIVE Entity--*/
-                  NULL,           /* NO pei_config */
+                  pei_config,           /* NO pei_config */
                   NULL            /* NO pei_monitor */
                },
                0xc800,            /* stack size */

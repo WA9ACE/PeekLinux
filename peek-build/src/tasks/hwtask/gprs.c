@@ -70,13 +70,11 @@ void gprs_ok(T_ACI_AT_CMD cmdId)
   gprs_signal(E_HW_GPRS_OK, &cmdId);
 
   gprs_set_on(1);
-
-  /*
+  
   attachMessage = P_ALLOC(EMOBIIX_MESSAGE);
   attachMessage->attach = 1;
   P_OPC(attachMessage) = EMOBIIX_SOCK_CREA;
   PSENDX(APP, attachMessage);
-  */
 
   return;
 }

@@ -187,7 +187,7 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struc
 				default:
 					FD_CLR(n, readfds);
 					if (exceptfds) 
-						FD_SET(n, exceptfds);
+						FD_SET(n, exceptfds), hasData++;
 				}
 			}
 		}
@@ -216,7 +216,7 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struc
 				default:
 					FD_CLR(n, writefds);
 					if (exceptfds) 
-						FD_SET(n, exceptfds);
+						FD_SET(n, exceptfds), hasData++;
 				}
 			}
 		}

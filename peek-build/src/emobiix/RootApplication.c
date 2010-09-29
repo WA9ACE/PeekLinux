@@ -51,7 +51,7 @@ DataObject *RootApplication(void)
     static DataObject *output = NULL;
 	DataObject *dobj1, *root, *dobj2, *frame;
 	DataObject *setw, *setiw, *setc, *settd;
-	DataObject *signalstack, *gprsstack, *testgprs;
+	DataObject *signalstack, *gprsstack, *emostack;
 	DataObject *batterystack, *testbattery, *testcharge;
 	DataObject *testweather, *testspkr;
 
@@ -100,10 +100,6 @@ DataObject *RootApplication(void)
 	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(4));
 	setc = dobjFromFile("signal4.png", setiw);
 
-	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
-	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(5));
-	setc = dobjFromFile("signal5.png", setiw);
-
 	/* GPRS set */
 	gprsstack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
 
@@ -119,6 +115,22 @@ DataObject *RootApplication(void)
 	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(1));
 	setc = dobjFromFile("edge_on.png", setiw);
 
+	/* emobiix indicator */
+	emostack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
+
+	setw = widget_newTypeIdName("set", NULL, NULL, emostack);
+	dataobject_setValue(setw, "margintop", dataobjectfield_string("6"));
+	dataobject_setValue(setw, "fieldname", dataobjectfield_string("emobiix-on"));
+	dataobject_setValue(setw, "reference", dataobjectfield_string("system://local/gprs"));
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(0));
+	setc = dobjFromFile("emo_off.png", setiw);
+
+	setiw = widget_newTypeIdName("setitem", NULL, NULL, setw);
+	dataobject_setValue(setiw, "fieldvalue", dataobjectfield_uint(1));
+	setc = dobjFromFile("emo_on.png", setiw);
+
 	/* Time */
 	setw = widget_newTypeIdName("box", NULL, NULL, dobj1);
 	widget_setPacking(setw, WP_VERTICAL);
@@ -129,7 +141,7 @@ DataObject *RootApplication(void)
 	dataobject_setValue(settd, "weight", dataobjectfield_string("bold"));
 	dataobject_setValue(settd, "font-color", dataobjectfield_string("#FFFFFF00"));
 	dataobject_setValue(settd, "alignment", dataobjectfield_string("center"));
-	dataobject_setValue(settd, "margintop", dataobjectfield_string("2"));
+	dataobject_setValue(settd, "margintop", dataobjectfield_string("4"));
 
 #if 0
 	/* Weather set */
@@ -190,7 +202,7 @@ DataObject *RootApplication(void)
 	batterystack = widget_newTypeIdName("stack", NULL, NULL, dobj1);
 
 	setw = widget_newTypeIdName("set", NULL, NULL, batterystack);
-	dataobject_setValue(setw, "marginleft", dataobjectfield_string("0"));
+	dataobject_setValue(setw, "marginleft", dataobjectfield_string("33"));
 	dataobject_setValue(setw, "fieldname", dataobjectfield_string("charge-level"));
 	dataobject_setValue(setw, "reference", dataobjectfield_string("system://local/battery"));
 

@@ -179,32 +179,32 @@ bool fb_font_init(void)
         fb_faces[FB_FACE_SANS_SERIF_BOLD] = 
                 fb_new_face(option_fb_face_sans_serif_bold,
                             "sans_serif_bold.ttf",
-                            "/DejaVuSans-Bold.ttf");
+                            "/DejaVuSans.ttf");
 
         fb_faces[FB_FACE_SANS_SERIF_ITALIC] = 
                 fb_new_face(option_fb_face_sans_serif_italic,
                             "sans_serif_italic.ttf",
-                            "/DejaVuSans-Oblique.ttf");
+                            "/DejaVuSans.ttf");
 
         fb_faces[FB_FACE_SANS_SERIF_ITALIC_BOLD] = 
                 fb_new_face(option_fb_face_sans_serif_italic_bold, 
                             "sans_serif_italic_bold.ttf",
-                            "/DejaVuSans-BoldOblique.ttf");
+                            "/DejaVuSans.ttf");
 
         fb_faces[FB_FACE_MONOSPACE] = 
                 fb_new_face(option_fb_face_monospace,
                             "monospace.ttf",
-                            "/DejaVuSansMono.ttf");
+                            "/DejaVuSans.ttf");
 
         fb_faces[FB_FACE_SERIF] = 
                 fb_new_face(option_fb_face_serif,
                             "serif.ttf",
-                            "/DejaVuSerif.ttf");
+                            "/DejaVuSans.ttf");
 
         fb_faces[FB_FACE_SERIF_BOLD] = 
                 fb_new_face(option_fb_face_serif_bold,
                             "serif_bold.ttf",
-                            "/DejaVuSerif-Bold.ttf");
+                            "/DejaVuSans.ttf");
         
         /* set the default render mode */
         if (option_fb_font_monochrome == true)

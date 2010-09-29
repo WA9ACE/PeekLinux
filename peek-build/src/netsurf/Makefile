@@ -11,8 +11,7 @@ DEFINE += FB_USE_FREETYPE
 DEFINE += WITH_PNG
 DEFINE += WITH_GIF
 DEFINE += WITH_BMP
-#DEFINE += messages_get\(a\)=emo_messages_get\(a,__FUNCTION__,__LINE__\)
-#DEFINE += WITH_JPEG
+DEFINE += WITH_JPEG
 
 INCLUDE  = $(SRCDIR)/netsurf/emoport
 INCLUDE += $(M23DIR)/gpf/inc

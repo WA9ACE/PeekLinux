@@ -77,7 +77,9 @@ void manager_init(void)
     }
 	/*dataobject_debugPrint(appManager->style);*/
 
+#ifdef SIMULATOR
 	HardwareInit();
+#endif
 
 	appManager->rootApplicationObj = RootApplication();
 	appManager->rootApplication = application_load(appManager->rootApplicationObj);

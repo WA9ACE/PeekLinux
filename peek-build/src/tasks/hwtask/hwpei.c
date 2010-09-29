@@ -337,7 +337,7 @@ static const T_PEI_INFO pei_info =
                   NULL,           /* NO pei_config */
                   NULL            /* NO pei_monitor */
                },
-               0xc00,            /* stack size */
+               0x2800,            /* stack size */
                1,                        /* queue entries */
 	       	   HW_PRIORITY,     /* priority (1->low, 255->high) */
                0,                         /* number of timers */
