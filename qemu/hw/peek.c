@@ -70,7 +70,7 @@ uint32_t g_debug = (//LOCO_DEBUG_INTH |
                     //LOCO_DEBUG_I2C |
                     //LOCO_DEBUG_MPU |
                     //LOCO_DEBUG_UART |
-		    //LOCO_DEBUG_SOCKET |
+		    		//LOCO_DEBUG_SOCKET |
                     //0xffffffff |
                     0);
 uint32_t g_dlevel = 0;//LOCO_DLVL_WARN;
@@ -553,7 +553,7 @@ static void locosto_lcd_update_display(void *opaque)
     lcd->invalidate = 1;
 
     /* Content */
-    frame_base = 0x007bc060;
+    frame_base = 0x007d5dd8;
 
     if (!ds_get_bits_per_pixel(lcd->ds))
         return;
@@ -1105,8 +1105,9 @@ static void clk_reset(peek_state_s *s)
 static uint32_t clkm_read(void *opaque, target_phys_addr_t offset)
 {
     peek_state_s *s = (peek_state_s *)opaque;
+	//fprintf(stderr, "**CLKM** %s: offset %08x\n", __FUNCTION__, (int)offset);
     offset &= 0xff;
-    LOCO_DEBUG(LOCO_DEBUG_CLKM, LOCO_DLVL_INFO, "%s: offset %08x\n", __FUNCTION__, (int)offset);
+    //LOCO_DEBUG(LOCO_DEBUG_CLKM, LOCO_DLVL_INFO, "%s: offset %08x\n", __FUNCTION__, (int)offset);
     switch (offset) {
     case 0x0: // CNTL_ARM_CLK
         return s->clkm.cntl_arm_clk;
@@ -1121,9 +1122,10 @@ static uint32_t clkm_read(void *opaque, target_phys_addr_t offset)
     case 0xe: // CNTL_CLK_PROG_FREE
         return s->clkm.clk_prog_free;
     default:
-        LOCO_DEBUG(LOCO_DEBUG_CLKM, LOCO_DLVL_ERR,
-                   "%s: UNMAPPED_OFFSET = 0x%08X\n",
-                   __FUNCTION__, (int)offset);
+		fprintf(stderr, "**CLKM** %s: offset %08x\n", __FUNCTION__, (int)offset);
+        //LOCO_DEBUG(LOCO_DEBUG_CLKM, LOCO_DLVL_ERR,
+        //           "%s: UNMAPPED_OFFSET = 0x%08X\n",
+        //           __FUNCTION__, (int)offset);
         //LOCO_BREAK;
     }
     return 0;
@@ -1201,7 +1203,7 @@ static void clkm_write(void *opaque, target_phys_addr_t offset,
 static CPUReadMemoryFunc *clkm_readfn[] = {
     clkm_read,
     clkm_read,
-    locosto_badwidth_read16, // xxx - this still causes a badwidth read at 0x104
+    clkm_read, // xxx - this still causes a badwidth read at 0x104
 };
 
 static CPUWriteMemoryFunc *clkm_writefn[] = {
@@ -2135,18 +2137,18 @@ static void peek_mouse_event(void *opaque,
         //int diff = s->mouse_buttons ^ buttons_state;
         int i;
 
-        printf("buttons: 0x%08x -> 0x%08x\n", s->mouse_buttons, buttons_state);
+       // printf("buttons: 0x%08x -> 0x%08x\n", s->mouse_buttons, buttons_state);
 
         for (i = 0; i < 3; i++) {
             int ln, b;
 
             b = ~s->gpio[i]->mask & s->gpio[i]->dir;
-            printf("GPIO%d mask 0x%04x dir 0x%04x inputs 0x%04x\n", i,
-                   s->gpio[i]->mask, s->gpio[i]->dir, s->gpio[i]->inputs);
+            //printf("GPIO%d mask 0x%04x dir 0x%04x inputs 0x%04x\n", i,
+                   //s->gpio[i]->mask, s->gpio[i]->dir, s->gpio[i]->inputs);
 
             while ((ln = ffs(b))) {
                 ln --;
-                printf("GPIO %d active irq\n", i*16 + ln);
+                //printf("GPIO %d active irq\n", i*16 + ln);
                 b &= ~(1 << ln);
             }
         }
@@ -2179,7 +2181,7 @@ static void peek_button_event(void *opaque, int keycode)
 
     if (peek_keymap[keycode & 0x7f].row != -1) {
         fprintf(stderr, "KEY 0x%x\n", keycode);
-        printf("KEY 0x%x\n", keycode);
+        //printf("KEY 0x%x\n", keycode);
     }
 }
 
@@ -2231,6 +2233,13 @@ static void peek_bootrom_setup(void)
 
     /* Load the instructions */
     cpu_physical_memory_write(0x00000000, (uint8*)intvecs, sizeof(intvecs));
+}
+
+static void locosto_emu_detect(void) {
+    static unsigned int jtagid = 0xFFFFFFFF;
+
+	cpu_register_physical_memory(0xFFFFFE00, 0xff, qemu_ram_alloc(0xff));
+	//cpu_physical_memory_write(0xFFFFFE00, &jtagid, 4);
 }
 
 static void peek_init(ram_addr_t ram_size,
@@ -2310,7 +2319,7 @@ static void peek_init(ram_addr_t ram_size,
     clk_reset(s);
     io = cpu_register_io_memory(clkm_readfn, clkm_writefn, s);
     LOCOSTO_OPAQUE("clkm", s);
-    cpu_register_physical_memory(CLKM_BASE, 0xFF, io);
+    cpu_register_physical_memory(CLKM_BASE, 0xff, io);
 
     /* DPLL */
     locosto_dpll_init(s);
@@ -2349,6 +2358,8 @@ static void peek_init(ram_addr_t ram_size,
     /* i2c */
     locosto_i2c_init(I2C1_BASE,s->irq[0][LOCOSTO_INT_I2C1], &s->drq[LOCOSTO_DMA_I2C1_RX]);
     locosto_i2c_init(I2C2_BASE,s->irq[0][LOCOSTO_INT_I2C2], &s->drq[LOCOSTO_DMA_I2C2_RX]);
+
+	//locosto_emu_detect();
 
     /* peek buttons */
     qemu_add_kbd_event_handler(peek_button_event, s);

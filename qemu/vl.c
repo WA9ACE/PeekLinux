@@ -31,7 +31,6 @@
 
 /* Needed early for CONFIG_BSD etc. */
 #include "config-host.h"
-
 #ifndef _WIN32
 #include <libgen.h>
 #include <pwd.h>
@@ -90,6 +89,8 @@ extern int madvise(caddr_t, size_t, int);
 #endif
 #endif
 #endif
+
+#include "peek_sock.h"
 
 #if defined(__OpenBSD__)
 #include <util.h>
@@ -4847,34 +4848,6 @@ static int virtcon_parse(const char *devname)
     index++;
     return 0;
 }
-
-typedef struct peek_socket_s {
-    int sock;
-    int type;
-    int domain;
-    int protocol;
-
-    /* Connect vars */
-    int cRet;
-    int wRet;
-    int rRet;
-    struct sockaddr_in *conn_in;
-
-    /* Connect Sock */
-    uint32_t cTransferSize;
-    uint32_t cTransferCount;
-    char *cTransferbuffer;
-
-    /* Write Sock */
-    uint32_t wTransferSize;
-    uint32_t wTransferCount;
-    char *wTransferbuffer;
-
-    /* Read Sock */
-    uint32_t rTransferSize;
-    char *rTransferbuffer;
-    uint32_t rTransferCount;
-} peek_socket_s;
 
 int main(int argc, char **argv, char **envp)
 {

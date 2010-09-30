@@ -3,6 +3,7 @@
 
 #include "i2c.h"
 #include "qemu-timer.h"
+#include "peek_sock.h"
 
 #define LOCO_DEBUG_I2C	(0x00000001)
 #define LOCO_DEBUG_INTH	(0x00000002)
@@ -153,35 +154,6 @@ void locosto_badwidth_write16(void *opaque, target_phys_addr_t addr, uint32_t va
 #define LOCOSTO_DMA_I2C1_RX 16
 #define LOCOSTO_DMA_I2C2_RX 25
 #define PEEK_INTR_REV   0x37
-
-typedef struct peek_socket_s {
-    int sock;
-    int type;
-    int domain;
-    int protocol;
-    int key;
-	int state;
-    /* Connect vars */
-    int cRet;
-    int wRet;
-    int rRet;
-    struct sockaddr_in *conn_in;
-
-    /* Connect Sock */
-    uint32_t cTransferSize;
-    uint32_t cTransferCount;
-    char *cTransferbuffer;
-
-    /* Write Sock */
-    uint32_t wTransferSize;
-    uint32_t wTransferCount;
-    char *wTransferbuffer;
-
-    /* Read Sock */
-    uint32_t rTransferSize;
-    char *rTransferbuffer;
-    uint32_t rTransferCount;
-} peek_socket_s;
 
 typedef struct locosto_clkm {
     uint32_t cntl_arm_clk;

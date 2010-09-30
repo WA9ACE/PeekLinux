@@ -1,4 +1,5 @@
 #include "hw/peek.h"
+#include "hw/peek_keymap.h"
 #include "qemu_socket.h"
 #include <sys/socket.h>
 #include <sys/poll.h>
@@ -40,6 +41,15 @@ struct pollfd {
 
 };
 #endif
+
+typedef struct {
+    char addr_name[128];
+    unsigned int addr_in; // this is just 4 bytes
+} addrinfo;
+
+extern uint32_t g_debug;
+extern uint32_t g_dlevel;
+extern FILE *g_debug_fp;
 
 static void peek_client_read(void *opaque)
 {
@@ -112,6 +122,36 @@ int SockWrite(char *buffer, int len, void *opaque) {
 	return send(s->sock, buffer, len, 0);
 }
 
+
+int SockHostByName(char **buffer, int *len, void *opaque) {
+	peek_socket_s *s = (peek_socket_s *)opaque;
+	int i;
+	struct hostent *hostr;
+	addrinfo addrb;
+
+	fprintf(stderr, "SockHostByName(): %s\n", *buffer);
+
+	hostr = gethostbyname(*buffer);
+	free(*buffer);
+	if(!hostr)
+		return 0;
+
+	memset(&addrb, 0, sizeof(addrinfo));
+	strncpy(addrb.addr_name, hostr->h_name, 128);
+	if (hostr->h_addr_list && hostr->h_addr) {
+		addrb.addr_in = *(unsigned int *)(hostr->h_addr);
+        fprintf(stderr,"SockHostByName(): addr_in %d.%d.%d.%d", ((char *)(&addrb.addr_in))[0], ((char *)(&addrb.addr_in))[1], ((char *)(&addrb.addr_in))[2], ((char *)(&addrb.addr_in))[3]);
+	} else
+		addrb.addr_in = 0;
+
+	*buffer = malloc(sizeof(addrinfo));
+	memcpy(*buffer, &addrb, sizeof(addrinfo));
+
+	*len = sizeof(addrinfo);
+
+	return *len;
+}
+
 int SockRead(char *buffer, int len, void *opaque) {
         peek_socket_s *s = (peek_socket_s *)opaque;
 	//fprintf(stderr, "SockRead() reading data\n");
@@ -180,6 +220,25 @@ static uint32_t peek_socket_read(void *opaque, target_phys_addr_t offset)
 	return s->key;
 	case 0x3c:
 	return s->state;
+	/* gethostbyname */
+	case 0x40:// return val
+	return s->gRet;
+	case 0x44:// return Buf
+		fprintf(stderr, "GetHostByName: s->gTransferSize %d - s->gTransferCount %d\n", s->gTransferSize, s->gTransferCount);
+        if(s->gTransferSize > 0) {
+                //Start transfer
+                //fprintf(stderr, "GetHostByName: Reading back: 0x%08X\n", offset);
+      			fprintf(stderr, "Sending Buffer %08X\n", s->gTransferbuffer[s->gTransferCount]);
+                memcpy(&retBuf, s->gTransferbuffer+s->gTransferCount, 1);
+                if(s->gTransferCount < s->gTransferSize)
+                        s->gTransferCount++;
+        }
+	return retBuf;
+	case 0x48:
+	return s->gTransferSize;
+	case 0x50:
+	return s->gTransferSize;
+
     default:
         LOCO_DEBUG(LOCO_DEBUG_SOCKET, LOCO_DLVL_ERR,
                    "%s: UNMAPPED_OFFSET = 0x%08X\n", __FUNCTION__, (int)offset);
@@ -259,14 +318,13 @@ static void peek_socket_write(void *opaque, target_phys_addr_t offset, uint32_t 
     case 0x2C: // read trig
 	//fprintf(stderr, "Socket read started\n");
 	s->rRet = SockRead(s->rTransferbuffer, s->rTransferSize, s);
-	//fprintf(stderr, "Socket read %d\n", s->rRet);
+	fprintf(stderr, "Socket read %d\n", s->rRet);
 //	if (s->rRet == -1 && errno != EWOULDBLOCK)
 	s->rTransferSize = s->rRet;
 	s->rTransferCount = 0;
 	break;
     case 0x30: // read transfer reset 
 	free(s->rTransferbuffer);
-	s->rTransferCount = 0;
 	s->rTransferCount = 0;
 	//fprintf(stderr, "read transfer reset\n");
 	break;
@@ -281,6 +339,27 @@ static void peek_socket_write(void *opaque, target_phys_addr_t offset, uint32_t 
 	break;
 	case 0x3c:
 	s->state = value;
+	/* gethostbyname */
+	case 0x40: // transfer size
+	s->gTransferSize = value;
+	s->gTransferbuffer = malloc(s->gTransferSize);
+	s->gTransferCount = 0;
+	break;
+	case 0x44: // transfer trig
+    if(s->gTransferSize > 0) {
+        fprintf(stderr, "GetHostByName: write got: 0x%08X\n", value);
+                memcpy(s->gTransferbuffer+s->gTransferCount, &value, 1);
+                if(s->gTransferCount < s->gTransferSize)
+                        s->gTransferCount++;
+    }
+	break;
+	case 0x48:
+	s->gRet = SockHostByName(&s->gTransferbuffer, &s->gTransferSize, s);
+	s->gTransferCount = 0;
+	break;
+	case 0x4c: // transfer reset
+	free(s->gTransferbuffer);
+	s->gTransferCount = 0;
 	break;
 
     default:
@@ -366,6 +445,15 @@ static CPUWriteMemoryFunc *peek_socket_writefn[] = {
     peek_socket_write,
     peek_socket_write,
 };
+/*
+static void locosto_keyboard_event (peek_socket_s *s, int keycode)
+{
+    //int row, col,rel;
+
+    fprintf(stderr, "Got keypad event 0x%02x\n", keycode);
+    s->key=keycode;
+}
+*/
 
 #define KEY_UNKNOWN 0
 #define KCD_0          (1)
@@ -424,168 +512,110 @@ static CPUWriteMemoryFunc *peek_socket_writefn[] = {
 #define KCD_DOWN       (52)
 
 static int linux_key_map[] = {
+    KEY_UNKNOWN,
+    SYS_CANCEL_KEY,
+    //KCD_1,
+    SYS_WHEEL,
+    KCD_2,
+    KCD_3,
+    KCD_4,
+    KCD_5,
+    KCD_6,
+    KCD_7,
+    KCD_8,
+    KCD_9,
+    KEY_UNKNOWN,
+    KCD_REDUCE,
+    KEY_UNKNOWN,
+    KCD_BACKSPACE,
+    SYS_LOCK, /* tab */
+    KCD_Q,
+    KCD_W,
+    KCD_E,
+    KCD_R,
+    KCD_T,
+    KCD_Y,
+    KCD_U,
+    KCD_I,
+    KCD_O,
+    KCD_P,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    SYS_WHEEL,
+    KEY_UNKNOWN,
+    KCD_A,
+    KCD_S,
+    KCD_D,
+    KCD_F,
+    KCD_G,
+    KCD_H,
+    KCD_J,
+    KCD_K,
+    KCD_L,
+    KEY_UNKNOWN,
+    SYS_WHEEL,
+    KEY_UNKNOWN,
+    KCD_SHIFT_L,
+    KEY_UNKNOWN,
+    KCD_Z,
+    KCD_X,
+    KCD_C,
+    KCD_V,
+    KCD_B,
+    KCD_N,
+    KCD_M,
+    KCD_COMMA,
+    KCD_DOT,
+    KCD_6,
+    KEY_UNKNOWN,
 	KEY_UNKNOWN,
-	KCD_CANCLE,
-	KCD_1,
-	KCD_2,
-	KCD_3,
-	KCD_4,
-	KCD_5,
-	KCD_6,
-	KCD_7,
-	KCD_8,
-	KCD_9,
-	KEY_UNKNOWN,
-	KCD_REDUCE,
-	KEY_UNKNOWN,
-	KCD_BACKSPACE,
-	KCD_LOCK, /* tab */
-	KCD_Q,
-	KCD_W,
-	KCD_E,
-	KCD_R,
-	KCD_T,
-	KCD_Y,
-	KCD_U,
-	KCD_I,
-	KCD_O,
-	KCD_P,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KCD_ENTER,
-	KEY_UNKNOWN,
-	KCD_A,
-	KCD_S,
-	KCD_D,
-	KCD_F,
-	KCD_G,
-	KCD_H,
-	KCD_J,
-	KCD_K,
-	KCD_L,
-	KEY_UNKNOWN,
-	KCD_QUOTE,
-	KEY_UNKNOWN,
-	KCD_SHIFT_L,
-	KEY_UNKNOWN,
-	KCD_Z,
-	KCD_X,
-	KCD_C,
-	KCD_V,
-	KCD_B,
-	KCD_N,
-	KCD_M,
-	KCD_COMMA,
-	KCD_DOT,
-	KCD_6,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KCD_SPACE,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KCD_UP,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KCD_UP,
-	KEY_UNKNOWN,
-	KCD_DOWN,
-	KEY_UNKNOWN,
-	KEY_UNKNOWN,
-	KCD_DOWN // slash
+    KEY_UNKNOWN,
+    KCD_SPACE,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    SYS_WHEEL_BACK,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    SYS_WHEEL_BACK_SHIFT,
+    KEY_UNKNOWN,
+    SYS_WHEEL_FORWARD_SHIFT,
+    KEY_UNKNOWN,
+    KEY_UNKNOWN,
+    SYS_WHEEL_FORWARD
 };
-#if 0	
-static int linux_keys[0x80] = {
-    [0x01] = 16,    /* Q */
-    [0x02] = 37,    /* K */
-    [0x03] = 24,    /* O */
-    [0x04] = 25,    /* P */
-    [0x05] = 14,    /* Backspace */
-    [0x06] = 30,    /* A */
-    [0x07] = 31,    /* S */
-    [0x08] = 32,    /* D */
-    [0x09] = 33,    /* F */
-    [0x0a] = 34,    /* G */
-    [0x0b] = 35,    /* H */
-    [0x0c] = 36,    /* J */
 
-    [0x11] = 17,    /* W */
-    [0x12] = 62,    /* Menu (F4) */
-    [0x13] = 38,    /* L */
-    [0x14] = 40,    /* ' (Apostrophe) */
-    [0x16] = 44,    /* Z */
-    [0x17] = 45,    /* X */
-    [0x18] = 46,    /* C */
-    [0x19] = 47,    /* V */
-    [0x1a] = 48,    /* B */
-    [0x1b] = 49,    /* N */
-    [0x1c] = 42,    /* Shift (Left shift) */
-    [0x1f] = 65,    /* Zoom+ (F7) */
-
-    [0x21] = 18,    /* E */
-    [0x22] = 39,    /* ; (Semicolon) */
-    [0x23] = 12,    /* - (Minus) */
-    [0x24] = 13,    /* = (Equal) */
-    [0x2b] = 56,    /* Fn (Left Alt) */
-    [0x2c] = 50,    /* M */
-    [0x2f] = 66,    /* Zoom- (F8) */
-
-    [0x31] = 19,    /* R */
-    [0x32] = 29,    /* Right Ctrl */
-    [0x34] = 57,    /* Space */
-    [0x35] = 51,    /* , (Comma) */
-    [0x37] = 72,    /* Up */
-    [0x3c] = 82,    /* Compose (Insert) */
-    [0x3f] = 64,    /* FullScreen (F6) */
-
-    [0x41] = 20,    /* T */
-    [0x44] = 52,    /* . (Dot) */
-    [0x46] = 77,    /* Right */
-    [0x4f] = 63,    /* Home (F5) */
-    [0x51] = 21,    /* Y */
-    [0x53] = 80,    /* Down */
-    [0x55] = 28,    /* Enter */
-    [0x5f] =  1,    /* Cycle (ESC) */
-
-    [0x61] = 22,    /* U */
-    [0x64] = 75,    /* Left */
-
-    [0x71] = 23,    /* I */
-    [0x75] = 15,    /* KP Enter (Tab) */
-};
-#endif
 static void locosto_keyboard_event (peek_socket_s *s, int keycode)
 {
-	int down = 1;
-	int extended = 0;
+    int down = 1;
+    int extended = 0;
 
     if (keycode == 0xe0) {
-		extended = 1;
-   		return;
+        extended = 1;
+        return;
     } else if (keycode & 0x80) {
-    	keycode &= 0x7f;
-    	down = 0;
+        keycode &= 0x7f;
+        down = 0;
     }
     if (extended) {
-    	keycode |= 0x80;
-    	extended = 0;
+        keycode |= 0x80;
+        extended = 0;
     }
     fprintf(stderr, "Got keypad event %d - orig %d - state %d\n",
-linux_key_map[keycode], keycode, down);
+	linux_key_map[keycode], keycode, down);
     s->key=linux_key_map[keycode];
-	s->state = down;
+    s->state = down;
 }
 
 void peek_socket_init(peek_socket_s *s)
@@ -595,6 +625,7 @@ void peek_socket_init(peek_socket_s *s)
     cpu_register_physical_memory(0xFFFE9800, 0x7FF, io);
 
     s->key=0;
+	s->state=0;
     qemu_add_kbd_event_handler((QEMUPutKBDEvent *) locosto_keyboard_event, s);
 }
 
