@@ -117,7 +117,7 @@ int timerStart(tDS *timeData)
 
 		if(!fTimeData)
 			return -1;
-		last = fTimeData->last;
+		left = fTimeData->left;
 
 		for(list_begin(timeEventQ, &iter); !listIterator_finished(&iter); listIterator_next(&iter)) 
 		{
