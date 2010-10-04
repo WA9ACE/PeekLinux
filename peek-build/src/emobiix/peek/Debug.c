@@ -10,6 +10,8 @@ typedef long off_t;
 unsigned int mfwMmeDrvFlag;
 static char buf[76] = {0};
 
+#pragma NO_HOOKS (emo_printf)
+
 void emo_printf( const char* fmt, ...) {
 #ifndef EMO_PROD
         va_list ap;
@@ -27,7 +29,7 @@ void emo_printf( const char* fmt, ...) {
 		buf[75] = '\0';
         rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
         va_end(ap);
-        //TCCE_Task_Sleep(2);
+       	TCCE_Task_Sleep(2);
 #endif
 }
 

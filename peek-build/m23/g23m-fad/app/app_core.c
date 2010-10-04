@@ -48,8 +48,8 @@
 #include "p_sim.h"
 
 extern void* p_malloc(int);
-#ifdef EMO_SIM
 
+#if 1 /*Start sim defines */
 #define bal_htons(a)          SOCK_HTONS(a)
 
 struct in_addr 
@@ -87,7 +87,7 @@ struct hostent
 
 
 int emo_server_fd = -1;
-#endif
+#endif /* End sim defines */
 
 #define hCommUI _ENTITY_PREFIXED (hCommUI)
 
@@ -1321,41 +1321,41 @@ void app_sock_callback_DNS(T_SOCK_EVENTSTRUCT *event, void *context)
 
 void app_gethostbyname(const char *hostname)
 {
-#ifndef EMO_SIM
-	T_SOCK_RESULT result ;        /* Result of query call. */
+	if(simAutoDetect()) {
+			T_SOCK_RESULT result ;        /* Result of query call. */
 
-	emo_printf("peek_gethostbyname()");
+			emo_printf("peek_gethostbyname()");
 
-	if (!s_tcp_socket_bearar_open)
-	{
-		memset(&proc_context_dns, 0, sizeof(proc_context_dns));
-		strcpy(proc_context_dns.server_name, hostname);
-		app_open_bearer_tcp(&proc_context_dns);
-		proc_new_state(&proc_context_dns, PS_W_DCM_OPEN_ONLY);
-		return;
+			if (!s_tcp_socket_bearar_open)
+			{
+			memset(&proc_context_dns, 0, sizeof(proc_context_dns));
+			strcpy(proc_context_dns.server_name, hostname);
+			app_open_bearer_tcp(&proc_context_dns);
+			proc_new_state(&proc_context_dns, PS_W_DCM_OPEN_ONLY);
+			return;
+			}
+
+			strcpy(proc_context_dns.server_name, hostname);
+			proc_new_state(&proc_context_dns, PS_W_DNS);
+
+			result = sock_gethostbyname(sock_api_inst, proc_context_dns.server_name, app_sock_callback_DNS, &proc_context_dns) ;
+
+			sock_trace_result(&proc_context_dns, "sock_gethostbyname()", result) ;
+			if (result != SOCK_RESULT_OK)
+			{
+				TRACE_ERROR("sock_gethostbyname() failed, sleep...") ;
+				vsi_t_sleep(VSI_CALLER 2000) ;
+			}
+	} else {
+		unsigned long bal_gethostbyname(const char *);
+		struct hostent* he = (struct hostent *)bal_gethostbyname(hostname);
+		if (!he)
+			proc_context_dns.server_ipaddr = 0;
+		else
+			proc_context_dns.server_ipaddr = (unsigned long)he->h_addr_list[0];
+
+		app_ui_send(&proc_context_dns, EMOBIIX_NETSURF_DNS);
 	}
-
-	strcpy(proc_context_dns.server_name, hostname);
-	proc_new_state(&proc_context_dns, PS_W_DNS);
-
-	result = sock_gethostbyname(sock_api_inst, proc_context_dns.server_name, app_sock_callback_DNS, &proc_context_dns) ;
-
-	sock_trace_result(&proc_context_dns, "sock_gethostbyname()", result) ;
-	if (result != SOCK_RESULT_OK)
-	{
-		TRACE_ERROR("sock_gethostbyname() failed, sleep...") ;
-		vsi_t_sleep(VSI_CALLER 2000) ;
-	}
-#else
-	unsigned long bal_gethostbyname(const char *);
-	struct hostent* he = (struct hostent *)bal_gethostbyname(hostname);
-	if (!he)
-		proc_context_dns.server_ipaddr = 0;
-	else
-		proc_context_dns.server_ipaddr = (unsigned long)he->h_addr_list[0];
-	
-	app_ui_send(&proc_context_dns, EMOBIIX_NETSURF_DNS);
-#endif
 }
 
 void app_ui_send(PROC_CONTEXT_T *pcont, U32 event_type)
@@ -1717,39 +1717,37 @@ BOOL app_send_buf(PROC_CONTEXT_T *pcont, char *buffer, int size)
 }
 
 void app_connect_emobiix(void)
-{
-#ifndef EMO_SIM
-	//app_set_profile("track.t-mobile.com", "getpeek", "txtbl123");
-	//app_connect_info("10.150.9.6", 12345);
-	//app_connect_info("69.114.111.9", 8444);
-	app_connect_info("10.150.9.6", 8444);
-	app_socket_emobiix(&proc_context_tcp, AP_TCPUL, SOCK_IPPROTO_TCP);
-#else
-#if 0
-	struct sockaddr_in connect_in;
-	emo_server_fd = bal_socket(0 /*AF_INET*/, 0 /*SOCK_STREAM*/, 0 /*IPPROTO_TCP*/);
-	if (emo_server_fd < 0)
-	{
-		emo_printf("app_connect() Failed to create socket");
-		return;
+{	
+	if(simAutoDetect()) {
+		//app_set_profile("track.t-mobile.com", "getpeek", "txtbl123");
+		//app_connect_info("10.150.9.6", 12345);
+		//app_connect_info("69.114.111.9", 8444);
+		app_connect_info("10.150.9.6", 8444);
+		app_socket_emobiix(&proc_context_tcp, AP_TCPUL, SOCK_IPPROTO_TCP);
+	} else {
+		struct sockaddr_in connect_in;
+		emo_server_fd = bal_socket(0 /*AF_INET*/, 0 /*SOCK_STREAM*/, 0 /*IPPROTO_TCP*/);
+		if (emo_server_fd < 0)
+		{
+			emo_printf("app_connect() Failed to create socket");
+			return;
+		}
+
+		app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_CREA);
+
+		memset(&connect_in, 0, sizeof(struct sockaddr_in));
+		connect_in.sin_family = 0; /*AF_INET*/
+		connect_in.sin_addr.s_addr = bal_inet_addr("192.168.1.20");
+		connect_in.sin_port = bal_htons(8444);
+
+		if (bal_connect(emo_server_fd, &connect_in, sizeof(connect_in)) < 0)
+		{
+			emo_printf("Failed to connect to server");
+			return;
+		}
+
+		app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_CONN);
 	}
-
-	app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_CREA);
-
-	memset(&connect_in, 0, sizeof(struct sockaddr_in));
-	connect_in.sin_family = 0; /*AF_INET*/
-	connect_in.sin_addr.s_addr = bal_inet_addr("69.114.111.9");
-	connect_in.sin_port = bal_htons(12345);
-
-	if (bal_connect(emo_server_fd, &connect_in, sizeof(connect_in)) < 0)
-	{
-		emo_printf("Failed to connect to server");
-		return;
-	}
-
-	app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_CONN);
-#endif
-#endif
 }
 
 void app_send(void *data) 
@@ -1757,31 +1755,30 @@ void app_send(void *data)
 	T_EMOBIIX_WRITEMSG *writeMessage = (T_EMOBIIX_WRITEMSG *)data;
 	emo_printf("app_send()");
 
-#ifndef EMO_SIM
-	//trace_dump_data((U8 *)writeMessage->data, writeMessage->size);
-	// XXX: Will have to split up bigger buffers
-	if(app_send_buf(&proc_context_tcp, (char *)writeMessage->data, writeMessage->size)) {
-		// Handle Data sent ok
-		emo_printf("app_send(): Wrote data");
+	if(simAutoDetect()) {
+		//trace_dump_data((U8 *)writeMessage->data, writeMessage->size);
+		// XXX: Will have to split up bigger buffers
+		if(app_send_buf(&proc_context_tcp, (char *)writeMessage->data, writeMessage->size)) {
+			// Handle Data sent ok
+			emo_printf("app_send(): Wrote data");
+		} else {
+			// handle failed to send data
+			emo_printf("app_send(): Failed to write data");
+		}
 	} else {
-		// handle failed to send data
-		emo_printf("app_send(): Failed to write data");
+		if (bal_send(emo_server_fd, writeMessage->data, writeMessage->size, 0) < 0)
+		{
+			emo_printf("app_send() Failed to send message");
+			app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_DCON);
+		}
+		else
+			app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_SENT);
 	}
-#else
-	if (bal_send(emo_server_fd, writeMessage->data, writeMessage->size, 0) < 0)
-	{
-		emo_printf("app_send() Failed to send message");
-		app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_DCON);
-	}
-	else
-		app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_SENT);
-#endif
 
 	p_free(writeMessage->data);
 }
 
-#ifdef EMO_SIM
-void app_recv()
+void app_sim_recv()
 {
 	static char eventBuf[2048] = { 0 };
 	int ret = bal_recv(emo_server_fd, eventBuf, sizeof(eventBuf), 0);
@@ -1796,7 +1793,6 @@ void app_recv()
 	proc_context_tcp.data_rcvd = ret;
 	app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_RECV);
 }
-#endif
 
 void app_bind_udp_server()
 {
@@ -1832,9 +1828,10 @@ BOOL app_initialize_tcpip(T_HANDLE app_handle)
 
 	peek_initialize_sockets();
 
-#ifdef EMO_SIM
-	app_connect_emobiix();
-#endif
+	/* Auto Connect in Simulator */
+	if(!simAutoDetect())
+		app_connect_emobiix();
+
 	return PEI_OK ;
 }
 

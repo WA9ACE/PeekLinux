@@ -24,16 +24,7 @@
 #include <windows.h>
 #endif
 
-#ifndef SIMULATOR
-#include "dspl.h"
-#endif
-
-#define BWIDTH 320
-#define BHEIGHT 240
-
-extern unsigned char *screenBuf;
 extern unsigned char pwr_PowerOffMobile   (void);
-extern U8* get_LCD_bitmap(void);
 
 #include "kpd_cfg.h"
 #include "hwtask.h"
@@ -74,57 +65,6 @@ typedef enum
     BAL_KEY_HOLD,
     BAL_KEY_STATUS_NUM
 }BalKeyStatusT;
-
-void emo_BitBltPartial(Rectangle *rect, U8 *bmp)
-{
-	U8 *dbmp = get_LCD_bitmap();
-	int yy, offset;
-	
-	for (yy = rect->y; yy < rect->y + rect->height; ++yy)
-	{
-		offset = (BWIDTH * yy + rect->x) * 2;
-		memcpy(dbmp + offset, bmp + offset, rect->width * 2);
-	}
-}
-
-void emo_BitBltFull(U8* bmp)
-{
-	U8 *dbmp = get_LCD_bitmap();
-	memcpy(dbmp, bmp, BWIDTH * BHEIGHT * 2);
-}
-
-void updateScreen(void) {
-#ifndef SIMULATOR
-	int index, upper;
-	extern int netsurf_start_flag;
-
-	if(netsurf_start_flag) 
-		return;
-
-	renderman_flush();
-	manager_drawScreen();
-
-	if (!lgui_is_dirty())
-		return;
-    dspl_Enable(0);
-
-	upper = lgui_index_count();
-	if (upper == 0) {
-		//emo_printf("Flipping entire screen" NL);
-		emo_BitBltFull(screenBuf);
-	} else {
-		Rectangle *rect;
-		int i;
-		for (index = 0; index < upper; ++index) {
-			rect = lgui_get_region(index);
-			//emo_printf("Flipping partial screen: %d, %d %d %d %d" NL, index, rect->x, rect->y, rect->width, rect->height);
-			emo_BitBltPartial(rect, screenBuf);
-		}
-	}
-	dspl_Enable(1);
-	lgui_blit_done();
-#endif
-}
 
 #ifdef SIMULATOR
 ConnectionContext *connectionContext;
@@ -205,63 +145,9 @@ void main_test(void)
 }
 #endif
 
-int kbdEmobiixCB(T_EMOBIIX_KBD_EVENT *event)
-{
-	switch (event->key)
-	{
-		//case KCD_CANCLE:
-	//		break;
-
-		case KPD_KEY_ENTER:
-			manager_handleKey(KPD_KEY_ENTER);
-			updateScreen();
-			break;
-
-		case KPD_KEY_UP:
-			manager_handleKey(KPD_KEY_UP);
-			updateScreen();
-			break;
-
-		case KPD_KEY_DOWN:
-			manager_handleKey(KPD_KEY_DOWN);
-			updateScreen();
-			break;
-
-		default:
-			manager_handleKey(MapKeyToInternal(event->key));
-			updateScreen();
-			break;
-	}
-
-	PFREE(event);
-	return 1;
-}
-
-static int kdbEventCB(hwEventType eventType, void *eventData, void *context)
-{
-	KBD_EVENT *keyEvent = (KBD_EVENT *)eventData;
-	PALLOC(event, EMOBIIX_KBD_EVENT);
-
-	event->context = context;
-	event->key = keyEvent->key;
-	event->state = keyEvent->state;
-
-	PSEND(hCommUI, event);
-	return 1;
-}
-
-void emobiixKbdInit()
-{
-	hwEventSubscribe(HW_KEYBOARD_EVENT, kdbEventCB, 0);
-}
-
 int netsurf_start_flag = 0;
 
-#ifdef EMO_SIM
-void UiHandleKeyEvents(RegIdT RegId, UINT32 MsgId, void *MsgBufferP)
-#else
 static void UiHandleKeyEvents(RegIdT RegId, UINT32 MsgId, void *MsgBufferP)
-#endif
 {
         int UiKeyId = *((int *)MsgBufferP);
 		T_EMOBIIX_NETSURF_START *netStart;
@@ -294,6 +180,11 @@ static void UiHandleKeyEvents(RegIdT RegId, UINT32 MsgId, void *MsgBufferP)
         updateScreen();
 }
 
+void emulatorKeyPass(RegIdT RegId, UINT32 MsgId, void *MsgBufferP) {
+	UiHandleKeyEvents(RegId, MsgId, MsgBufferP);
+}
+
+
 void netsurfStart(void) {
      T_EMOBIIX_NETSURF_START *netStart;
 
@@ -307,9 +198,8 @@ void netsurfStart(void) {
 void KeyPad_Init(void) {
 
      if(BalKeypadRegister(UiHandleKeyEvents) == -1) {
-        emo_printf("BalKeypadRegister() Failed to register handler" NL);
+        emo_printf("KeypadRegister() Failed to register handler");
         return;
      }
-     //emo_printf("BalKeypadRegister() registered" NL);
 }
 

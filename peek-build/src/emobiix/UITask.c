@@ -24,22 +24,32 @@
 #include "system_battery.h"
 #include "exeapi.h"
 
-unsigned char *screenBuf; //[320*240*2];
-void updateScreen(void);
-int UIInit(void);
-static int UIIteration(void);
-int UIWaitForActivity(void);
-static void UICleanup(void);
-ConnectionContext *connectionContext;
-//extern void appProtocolStatus(int status);
-int netsurf_main(int argc, char** argv);
+#ifndef SIMULATOR
+#include "dspl.h"
+#endif
 
-Task UITask_s = {UIInit, UIIteration, UIWaitForActivity, UICleanup};
+#define BWIDTH 320
+#define BHEIGHT 240
+
+#pragma DATA_SECTION(lcd_frame_buffer, ".r2dbuffer")
+char lcd_frame_buffer[BWIDTH * BHEIGHT * 2];
+
+typedef struct 
+{
+	UINT16 start_x;
+	UINT16 start_y;
+	UINT16 end_x;
+	UINT16 end_y;
+} lcd_fb_coordinates;
+
+
+extern void emo_BitBlt(int x1, int y1, int x2, int y2);
+void updateScreen(void);
+void UIInit(void);
+ConnectionContext *connectionContext;
 
 DataObject *systemAppObject;
 Application *systemApplication;
-
-extern int gprsAttached;
 
 void uiAppConn(void *connData)
 {
@@ -75,9 +85,7 @@ void uiAppSent()
 	emo_printf("uiAppSent() Looping...");
 	connectionContext_loopIteration(connectionContext);
 }
-#ifdef EMO_SIM
 int recvProcess = 0;
-#endif
 
 void uiAppRecv(void *recvData)
 {
@@ -100,9 +108,8 @@ void uiAppRecv(void *recvData)
 	if(emoMenu_get_window())
 		SEND_EVENT(emoMenu_get_window(), SCREEN_UPDATE, 0, 0);
 	*/
-#ifdef EMO_SIM
-	recvProcess = 0;
-#endif
+	if(!simAutoDetect())
+		recvProcess = 0;
 }
 
 GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
@@ -139,10 +146,8 @@ GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 
 		case EMOBIIX_NETSURF_START:
 		{
-			extern unsigned char *get_LCD_bitmap();
-			unsigned char *dbmp = get_LCD_bitmap();
-			dspl_Enable(0);
-			memset(dbmp, 0xFF, 320 * 240 * 2);
+			memset(&lcd_frame_buffer, 0xFF, 320 * 240 * 2);
+			emo_BitBlt(0,0,320,240);
 
 			emo_printf("appdata_response_cb(): start_netsurf");
 			netsurf_main(1, &argv);
@@ -157,78 +162,101 @@ GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 	return FALSE;
 }
 
+U8* emo_LCD_bitmap(void)
+{
+       return ((U8*)lcd_frame_buffer);
+}
+
+void emo_BitBlt(int x1, int y1, int x2, int y2)
+{
+	static lcd_fb_coordinates coord;
+
+	emo_printf("Flipping partial screen: %d %d %d %d", x1, y1, x2, y2);
+
+	coord.start_x = x1;
+	coord.start_y = y1;
+	coord.end_x =  x2;
+	coord.end_y = y2;
+
+	if(simAutoDetect())
+		lcd_display(0, emo_LCD_bitmap(), &coord);
+}
+
+void updateScreen(void) 
+{
+#ifndef SIMULATOR
+    int index, upper;
+    extern int netsurf_start_flag;
+
+    if(netsurf_start_flag)
+        return;
+
+    renderman_flush();
+    manager_drawScreen();
+
+    if (!lgui_is_dirty())
+        return;
+
+    upper = lgui_index_count();
+    if (upper == 0) 
+	{
+        emo_BitBlt(0, 0, BWIDTH, BHEIGHT);
+    } 
+	else 
+	{
+        int i;
+        Rectangle *rect;
+        for (index = 0; index < upper; ++index) 
+		{
+            rect = lgui_get_region(index);
+            emo_BitBlt(rect->x, rect->y, rect->x + rect->width, rect->y + rect->height);
+        }
+    }
+
+    lgui_blit_done();
+#endif
+}
+
 void display_init()
 {
-	dspl_DevCaps displayData;
-	UBYTE ret = dspl_Init();
+	int ret;
 	emo_printf("Initializing display driver");
-	if (ret != DRV_OK)
-	{
+	
+	if(simAutoDetect())
+		ret = lcd_initialization(0);
+	else 
+		ret = 0;
+
+	if (ret != 0)
 		emo_printf("Display driver initialization failed: %d", ret);
-		return;
-	}
 
-	displayData.DisplayType = DSPL_TYPE_GRAPHIC;
-
-	dspl_SetDeviceCaps(&displayData);
-	dspl_GetDeviceCaps(&displayData);
-
-	emo_printf("Display parameters are %dx%d", displayData.Width, displayData.Height);
+	memset(&lcd_frame_buffer, 0xff, 320*240*2);
+	emo_BitBlt(0,0,320,240);
 }
 
-void UITask(void)
-{
-	task_threadFunction(&UITask_s);
-
-	return;
-}
-
-extern void emobiixKbdInit();
-
-int UIInit(void)
+void UIInit(void)
 {	
-	char *argv = "emobiix";
-	static int initd = 0;
+	if(simAutoDetect())
+		backlightInit();
 
-	if (!initd) {
-		screenBuf = (unsigned char *)p_malloc(320*240*2);
-		if(!screenBuf)
-			emo_printf("Failed to allocate screenBuf\n");
+	TCCE_Task_Sleep(500); 
 
-		dataobject_platformInit();
-		renderman_init();
+	display_init();
+	
+	dataobject_platformInit();
+	renderman_init();
 
-		lgui_attach(screenBuf);
-		manager_init();
-		initd = 1;
-
-		manager_drawScreen();
-#ifndef EMO_SIM
-		KeyPad_Init();
-#endif
-	}
+	lgui_attach(&lcd_frame_buffer);
+	manager_init();
 
 	lgui_set_dirty();
 	updateScreen();
+
 	uiStatusSet();
-	return 1;
+
+	BalKeypadInit(0,0,4);
+    KeyPad_Init();
+	
+	return;
 }
 
-static int UIIteration(void)
-{
-	return 1;
-}
-
-int UIWaitForActivity(void)
-{
-	char *argv = "emobiix";
-
-	TCCE_Task_Sleep(10);
-
-	return 1;
-}
-
-static void UICleanup(void)
-{
-
-}

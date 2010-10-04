@@ -23,8 +23,9 @@
 
 #include "List.h"
 
-extern uint8_t* get_LCD_bitmap(void);
-extern void dspl_Enable(uint8_t);
+extern U8* emo_LCD_bitmap(void);
+extern void emo_BitBlt(int x1, int y1, int x2, int y2);
+
 extern List *netsurf_get_queue();
 
 #ifdef EMO_SIM
@@ -213,7 +214,7 @@ static int peek_initialise(nsfb_t *nsfb)
 	if (nsfb->bpp != 16 || nsfb->width != 320 || nsfb->height != 240)
 		return -1;
 
-	nsfb->ptr = (void *)get_LCD_bitmap();
+	nsfb->ptr = (void *)emo_LCD_bitmap();
 	nsfb->linelen = nsfb->width * (nsfb->bpp >> 3);
 
 	return 0;
@@ -353,13 +354,12 @@ static bool peek_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
 			/* Invert wheel mode */
 			if(state) {
 				wheel_mode = wheel_mode ? 0 : 1;	
-				dspl_Enable(0);
 				if(!wheel_mode) {
 					nsfb_cursor_clear(nsfb, cursor);
 				} else {
 					nsfb_cursor_plot(nsfb, cursor);
 				}
-				dspl_Enable(1);
+				emo_BitBlt(0, 0, nsfb->width, nsfb->height);
 			}
 			break;
 		case SYS_CANCEL_KEY:
@@ -436,8 +436,6 @@ static int peek_claim(nsfb_t *nsfb, nsfb_bbox_t *box)
 {
 	struct nsfb_cursor_s *cursor = nsfb->cursor;
 
-	dspl_Enable(0);
-	
 	emo_printf("peek_claim()");
 
 	if ((cursor != NULL) && 
@@ -454,15 +452,12 @@ static int peek_claim(nsfb_t *nsfb, nsfb_bbox_t *box)
 		cursor->plotted = false;
 	}
 
-	//dspl_Enable(1);
 	return 0;
 }
 
 static int peek_cursor(nsfb_t *nsfb, struct nsfb_cursor_s *cursor)
 {
 	nsfb_bbox_t sclip;
-
-	dspl_Enable(0);
 
 	emo_printf("peek_cursor()");
 
@@ -482,9 +477,10 @@ static int peek_cursor(nsfb_t *nsfb, struct nsfb_cursor_s *cursor)
 		nsfb_cursor_plot(nsfb, cursor);
 
 		nsfb->clip = sclip;
+	
+		emo_BitBlt(cursor->loc.x0, cursor->loc.y0, cursor->loc.x1, cursor->loc.y1);
 	}
 
-	dspl_Enable(1);
 	return true;
 }
 
@@ -493,13 +489,14 @@ static int peek_update(nsfb_t *nsfb, nsfb_bbox_t *box)
 {
 	struct nsfb_cursor_s *cursor = nsfb->cursor;
 	emo_printf("peek_update()");
-	//dspl_Enable(0);
 
-	if ((cursor != NULL) && (cursor->plotted == false) && (wheel_mode == true)) {
+	if ((cursor != NULL) && (cursor->plotted == false) && (wheel_mode == true)) 
+	{
 		nsfb_cursor_plot(nsfb, cursor);
+		emo_BitBlt(cursor->loc.x0, cursor->loc.y0, cursor->loc.x1, cursor->loc.y1);
 	}
 
-	dspl_Enable(1);
+	emo_BitBlt(box->x0, box->y0, box->x1, box->y1);
 	return 0;
 }
 

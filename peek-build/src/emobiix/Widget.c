@@ -1024,7 +1024,7 @@ Widget *widget_focusWhichOne(Widget *w)
 	Application *app;
 
 	EMO_ASSERT_NULL(w != NULL, "widget focus whoch one missing widget")
-	
+
 	if (widget_hasFocus(w)) {
 		widget_setFocus(w, 0);
 		return w;
@@ -1056,22 +1056,20 @@ Widget *widget_focusWhichOne(Widget *w)
 		if (child == NULL)
 			goto normal_focus;
 		result = widget_focusWhichOne(child);
-					if (result)
-						return result;
+		if (result)
+			return result;
 	} else {
 normal_focus:
 		dataobject_childIterator(w, &iter);
-		while (!listIterator_finished(&iter)) {
+		while (!listIterator_finished(&iter)) 
+		{
 			result = widget_focusWhichOne((Widget *)listIterator_item(&iter));
-			if (result) {
-				/*listIterator_delete(iter);*/
+			if (result)
 				return result;
-			}
+
 			listIterator_next(&iter);
 		}
 	}
-
-	/*listIterator_delete(iter);*/
 
 	return NULL;
 }

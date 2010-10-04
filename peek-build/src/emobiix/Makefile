@@ -106,10 +106,7 @@ SRC += Cache.c
 SRC += StackWidget.c
 SRC += ScrollBarWidget.c
 SRC += ScrolledWidget.c
-
-ifneq (,$(findstring EMO_SIM,$(VARIANT_DEFINE)))
 SRC += SimDriver.c
-endif
 
 TARGET = $(CURDIR)/emobiix.a
 

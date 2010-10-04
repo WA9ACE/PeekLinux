@@ -40,8 +40,10 @@ SRCSUBDIR += lua
 SRCSUBDIR += nmealib
 SRCSUBDIR += tasks
 SRCSUBDIR += emobiix
+#SRCSUBDIR += sdl
 
 SRCLIB  = $(SRCDIR)/zlib/libz.a 
+#SRCLIB += $(SRCDIR)/sdl/libsdl.a
 SRCLIB += $(SRCDIR)/freetype2/freetype2.a 
 SRCLIB += $(SRCDIR)/libpng/libpng.a 
 SRCLIB += $(SRCDIR)/netdepends/libjpeg/libjpeg.a

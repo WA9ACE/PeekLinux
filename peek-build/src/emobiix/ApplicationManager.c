@@ -199,8 +199,10 @@ void manager_handleKey(unsigned int key)
 		style = appManager->style;
 
 	focus = NULL;
+
 	if (appManager->rootApplicationWindow != NULL)
 		focus = widget_focusWhichOneNF(appManager->rootApplicationWindow);
+
 	if (focus != NULL) {
 		DataObjectField *field;
 		field = dataobject_getValue(focus, "type");

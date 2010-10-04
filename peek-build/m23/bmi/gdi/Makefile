@@ -11,7 +11,7 @@ INCLUDE += $(M23DIR)/chipsetsw/riviera/rvf
 INCLUDE += $(M23DIR)/chipsetsw/riviera/rvm
 
 SRC  = audio.c
-SRC += display.c
+#SRC += display.c
 SRC += font_bitmaps.c
 SRC += power.c
 SRC += keypad.c

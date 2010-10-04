@@ -492,12 +492,12 @@ T_RVF_RET RTC_GetDateTime(T_RTC_DATE_TIME* date_time)
    bspTwl3029_Rtc_DateTime dateTime;
    UINT8 hour;
 
-#ifndef EMO_SIM
-   if( BSP_TWL3029_RETURN_CODE_FAILURE == bspTwl3029_Rtc_GetDateTime (&dateTime))
-   {
-        return RVF_INTERNAL_ERR;
+   if(simAutoDetect()) {
+   		if( BSP_TWL3029_RETURN_CODE_FAILURE == bspTwl3029_Rtc_GetDateTime (&dateTime))
+   		{
+        	return RVF_INTERNAL_ERR;
+   		}
    }
-#endif
    date_time->second = dateTime.second;
    date_time->minute = dateTime.minute;
    date_time->hour = dateTime.hour;

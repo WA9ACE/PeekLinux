@@ -44,6 +44,12 @@ void gprs_dataobject_init(void)
 	dataobject_setValue(GPRS_DO, "emobiix-on", GPRS_EMOBIIX_ON);
 	dataobject_setValue(GPRS_DO, "lac", GPRS_LOCATION_LAC);
 	dataobject_setValue(GPRS_DO, "ci", GPRS_LOCATION_CI);
+
+	/* Set default signal in simulator */
+	if(!simAutoDetect()) {
+		gprs_set_signal_level(3);
+		gprs_set_on(1);
+	}
 }
 
 void gprs_set_status(BOOL status)

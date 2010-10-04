@@ -223,6 +223,64 @@ void listIterator_remove(ListIterator *iter)
     p_free(node);
 }
 
+void listIterator_insertBefore(ListIterator *iter, void *obj)
+{
+	ListNode *node;
+
+	EMO_ASSERT(iter != NULL, "Insert before null iter");
+	EMO_ASSERT(iter->node != NULL, "Insert before null iter node");
+	EMO_ASSERT(iter->list != NULL, "Insert before null iter list");
+
+	node = (ListNode *)p_malloc(sizeof(ListNode));
+	node->data = obj;
+	node->prev = iter->node->prev;
+	node->next = iter->node;
+	iter->node->prev = node;
+
+	iter->list->length++;
+	if (!node->prev)
+		iter->list->head = node;
+}
+
+void listIterator_insertAfter(ListIterator *iter, void *obj)
+{
+	ListNode *node;
+
+	EMO_ASSERT(iter != NULL, "Insert after null iter");
+	EMO_ASSERT(iter->node != NULL, "Insert after null iter node");
+	EMO_ASSERT(iter->list != NULL, "Insert after null iter list");
+
+	node = (ListNode *)p_malloc(sizeof(ListNode));
+	node->data = obj;
+	node->prev = iter->node;
+	node->next = iter->node->next;
+	iter->node->next = node;
+
+	iter->list->length++;
+	if (!node->next)
+		iter->list->tail = node;
+}
+
+void* list_firstItem(List *list)
+{
+	EMO_ASSERT_NULL(list != NULL, "First item null list");
+	
+	if (list->head)
+		return list->head->data;
+
+	return NULL;
+}
+
+void* list_lastItem(List *list)
+{
+	EMO_ASSERT_NULL(list != NULL, "Last item null list");
+	
+	if (list->tail)
+		return list->tail->data;
+
+	return NULL;
+}
+
 int ListEqualComparitor(void *arg1, void *arg2)
 {
 	if (arg1 == arg2)

@@ -966,22 +966,22 @@ if(apiCallbackFuncPtr==NULL)
   //register and by the time if minutes reg is read if there is a interrupt then time jumps by 1 minute .
   //OMAPS00056598
   //this workaround is valid only for blocking call.
-#ifndef EMO_SIM
+  if(simAutoDetect()) {
   while(dummysec<timePtr->second)
  	{
-#endif
            
   	  returnCode=BspTwl3029_RTC_check(timePtr,i2cRegArrayPtr,i2cTransArrayPtr);
            
 	  if(returnCode!=BSP_TWL3029_RETURN_CODE_SUCCESS)
          return returnCode;
 	  
-#ifndef EMO_SIM
-        }
-#endif
+	}
+  } else { // In Emulator
+      returnCode=BspTwl3029_RTC_check(timePtr,i2cRegArrayPtr,i2cTransArrayPtr);
 
-    
-
+      if(returnCode!=BSP_TWL3029_RETURN_CODE_SUCCESS)
+         return returnCode;
+  }
 }
 
 

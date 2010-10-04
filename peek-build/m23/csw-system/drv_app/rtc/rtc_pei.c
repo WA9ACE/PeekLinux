@@ -414,10 +414,14 @@ static const T_PEI_INFO pei_info =
 T_RVM_RETURN rtc_init(void)
 {
 // CQ 20001 avoid RTC wakeup interrupts every minute in NO GSM mode on OMAP730
-#if  (!(defined _WINDOWS) && (BOARD == 35) || defined(EMO_SIM))
+#if  (!(defined _WINDOWS) && (BOARD == 35))
 	return RVF_OK;
 #else
-	return RTC_Initialize();
+	if(simAutoDetect())
+		return RTC_Initialize();
+	else
+		return RVF_OK;
+
 #endif
 } /* End rtc_init() */
 

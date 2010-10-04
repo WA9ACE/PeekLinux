@@ -1,7 +1,7 @@
 include Makefile.globals
 
 TARGET=server
-SUBDIR=protocol application utils soaprpc 
+SUBDIR=protocol application utils soaprpc
 
 INCLUDE  = $(GSOAPINC)
 INCLUDE += $(BOOSTINC)
@@ -27,7 +27,7 @@ LIB += $(BOOSTLIB)/libboost_system.a
 LIB += $(BOOSTLIB)/libboost_thread.a -lpthread
 LIB += -lxerces-c
 
-.PHONY: $(SUBDIR)
+.PHONY: $(SUBDIR) peek peekclean
 
 all: server
 
@@ -43,6 +43,12 @@ protocol soaprpc:
 
 utils: 
 	$(MAKE) -C $@
+
+peek:
+	$(MAKE) -C examples/peek_interface
+
+peekclean:
+	$(MAKE) -C examples/peek_interface clean
 
 clean: 
 	$(MAKE) -C protocol clean

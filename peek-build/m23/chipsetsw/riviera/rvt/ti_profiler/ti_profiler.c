@@ -33,7 +33,7 @@
   #include "memif/mem.h"
   #include "inth/iq.h"
 
-  #include "rvt/ti_profiler/ti_profiler.h"
+//  #include "rvt/ti_profiler/ti_profiler.h"
 
   #include "timer/timer.h"       
 

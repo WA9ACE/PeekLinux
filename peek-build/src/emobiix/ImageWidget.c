@@ -98,6 +98,9 @@ static void image_measure(WidgetRenderer *wr, Style *s, Widget *w,
 
 	field = dataobject_getValue(dobj, "width");
 	if (field == NULL || field->type != DOF_INT) {
+		DataObject *parent = dataobject_parent(dobj);
+		dataobject_debugPrint(parent ? dataobject_parent(parent) : NULL);
+
 		emo_printf("width field not an int" NL);
 		output->x = 0;
 		output->y = 0;

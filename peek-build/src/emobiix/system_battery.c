@@ -88,11 +88,16 @@ void system_battery_init()
 	url = url_parse(SYSTEM_BATTERY_URI, URL_ALL);
 
 	SYSTEM_BATTERY = dataobject_construct(url, 1);
+
 	BATTERY_CHARGE_LEVEL = dataobjectfield_uint(0);
 	BATTERY_CHARGE_STATE = dataobjectfield_uint(0);
 
 	dataobject_setValue(SYSTEM_BATTERY, "charge-level", BATTERY_CHARGE_LEVEL);
 	dataobject_setValue(SYSTEM_BATTERY, "charge-state", BATTERY_CHARGE_STATE);
+
+	/* Set default level in simulator to 5 */
+	if(!simAutoDetect())
+		system_battery_set_battery_level(5);
 
 	url_delete(url);
 

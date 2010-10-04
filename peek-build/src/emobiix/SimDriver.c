@@ -1,5 +1,4 @@
-/*
- * QEMU driver for socket emulation
+/* * QEMU driver for socket emulation
  * 
 */ 
 #include "general.h"
@@ -7,7 +6,6 @@
 #include "Debug.h"
 #include <stdint.h>
 #include "mfw_kbd.h"
-//#include <sys/socket.h>
 
 #define SOCK_BASE 0xFFFE9800
 #define SOCK_FD     0x0
@@ -29,6 +27,10 @@
 #define SOCK_RRET    0x10
 #define SOCK_RBUF    0xc
 #define SOCK_CRET    0x18
+
+
+#define JTAG_ADDR	0xFFFFFE00
+
 
 int bal_sock_api_inst;
 
@@ -66,7 +68,26 @@ uint32_t SimReadReg(void) {
 	return *(unsigned int*) regaddr;
 
 }
-#ifdef EMO_SIM
+
+/* Auto Detects if we in simulator */
+static int simval = 2;
+
+uint32_t simAutoDetect(void) {
+	void *regaddr;
+
+	if(simval == 2) {	
+		/* We use jtag addr to auto detect if we are in vm */
+		regaddr = (void*)((unsigned int)JTAG_ADDR);
+		//emo_printf("Emulator detected 0x%08x", *(unsigned int*)regaddr);
+		if(*(unsigned int*)regaddr != 0)
+			simval = 1; // real device
+		else
+			simval = 0; // emulator
+	}
+	
+	return simval;
+}
+
 int bal_socket (int __family, int __type, int __protocol) {
 
 	void *regaddr;
@@ -301,6 +322,7 @@ int bal_closesocket(int fd) {
 
     return 0;
 }
+
 int SimReadKeyState(void) {
     void *regaddr;
     int state = 0;
@@ -319,85 +341,4 @@ int SimReadKey(void) {
 	key = *(unsigned int*)regaddr;
 	*(unsigned int*) regaddr=0;
 	return key;
-	/*
-    switch(*(unsigned int*)regaddr) {
-	case 0x81: 
-		*(unsigned int*)regaddr =0;
-		return KCD_CANCLE;
-	case 0x1b: // Backspace
-	case 0x9b:
-		*(unsigned int*)regaddr =0;
-		return KCD_BACKSPACE;
-        case 0x51: // up arrow
-        case 0xd1:
-        case 0xc8: // win
-                *(unsigned int*)regaddr =0;
-                return KCD_UP;
-        case 0x53: // down arrow
-        case 0xd3:
-        case 0xd0:
-                *(unsigned int*) regaddr=0;
-                return KCD_DOWN;
-        case 0x36: // enter key
-        case 0xb6:
-        case 0x1c:
-        case 0x9c:
-                *(unsigned int*) regaddr=0;
-                return KCD_NAV_CENTER;
-	case 0x9e:
-		*(unsigned int*) regaddr=0;
-		return KCD_A;
-	case 0xb0:
-		*(unsigned int*) regaddr=0;
-		return KCD_B;
-	case 0xae:
-		*(unsigned int*) regaddr=0;
-		return KCD_C;
-        case 0x0f: // 1
-        case 0x8f:
-                break;
-        case 0x10: // 2
-        case 0x90:
-                break;
-        case 0x11: // 3
-        case 0x91:
-                break;
-        case 0x12: // 4
-        case 0x92:
-                break;
-        case 0x13: // 5
-        case 0x93:
-                break;
-        case 0x14: // 6
-        case 0x94:
-                break;
-        case 0x15: // 7
-        case 0x95:
-                break;
-        case 0x16: // 8
-        case 0x96:
-                break;
-        case 0x17: // 9
-        case 0x97:
-                break;
-	case 0x50:
-		*(unsigned int*) regaddr=0;
-		return 0x50;
-	case 0x48:
-        *(unsigned int*) regaddr=0;
-		return 0x48;
-	case 0x4b:
-        *(unsigned int*) regaddr=0;
-        return 0x4b;
-	case 0x4d:
-        *(unsigned int*) regaddr=0;
-        return 0x4d;
-		
-      default:
-		*(unsigned int*) regaddr=0;
-                return 0;
-   }
-	*/
-
 }
-#endif
