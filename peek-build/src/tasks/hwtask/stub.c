@@ -30,8 +30,7 @@ unsigned int timer_state = 0;
 unsigned int http_error_counter = 0;
 
 int fResumeSettingFromConfigFile(void) {
-
-
+	return 0;
 }
 
 /* cant see where they used in bal_socket.o so we might have to investigate */
@@ -71,3 +70,24 @@ void rAT_PercentCPROAM(void) {
 void rAT_PercentCPVWI(void) {
 
 }
+
+static int entryInit = 0;
+
+void setEntryStub(void) {
+	entryInit = 1;
+}
+
+//const char *blah = "emo_printf";
+
+void entry_stub(const char *name) {
+//	if(name[0] == 'e' && name[1] == 'm' && name[2] == 'o' && name[3] == '_')
+//	if (name == blah
+//		return;
+
+//	if(entryInit) {
+		emo_printf("<%s>", name);
+		TCCE_Task_Sleep(2);
+//	}
+	
+}
+

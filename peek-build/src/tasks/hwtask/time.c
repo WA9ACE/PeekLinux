@@ -588,27 +588,26 @@ GLOBAL void sAT_PlusCOPSE(UBYTE *oper, UBYTE format,
 T_RTC_DATE* hw_td_get_date()
 {
         emo_printf("hw_td_get_date");
-#ifndef EMO_SIM
-        rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT); 
-#endif
+		if(simAutoDetect())
+        	rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT); 
         return &current_date;
 }
 
 T_RTC_TIME* hw_td_get_time()
 {
         emo_printf("hw_td_get_time");
-#ifndef EMO_SIM
-        rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT); 
-#endif
+		if(simAutoDetect())
+        	rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT); 
 		return &current_time;
 }
 
 char* hw_td_get_clock_str()
 {       
 		emo_printf("hw_td_get_clock_str");
-#ifndef EMO_SIM
-        rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT); 
-#endif
+
+		if(simAutoDetect())
+        	rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT); 
+
         if(current_time.PM_flag==1)
         	sprintf(time_string, "%02d:%02d pm ", current_time.hour, current_time.minute);
         else
@@ -627,47 +626,47 @@ char* hw_td_get_date_str()
 void hw_td_set_time(T_RTC_TIME* time)
 {       
 		int result;
-#ifndef EMO_SIM
         emo_printf("hw_td_set_time");
-        result = rtc_set_time_date(&current_date, time);
-        if (result == 0)
-        {       memcpy(&current_time, time, sizeof(T_RTC_TIME));
+		if(simAutoDetect()) {
+        	result = rtc_set_time_date(&current_date, time);
+       		if (result == 0)
+        	{
+		    	memcpy(&current_time, time, sizeof(T_RTC_TIME));
                 return;
-        }
-		emo_printf("RTC driver error");
-#endif
+        	}
+			emo_printf("RTC driver error");
+		}
         return;
 }
 
 void hw_td_set_date(T_RTC_DATE* date)
 {     	int result;
-#ifndef EMO_SIM
+
         emo_printf("hw_td_set_date");
-        result = rtc_set_time_date(date, &current_time);
-        if (result == 0)
-        {
+		if(simAutoDetect()) {
+        	result = rtc_set_time_date(date, &current_time);
+        	if (result == 0)
+        	{
                 memcpy(&current_date, date, sizeof(T_RTC_DATE));
 				return;
-        }
-		emo_printf("RTC driver error");
-#endif
+        	}
+			emo_printf("RTC driver error");
+		}
         return;
 }
 
 void hw_td_init(void) {
 
-#ifndef EMO_SIM
-    if(!rtc_clock_cleared())
-    {
-        rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT);
-    } else {
-        rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT);
-#else
-	{
-#endif
+	if(simAutoDetect()) {
+    	if(!rtc_clock_cleared())
+        	rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT);
+    	else 
+        	rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT);
+
+	} else { /* Set dummy time in emulator */
         current_time.second = 0;
-        current_time.minute = 0;
-        current_time.hour = 0;
+        current_time.minute = 20;
+        current_time.hour = 4;
 
         current_date.year = 2010;
         current_date.month = 9;
@@ -675,6 +674,6 @@ void hw_td_init(void) {
 
         hw_td_set_time(&current_time);
         hw_td_set_date(&current_date);
-    }
+	}
 }
 

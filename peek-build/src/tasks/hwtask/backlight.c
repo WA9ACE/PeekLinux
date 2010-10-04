@@ -62,6 +62,10 @@ void mme_setBacklightEvent(int event, int lightLevel)
 
 void backlightInit() {
          int i;
+
+		 light_Init();
+
+		/*
          for (i=0;i<BL_LAST_OPTION;i++) {
                 mme_setBacklightEvent(i,BL_MAX_LIGHT);
          }
@@ -69,9 +73,11 @@ void backlightInit() {
          mme_setBacklightEvent(BL_KEY_PRESS,BL_MAX_LIGHT);
          mme_setBacklightEvent(BL_INCOMING_CALL,BL_MAX_LIGHT);
          mme_setBacklightEvent(BL_EXIT,BL_NO_LIGHT);
+		*/
 
-         /*and tell the backlight that the init event has happened */
-         mme_backlightEvent(BL_INIT);
+         //mme_backlightEvent(BL_INIT);
+	
+		light_SetStatus(LIGHT_DEVICE_BACKLIGHT, BL_MAX_LIGHT);
 }
 
 

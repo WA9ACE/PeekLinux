@@ -37,6 +37,7 @@ SRC  = ui_pei.c
 
 SRC += hwtask/at.c
 SRC += hwtask/hwevents.c
+SRC += hwtask/timer.c
 SRC += hwtask/hwpei.c
 SRC += hwtask/hwtask.c
 SRC += hwtask/kbd.c

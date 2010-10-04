@@ -17,35 +17,27 @@
 #include "p_dl.h"
 
 
-static int pSlot;
+void mmi_main(void) 
+{
+	emo_printf("mmi_main()");
 
-extern BOOL appdata_response_cb (ULONG opc, void * data);
-
-void mmi_main(void) {
-
- // Setup battery callbacks
 	system_battery_init();
 	gprs_dataobject_init();
 
- // while(1)
- //	TCCE_Task_Sleep(1000);
+	/* Wait for HW task and UI task to complete */
+	while(!HwStatusGet() && !uiStatusGet())
+		TCCE_Task_Sleep(100);
 
- /* Wait for HW task and UI task to complete */
- while(!HwStatusGet() && !uiStatusGet())
-   TCCE_Task_Sleep(1000);
+	// Setup/Start baseband related functionality
+	/* Enable signal quality */
+	sAT_PercentCSQ ( CMD_SRC_LCL, CSQ_Enable );
+	/* Register SIM management handler */
+	sim_init();
+	/* Register network management handler */
+	nm_init();
+	/* Start SIM which triggers network registration*/
+	if(simAutoDetect()) {
+		sim_activate();
+	}
 
- emo_printf("mmi_main()");
- //pSlot = aci_create(appdata_response_cb,NULL);
-
- // Setup/Start baseband related functionality
- /* Enable signal quality */
- sAT_PercentCSQ ( CMD_SRC_LCL, CSQ_Enable );
- /* Register SIM management handler */
- sim_init();
- /* Register network management handler */
- nm_init();
- /* Start SIM which triggers network registration*/
-#ifndef EMO_SIM
- sim_activate();
-#endif
 }

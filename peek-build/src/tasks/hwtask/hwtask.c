@@ -29,9 +29,9 @@
  * 
  */
 
-#ifdef EMO_SIM
 extern int recvProcess;
-#endif
+
+extern void setEntryStub(void);
 
 extern void BalGetImei(char *ImeiBuffer);
 
@@ -45,9 +45,7 @@ void hwStart(void) {
     BOSEventWaitT MailBoxIndex;
     char ImeiBuffer[15];
     int i;
-#ifdef EMO_SIM
 	int key,state, hasData;
-#endif
 #ifdef DAR_HALT
     File *fp;
 #endif
@@ -69,13 +67,13 @@ void hwStart(void) {
 #endif
 
  // Setup display 
-#ifndef EMO_SIM
- backlightInit();
-#endif
- display_init();
+ //if(simAutoDetect())
+ //	backlightInit();
+
+ //display_init();
  // Start animation
  // Setup keypad/jog
- BalKeypadInit(0,0,4);
+ //BalKeypadInit(0,0,4);
  // Setup Sound
 
  // Setup time/date
@@ -92,9 +90,11 @@ void hwStart(void) {
  /* Needed for Imei decoding */
  BalMiscInit();
 
+ setEntryStub();
+
  emo_printf("IMEI: %s", EmoGetImei());
 
-#ifndef EMO_SIM
+ if(simAutoDetect()) {
  // Enter main notify loop
     while(1) {
         EvtStatus = BOSEventWait(EXE_BAL_ID, BOS_SIGNAL_TRUE, BOS_MESSAGE_TRUE,BOS_TIMEOUT_FALSE);//BOSCalMsec(10000)
@@ -114,7 +114,7 @@ void hwStart(void) {
                         //emo_printf("hwStart() handling msg id[%d]", MsgId);
 						switch(MsgId) {
 							case HW_KEY_MSG:
-                                //emo_printf("hwStart(): Got HW_KEY_MSG press");
+                                emo_printf("hwStart(): Got HW_KEY_MSG press");
 								BalKeypadProcess(MsgId, MsgBufferP, MsgSize);
 								break;
 						}
@@ -132,29 +132,28 @@ void hwStart(void) {
 
 	}
 
-#else 
-
-while(1) {
-    if(uiStatusGet()) {
+ /* Must be in emulator */
+ } else  {
+	while(1) {
+    	if(uiStatusGet()) {
             key = SimReadKey();
 			state = SimReadKeyState();
 
 			if(!recvProcess) {
-            hasData = SimReadReg();
+            	hasData = SimReadReg();
             	if (hasData > 0) {
-					app_recv();
+					app_sim_recv();
 					recvProcess = 1;
 				}
 			}
-
             if(key) {
-            	UiHandleKeyEvents(NULL, state, &key);
+            	emulatorKeyPass(NULL, state, &key);
 			}
 
-    }
-    TCCE_Task_Sleep(20);
-}
-#endif
+    	}
+    	TCCE_Task_Sleep(20);
+	}
+ }
 }
 /* 
  * Shutdown Peek

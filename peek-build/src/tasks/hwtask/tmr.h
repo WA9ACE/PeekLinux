@@ -1,6 +1,9 @@
 #ifndef _DEF_TI1_TMR_H_
 #define _DEF_TI1_TMR_H_
 
+int tmrInit (void (*s)(void));
+void tmrStart (unsigned long ms);
+unsigned long tmrStop (void);
 
 #define TIMER_START(C,I,T)         vsi_t_start(C,I,T)
 #define TIMER_STOP(C,I)            vsi_t_stop(C,I)
