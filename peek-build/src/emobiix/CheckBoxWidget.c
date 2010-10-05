@@ -17,7 +17,8 @@
 int checkboxWidget_handleKey(Widget *w, unsigned int key, Style *s)
 {
 	DataObject *dobj;
-	DataObjectField *field;
+	DataObjectField *field, *cbfield, *cbvalue = NULL;
+	const char *fieldStr = NULL, *valueStr;
 	int isChecked;
 
 	EMO_ASSERT_INT(w != NULL, 0,
@@ -29,16 +30,39 @@ int checkboxWidget_handleKey(Widget *w, unsigned int key, Style *s)
 		return 0;
 
 	dobj = widget_getDataObject(w);
-	field = dataobject_getValue(dobj, "data");
+
+	cbfield = dataobject_getValue(w, "checkfield");
+	if (cbfield != NULL && cbfield->type == DOF_STRING) {
+		cbvalue = dataobject_getValue(w, "checkvalue");
+		if (cbvalue != NULL && cbvalue->type == DOF_STRING) {
+			fieldStr = cbfield->field.string;
+			valueStr = cbvalue->field.string;
+		}
+	}
+	if (fieldStr == NULL) {
+		fieldStr = "data";
+		valueStr =  "1";
+	}
+
+	field = dataobject_getValue(dobj, fieldStr);
 	if (field == NULL) {
 		field = dataobjectfield_string("0");
 		dataobject_setValue(dobj, "data", field);
 	}
-	isChecked = dataobjectfield_isTrue(field);
+	isChecked = dataobjectfield_isString(field, valueStr);
 
-	dataobjectfield_setBoolean(field, !isChecked);
+	if (isChecked) {
+		if (cbvalue == NULL) {
+			dataobjectfield_setString(field, "0");
+		} else {
+			/* acting as a radio, and you cannot uncheck a radio */
+			return 1;
+		}
+	} else {
+		dataobjectfield_setString(field, valueStr);
+	}
 
-	dataobject_setIsModified(w, 1);
+	dataobject_setIsModified(dobj, 1);
 #if 0
 	lgui_clip_identity();
 	widget_getClipRectangle(w, &rect);
@@ -56,7 +80,8 @@ static void checkbox_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj) {
 	Rectangle *box, *margin, checkBox;
 	DataObject *text;
-	DataObjectField *field;
+	DataObjectField *field, *cbfield, *cbvalue;
+	const char *fieldStr = NULL, *valueStr;
 	Color checkColor;
 	WidgetRenderer *iwr;
 
@@ -81,10 +106,23 @@ static void checkbox_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	if (iwr != NULL)
 		iwr->render(wr, s, w, dobj);
 
-	text = widget_getDataObject(w);
-	field = dataobject_getValue(text, "data");
+	cbfield = dataobject_getValue(w, "checkfield");
+	if (cbfield != NULL && cbfield->type == DOF_STRING) {
+		cbvalue = dataobject_getValue(w, "checkvalue");
+		if (cbvalue != NULL && cbvalue->type == DOF_STRING) {
+			fieldStr = cbfield->field.string;
+			valueStr = cbvalue->field.string;
+		}
+	}
+	if (fieldStr == NULL) {
+		fieldStr = "data";
+		valueStr =  "1";
+	}
 
-	if (dataobjectfield_isTrue(field) && 
+	text = widget_getDataObject(w);
+	field = dataobject_getValue(text, fieldStr);
+
+	if (dataobjectfield_isString(field, valueStr) && 
 			style_getColor(s, w, "check-color", &checkColor.value) != NULL) {
 		lgui_hline(checkBox.x, checkBox.y, checkBox.width, checkBox.height,
 				checkColor.rgba.red, checkColor.rgba.green, checkColor.rgba.blue);
