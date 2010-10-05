@@ -213,18 +213,14 @@ static uint32_t pflash_read (pflash_t *pfl, uint32_t offset, int width)
 }
 
 /* update flash content on disk */
-static void pflash_update(pflash_t *pfl, int offset,
+static void pflash_update(pflash_t *pfl, uint32_t offset,
                           int size)
 {
     int offset_end;
     if (pfl->bs) {
         offset_end = offset + size;
-        /* round to sectors */
-        offset = offset >> 9;
-        offset_end = (offset_end + 511) >> 9;
-        DPRINTF("%s: Writing 0x%08x to image @ offset 0x%08x - num_secs = 0x%08x\n", __func__, *(int *)(pfl->storage + (offset << 9)), offset, offset_end - offset);
-        bdrv_write(pfl->bs, offset, pfl->storage + (offset << 9),
-                   offset_end - offset);
+        DPRINTF("%s: Writing 0x%08x to image @ offset 0x%08x - num_secs = 0x%08x\n", __func__, *(int *)(pfl->storage + offset), offset, offset_end - offset);
+		bdrv_write(pfl->bs, offset, pfl->storage + offset, offset_end - offset);
     }
 }
 
@@ -330,7 +326,7 @@ static void pflash_write (pflash_t *pfl, uint32_t offset, uint32_t value,
             DPRINTF("%s: write data offset " TARGET_FMT_lx " value = 0x%08x width = %d bufWriteoffset = 0x%08x bufWordCount = 0x%08x bufWordCur = 0x%08x\n",
                     __func__, offset, value, width, pfl->bufWriteOffset, pfl->bufWordCount, (pfl->bufWordCur - 1));
 
-	    pfl->bufWordCur++;
+	    	pfl->bufWordCur++;
             p = pfl->storage;
             switch (width) {
             case 1:
