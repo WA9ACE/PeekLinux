@@ -526,7 +526,7 @@ static int linux_key_map[] = {
     SYS_0_KEY,
     KCD_REDUCE,
     KEY_UNKNOWN,
-    KCD_BACKSPACE,
+    SYS_BACKSPACE,
     SYS_LOCK, /* tab */
     SYS_q_KEY,
     SYS_w_KEY,
