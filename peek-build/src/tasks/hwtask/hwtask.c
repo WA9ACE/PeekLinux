@@ -135,7 +135,6 @@ void hwStart(void) {
  /* Must be in emulator */
  } else  {
 	while(1) {
-    	if(uiStatusGet()) {
             key = SimReadKey();
 			state = SimReadKeyState();
 
@@ -150,8 +149,7 @@ void hwStart(void) {
             	emulatorKeyPass(NULL, state, &key);
 			}
 
-    	}
-    	TCCE_Task_Sleep(20);
+    		TCCE_Task_Sleep(10);
 	}
  }
 }

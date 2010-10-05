@@ -1,19 +1,15 @@
 #ifndef __HW_TIMER_H__
 #define __HW_TIMER_H__
 
-typedef void (*timerCB)(void *tdCB);
-typedef struct {
-    timerCB *tCB;
-    void *tData;
-    int left;
-    int time;
-} tDS;
+struct tDS;
+typedef struct tDS tDS;
+typedef void (*timerCB)(tDS *, void *tdCB);
 
 void timerInit(void);
 void timerTimeout (void);
 static void timerRemove(tDS *timeData);
 void timerSignal(void);
-tDS *timerCreate(timerCB *tcb, unsigned int time, void *opaque);
+tDS *timerCreate(timerCB tcb, void *opaque);
 
 #endif 
 

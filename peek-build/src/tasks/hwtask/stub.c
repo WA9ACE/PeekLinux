@@ -84,10 +84,9 @@ void entry_stub(const char *name) {
 //	if (name == blah
 //		return;
 
-//	if(entryInit) {
+	if(entryInit) {
 		emo_printf("<%s>", name);
-		TCCE_Task_Sleep(2);
-//	}
+	}
 	
 }
 

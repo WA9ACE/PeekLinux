@@ -32,6 +32,8 @@ extern unsigned char pwr_PowerOffMobile   (void);
 #include "ui_pei.h"
 #include "p_sim.h"
 
+EXTERN T_HANDLE	hCommACI;
+
 List *netsurf_get_queue()
 {
 	static List *netsurf_key_queue = NULL;
@@ -153,6 +155,10 @@ static void UiHandleKeyEvents(RegIdT RegId, UINT32 MsgId, void *MsgBufferP)
 		T_EMOBIIX_NETSURF_START *netStart;
 
         emo_printf("UiHandleKeyEvents MsgId=%d KeyId=%d" NL, MsgId, UiKeyId);
+	
+		/* Snap key press time for idle timeout */
+		blightSnaptime();
+
 		if(netsurf_start_flag) {
 			netsurf_key_enqueue(UiKeyId, MsgId);
 			return;
@@ -191,7 +197,7 @@ void netsurfStart(void) {
      netsurf_start_flag = TRUE;
      netStart = P_ALLOC(EMOBIIX_NETSURF_START);
      P_OPC(netStart) = EMOBIIX_NETSURF_START;
-     PSENDX(UI, netStart);
+     PSENDX(ACI, netStart);
 }
 
 

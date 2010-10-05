@@ -8,7 +8,7 @@
 #include "errno.h"
 #include "peekerrno.h"
 
-#define _ENTITY_PREFIXED(N) ui_##N
+#define _ENTITY_PREFIXED(N) aci_##N
 
 #define hCommAPP _ENTITY_PREFIXED(hCommAPP)
 
@@ -37,6 +37,13 @@ extern int peek_tcp_can_read(int fd);
 extern int peek_tcp_can_write(int fd);
 extern void peek_sleep(int ms);
 
+/* Sim externs */
+extern struct hostent *gethostbyname_sim(const char *name);
+extern int connect_sim(int fd, const struct sockaddr * addr, socklen_t len);
+extern int select_sim(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);
+extern int send_sim(int fd, const void *buf, int len, int flags);
+extern int recv_sim(int fd, void * buf, int n, int flags);
+
 int bind(int fd, const struct sockaddr * addr, socklen_t len)
 {
 	errno = 0;
@@ -52,6 +59,9 @@ struct hostent *gethostbyname(const char *name)
     static char *addr_ip_list[2] = { (char *)&addr_ip, NULL };
     static char addr_name[256];
     static struct hostent entry;
+
+	if(!simAutoDetect())
+		return gethostbyname_sim(name);
 
 	errno = 0;
 
@@ -114,6 +124,9 @@ int socket(int domain, int type, int protocol)
 	T_EMOBIIX_NETSURF_SOCKET *msg;
 	int ret;
 
+	if(!simAutoDetect())
+		return socket_sim(domain, type, protocol);
+
 	errno = 0;
 
 	emo_printf("SOCKET socket(domain=%d, type=%d, protocol=%d)", domain, type, protocol);
@@ -139,6 +152,9 @@ int connect(int fd, const struct sockaddr * addr, socklen_t len)
 	char *ipaddr = (char *)((unsigned int *)(&sockin->sin_addr));
 	int ret;
 
+    if(!simAutoDetect())
+		return connect_sim(fd, addr, len);
+
     emo_printf("SOCKET connect(fd=%d, addr=%08X, len=%d)", fd, addr, len);
 
 	sprintf(host, "%d.%d.%d.%d", ipaddr[0], ipaddr[1], ipaddr[2], ipaddr[3]);
@@ -162,6 +178,9 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struc
 	int hasData = 0;
 
 	errno = 0;
+
+    if(!simAutoDetect())
+		return select_sim(nfds, readfds, writefds, exceptfds, timeout);
 
 	emo_printf("SOCKET select(fd=%d)", nfds); 
 	if (readfds)
@@ -236,6 +255,9 @@ int send(int s, const void *buf, unsigned int len, int flags)
 
 	errno = 0;
 
+    if(!simAutoDetect())
+		return send_sim(s, buf, len, flags);
+
 	emo_printf("SOCKET send(s=%d, buf=%08X, len=%d, flags=%d)", s, buf, len, flags);
 
 	msg = P_ALLOC(EMOBIIX_NETSURF_SEND);
@@ -264,6 +286,9 @@ int recv(int fd, void * buf, int n, int flags)
 	int ret;
 
 	errno = 0;
+
+    if(!simAutoDetect())
+		return recv_sim(fd, buf, n, flags);	
 
 	emo_printf("SOCKET recv(fd=%d, buf=%08X, n=%d, flags=%d)", fd, buf, n, flags);
 

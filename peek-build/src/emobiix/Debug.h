@@ -25,21 +25,21 @@ void emo_printf(const char *fmt, ...);
 
 #define EMO_ASSERT(__ast, __msg) \
 if (!(__ast)) { \
-	emo_printf("ASSERT:" __FILE__ ":%d: " __msg NL, __LINE__); \
+	emo_printf("ASSERT:%s - %s :%d: " __msg NL, __FUNCTION__,  __LINE__); \
 	emo_abort; \
 	return; \
 }
 
 #define EMO_ASSERT_NULL(__ast, __msg) \
 if (!(__ast)) { \
-	emo_printf("ASSERT:" __FILE__ ":%d: "__msg NL, __LINE__); \
+	emo_printf("ASSERT:%s - %s :%d: "__msg NL, __FUNCTION__,  __LINE__); \
 	emo_abort; \
 	return NULL; \
 }
 
 #define EMO_ASSERT_INT(__ast, __ival, __msg) \
 if (!(__ast)) { \
-	emo_printf("ASSERT:" __FILE__ ":%d: "__msg NL, __LINE__); \
+	emo_printf("ASSERT:%s - %s :%d: "__msg NL,__FUNCTION__,  __LINE__); \
 	emo_abort; \
 	return (__ival); \
 }

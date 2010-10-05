@@ -146,8 +146,8 @@ GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 
 		case EMOBIIX_NETSURF_START:
 		{
-			memset(&lcd_frame_buffer, 0xFF, 320 * 240 * 2);
-			emo_BitBlt(0,0,320,240);
+			//memset(&lcd_frame_buffer, 0xFF, 320 * 240 * 2);
+			//emo_BitBlt(0,0,320,240);
 
 			emo_printf("appdata_response_cb(): start_netsurf");
 			netsurf_main(1, &argv);
@@ -236,10 +236,13 @@ void display_init()
 
 void UIInit(void)
 {	
+  	while(!HwStatusGet())
+   		TCCE_Task_Sleep(100);
+
 	if(simAutoDetect())
 		backlightInit();
 
-	TCCE_Task_Sleep(500); 
+	//TCCE_Task_Sleep(500); 
 
 	display_init();
 	
@@ -251,8 +254,6 @@ void UIInit(void)
 
 	lgui_set_dirty();
 	updateScreen();
-
-	uiStatusSet();
 
 	BalKeypadInit(0,0,4);
     KeyPad_Init();

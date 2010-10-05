@@ -137,7 +137,7 @@ DataObject *RootApplication(void)
 	dataobject_setValue(setw, "width", dataobjectfield_string("200"));
 
 	settd = widget_newTypeIdName("label", NULL, NULL, setw);
-	dataobject_setValue(settd, "data", dataobjectfield_string(hw_td_get_clock_str()));
+	dataobject_setValue(settd, "reference", dataobjectfield_string("system://local/time"));
 	dataobject_setValue(settd, "weight", dataobjectfield_string("bold"));
 	dataobject_setValue(settd, "font-color", dataobjectfield_string("#FFFFFF00"));
 	dataobject_setValue(settd, "alignment", dataobjectfield_string("center"));

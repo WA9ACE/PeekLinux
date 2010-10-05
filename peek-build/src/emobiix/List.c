@@ -189,13 +189,9 @@ void listIterator_next(ListIterator *iter)
 {
 	EMO_ASSERT(iter != NULL, "list next missing iterator")
 
-    iter->node = *(ListNode **)(((char *)(iter->node))+iter->offset);
+	if (iter->node)
+    	iter->node = *(ListNode **)(((char *)(iter->node))+iter->offset);
 }
-
-/*void listIterator_delete(ListIterator *iter)
-{
-    p_free(iter);
-}*/
 
 void listIterator_remove(ListIterator *iter)
 {
@@ -204,9 +200,6 @@ void listIterator_remove(ListIterator *iter)
 	EMO_ASSERT(iter != NULL, "list remove missing iterator")
 
     node = iter->node;
-
-	/*if (node == NULL)
-		return;*/
 
     if (node->prev != NULL)
         node->prev->next = node->next;

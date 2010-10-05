@@ -25,6 +25,8 @@
 #include "hwat.h"
 #include "rtc.h"
 
+#include "hwtimer.h"
+
 static T_RTC_TIME current_time;
 static T_RTC_DATE current_date;
 
@@ -655,8 +657,8 @@ void hw_td_set_date(T_RTC_DATE* date)
         return;
 }
 
-void hw_td_init(void) {
-
+void hw_td_init(void) 
+{
 	if(simAutoDetect()) {
     	if(!rtc_clock_cleared())
         	rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT);
@@ -675,5 +677,6 @@ void hw_td_init(void) {
         hw_td_set_time(&current_time);
         hw_td_set_date(&current_date);
 	}
+
 }
 

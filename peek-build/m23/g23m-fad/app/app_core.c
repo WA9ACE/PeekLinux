@@ -89,9 +89,9 @@ struct hostent
 int emo_server_fd = -1;
 #endif /* End sim defines */
 
-#define hCommUI _ENTITY_PREFIXED (hCommUI)
+#define hCommACI _ENTITY_PREFIXED (hCommACI)
 
-extern T_HANDLE hCommUI;
+extern T_HANDLE hCommACI;
 
 /*==== Local data ============================================================*/
 
@@ -1408,7 +1408,7 @@ void app_ui_send(PROC_CONTEXT_T *pcont, U32 event_type)
 			return;
 	}
 
-	PSENDX(UI, msg);
+	PSENDX(ACI, msg);
 }
 
 int app_open_bearer_tcp(PROC_CONTEXT_T *pcont)

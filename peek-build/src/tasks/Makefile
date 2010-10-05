@@ -31,11 +31,7 @@ INCLUDE += $(M23DIR)/csw-system/drv_core/abb
 INCLUDE += $(M23DIR)/csw-system/drv_core/i2c
 INCLUDE += $(M23DIR)/csw-system/drv_core/util
 
-#SRC = emo_pei.c
-SRC  = ui_pei.c
-#SRC += trans_pei.c
-
-SRC += hwtask/at.c
+SRC  = hwtask/at.c
 SRC += hwtask/hwevents.c
 SRC += hwtask/timer.c
 SRC += hwtask/hwpei.c

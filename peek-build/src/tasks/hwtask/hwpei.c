@@ -35,7 +35,7 @@ extern int kbdEmobiixCB(T_EMOBIIX_KBD_EVENT *event);
 /*===========================Global Variables==================================*/
 
 T_HANDLE HW_handle;
-T_HANDLE hCommUI = VSI_ERROR;
+T_HANDLE hCommACI = VSI_ERROR;
 
 LOCAL BOOL first_access = TRUE;
 
@@ -275,8 +275,8 @@ LOCAL SHORT pei_init (T_HANDLE handle)
     RVM_TRACE_DEBUG_HIGH("HW: pei_init");
     HW_handle = handle;
 
-	if(hCommUI < VSI_OK)
-		if ((hCommUI = vsi_c_open (VSI_CALLER "UI")) < VSI_OK)
+	if(hCommACI < VSI_OK)
+		if ((hCommACI = vsi_c_open (VSI_CALLER "MMI")) < VSI_OK)
 			return PEI_ERROR;
 
     ExeIntStackP = &ExeIntStack[0];

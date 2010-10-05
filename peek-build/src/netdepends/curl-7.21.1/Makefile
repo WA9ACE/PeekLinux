@@ -19,10 +19,6 @@ DEFINE += NG_TIMEVAL
 DEFINE += Error=\#error
 DEFINE += ssize_t=int
 
-ifneq (,$(findstring EMO_SIM,$(VARIANT_DEFINE)))
-DEFINE += EMO_SIM
-endif
-
 VARIANT_DEFINE :=
 
 INCLUDE  = $(SRCDIR)/netsurf/emoport
@@ -94,6 +90,7 @@ SRC += lib/curl_threads.c
 SRC += lib/warnless.c
 SRC += lib/curl_gethostname.c
 SRC += emoport/socket.c
+SRC += emoport/sim-socket.c
 
 
 DEPS = $(patsubst %.o,%.d,$(OBJ))

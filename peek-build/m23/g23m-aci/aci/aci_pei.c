@@ -853,6 +853,12 @@ TRACE_FUNCTION ("pei_primitive()");
       PFREE (P2D(prim));
       return PEI_OK;
     }
+	
+    if(appdata_response_cb(opc, (void*)(&(prim->data)))) {
+        PFREE(P2D(prim));
+        return PEI_OK;
+    }
+
 #endif
 
  /*   TRACE_EVENT_P1("opcode: %d", opc);*/
@@ -2488,7 +2494,7 @@ GLOBAL SHORT aci_pei_create (T_PEI_INFO **info)
 /* Increased 300 bytes because when DCM is used for GPRS call 
    more number of bytes need in the stack */
 #if defined (MFW)
-    4396,     /* Stack Size      */
+    0xc800,//4396,     /* Stack Size      */
 #endif
 #if defined (FF_MMI_RIV)
     3072,     /* Stack Size      */

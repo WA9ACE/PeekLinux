@@ -13,6 +13,8 @@ static void (*sig) (void) = 0;          /* timer signaling function */
 
 int mfw_timeout (USHORT t)
 {
+	emo_printf("mfw_timeout()");
+
     if (sig AND t EQ MFW_TIMER)
     {
       sig();
@@ -26,7 +28,7 @@ int tmrInit (void (*s)(void))
 {
     sig = s;
 
-    TRACE_FUNCTION("tmrInit()");
+    emo_printf("tmrInit()");
 
     if (!s)
         return 0;
@@ -36,7 +38,7 @@ int tmrInit (void (*s)(void))
 
 int tmrExit (void)
 {
-    TRACE_FUNCTION("tmrExit()");
+    emo_printf("tmrExit()");
 
     if (sig)
     {

@@ -1,7 +1,5 @@
 VARIANT_DEFINE :=
 
-DEFINE += $(EMO_SIM)
-
 INCLUDE  = $(SRCDIR)/netsurf/emoport
 INCLUDE += $(SRCDIR)/emobiix
 INCLUDE += $(SRCDIR)/netdepends/libnsgif/include

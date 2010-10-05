@@ -14,6 +14,13 @@ static int timerTimeoutCount;             /* overrun counter          */
 static int timerTimeoutBusy;              /* overrun marker           */
 static int timerPrecMs;              /* minimum timer intervall  */
 
+struct tDS {
+    timerCB tCB;
+    void *tData;
+    int left;
+    int time;
+};
+
 /* Pending Timer Queue */
 List *timer_get_queue()
 {
@@ -37,6 +44,7 @@ List *timer_get_r_queue()
 /* Init and obtain timer precision */
 void timerInit(void)
 {
+	emo_printf("timerInit");
 	timerTimeoutCount = 0;
 	timerTimeoutBusy = 0;
 	tmrInit(timerTimeout);
@@ -44,19 +52,21 @@ void timerInit(void)
 	/* Obtain precision of irq tick */
 	tmrStart(1);
 	timerPrecMs = tmrStop();
+	emo_printf("timerInit() - timerPrecMs - 0x%08x", timerPrecMs);
 }
 
 /* Insert new element into timer event list */
-tDS *timerCreate(timerCB *tcb, unsigned int time, void *opaque)
+tDS *timerCreate(timerCB tcb, void *opaque)
 {
 	List *timeEventQ = timer_get_queue();
 	tDS *timeData = (void *)malloc(sizeof(tDS));
+
+	emo_printf("timerCreate()");
 
 	if(!timeData)		
 		return NULL;
 
 	timeData->tCB = tcb;
-	timeData->time = time;
 	timeData->left = 0;
 	timeData->tData = opaque;
 
@@ -67,6 +77,13 @@ static void timerInsert(tDS *timeData)
 {
 	List *timeEventQ = timer_get_queue();
 	ListIterator iter;
+
+	emo_printf("timerInsert");
+	
+	if(!list_size(timeEventQ)) {
+		list_append(timeEventQ, timeData);
+		return;
+	}
 
     for(list_begin(timeEventQ, &iter); !listIterator_finished(&iter); listIterator_next(&iter))
 	{
@@ -80,13 +97,28 @@ static void timerInsert(tDS *timeData)
 
 }
 
+static void timersAdjust(unsigned int time)
+{
+    List *timeEventQ = timer_get_queue();
+    tDS *timeData = NULL;
+    ListIterator iter;
+
+    for(list_begin(timeEventQ, &iter); !listIterator_finished(&iter); listIterator_next(&iter))
+    {
+        timeData = (tDS *)listIterator_item(&iter);
+        timeData->left += time;
+    }
+}
+
 /* Start timer */
-int timerStart(tDS *timeData)
+int timerStart(tDS *timeData, unsigned int time)
 {
 	List *timeEventQ = timer_get_queue();
 	ListIterator iter;
 	tDS *fTimeData;
 	int left, diff;
+
+	timeData->time = time;
 
 	if(timeData->time <= 0)
 		return -1;
@@ -126,6 +158,7 @@ int timerStart(tDS *timeData)
 		}
 	}
 
+	emo_printf("timerStart() starting timer left - %d", left);
 	tmrStart(left); /* restart timer */
 
 	return 0;
@@ -192,6 +225,7 @@ void timerStop(tDS *timeData)
 /* thread context timeout */
 void timerTimeout (void)
 {
+	emo_printf("timerTimeout");
     timerTimeoutCount++;
 
     if (timerTimeoutBusy)
@@ -213,6 +247,8 @@ void timerSignal(void)
 	tDS	*timeData = NULL;
     ListIterator iter;
 	int timeout;
+
+	emo_printf("timerSignal");
 
     if(!list_size(timeEventQ))
         return;
@@ -250,18 +286,16 @@ void timerSignal(void)
     if(list_size(timeEventR))
     {
 		/* Start elements in running queue */
-		for(list_begin(timeEventR, &iter); !listIterator_finished(&iter); listIterator_next(&iter))
+		for (list_begin(timeEventR, &iter); !listIterator_finished(&iter); listIterator_next(&iter))
 		{
 			timeData = (tDS *)listIterator_item(&iter);
 
+			/* timer expired..  */
+            listIterator_remove(&iter);
+
+			/* Call Handler */
 			if(timeData->tCB)
-			{
-				/* Call Handler */
-				(void)((*(timeData->tCB))(timeData));
-			}
-
-			listIterator_remove(&iter);
-
+				(timeData->tCB)(timeData, timeData->tData);
 		}
 	}
 

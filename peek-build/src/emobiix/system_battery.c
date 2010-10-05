@@ -96,8 +96,8 @@ void system_battery_init()
 	dataobject_setValue(SYSTEM_BATTERY, "charge-state", BATTERY_CHARGE_STATE);
 
 	/* Set default level in simulator to 5 */
-	if(!simAutoDetect())
-		system_battery_set_battery_level(5);
+	//if(!simAutoDetect())
+	//	system_battery_set_battery_level(5);
 
 	url_delete(url);
 

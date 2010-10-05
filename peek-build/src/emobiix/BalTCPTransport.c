@@ -51,7 +51,7 @@ Transport TCPTransport = {
 	TCPSequenceID
 };
 
-#define _ENTITY_PREFIXED(N) ui_##N
+#define _ENTITY_PREFIXED(N) aci_##N
 #define hCommAPP        _ENTITY_PREFIXED(hCommAPP)
 
 extern T_HANDLE hCommAPP;

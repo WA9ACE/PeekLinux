@@ -88,6 +88,7 @@ SRC += Mime.c
 #SRC += ffs.c
 SRC += FFSFile.c
 SRC += system_battery.c
+SRC += system_time.c
 #SRC += system_misc.c
 SRC += peek/KeyMappings.c
 SRC += ApplicationManager.c

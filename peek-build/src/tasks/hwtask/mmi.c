@@ -15,28 +15,34 @@
 #include "p_8010_152_ps_include.h"
 #include "gaci_cmh.h"
 #include "p_dl.h"
-
+#include "hwtimer.h"
+#include "system_time.h"
 
 void mmi_main(void) 
 {
+	timerInit();
+
 	emo_printf("mmi_main()");
 
+	system_time_init();
 	system_battery_init();
 	gprs_dataobject_init();
 
+    UIInit();
+
 	/* Wait for HW task and UI task to complete */
-	while(!HwStatusGet() && !uiStatusGet())
+	while(!HwStatusGet()) //&& !uiStatusGet())
 		TCCE_Task_Sleep(100);
 
-	// Setup/Start baseband related functionality
-	/* Enable signal quality */
-	sAT_PercentCSQ ( CMD_SRC_LCL, CSQ_Enable );
-	/* Register SIM management handler */
-	sim_init();
-	/* Register network management handler */
-	nm_init();
-	/* Start SIM which triggers network registration*/
 	if(simAutoDetect()) {
+		// Setup/Start baseband related functionality
+		/* Enable signal quality */
+		sAT_PercentCSQ ( CMD_SRC_LCL, CSQ_Enable );
+		/* Register SIM management handler */
+		sim_init();
+		/* Register network management handler */
+		nm_init();
+		/* Start SIM which triggers network registration*/
 		sim_activate();
 	}
 
