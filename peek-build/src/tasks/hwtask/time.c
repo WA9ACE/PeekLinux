@@ -30,11 +30,13 @@
 static T_RTC_TIME current_time;
 static T_RTC_DATE current_date;
 
+
 static char time_string[15];
 static char date_string[15];
 
 /* defines */
-#define E_NM_OPN 0x4000
+#define E_NM_OPN 		0x4000
+#define E_NM_TIME_IND	0x1000 
 #define NM_AUTOMATIC    0       /* automatic mode set */
 #define NM_MANUAL       1       /* manual mode is set */
 
@@ -70,6 +72,10 @@ typedef struct /* data for timer zone */
 static T_HW_SP_NAME service_provider_name;
 static U8 display_condition;
 static T_HW_TIME_IND tim_ind;
+
+void hw_td_set_time(T_RTC_TIME* time);
+T_RTC_TIME* hw_td_get_time();
+void hw_td_set_date(T_RTC_DATE* date);
 
 GLOBAL void sAT_PlusCOPSE(UBYTE *oper, UBYTE format,
                           T_HW_LNAME *long_name,
@@ -234,6 +240,285 @@ static void nm_signal (int event, void *para)
 {
     emo_printf("nm_signal() event[%d]", event);
     //nm_sign_exec(event,para);
+
+	switch(event) {
+
+		case E_NM_TIME_IND:
+			{
+			static T_RTC_TIME newTime;
+			static T_RTC_DATE newDate;
+
+			T_HW_TIME_IND *network_time; // Time/date info from network
+			T_RTC_TIME *time_format; // To get the current time format set in MS
+			BOOL modify_date_negative = FALSE;
+			BOOL modify_date_positive = FALSE;    
+			int actual_TD = 0;
+			int absolute_value;
+
+
+			network_time = (T_HW_TIME_IND *)para;
+			actual_TD = network_time->timezone;
+			absolute_value = (10*(actual_TD & 0x7))+((actual_TD >> 4) & 0xf);
+
+			emo_printf("actual_TD: %d", actual_TD);
+			emo_printf("Absolute value: %d", absolute_value);
+			emo_printf("IN HEX");
+			emo_printf("actual_TD: %x", actual_TD);
+			emo_printf("Absolute value: %x", absolute_value);
+			if((actual_TD & 0x08))
+			{
+				absolute_value = ~absolute_value+1;
+			}
+
+			actual_TD = absolute_value;
+
+			if(actual_TD >0)
+			{
+
+				network_time->hour = network_time->hour + actual_TD/4 ;
+
+				network_time->minute = network_time->minute + (actual_TD%4)*15;
+				if(network_time->minute > 60)
+				{
+					network_time->minute = network_time->minute - 60 ;
+					network_time->hour = network_time->hour +1;
+				}
+				if(network_time->minute == 60)
+				{
+					network_time->minute = 0;
+					network_time->hour = network_time->hour +1;
+				}
+				if(network_time->hour >= 24)
+					modify_date_positive = TRUE;
+
+
+			}
+			else if(actual_TD<0)
+			{
+
+				if((network_time->minute - abs((actual_TD%4)*15)) < 0)
+				{
+					network_time->minute = 60 - (abs((actual_TD%4)*15)  - network_time->minute );
+
+					network_time->hour = network_time->hour - 1;
+				}
+				else if((network_time->minute - abs((actual_TD%4)*15)) == 0)
+				{
+					network_time->minute = 0;
+					network_time->hour = network_time->hour - 1;
+
+				}
+				else
+					network_time->minute = network_time->minute - abs((actual_TD%4)*15);
+
+				if((network_time->hour - abs(actual_TD/4 ))  < 0)
+					modify_date_negative = TRUE;
+				else
+					network_time->hour = network_time->hour - abs(actual_TD/4 );  
+
+			}
+
+			//Assume the date is 1/07/2005 5 Am in the morning 
+			//After time zone calculation it needs to become 30/06/2005 and not 31 st June 2005 since there are only 30 days
+			//in all the odd months before July and in all the even months after july(7th Month)
+			//Similarly a problem arises if the year too needs to be adjusted after the timezone calculations.
+
+
+			if(modify_date_negative)
+			{
+
+				emo_printf("modify date negative");
+				network_time->hour  = 24 - abs(network_time->hour - abs(actual_TD/4 ));
+
+				network_time->day = network_time->day -1;
+
+				if(network_time->day == 0)
+				{
+					if(((network_time->month)%2 != 0) && network_time->month <= 7)
+					{
+						if( network_time->month == 1)
+						{
+							network_time->month = network_time->month -1;  
+							network_time->day = 31;
+						}
+						else{
+							network_time->month = network_time->month -1;  
+							network_time->day = 30;
+						}
+					}
+					else if(((network_time->month)%2 == 0) && network_time->month < 7)
+					{
+						network_time->month = network_time->month -1;  
+						network_time->day = 31;
+					}
+					if(((network_time->month)%2 == 0) && network_time->month > 7)
+					{
+						if( network_time->month == 8)
+						{
+							network_time->month = network_time->month -1;  
+							network_time->day = 31;
+						}
+						else
+						{
+							network_time->month = network_time->month -1;  
+							network_time->day = 30;
+						}
+
+					}
+					if(network_time->month == 2)
+					{
+						if(((network_time->year+2000)%4 == 0) && ((network_time->year+2000)%100 != 0))
+							network_time->day = 29;
+						else
+							network_time->day = 28;
+					}
+					if(network_time->month <= 0)
+					{
+						network_time->year = network_time->year -1;
+						network_time->month = 12;
+					}
+				}
+			}
+
+			else if(modify_date_positive)
+			{
+				emo_printf("modify date positive");
+				network_time->hour =  network_time->hour -24;
+
+				network_time->day = network_time->day + 1;
+
+				if(network_time->month ==  2)
+				{
+					if(network_time->day ==  30)
+					{
+						network_time->day =  1;
+						network_time->month =  3;                                        
+					}
+					if(network_time ->day == 29)
+					{
+						if(((network_time->year+2000)%4 == 0) && ((network_time->year+2000)%100 != 0))
+						{
+							network_time->day = 29;
+						}
+						else
+						{
+							network_time->day = 1;
+							network_time->month = 3;
+						}
+					}
+				}
+				else
+				{
+					if(network_time->day>=31)
+					{
+						if(network_time->day == 31)  
+						{
+							if(((network_time->month)%2 != 0) && network_time->month <= 7)
+							{
+								network_time->day = 31;
+							}
+                                else if(((network_time->month)%2 == 0) && network_time->month > 7)
+                                    {
+                                        network_time->day = 31;
+                                    }
+                                                
+                                else
+                                    {
+                                        network_time->day = 1;
+                                        network_time->month = network_time->month +1;
+                                    }
+                                        }
+                                        else
+                                    {
+                                        network_time->day = 1;
+                                        network_time->month = network_time->month +1;
+                                    }
+                                        }
+                                }       
+                                if(network_time->month > 12)
+                                    {
+                                        network_time->year = network_time->year + 1;
+                                        network_time->month = 1;
+                                    }
+                    }
+			// Get the current time and format info set in the MS 
+			time_format = hw_td_get_time();
+
+			// Copy this info in the structure that will be used to do RTC upation.
+			// This ensures that the format set remains the same even after RTC updation.
+			newTime = *time_format;
+
+			/* We always use 12 hour format */
+			time_format->format = RTC_TIME_FORMAT_12HOUR;
+
+			emo_printf("------------------------------------");
+			emo_printf("Current format set in MS : %d", time_format->format);
+
+			// The time info received from network is in 24Hrs format. Depeneding on the format
+			// curently set in the MS, we need to do conversion and then update the RTC.
+			if (time_format->format == RTC_TIME_FORMAT_12HOUR)
+			{
+				emo_printf("12 Hrs format");
+
+				if (network_time->hour == 0) // If hour info from network is 0, set hour as 12 
+				{                    // and the AM/PM flag off to indicate AM. 
+					newTime.PM_flag = 0;
+					newTime.hour = 12;
+				}
+				else if (network_time->hour < 12) // If hour info from network is less than 12,
+					{                         // set the hour info as it is and AM flag to off.
+						newTime.PM_flag = 0;
+						newTime.hour = network_time->hour;
+					}
+				else
+				{                                     
+					newTime.PM_flag = 1;  // If hour info from network is greater than 12,
+					newTime.hour = network_time->hour - 12; // set hour = received hour - 12 and AM/PM
+				}                                     // flag to ON indicate PM.
+
+				newTime.minute = network_time->minute; // Set minute info
+				newTime.second = network_time->second; // Set second info
+
+				// Set the date related info. Year information is decoded in the following way:
+				// 0 - 2000 - default
+				// 1 - 2001
+				// 2 - 2002 etc.
+				// Hence we need to add 2000 to the year value received from network to 
+				// display the actual year.
+
+				newDate.day = network_time->day; // Day of the month
+				newDate.month = network_time->month; // Month
+				newDate.year = network_time->year + 2000; // year 
+			}
+			else
+			{
+				emo_printf("24 Hrs format");        
+				newTime.hour = network_time->hour; // In 24 Hrs format, set the received hour info as it is.
+
+				newTime.minute = network_time->minute; // Set minute info
+				newTime.second = network_time->second; // Set second info
+
+				// Set the date related info. Year information is decoded in the following way:
+				// 0 - 2000 - default
+				// 1 - 2001
+				// 2 - 2002 etc.
+				// Hence we need to add 2000 to the year value received from network to 
+				// display the actual year.
+
+				newDate.day = network_time->day; // Day of the month
+				newDate.month = network_time->month; // Month
+				newDate.year = network_time->year + 2000; // year 
+			}
+
+			/* Lets assume get RTC automatically */
+			// Update RTC with new time info
+			hw_td_set_time(&newTime);
+
+			// Update RTC with new date info            
+			hw_td_set_date(&newDate);
+		}
+		break;
+	}
 }
 
 void nm_get_network_data(T_HW_NETWORK_STRUCT *plmn_netw_data)
@@ -247,7 +532,6 @@ void nm_get_network_data(T_HW_NETWORK_STRUCT *plmn_netw_data)
 void nm_nitz_info_ind(T_MMR_INFO_IND * mmr_info_ind)
 {
   UBYTE flag;
-
   emo_printf("nm_nitz_info_ind() ");
 
   flag = 0;
@@ -264,6 +548,7 @@ void nm_nitz_info_ind(T_MMR_INFO_IND * mmr_info_ind)
     tim_ind.hour     = mmr_info_ind->time.hour;
     tim_ind.minute   = mmr_info_ind->time.minute;
     tim_ind.second   = mmr_info_ind->time.second;
+	
   }
   else if (mmr_info_ind->ntz.v_tz EQ TRUE AND
            mmr_info_ind->time.v_time NEQ TRUE )
@@ -272,9 +557,8 @@ void nm_nitz_info_ind(T_MMR_INFO_IND * mmr_info_ind)
     tim_ind.timezone = mmr_info_ind->ntz.tz;
   }
 
-  ///XXX: fix to update time
-  //if (flag)
-  //  nm_signal(E_MFW_TIME_IND, &tim_ind);
+  if (flag)
+  	nm_signal(E_NM_TIME_IND, &tim_ind);
 }
 
 void nm_get_COPN( T_HW_NETWORK_STRUCT *plmn_ident )
@@ -627,18 +911,22 @@ char* hw_td_get_date_str()
 
 void hw_td_set_time(T_RTC_TIME* time)
 {       
-		int result;
-        emo_printf("hw_td_set_time");
-		if(simAutoDetect()) {
-        	result = rtc_set_time_date(&current_date, time);
-       		if (result == 0)
-        	{
-		    	memcpy(&current_time, time, sizeof(T_RTC_TIME));
-                return;
-        	}
+	int result;
+	emo_printf("hw_td_set_time");
+	if(simAutoDetect())
+	{
+		result = rtc_set_time_date(&current_date, time);
+		if (result == 0)
+		{
+			memcpy(&current_time, time, sizeof(T_RTC_TIME));
+		} else {
 			emo_printf("RTC driver error");
 		}
-        return;
+	}
+
+	emo_printf("Current Time: %s ", hw_td_get_clock_str());
+	emo_printf("Current Date: %s ", hw_td_get_date_str());
+    return;
 }
 
 void hw_td_set_date(T_RTC_DATE* date)
@@ -666,6 +954,7 @@ void hw_td_init(void)
         	rtc_get_time_date(&current_date, &current_time,RTC_TIME_TYPE_CURRENT);
 
 	} else { /* Set dummy time in emulator */
+		current_time.format = RTC_TIME_FORMAT_12HOUR;
         current_time.second = 0;
         current_time.minute = 20;
         current_time.hour = 4;
@@ -673,9 +962,8 @@ void hw_td_init(void)
         current_date.year = 2010;
         current_date.month = 9;
         current_date.day = 22;
-
-        hw_td_set_time(&current_time);
-        hw_td_set_date(&current_date);
+    	hw_td_set_time(&current_time);
+    	hw_td_set_date(&current_date);
 	}
 
 }
