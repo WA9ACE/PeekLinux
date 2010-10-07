@@ -46,12 +46,10 @@ void gprs_dataobject_init(void)
 	dataobject_setValue(GPRS_DO, "ci", GPRS_LOCATION_CI);
 
 	/* Set default signal in simulator */
-	/*
 	if(!simAutoDetect()) {
-		gprs_set_signal_level(2);
-		gprs_set_on(1);
+		GPRS_ON->field.uinteger = 1;
+		GPRS_SIGNAL_LEVEL->field.uinteger = 3;
 	}
-	*/
 }
 
 void gprs_set_status(BOOL status)
