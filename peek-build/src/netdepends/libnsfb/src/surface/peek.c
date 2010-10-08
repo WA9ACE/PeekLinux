@@ -30,6 +30,62 @@ extern List *netsurf_get_queue();
 extern int netsurf_start_flag;
 static bool wheel_mode = 0;
 
+static nsfb_t* g_peek_frontend = NULL;
+static nsfb_plotter_fns_t g_peek_plotters;
+
+static bool null_clg(nsfb_t *nsfb, nsfb_colour_t c){ return true; }
+static bool null_rectangle(nsfb_t *nsfb, nsfb_bbox_t *rect, int line_width, nsfb_colour_t c, bool dotted, bool dashed){ return true; }
+static bool null_line(nsfb_t *nsfb, int linec, nsfb_bbox_t *line, nsfb_plot_pen_t *pen){ return true; }
+static bool null_polygon(nsfb_t *nsfb, const int *p, unsigned int n, nsfb_colour_t fill){ return true; }
+static bool null_fill(nsfb_t *nsfb, nsfb_bbox_t *rect, nsfb_colour_t c){ return true; }
+static bool null_clip(nsfb_t *nsfb, nsfb_bbox_t *clip){ return true; }
+static bool null_arc(nsfb_t *nsfb, int x, int y, int radius, int angle1, int angle2, nsfb_colour_t c){ return true; }
+static bool null_point(nsfb_t *nsfb, int x, int y, nsfb_colour_t c){ return true; }
+static bool null_ellipse(nsfb_t *nsfb, nsfb_bbox_t *ellipse, nsfb_colour_t c){ return true; }
+static bool null_ellipse_fill(nsfb_t *nsfb, nsfb_bbox_t *ellipse, nsfb_colour_t c){ return true; }
+static bool null_bitmap(nsfb_t *nsfb, const nsfb_bbox_t *loc, const nsfb_colour_t *pixel, int bmp_width, int bmp_height, int bmp_stride, bool alpha){ return true; }
+static bool null_copy(nsfb_t *nsfb, nsfb_bbox_t *srcbox, nsfb_bbox_t *dstbox){ return true; }
+static bool null_glyph8(nsfb_t *nsfb, nsfb_bbox_t *loc, const uint8_t *pixel, int pitch, nsfb_colour_t c){ return true; }
+static bool null_glyph1(nsfb_t *nsfb, nsfb_bbox_t *loc, const uint8_t *pixel, int pitch, nsfb_colour_t c){ return true; }
+static bool null_readrect(nsfb_t *nsfb, nsfb_bbox_t *rect, nsfb_colour_t *buffer){ return true; }
+static bool null_quadratic_bezier(nsfb_t *nsfb, nsfb_bbox_t *curve, nsfb_point_t *ctrla, nsfb_plot_pen_t *pen){ return true; }
+static bool null_cubic_bezier(nsfb_t *nsfb, nsfb_bbox_t *curve, nsfb_point_t *ctrla, nsfb_point_t *ctrlb, nsfb_plot_pen_t *pen){ return true; }
+static bool null_polylines(nsfb_t *nsfb, int pointc, const nsfb_point_t *points, nsfb_plot_pen_t *pen){ return true; }
+static bool null_path(nsfb_t *nsfb, int pathc, nsfb_plot_pathop_t *pathop, nsfb_plot_pen_t *pen){ return true; }
+
+void select_null_plotters()
+{
+	static nsfb_plotter_fns_t null_plotters = {
+		null_clg,
+		null_rectangle,
+		null_line,
+		null_polygon,
+		null_fill,
+		null_clip,
+		null_clip,
+		null_ellipse,
+		null_ellipse_fill,
+		null_arc,
+		null_bitmap,
+		null_point,
+		null_copy,
+		null_glyph8,
+		null_glyph1,
+		null_readrect,
+		null_quadratic_bezier,
+		null_cubic_bezier,
+		null_path,
+		null_polylines
+	};
+
+	memcpy(g_peek_frontend->plotter_fns, &null_plotters, sizeof(nsfb_plotter_fns_t));
+}
+
+void select_peek_plotters()
+{
+	memcpy(g_peek_frontend->plotter_fns, &g_peek_plotters, sizeof(nsfb_plotter_fns_t));
+}
+
 enum nsfb_key_code_e peek_sim_nsfb_map[] = {
 	NSFB_KEY_UNKNOWN,
 	NSFB_KEY_0,
@@ -203,6 +259,10 @@ static int peek_geometry(nsfb_t *nsfb, int width, int height, int bpp)
 	/* select default sw plotters for bpp */
 	select_plotters(nsfb);
 
+	g_peek_frontend = nsfb;
+	memcpy(&g_peek_plotters, nsfb->plotter_fns, sizeof(nsfb_plotter_fns_t));
+
+	select_null_plotters();
 	return 0;
 }
 
@@ -277,11 +337,19 @@ static bool peek_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
 				emo_BitBlt(0, 0, nsfb->width, nsfb->height);
 			}
 			break;
+
 		case SYS_CANCEL_KEY:
-			event->type = NSFB_EVENT_CONTROL;
-			event->value.controlcode = NSFB_CONTROL_QUIT;
+		{
+			select_null_plotters();
 			netsurf_start_flag = 0;
-			break;
+			emo_SendFullDraw();
+			netsurf_pause();
+
+			select_peek_plotters();
+			netsurf_redraw();
+			return false;
+		}
+
 		case SYS_WHEEL:
             event->value.keycode = NSFB_KEY_MOUSE_1;
             event->type = state ? NSFB_EVENT_KEY_DOWN : NSFB_EVENT_KEY_UP;

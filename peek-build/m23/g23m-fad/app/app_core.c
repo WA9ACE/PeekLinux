@@ -1738,7 +1738,7 @@ void app_connect_emobiix(void)
 		memset(&connect_in, 0, sizeof(struct sockaddr_in));
 		connect_in.sin_family = 0; /*AF_INET*/
 		connect_in.sin_addr.s_addr = bal_inet_addr("192.168.1.20");
-		connect_in.sin_port = bal_htons(8444);
+		connect_in.sin_port = bal_htons(12345);
 
 		if (bal_connect(emo_server_fd, &connect_in, sizeof(connect_in)) < 0)
 		{

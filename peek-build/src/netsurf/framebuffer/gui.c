@@ -510,10 +510,11 @@ gui_init(int argc, char** argv)
  * /param argv The argument string vector.
  * /return The return code to the OS
  */
+static struct browser_window *g_bw;
+
 int
 netsurf_main(int argc, char** argv)
 {
-	struct browser_window *bw;
 	char options[PATH_MAX];
 	char messages[PATH_MAX];
 
@@ -528,17 +529,25 @@ netsurf_main(int argc, char** argv)
 	gui_init(argc, argv);
 
 	LOG(("calling browser_window_create"));
-	bw = browser_window_create(feurl, 0, 0, true, false);
+	g_bw = browser_window_create(feurl, 0, 0, true, false);
 
 	netsurf_main_loop();
 
-	browser_window_destroy(bw);
+	browser_window_destroy(g_bw);
 
 	netsurf_exit();
 
 	return 0;
 }
 
+void netsurf_redraw()
+{
+	extern fbtk_widget_t *fbtk_get_root_widget(fbtk_widget_t *widget);
+	fbtk_widget_t *root = fbtk_get_root_widget(g_bw->window->browser);
+
+	fbtk_request_redraw(root);
+	//fbtk_redraw(root);
+}
 
 void
 gui_multitask(void)

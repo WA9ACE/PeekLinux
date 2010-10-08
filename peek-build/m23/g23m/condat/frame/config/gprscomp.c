@@ -62,7 +62,7 @@ extern SHORT esim_pei_create  (T_PEI_INFO const **Info); /* esim module */
 extern SHORT hw_pei_create	  (T_PEI_INFO const **Info);
 //extern SHORT trans_pei_create   (T_PEI_INFO const **Info);
 //extern SHORT ems_pei_create   (T_PEI_INFO const **Info);
-//extern SHORT ui_pei_create   (T_PEI_INFO const **Info);
+extern SHORT ui_pei_create   (T_PEI_INFO const **Info);
 extern SHORT sim_pei_create   (T_PEI_INFO const **Info);
 extern SHORT sms_pei_create   (T_PEI_INFO const **Info);
 extern SHORT cc_pei_create    (T_PEI_INFO const **Info);
@@ -454,13 +454,11 @@ const T_COMPONENT_ADDRESS trans_list[] =
   { NULL,                NULL,   0 }
 };
 */
-/*
 const T_COMPONENT_ADDRESS ui_list[] =
 {
   { ui_pei_create,       NULL,   ASSIGNED_BY_TI },
   { NULL,                NULL,   0 }
 };
-*/
 /*
 const T_COMPONENT_ADDRESS ems_list[] =
 {
@@ -1099,7 +1097,7 @@ upm_list,
 #endif  
   //emo_list,
   hw_list,
-  //ui_list,
+  ui_list,
   //trans_list,
   //ems_list,
   NULL
@@ -1818,10 +1816,11 @@ T_HANDLE *PoolGroupHandle[MAX_POOL_GROUPS+1] =
 
 #define EXT_DATA_POOL_GPF_SIZE  (2048 + OS_QUEUE_ENTRY_SIZE(TSTSND_QUEUE_ENTRIES) + OS_QUEUE_ENTRY_SIZE(TSTRCV_QUEUE_ENTRIES))
 
-#define EMO_APP					0x3000
-#define EMO_HW					0x1C00
+#define EMO_APP					0x1800
+#define EMO_HW					0x2800
 #define EMO_UI					0xc800 /* 50k for UI/Emo tasks */
-#define EXT_DATA_POOL_SIZE      (EXT_DATA_POOL_PS_SIZE + EXT_DATA_POOL_GPF_SIZE + EXT_DATA_POOL_BSP_SIZE + EXT_DATA_POOL_MM_SIZE + EMO_UI + EMO_APP + EMO_HW)
+#define EMO_MMI					0x5000
+#define EXT_DATA_POOL_SIZE      (EXT_DATA_POOL_PS_SIZE + EXT_DATA_POOL_GPF_SIZE + EXT_DATA_POOL_BSP_SIZE + EXT_DATA_POOL_MM_SIZE + EMO_UI + EMO_HW + EMO_APP + EMO_MMI)
 #define INT_DATA_POOL_SIZE      (INT_DATA_POOL_PS_SIZE+INT_DATA_POOL_BSP_SIZE+INT_DATA_POOL_MM_SIZE+1000)
 
 #if(PSP_STANDALONE == 1)

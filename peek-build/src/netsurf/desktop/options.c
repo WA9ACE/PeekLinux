@@ -169,7 +169,7 @@ bool option_enable_PDF_password = false;
 
 /* Fetcher configuration */
 /** Maximum simultaneous active fetchers */
-int option_max_fetchers = 1;
+int option_max_fetchers = 2;
 /** Maximum simultaneous active fetchers per host.
  * (<=option_max_fetchers else it makes no sense)
  * Note that rfc2616 section 8.1.4 says that there should be no more than
@@ -177,7 +177,7 @@ int option_max_fetchers = 1;
  * as it slows page fetches down considerably.
  * See https://bugzilla.mozilla.org/show_bug.cgi?id=423377#c4
  */
-int option_max_fetchers_per_host = 1;
+int option_max_fetchers_per_host = 2;
 /** Maximum number of inactive fetchers cached.
  * The total number of handles netsurf will therefore have open
  * is this plus option_max_fetchers.

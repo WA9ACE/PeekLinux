@@ -1163,6 +1163,13 @@ typedef struct
 } T_SIM_REFRESH_USER_RES;
 #endif
 
+#define EMOBIIX_KEY_EVENT   0xB00B4
+typedef struct 
+{
+	int key;
+	unsigned int state;
+} T_EMOBIIX_KEY_EVENT;
+
 #define EMOBIIX_MESSAGE   0xB00B5
 typedef struct 
 {

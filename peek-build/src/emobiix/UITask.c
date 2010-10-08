@@ -21,6 +21,7 @@
 #include "dspl.h"
 #include "p_sim.h"
 
+#include "vsi.h"
 #include "system_battery.h"
 #include "exeapi.h"
 
@@ -34,6 +35,19 @@
 #pragma DATA_SECTION(lcd_frame_buffer, ".r2dbuffer")
 char lcd_frame_buffer[BWIDTH * BHEIGHT * 2];
 
+
+#define hCommACI aci_hCommACI
+EXTERN T_HANDLE         hCommACI; 
+
+#ifdef TI_PS_HCOMM_CHANGE
+#define PSENDX(A,B) PSEND(_hComm##A,B)
+#else
+#define PSENDX(A,B) PSEND(hComm##A,B)
+#endif /* TI_PS_HCOMM_CHANGE */
+
+
+
+
 typedef struct 
 {
 	UINT16 start_x;
@@ -43,6 +57,7 @@ typedef struct
 } lcd_fb_coordinates;
 
 
+void setRecvProcess(int recv);
 extern void emo_BitBlt(int x1, int y1, int x2, int y2);
 void updateScreen(void);
 void UIInit(void);
@@ -75,6 +90,8 @@ void uiAppConn(void *connData)
 		emo_printf("uiAppConn() Failed to allocate connectionContext");
 		return;
 	}
+	if(!simAutoDetect())
+		setRecvProcess(0);
 	//connectionContext_syncRequest(connectionContext, url);
 	//connectionContext_loopIteration(connectionContext);
 }
@@ -85,7 +102,18 @@ void uiAppSent()
 	emo_printf("uiAppSent() Looping...");
 	connectionContext_loopIteration(connectionContext);
 }
-int recvProcess = 0;
+
+static int recvProcess = 0;
+
+void setRecvProcess(int recv)
+{
+	recvProcess = recv;
+}
+
+int getRecvProcess(void)
+{
+	return recvProcess;
+}
 
 void uiAppRecv(void *recvData)
 {
@@ -109,8 +137,10 @@ void uiAppRecv(void *recvData)
 		SEND_EVENT(emoMenu_get_window(), SCREEN_UPDATE, 0, 0);
 	*/
 	if(!simAutoDetect())
-		recvProcess = 0;
+		setRecvProcess(0);
 }
+
+extern void emo_FullDraw(void);
 
 GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 {
@@ -144,17 +174,20 @@ GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 			emo_printf("appdata_response_cb(): APP_DATA_DCON");
 			return TRUE;
 
-		case EMOBIIX_NETSURF_START:
+    case EMOBIIX_NETSURF_START:
 		{
-			//memset(&lcd_frame_buffer, 0xFF, 320 * 240 * 2);
-			//emo_BitBlt(0,0,320,240);
-
 			emo_printf("appdata_response_cb(): start_netsurf");
-			netsurf_main(1, &argv);
+			emo_FullDraw();
 			return TRUE;
 		}
-
-		default:
+		
+		case EMOBIIX_KEY_EVENT:
+		{
+			//emo_printf("appdata_response_cb(): key_event");
+			UiHandleKeyEvents(((T_EMOBIIX_KEY_EVENT *)data)->state, ((T_EMOBIIX_KEY_EVENT *)data)->key);
+			return TRUE;
+		}
+	 default:
 			break;
 	}
 
@@ -164,14 +197,14 @@ GLOBAL BOOL appdata_response_cb (ULONG opc, void * data)
 
 U8* emo_LCD_bitmap(void)
 {
-       return ((U8*)lcd_frame_buffer);
+	return ((U8*)lcd_frame_buffer);
 }
 
 void emo_BitBlt(int x1, int y1, int x2, int y2)
 {
 	static lcd_fb_coordinates coord;
 
-	emo_printf("Flipping partial screen: %d %d %d %d", x1, y1, x2, y2);
+	//emo_printf("Flipping partial screen: %d %d %d %d", x1, y1, x2, y2);
 
 	coord.start_x = x1;
 	coord.start_y = y1;
@@ -182,38 +215,52 @@ void emo_BitBlt(int x1, int y1, int x2, int y2)
 		lcd_display(0, emo_LCD_bitmap(), &coord);
 }
 
+void emo_SendFullDraw(void)
+{
+	void *msg;
+	msg = P_ALLOC(EMOBIIX_NETSURF_START);
+	PSENDX(ACI, msg);
+}
+
+void emo_FullDraw(void)
+{
+	manager_resolveLayout();
+	lgui_set_dirty();
+	updateScreen();
+}
+
 void updateScreen(void) 
 {
 #ifndef SIMULATOR
-    int index, upper;
-    extern int netsurf_start_flag;
+	int index, upper;
+	extern int netsurf_start_flag;
 
-    if(netsurf_start_flag)
-        return;
+	if(netsurf_start_flag)
+		return;
 
-    renderman_flush();
-    manager_drawScreen();
+	renderman_flush();
+	manager_drawScreen();
 
-    if (!lgui_is_dirty())
-        return;
+	if (!lgui_is_dirty())
+		return;
 
-    upper = lgui_index_count();
-    if (upper == 0) 
+	upper = lgui_index_count();
+	if (upper == 0) 
 	{
-        emo_BitBlt(0, 0, BWIDTH, BHEIGHT);
-    } 
+		emo_BitBlt(0, 0, BWIDTH, BHEIGHT);
+	} 
 	else 
 	{
-        int i;
-        Rectangle *rect;
-        for (index = 0; index < upper; ++index) 
+		int i;
+		Rectangle *rect;
+		for (index = 0; index < upper; ++index) 
 		{
-            rect = lgui_get_region(index);
-            emo_BitBlt(rect->x, rect->y, rect->x + rect->width, rect->y + rect->height);
-        }
-    }
+			rect = lgui_get_region(index);
+			emo_BitBlt(rect->x, rect->y, rect->x + rect->width, rect->y + rect->height);
+		}
+	}
 
-    lgui_blit_done();
+	lgui_blit_done();
 #endif
 }
 
@@ -221,7 +268,7 @@ void display_init()
 {
 	int ret;
 	emo_printf("Initializing display driver");
-	
+
 	if(simAutoDetect())
 		ret = lcd_initialization(0);
 	else 
@@ -234,18 +281,20 @@ void display_init()
 	emo_BitBlt(0,0,320,240);
 }
 
+static int uiStatus = 0;
+int uiGetStatus(void) 
+{
+	return uiStatus;
+}
 void UIInit(void)
 {	
-  	while(!HwStatusGet())
-   		TCCE_Task_Sleep(100);
-
 	if(simAutoDetect())
 		backlightInit();
 
 	//TCCE_Task_Sleep(500); 
 
 	display_init();
-	
+
 	dataobject_platformInit();
 	renderman_init();
 
@@ -256,8 +305,9 @@ void UIInit(void)
 	updateScreen();
 
 	BalKeypadInit(0,0,4);
-    KeyPad_Init();
-	
+	KeyPad_Init();
+
+	uiStatus = 1;
 	return;
 }
 

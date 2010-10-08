@@ -32,7 +32,14 @@ extern unsigned char pwr_PowerOffMobile   (void);
 #include "ui_pei.h"
 #include "p_sim.h"
 
-EXTERN T_HANDLE	hCommACI;
+#define hCommACI aci_hCommACI
+EXTERN T_HANDLE         hCommACI;
+
+#ifdef TI_PS_HCOMM_CHANGE
+#define PSENDX(A,B) PSEND(_hComm##A,B)
+#else
+#define PSENDX(A,B) PSEND(hComm##A,B)
+#endif /* TI_PS_HCOMM_CHANGE */
 
 List *netsurf_get_queue()
 {
@@ -149,12 +156,11 @@ void main_test(void)
 
 int netsurf_start_flag = 0;
 
-static void UiHandleKeyEvents(RegIdT RegId, UINT32 MsgId, void *MsgBufferP)
+void UiHandleKeyEvents(UINT32 MsgId, int UiKeyId)
 {
-        int UiKeyId = *((int *)MsgBufferP);
 		T_EMOBIIX_NETSURF_START *netStart;
 
-        emo_printf("UiHandleKeyEvents MsgId=%d KeyId=%d" NL, MsgId, UiKeyId);
+    //emo_printf("UiHandleKeyEvents MsgId=%d KeyId=%d" NL, MsgId, UiKeyId);
 	
 		/* Snap key press time for idle timeout */
 		blightSnaptime();
@@ -173,37 +179,40 @@ static void UiHandleKeyEvents(RegIdT RegId, UINT32 MsgId, void *MsgBufferP)
 				break;
 			case SYS_WHEEL_BACK:
 			case SYS_WHEEL_FORWARD:
-				emo_printf("UiHandleKeyEvents() Passing to manager key [%c]", MapKeyToInternal(UiKeyId));
+				//emo_printf("UiHandleKeyEvents() Passing to manager key [%c]", MapKeyToInternal(UiKeyId));
 				manager_handleKey(MapKeyToInternal(UiKeyId));
 				break;
 			default:
 				if (MsgId == BAL_KEY_PRESS)
 				{
-					emo_printf("UiHandleKeyEvents() Passing to manager key [%c]", MapKeyToInternal(UiKeyId));
+					//emo_printf("UiHandleKeyEvents() Passing to manager key [%c]", MapKeyToInternal(UiKeyId));
 					manager_handleKey(MapKeyToInternal(UiKeyId));
 				}
 		}
         updateScreen();
 }
 
-void emulatorKeyPass(RegIdT RegId, UINT32 MsgId, void *MsgBufferP) {
-	UiHandleKeyEvents(RegId, MsgId, MsgBufferP);
+void hwPassKeyEvent(RegIdT RegId, UINT32 MsgId,void *MsgBufferP)
+{
+  T_EMOBIIX_KEY_EVENT *msg;
+  msg = P_ALLOC(EMOBIIX_KEY_EVENT);
+	msg->key = *((int *)MsgBufferP);
+	msg->state = MsgId;
+  PSENDX(ACI, msg);
 }
 
-
-void netsurfStart(void) {
-     T_EMOBIIX_NETSURF_START *netStart;
-
-     netsurf_start_flag = TRUE;
-     netStart = P_ALLOC(EMOBIIX_NETSURF_START);
-     P_OPC(netStart) = EMOBIIX_NETSURF_START;
-     PSENDX(ACI, netStart);
+void netsurfStart(void) 
+{
+	netsurf_start_flag = 1;
+	select_peek_plotters();
+	netsurf_redraw();
+	netsurf_resume();
 }
 
 
 void KeyPad_Init(void) {
 
-     if(BalKeypadRegister(UiHandleKeyEvents) == -1) {
+     if(BalKeypadRegister(hwPassKeyEvent) == -1) {
         emo_printf("KeypadRegister() Failed to register handler");
         return;
      }

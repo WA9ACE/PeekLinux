@@ -31,6 +31,7 @@
 
 extern int recvProcess;
 
+extern int uiGetStatus(void);
 extern void setEntryStub(void);
 
 extern void BalGetImei(char *ImeiBuffer);
@@ -52,49 +53,33 @@ void hwStart(void) {
 	peek_file_init();
 
 #ifdef DAR_HALT
-    fp = file_openRead("/var/dbg/dar");
-    if(fp){
-        if(file_size(fp) > 0) {
-            emo_printf("Dar crash file detected. Going to sleep");
-            file_close(fp);
-            while(1) {
-                lcd_led_onoff(1);
-                TCCE_Task_Sleep(10);
-                lcd_led_onoff(0);
-            }
-        }
-    }
+		if(simAutoDetect()) 
+		{
+			fp = file_openRead("/var/dbg/dar");
+			if(fp){
+				if(file_size(fp) > 0) {
+					emo_printf("Dar crash file detected. Going to sleep");
+					file_close(fp);
+					while(1) {
+						lcd_led_onoff(1);
+						TCCE_Task_Sleep(10);
+						lcd_led_onoff(0);
+					}
+				}
+			}
+	  }
 #endif
-
- // Setup display 
- //if(simAutoDetect())
- //	backlightInit();
-
- //display_init();
- // Start animation
- // Setup keypad/jog
- //BalKeypadInit(0,0,4);
- // Setup Sound
 
  // Setup time/date
  hw_td_init();
 
- // Register battery
- //system_battery_init();
-
  // Unlock UI
  HwStatusSet();
-
- emo_printf("hwStart() time: %s", hw_td_get_clock_str());
-
- /* Needed for Imei decoding */
- BalMiscInit();
-
- setEntryStub();
-
- emo_printf("IMEI: %s", EmoGetImei());
+ //emo_printf("hwStart() time: %s", hw_td_get_clock_str());
 
  if(simAutoDetect()) {
+	  BalMiscInit();
+		emo_printf("IMEI: %s", EmoGetImei());
  // Enter main notify loop
     while(1) {
         EvtStatus = BOSEventWait(EXE_BAL_ID, BOS_SIGNAL_TRUE, BOS_MESSAGE_TRUE,BOS_TIMEOUT_FALSE);//BOSCalMsec(10000)
@@ -114,7 +99,7 @@ void hwStart(void) {
                         //emo_printf("hwStart() handling msg id[%d]", MsgId);
 						switch(MsgId) {
 							case HW_KEY_MSG:
-                                emo_printf("hwStart(): Got HW_KEY_MSG press");
+                //emo_printf("hwStart(): Got HW_KEY_MSG press");
 								BalKeypadProcess(MsgId, MsgBufferP, MsgSize);
 								break;
 						}
@@ -134,22 +119,27 @@ void hwStart(void) {
 
  /* Must be in emulator */
  } else  {
+	setRecvProcess(1);
 	while(1) {
-            key = SimReadKey();
-			state = SimReadKeyState();
 
-			if(!recvProcess) {
-            	hasData = SimReadReg();
-            	if (hasData > 0) {
-					app_sim_recv();
-					recvProcess = 1;
+			if(uiGetStatus())
+			{
+				key = SimReadKey();
+				state = SimReadKeyState();
+
+				if(!getRecvProcess()) {
+					hasData = SimReadReg();
+					if (hasData > 0) {
+						app_sim_recv();
+						setRecvProcess(1);
+					}
+				}
+				if(key) {
+					UiHandleKeyEvents(state, key);
 				}
 			}
-            if(key) {
-            	emulatorKeyPass(NULL, state, &key);
-			}
 
-    		TCCE_Task_Sleep(10);
+			TCCE_Task_Sleep(10);
 	}
  }
 }

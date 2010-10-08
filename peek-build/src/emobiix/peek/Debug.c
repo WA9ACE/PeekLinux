@@ -14,65 +14,72 @@ static char buf[76] = {0};
 
 void emo_printf( const char* fmt, ...) {
 #ifndef EMO_PROD
-        va_list ap;
-        NU_TASK *tp;
+	va_list ap;
+	NU_TASK *tp;
 
-        va_start(ap, fmt);
-        tp =  TCC_Current_Task_Pointer();
+	va_start(ap, fmt);
+	tp =  TCC_Current_Task_Pointer();
 
-        if(!tp) {
-                vsprintf(buf, fmt, ap);
-        } else {
-                sprintf(buf, "[%s] ", tp->tc_name);
-                vsprintf(buf+strlen(buf), fmt, ap);
-        }
-		buf[75] = '\0';
-        rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
-        va_end(ap);
-       	TCCE_Task_Sleep(2);
+	if(tp) 
+	{
+		int len;
+		sprintf(buf, "[%s]", tp->tc_name);
+		len = strlen(buf);
+		vsnprintf(buf + len, sizeof(buf) - 1 - len, fmt, ap);
+	} 
+	else 
+		vsnprintf(buf, sizeof(buf) - 1, fmt, ap);
+
+	buf[60] = '\0';
+	rvf_send_trace(buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID);
+
+	va_end(ap);
+	TCCE_Task_Sleep(2);
 #endif
 }
 
 void emo_printlock(char *msg) {
-        NU_TASK *tp;
+	NU_TASK *tp;
 
-        tp =  TCC_Current_Task_Pointer();
-	
-		buf[0] = 0;
-        if(tp) {
-			strcpy(buf, "[");
-			strcat(buf, tp->tc_name);
-			strcat(buf, "] ");
-        } 
-		strncat(buf, msg, 75 - strlen(buf));
-        buf[75] = '\0';
-        rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID );
+	tp =  TCC_Current_Task_Pointer();
+
+	buf[0] = 0;
+	if(tp) {
+		strcpy(buf, "[");
+		strcat(buf, tp->tc_name);
+		strcat(buf, "] ");
+	} 
+	strncat(buf, msg, 75 - strlen(buf));
+	buf[75] = '\0';
+	rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID );
 }
 
 void emo_fprintf(FILE *file, const char* fmt, ...) {
 #ifndef EMO_PROD
-        va_list ap;
-        NU_TASK *tp;
+	va_list ap;
+	NU_TASK *tp;
 
-		if(file->fd > 2) {
-			emo_printf("______EMO_FPRINTF USED FOR FILE______");
-			while(1) {
-				TCCE_Task_Sleep(200);
-			}
+	if(file->fd > 2) {
+		emo_printf("______EMO_FPRINTF USED FOR FILE______");
+		while(1) {
+			TCCE_Task_Sleep(200);
 		}
-        va_start(ap, fmt);
-        tp =  TCC_Current_Task_Pointer();
+	}
+	va_start(ap, fmt);
+	tp =  TCC_Current_Task_Pointer();
 
-        if(!tp) {
-                vsprintf(buf, fmt, ap);
-        } else {
-                sprintf(buf, "[%s] ", tp->tc_name);
-                vsprintf(buf+strlen(buf), fmt, ap);
-        }
-		buf[75] = '\0';
-        rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
-        va_end(ap);
- //       TCCE_Task_Sleep(2);
+	if(!tp) {
+		vsnprintf(buf, sizeof(buf) - 1, fmt, ap);
+	} else {
+		int len;
+		sprintf(buf, "[%s]", tp->tc_name);
+		len = strlen(buf);
+		vsnprintf(buf + len, sizeof(buf) - 1 - len, fmt, ap);
+	}
+	buf[75] = '\0';
+	rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
+		va_end(ap);
+	TCCE_Task_Sleep(2);
 #endif
 }
 
@@ -82,18 +89,18 @@ void bal_trace(char *msg) {
 
 void bal_printf(const char* fmt, ...) {
 #ifndef EMO_PROD
-/* only used for kpd stuff and we know its working
-        va_list ap;
-        NU_TASK *tp;
+	/* only used for kpd stuff and we know its working
+		 va_list ap;
+		 NU_TASK *tp;
 
-        va_start(ap, fmt);
-        tp =  TCC_Current_Task_Pointer();
+		 va_start(ap, fmt);
+		 tp =  TCC_Current_Task_Pointer();
 
-        if(!tp) {
-                vsprintf(buf, fmt, ap);
-        } else {
-                sprintf(buf, "Task [%s] ", tp->tc_name);
-                vsprintf(buf+strlen(buf), fmt, ap);
+		 if(!tp) {
+		 vsprintf(buf, fmt, ap);
+		 } else {
+		 sprintf(buf, "Task [%s] ", tp->tc_name);
+		 vsprintf(buf+strlen(buf), fmt, ap);
         }
         rvf_send_trace (buf,strlen(buf)+1,NULL_PARAM,RV_TRACE_LEVEL_DEBUG_HIGH,RVM_USE_ID )
         va_end(ap);

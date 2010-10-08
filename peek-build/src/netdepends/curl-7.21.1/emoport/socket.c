@@ -8,7 +8,7 @@
 #include "errno.h"
 #include "peekerrno.h"
 
-#define _ENTITY_PREFIXED(N) aci_##N
+#define _ENTITY_PREFIXED(N) ui_##N
 
 #define hCommAPP _ENTITY_PREFIXED(hCommAPP)
 

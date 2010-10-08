@@ -173,6 +173,7 @@ nserror netsurf_init(int *pargc,
 /**
  * Gui NetSurf main loop.
  */
+
 int netsurf_main_loop(void)
 {
 	while (!netsurf_quit) {

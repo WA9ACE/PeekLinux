@@ -36,7 +36,7 @@ static UBYTE sim_service_table [0x10];
 void sim_read_sim(USHORT data_id, UBYTE len, UBYTE max_length);
 void sim_signal (int event, void *para);
 
-int sim_status_check (void)
+UBYTE sim_status_check (void)
 {
     emo_printf("sim_status_check()");
 
@@ -95,18 +95,18 @@ int sim_event_cb_main (int event, void * para)
 {
         UBYTE limited;
 
-		T_HW_SIM_STATUS * status;
+				T_HW_SIM_STATUS * status;
 
         //status = (T_HW_SIM_STATUS *)para;
 
     	limited = TRUE;
 
-  		emo_printf("sim event handler,event:%d", event);; //, status:%d, proc:%d",event, status->sim_status, status->sim_procedure);
+  		emo_printf("sim event handler,event:%d", event); //, status:%d, proc:%d",event, status->sim_status, status->sim_procedure);
 
         switch(event)
         {
                 case E_SIM_INSERTED:
-					emo_printf("E_SIM_INSERTED");
+									emo_printf("E_SIM_INSERTED");
                 	BootUpState = BOOTUP_STATE_COMPLETED;
                 	nm_registration (NM_AUTOMATIC, 0, FALSE);
                 	return 0;

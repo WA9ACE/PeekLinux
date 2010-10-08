@@ -1,11 +1,11 @@
 DEFINE  = strdup=p_strdup
 DEFINE += nsframebuffer
 #DEFINE += fprintf=emo_fprintf
-#DEFINE += NETSURF_HOMEPAGE="\"file:///home.html\""
+DEFINE += NETSURF_HOMEPAGE="\"file:///default.html\""
 #DEFINE += NETSURF_HOMEPAGE="\"file:///emo/index.html\""
 #DEFINE += NETSURF_HOMEPAGE="\"http://72.20.1.6\""
 #DEFINE += NETSURF_HOMEPAGE="\"http://www.cmw.me\""
-DEFINE += NETSURF_HOMEPAGE="\"http://m.yahoo.com\""
+#DEFINE += NETSURF_HOMEPAGE="\"http://m.yahoo.com\""
 DEFINE += NETSURF_FB_RESPATH="\"\""
 DEFINE += FB_USE_FREETYPE
 DEFINE += WITH_PNG

@@ -584,10 +584,12 @@ void memmap()
 
     _unlock();
 
-    emo_printf("free_block_num:%d free_block_space:%d free_block_max:%d used_block_num:%d used_block_space:%d used_block_max:%d overhead:%d\n\n", 
-	    free_block_num, free_block_space, free_block_max,
-	    used_block_num, used_block_space, used_block_max,
-	    (free_block_num + used_block_num) * BLOCK_OVERHEAD);
+    emo_printf("free_b_num:%d free_b_space:%d", free_block_num, free_block_space);
+
+		emo_printf("free_b_max:%d used_b_num:%d", free_block_max, used_block_num);
+
+		emo_printf("used_b_space:%d used_b_max:%d", used_block_space, used_block_max);
+		emo_printf("overhead:%d", (free_block_num + used_block_num) * BLOCK_OVERHEAD);
 
     //fflush(stdout);
 }

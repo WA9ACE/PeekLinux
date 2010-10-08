@@ -46,7 +46,7 @@ SRC += hwtask/gprs.c
 SRC += hwtask/backlight.c
 SRC += hwtask/stub.c
 SRC += hwtask/vibrator.c
-
+SRC += ui_pei.c
 
 BALOBJ  = hwtask/bal/kpd_drv_if.o
 BALOBJ += hwtask/bal/balkeypad.o

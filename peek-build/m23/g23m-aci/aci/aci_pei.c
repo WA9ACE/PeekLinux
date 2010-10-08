@@ -2494,7 +2494,7 @@ GLOBAL SHORT aci_pei_create (T_PEI_INFO **info)
 /* Increased 300 bytes because when DCM is used for GPRS call 
    more number of bytes need in the stack */
 #if defined (MFW)
-    0xc800,//4396,     /* Stack Size      */
+    0x5000,     /* Stack Size      */
 #endif
 #if defined (FF_MMI_RIV)
     3072,     /* Stack Size      */

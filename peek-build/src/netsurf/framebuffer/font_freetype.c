@@ -144,7 +144,7 @@ bool fb_font_init(void)
                 return false;
         }
 
-        max_cache_size = 2 * 1024 *1024; /* 2MB should be enough */
+        max_cache_size = 100 * 1024; // *1024; /* 2MB should be enough */
 
         /* cache manager initialise */
         error = FTC_Manager_New(library, 

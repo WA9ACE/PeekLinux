@@ -28,6 +28,31 @@
 #include "p_sim.h"
 #include "gprs.h"
 
+static NU_SEMAPHORE mutex_netsurf;
+
+void netsurf_pause()
+{
+	emo_printf("netsurf_pause() start");
+	NU_Obtain_Semaphore(&mutex_netsurf, NU_SUSPEND);
+	emo_printf("netsurf_pause() finish");
+}
+
+void netsurf_resume()
+{
+	static int init = 0;
+	if (!init)
+	{
+		NU_Create_Semaphore(&mutex_netsurf, "mutex_netsurf", 0, NU_PRIORITY);
+		init = 1;
+	}
+	else
+	{
+		emo_printf("netsurf_resume() start");
+		NU_Release_Semaphore(&mutex_netsurf);
+		emo_printf("netsurf_resume() finish");
+	}
+}
+
 #define         NU_VARIABLE_SIZE                13
 #define         NU_QUEUE_SIZE                   18
 
@@ -47,10 +72,14 @@ T_HANDLE UI_handle;
 
 #define hCommAPP        _ENTITY_PREFIXED(hCommAPP)
 
+#define hCommACI        _ENTITY_PREFIXED(hCommACI)
+
 LOCAL BOOL first_access = TRUE;
 static UINT32 uiIsReady = 0;
 
 T_HANDLE hCommAPP = VSI_ERROR;
+T_HANDLE hCommACI = VSI_ERROR;
+
 
 extern NU_MEMORY_POOL  ExeSystemMemory;
 extern void memmap(void);
@@ -219,25 +248,17 @@ void uiStatusSet(void) {
 +------------------------------------------------------------------------------
 */
 
-extern void mmiInit( void);
-extern void UiTask(void);
-
 LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
 {  
+	const char *argv = "emobiix";
 
   RVM_TRACE_DEBUG_HIGH("UI: pei_run");
 
-  return RV_OK;
-#if 0
-  /* Wait for Main EMO task to start */
   while(!HwStatusGet())
- 	TCCE_Task_Sleep(100);
+    TCCE_Task_Sleep(100);
 
-  /* Start UI Task */
-  UITask();
-  
-  return RV_OK;  
-#endif
+	netsurf_main(1, &argv);
+  return RV_OK;
 }/* End pei_run(..) */
 
 
@@ -320,10 +341,11 @@ LOCAL SHORT pei_init (T_HANDLE handle)
   if(hCommAPP < VSI_OK)
         if ((hCommAPP = vsi_c_open (VSI_CALLER APP_NAME)) < VSI_OK)
                 return PEI_ERROR;
+  if(hCommACI < VSI_OK)
+        if ((hCommACI = vsi_c_open (VSI_CALLER "MMI")) < VSI_OK)
+                return PEI_ERROR;
 
-  while(!HwStatusGet())
-    TCCE_Task_Sleep(100);
-  UIInit();
+
   return (PEI_OK);
 } /* End pei_init(..) */
 
@@ -351,7 +373,7 @@ static const T_PEI_INFO pei_info =
                {              /* pei-table */
                   pei_init,
                   pei_exit,
-                  pei_primitive,           /* NO pei_primitive */
+                  NULL,           /* NO pei_primitive */
                   NULL,           /* NO pei_timeout */
                   NULL,           /* NO pei_signal */   
                   pei_run,        /*-- ACTIVE Entity--*/
@@ -360,9 +382,9 @@ static const T_PEI_INFO pei_info =
                },
                0xc800,            /* stack size */
                10,                        /* queue entries */
-			   EMO_UI_PRIORITY,     /* priority (1->low, 255->high) */
+			   		  EMO_UI_PRIORITY,     /* priority (1->low, 255->high) */
                0,                         /* number of timers */
-               COPY_BY_REF|PASSIVE_BODY	/* Flags Settings */
+               COPY_BY_REF	/* Flags Settings */
               };
 
   RVM_TRACE_DEBUG_HIGH("UI: pei_create");

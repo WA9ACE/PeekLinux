@@ -20,21 +20,20 @@
 
 void mmi_main(void) 
 {
-	timerInit();
-
-	emo_printf("mmi_main()");
+//	timerInit();
 
 	system_time_init();
 	system_battery_init();
 	gprs_dataobject_init();
 
-    UIInit();
-
-	/* Wait for HW task and UI task to complete */
-	while(!HwStatusGet()) //&& !uiStatusGet())
+	/* Wait for HW task */
+	while(!HwStatusGet())
 		TCCE_Task_Sleep(100);
 
-	if(simAutoDetect()) {
+  UIInit();
+
+	if(simAutoDetect())
+	{
 		// Setup/Start baseband related functionality
 		/* Enable signal quality */
 		sAT_PercentCSQ ( CMD_SRC_LCL, CSQ_Enable );

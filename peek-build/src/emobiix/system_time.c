@@ -53,8 +53,8 @@ void system_time_init()
 
 	url_delete(url);
 
-    t = timerCreate(updateTimeCB, 0);
+//    t = timerCreate(updateTimeCB, 0);
 
-    emo_printf("system_time_init() timer returned %d", timerStart(t, TIME_UPDATE_INTERVAL));
+//    emo_printf("system_time_init() timer returned %d", timerStart(t, TIME_UPDATE_INTERVAL));
 }
 

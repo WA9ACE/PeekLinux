@@ -23,7 +23,7 @@
 #define ENTITY_APP
 /* this #define SAP_TCPIP and #define SAP_DCM in prim.h - */
 
-#define APP_STACK_SIZE    0x3000
+#define APP_STACK_SIZE    0x1800
 #define APP_QUEUE_SIZE    10   /* queue entries */
 #define APP_PRIORITY      90   /* priority (1->low, 255->high) */
 #define APP_NUM_TIMER     10   /* number of timers */

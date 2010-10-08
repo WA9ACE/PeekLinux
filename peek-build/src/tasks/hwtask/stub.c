@@ -84,9 +84,9 @@ void entry_stub(const char *name) {
 //	if (name == blah
 //		return;
 
-	if(entryInit) {
-		emo_printf("<%s>", name);
-	}
+//	if(entryInit) {
+		emo_printf("@@ %s @@", name);
+//	}
 	
 }
 
