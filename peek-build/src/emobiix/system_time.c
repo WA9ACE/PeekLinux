@@ -1,5 +1,5 @@
 #include "system_time.h"
- 
+
 #include "DataObject.h"
 #include "URL.h"
 #include "hwtimer.h"
@@ -9,7 +9,7 @@ extern char *hw_td_get_clock_str(void);
 static DataObject *SYSTEM_TIME;
 static DataObjectField *SYSTEM_TIME_NOW;
 
-#define TIME_UPDATE_INTERVAL (30 * 1000)
+#define TIME_UPDATE_INTERVAL (45 * 1000)
 
 void system_set_time()
 {
@@ -30,16 +30,16 @@ void system_set_time()
 
 static void updateTimeCB(tDS *timeData, void *opaque)
 {
-    emo_printf("awesome timer power!!");
+	emo_printf("awesome timer power!! %08X, %08X", timeData, opaque);
 
-    system_set_time();
+	system_set_time();
 
-    emo_printf("updateTimeCB() timerstart ret %d", timerStart(timeData, TIME_UPDATE_INTERVAL));
+	emo_printf("updateTimeCB() timerstart ret %d", timerStart(timeData, TIME_UPDATE_INTERVAL));
 }
 
 void system_time_init()
 {
-    tDS *t;
+	tDS *t;
 	URL *url;
 
 	dataobject_platformInit();
@@ -53,8 +53,7 @@ void system_time_init()
 
 	url_delete(url);
 
-//    t = timerCreate(updateTimeCB, 0);
-
-//    emo_printf("system_time_init() timer returned %d", timerStart(t, TIME_UPDATE_INTERVAL));
+	t = timerCreate(updateTimeCB, 0);
+	emo_printf("system_time_init() timer returned %d", timerStart(t, TIME_UPDATE_INTERVAL));
 }
 

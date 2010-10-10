@@ -13,53 +13,53 @@
 
 //Events that may affect the backlight 
 enum {
-        BL_INIT,
-        BL_IDLE_TIMER,
-        BL_KEY_PRESS,
-        BL_INCOMING_SMS,
-        BL_INCOMING_CALL,
-        BL_EXIT,
-        BL_SPARE_OPTION_1,
-        BL_SPARE_OPTION_2,
-        BL_SPARE_OPTION_3,
-        BL_LAST_OPTION
+	BL_INIT,
+	BL_IDLE_TIMER,
+	BL_KEY_PRESS,
+	BL_INCOMING_SMS,
+	BL_INCOMING_CALL,
+	BL_EXIT,
+	BL_SPARE_OPTION_1,
+	BL_SPARE_OPTION_2,
+	BL_SPARE_OPTION_3,
+	BL_LAST_OPTION
 };
 
 static int mme_backlightStatus[BL_LAST_OPTION];
 
 void mmeBackLight (U8 level)
 {
-    light_SetStatus(LIGHT_DEVICE_BACKLIGHT,level);
+	light_SetStatus(LIGHT_DEVICE_BACKLIGHT,level);
 }
 
 void mme_backlightEvent(int event)
 {
-       int light;
-       if ((event >=BL_INIT) && (event <BL_LAST_OPTION))
-       {
-               light  = mme_backlightStatus[event];
-               if (light == BL_SET_IDLE)
-               {
-                       light_setBacklightIdle();
-               }
-               else if (light == BL_NO_CHANGE)
-               {
-                       //No change
-               }
-               else if ((light >=BL_NO_LIGHT) && (light <=BL_MAX_LIGHT))
-               {
-                       mmeBackLight ((U8)light);
-               }       
-       
-       }
+	int light;
+	if ((event >=BL_INIT) && (event <BL_LAST_OPTION))
+	{
+		light  = mme_backlightStatus[event];
+		if (light == BL_SET_IDLE)
+		{
+			light_setBacklightIdle();
+		}
+		else if (light == BL_NO_CHANGE)
+		{
+			//No change
+		}
+		else if ((light >=BL_NO_LIGHT) && (light <=BL_MAX_LIGHT))
+		{
+			mmeBackLight ((U8)light);
+		}       
+
+	}
 }
 
 void mme_setBacklightEvent(int event, int lightLevel)
 {
-        if ((event >=BL_INIT) && (event <BL_LAST_OPTION))
-        {
-                mme_backlightStatus[event] = lightLevel;
-        }
+	if ((event >=BL_INIT) && (event <BL_LAST_OPTION))
+	{
+		mme_backlightStatus[event] = lightLevel;
+	}
 }
 
 #define BACKLIGHT_IDLE 30000
@@ -72,12 +72,12 @@ extern T_HANDLE aci_handle;
 void blightSnaptime(void) {
 	T_TIME t;
 
-	return;
 	vsi_t_time(aci_handle, &t);
 	backlight_timer = t / 1000;
-	if(backlight_sleep) {
+	if (backlight_sleep) 
+	{
 		backlight_sleep = 0;
-        light_SetStatus(LIGHT_DEVICE_BACKLIGHT, BL_MAX_LIGHT);
+		light_SetStatus(LIGHT_DEVICE_BACKLIGHT, BL_MAX_LIGHT);
 		if(idleTime)
 			timerStart(idleTime, BACKLIGHT_IDLE);
 	}
@@ -95,11 +95,12 @@ static void idleBacklight(tDS *timeData, void *opaque)
 	/* Idle time out 60 seconds */
 	if(timeElapsed >= BACKLIGHT_IDLE) {
 		light_setBacklightIdle();
+		light_setBacklightIdle();
 		backlight_sleep = 1;
 		return;
 	} 
 		
-    emo_printf("idleBacklight() timerstart ret %d", timerStart(timeData, BACKLIGHT_IDLE - timeElapsed));
+	emo_printf("idleBacklight() timerstart ret %d", timerStart(timeData, BACKLIGHT_IDLE - timeElapsed));
 }
 
 void backlightInit() {
@@ -118,10 +119,10 @@ void backlightInit() {
 		*/
 
         ///mme_backlightEvent(BL_INIT);
-	//	blightSnaptime();
-	//	idleTime = timerCreate(idleBacklight, NULL);
-   // 	timerStart(idleTime, BACKLIGHT_IDLE);
+	blightSnaptime();
+	idleTime = timerCreate(idleBacklight, NULL);
+  timerStart(idleTime, BACKLIGHT_IDLE);
 
-		light_SetStatus(LIGHT_DEVICE_BACKLIGHT, BL_MAX_LIGHT);
+	light_SetStatus(LIGHT_DEVICE_BACKLIGHT, BL_MAX_LIGHT);
 }
 

@@ -20,7 +20,7 @@
 
 void mmi_main(void) 
 {
-//	timerInit();
+	timerInit();
 
 	system_time_init();
 	system_battery_init();
