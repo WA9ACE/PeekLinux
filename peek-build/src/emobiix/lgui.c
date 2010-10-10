@@ -854,7 +854,8 @@ void lgui_circlefill(int xc, int yc, int r,
     }
 }
 
-void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f, Color c, int isBold)
+void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f, Color c,
+		int isBold)
 {
 	const char *p;
 	unsigned int val;
