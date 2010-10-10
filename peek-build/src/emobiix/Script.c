@@ -398,11 +398,15 @@ static int __dataobject_append(lua_State *L)
 	return 0;
 }
 
+#ifndef SIMULATOR
 extern void netsurfStart(void);
+#endif
 
 static int __dataobject_netsurf(lua_State *L)
 {
+#ifndef SIMULATOR
 	 netsurfStart();
+#endif
 	 return 0;
 }
 
