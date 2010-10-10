@@ -52,7 +52,23 @@ public:
 
 typedef std::list<Message> MessageList;
 typedef std::list<Account> AccountList;
-typedef std::pair<std::string, PurpleAccount *> Buddy;
+
+class Buddy {
+public:
+	Buddy(const char *n, PurpleAccount *acc) {
+		name = n;
+		account = acc;
+	}
+
+	bool operator == (const Buddy &other) const {
+		return (name == other.name && account == other.account);
+	}
+
+	std::string name;
+	PurpleAccount *account;
+	time_t lastupdate_id;
+};
+
 typedef std::list<Buddy> BuddyList;
 
 class User {

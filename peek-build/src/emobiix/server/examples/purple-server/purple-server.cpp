@@ -547,10 +547,10 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 		user = GetUser(deviceId.c_str());
 		if (user == NULL)
 			return SOAP_OK;
-		std::string res = "<data>";
+		std::string res = "<record>";
 		for (iter = user->m_buddyList.begin(); iter != user->m_buddyList.end();
 				++iter) {
-			PurpleAccount *pacc = (*iter).second;
+			PurpleAccount *pacc = (*iter).account;
 			std::string aproto = "prpl-aim";
 			AccountList::iterator ali;
 
@@ -562,14 +562,14 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 				}
 			}
 			res += "<item user=\"";
-			res += (*iter).first;
+			res += (*iter).name;
 			res += "\" account=\"";
-			res += (*iter).first;
+			res += (*iter).name;
 			res += "\" protocol=\"";
 			res += aproto;
 			res += "\"/>";
 		}
-		res += "</data>";
+		res += "</record>";
 
 		treeData = base64BinaryFromString(soap, res.c_str());
 
@@ -582,7 +582,7 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 		user = GetUser(deviceId.c_str());
 		if (user == NULL)
 			return SOAP_OK;
-		std::string res = "<data>";
+		std::string res = "<record>";
 		MessageList msgs = user->getPushList();
 		MessageList::iterator iter;
 		for (iter = msgs.begin(); iter != msgs.end(); ++iter) {
@@ -594,7 +594,7 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 			res += iter->m_sender;
 			res += "\" mine=\"0\"/>";
 		}
-		res += "</data>";
+		res += "</record>";
 
 		treeData = base64BinaryFromString(soap, res.c_str());
 
@@ -607,7 +607,7 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 		user = GetUser(deviceId.c_str());
 		if (user == NULL)
 			return SOAP_OK;
-		std::string res = "<data>";
+		std::string res = "<record>";
 		AccountList::iterator iter;
 		for (iter = user->m_account.begin(); iter != user->m_account.end();
 				++iter) {
@@ -617,7 +617,7 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 			res += iter->m_username;
 			res += "\" />";
 		}
-		res += "</data>";
+		res += "</record>";
 
 		treeData = base64BinaryFromString(soap, res.c_str());
 
@@ -778,12 +778,12 @@ void ms_sendIM(Task *task)
 
 	for (iter = output->m_buddyList.begin(); iter != output->m_buddyList.end();
 			++iter) {
-		if ((*iter).first == task->m_username)
+		if ((*iter).name == task->m_username)
 			break;
 	}
 	if (iter == output->m_buddyList.end())
 		return;
-	account = (*iter).second;
+	account = (*iter).account;
 
     gconv = purple_conversation_new(PURPLE_CONV_TYPE_IM,
 			account, task->m_username.c_str()); 
