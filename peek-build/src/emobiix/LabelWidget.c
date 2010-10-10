@@ -9,6 +9,9 @@
 
 extern Font *defaultFont;
 
+static void string_measure(WidgetRenderer *wr, Style *s, Widget *w,
+		DataObject *dobj, IPoint *p);
+
 /* string renderer */
 static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj) {
@@ -18,8 +21,9 @@ static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	const char *dtype;
 	const char *ltype;
 	const char *str;
-	DataObjectField *field, *sourceField, *boldField;
+	DataObjectField *field, *sourceField, *boldField, *fontalign;
     int isBold = 0;
+	IPoint dimensions;
 
 	EMO_ASSERT(wr != NULL, "string render missing renderer")
 	EMO_ASSERT(s != NULL, "string render missing style")
@@ -59,7 +63,18 @@ static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
             isBold = 0;
     }
 
-	lgui_draw_font(box->x+margin->x, box->y+margin->y, box->width, box->height, str, f, c, isBold);
+	fontalign = style_getProperty(s, w, "font-alignment");
+
+	string_measure(wr, s, w, dobj, &dimensions);
+
+	emo_printf("Rendering label '%s'" NL, str);
+
+	if (dataobjectfield_isString(fontalign, "right"))
+		lgui_draw_font(box->x+margin->x + box->width - dimensions.x, box->y+margin->y, box->width, box->height, str, f, c, isBold);
+	else if (dataobjectfield_isString(fontalign, "center"))
+		lgui_draw_font(box->x+margin->x + (box->width - dimensions.x)/2, box->y+margin->y, box->width, box->height, str, f, c, isBold);
+	else
+		lgui_draw_font(box->x+margin->x, box->y+margin->y, box->width, box->height, str, f, c, isBold);
 }
 
 static void string_measure(WidgetRenderer *wr, Style *s, Widget *w,
