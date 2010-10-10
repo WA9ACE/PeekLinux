@@ -120,9 +120,12 @@ void manager_init(void)
 	cache_commit();
 }
 
-void manager_focusBootApp(void) {
+void manager_focusBootApp(void)
+{
 	manager_focusApplication(manager_getBootApp());
+#ifndef SIMULATOR
 	updateScreen();
+#endif
 }
 
 void manager_drawScreen(void)
