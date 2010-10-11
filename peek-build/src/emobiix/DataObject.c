@@ -1242,7 +1242,7 @@ void dataobject_setIsModified(DataObject *dobj, int isModified)
 
 	if (isModified) {
 		renderman_queue(dobj);
-		renderman_markLayoutChanged();
+		/*renderman_markLayoutChanged();*/
 		dobj->flags1 |= DO_FLAG_CHANGED;
 	} else {
 		renderman_dequeue(dobj);
