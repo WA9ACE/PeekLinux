@@ -538,6 +538,8 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 				cache_commitServerSide(sreq->dobj, sreq->url);
 				cache_commit();
 
+				//dataobject_resolveReferences(sreq->dobj);
+
 				dataobject_setState(sreq->dobj, DOS_OK);
 				if (field != NULL && field->type == DOF_STRING)
 					emo_printf("Finished Type: %s" NL, field->field.string); 
@@ -554,6 +556,10 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 					/*renderman_clearQueue();*/
 					dataobject_setIsModifiedTree(sreq->dobj, 1);
 				}
+	
+				renderman_markLayoutChanged();
+				renderman_clearQueue();
+
 				if (list_findIter(ctx->inprogressRequests, sreq->url->all,
 						(ListComparitor)strcmp, &iter)) {
 					sreq = (SyncRequest *)listIterator_item(&iter);
@@ -971,10 +977,6 @@ static void connectionContext_processRecordSyncList(ConnectionContext *ctx,
 
 	for (i = 0; i < p->list.count; ++i) {
 		rsl = p->list.array[i];
-		if (rsl->deleteRecordP) {
-			emo_printf("Delete record not supported yet" NL);
-			continue;
-		}
 		robj = NULL;
 		for (dataobject_childIterator(sreq->dobj, &iter);
 				!listIterator_finished(&iter); listIterator_next(&iter)) {
@@ -995,6 +997,12 @@ static void connectionContext_processRecordSyncList(ConnectionContext *ctx,
 		for (j = 0; j < rsl->recordFieldListP->list.count; ++j) {
 			syncOp = rsl->recordFieldListP->list.array[j];
 			connectionContext_processSyncOperand(ctx, sreq, robj, syncOp);
+		}
+		if (rsl->deleteRecordP) {
+			emo_printf("Deleting record" NL);
+			listIterator_remove(&iter);
+			dataobject_delete(robj);
+			//dataobject_recordDelete(sreg->dobj, robj);
 		}
 	}
 }
