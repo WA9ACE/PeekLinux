@@ -58,6 +58,8 @@ public:
 	Buddy(const char *n, PurpleAccount *acc) {
 		name = n;
 		account = acc;
+		status = SIGNED_ON;
+		lastupdate = 0;
 	}
 
 	bool operator == (const Buddy &other) const {
@@ -66,7 +68,8 @@ public:
 
 	std::string name;
 	PurpleAccount *account;
-	time_t lastupdate_id;
+	enum {SIGNED_ON, SIGNED_OFF} status;
+	int lastupdate;
 };
 
 typedef std::list<Buddy> BuddyList;
@@ -81,6 +84,8 @@ public:
 	void removeAccount(const char *username, const char *protocol);
 	void addAccountRef(PurpleAccount *account);
 	void saveAccountDetails(void);
+	std::string buddyListUpdateString(void);
+	void CleanBuddyList(void);
 
     char *m_emobiixID;
     Task *m_task;
@@ -90,6 +95,7 @@ public:
     MessageList m_pushList;
     BuddyList m_buddyList;
     int m_messageID;
+	int m_lastBuddyUpdate;
 };
 };
 

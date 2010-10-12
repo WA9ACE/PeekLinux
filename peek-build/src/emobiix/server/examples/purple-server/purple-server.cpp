@@ -45,6 +45,7 @@ using namespace IM;
 static PurpleBuddyList *pblist = NULL;
 
 void ms_pushIM(User *user, const char *sender, const char *message);
+void ms_pushBuddy(User *user);
 void ms_newAccount(const char *emobiixID, const char *protocol,
 		const char *username, const char *password);
 void ms_newConnection(const char *emobiixID);
@@ -304,19 +305,50 @@ static void buddy_signed_on(PurpleBuddy *buddy)
 			purple_account_get_protocol_id(purple_buddy_get_account(buddy)));
 	user = GetUserByAccount(purple_buddy_get_account(buddy));
 	if (user != NULL) {
-		if (std::find(user->m_buddyList.begin(), user->m_buddyList.end(),
+		BuddyList::iterator buditer = 
+				std::find(user->m_buddyList.begin(), user->m_buddyList.end(),
 				Buddy(purple_buddy_get_name(buddy),
-				purple_buddy_get_account(buddy))) == user->m_buddyList.end())
-		user->m_buddyList.push_back(Buddy(purple_buddy_get_name(buddy),
-                purple_buddy_get_account(buddy)));
+				purple_buddy_get_account(buddy)));
+		if (buditer == user->m_buddyList.end()) {
+			user->m_buddyList.push_back(Buddy(purple_buddy_get_name(buddy),
+            	    purple_buddy_get_account(buddy)));
+		} else {
+			(*buditer).status = Buddy::SIGNED_ON;
+			(*buditer).lastupdate = 0;
+		}
+	}
+
+	if (user->m_lastBuddyUpdate == 0) {
+		user->m_lastBuddyUpdate == 1;
+		ms_pushBuddy(user);
 	}
 }
 
 static void buddy_signed_off(PurpleBuddy *buddy)
 {
+	std::list<Buddy>::iterator iter;
+	IM::User *user;
+
 	printf("%s Buddy \"%s\" (%s) signed off\n", __F__,
 			purple_buddy_get_name(buddy),
 			purple_account_get_protocol_id(purple_buddy_get_account(buddy)));
+
+	user = GetUserByAccount(purple_buddy_get_account(buddy));
+	if (user == NULL) {
+		printf("+++ Buddy not for an active account\n");
+		return;
+	}
+
+	iter = std::find(user->m_buddyList.begin(), user->m_buddyList.end(),
+			Buddy(purple_buddy_get_name(buddy),
+			purple_buddy_get_account(buddy)));
+	(*iter).status = Buddy::SIGNED_OFF;
+	(*iter).lastupdate = 0;
+
+	if (user->m_lastBuddyUpdate == 0) {
+		user->m_lastBuddyUpdate == 1;
+		ms_pushBuddy(user);
+	}
 }
 
 static void buddy_away(PurpleBuddy *buddy, PurpleStatus *old_status, PurpleStatus *status)
@@ -571,9 +603,14 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 		}
 		res += "</record>";
 
-		treeData = base64BinaryFromString(soap, res.c_str());
 
 		printf("%s buddylist: %s\n", __F__, res.c_str());
+
+		std::string budlist;
+		budlist = user->buddyListUpdateString();;
+		printf("%s new buddy list: %s\n", __F__, budlist.c_str());
+
+		treeData = base64BinaryFromString(soap, budlist.c_str());
 
 		return SOAP_OK;
 	}
@@ -710,8 +747,10 @@ void ms_newConnection(const char *emobiixID)
 {
 	User *output;
 
-	if (GetUser(emobiixID) != NULL)
+	if ((output = GetUser(emobiixID)) != NULL) {
+		output->CleanBuddyList();
 		return;
+	}
 
 	output = new User(emobiixID);
 	AddUser(output);
@@ -845,6 +884,22 @@ void ms_pushIM(User *user, const char *sender, const char *message)
 	soap_end(s);
 	soap_free(s);
 
+}
+
+void ms_pushBuddy(User *user)
+{
+	soap *s;
+	std::string data;
+	bool isDelivered;
+
+    s = soap_new();
+	data = "tcp://127.0.0.1:5533/buddylist";
+
+	std::vector<ns__KeyValue> requestParams;
+    int ret = soap_call_ns__DataObjectPushRequest(s, "http://127.0.0.1:5522", NULL, user->m_emobiixID, data, &requestParams, isDelivered);
+
+    soap_end(s);
+    soap_free(s);
 }
 
 void *soap_startup(void *not_used)

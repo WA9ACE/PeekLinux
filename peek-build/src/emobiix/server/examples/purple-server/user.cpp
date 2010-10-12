@@ -147,6 +147,7 @@ User::User(const char *eID)
 	m_task = NULL;
 	m_messageID = 0;
 	m_pushMutex = g_mutex_new();
+	m_lastBuddyUpdate = 0;
 }
 
 void User::pushMessage(const char *sender, const char *message) {
@@ -206,3 +207,68 @@ void User::saveAccountDetails(void)
 	}
 }
 
+
+std::string User::buddyListUpdateString(void)
+{
+	std::string output;
+	BuddyList::iterator iter;
+	int bId = 0;
+	char ibuf[64];
+
+	output = "<record>";
+	g_mutex_lock(m_pushMutex);
+
+	for (iter = m_buddyList.begin(); iter != m_buddyList.end(); ++iter) {
+		std::string aproto = "prpl-aim";
+		AccountList::iterator ali;
+		PurpleAccount *pacc = (*iter).account;
+
+		++bId;
+		if ((*iter).lastupdate == 0) {
+			(*iter).lastupdate = 1;
+			if ((*iter).status == Buddy::SIGNED_ON)
+				output += "<item ";
+			else 
+				output += "<delete ";
+
+			output += "minorid=\"";
+			snprintf(ibuf, 64, "%d", bId);
+			output += ibuf;
+
+			for (ali = m_account.begin(); ali != m_account.end();
+                    ++ali) {
+                if ((*ali).m_account == pacc) {
+                    aproto = (*ali).m_protocol;
+                    break;
+                }
+            }
+
+		
+			if ((*iter).status == Buddy::SIGNED_ON) {
+				output += "\" user=\"";
+				output += (*iter).name;
+				output += "\" account=\"";
+				output += (*iter).name;
+				output += "\" protocol=\"";
+				output += aproto;
+			}
+			output += "\"/>";
+		}
+	}
+	
+	output += "</record>";
+
+	m_lastBuddyUpdate = 0;
+	g_mutex_unlock(m_pushMutex);
+
+	return output;
+}
+
+void User::CleanBuddyList(void)
+{
+	BuddyList::iterator iter;
+	for (iter = m_buddyList.begin(); iter != m_buddyList.end(); ++iter) {
+		if ((*iter).status == Buddy::SIGNED_ON)
+			(*iter).lastupdate = 0;
+	}
+}
