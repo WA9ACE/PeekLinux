@@ -41,13 +41,14 @@ DataObject *setwidget_activeItem(DataObject *w)
 	DataObjectField *itemvalue;
 	ListIterator iter;
 
-	EMO_ASSERT_NULL(w != NULL, "Set widet active item missing set");
+	EMO_ASSERT_NULL(w != NULL, "Set widget active item missing set");
 
 	dobj = widget_getDataObject(w);
 
 	fieldname = dataobject_getValue(w, "fieldname");
-	if (fieldname == NULL || fieldname->type != DOF_STRING)
+	if (fieldname == NULL || fieldname->type != DOF_STRING) {
 		return NULL;
+	}
 
 	fieldvalue = dataobject_getValue(dobj, fieldname->field.string);
 	if (!fieldvalue)
@@ -57,7 +58,7 @@ DataObject *setwidget_activeItem(DataObject *w)
 	while (!listIterator_finished(&iter)) {
 		itemobj = (DataObject *)listIterator_item(&iter);
 		itemvalue = dataobject_getValue(itemobj, "fieldvalue");
-		if (setwidget_fieldCompare(itemvalue, fieldvalue))
+		if (itemvalue == NULL || setwidget_fieldCompare(itemvalue, fieldvalue))
 		{
 			dataobject_childIterator(itemobj, &iter);
 			if (listIterator_finished(&iter))
