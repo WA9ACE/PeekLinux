@@ -199,7 +199,7 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 	EMO_ASSERT_INT(ctx != NULL, 0,
 			"connection context loop iteration without context")
 #if 0
-	emo_printf("connectionContext_loopIteration()");
+	emo_printf("connectionContext_loopIteration()" NL);
 #endif
 #ifdef SIMULATOR
 	transport = endpoint_getTransport(ctx->endpoint);
@@ -406,7 +406,7 @@ int connectionContext_consumePacket(ConnectionContext *ctx)
 static void connectionContext_processSyncStart(ConnectionContext *ctx,
 		DataObjectSyncStartP_t *p)
 {
-	char *tmpstr;
+	char *tmpstr, *foundstr;
 	DataObject *dobj;
 	SyncRequest *sreq;
 	URL *url;
@@ -424,9 +424,9 @@ static void connectionContext_processSyncStart(ConnectionContext *ctx,
 		emo_printf("Faild to get URL in sync start" NL);
 		return;
 	}
-	sreq = (SyncRequest *)list_find(ctx->inprogressRequests, tmpstr, (ListComparitor)strcmp);
+	foundstr = (char *)list_find(ctx->inprogressRequests, tmpstr, (ListComparitor)strcmp);
 	emo_printf("SyncStart : %s" NL, tmpstr);
-	if (sreq != NULL) {
+	if (foundstr != NULL) {
 		emo_printf("Received a Sync request for a already in progress object :%s" NL,
 				tmpstr);
 		return;
@@ -458,7 +458,8 @@ static void connectionContext_processSyncStart(ConnectionContext *ctx,
 		sreq->stampMajor = p->dataObjectStampMinorP;
 		mapKey = generate_mapKey(ctx->endpoint, sreq->sequenceID);
 		map_append(ctx->syncRequests, mapKey, sreq);
-		list_append(ctx->inprogressRequests, tmpstr);
+		emo_printf("Setting inprogress: %s" NL, tmpstr);
+		list_append(ctx->inprogressRequests, p_strdup(tmpstr));
 	} else {
 		emo_printf("Failed to create sync request for :%s" NL,
 				tmpstr);
@@ -568,7 +569,8 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 
 				if (list_findIter(ctx->inprogressRequests, sreq->url->all,
 						(ListComparitor)strcmp, &iter)) {
-					sreq = (SyncRequest *)listIterator_item(&iter);
+					//sreq = (SyncRequest *)listIterator_item(&iter);
+					emo_printf("Removing %s" NL, sreq->url->all);
 					listIterator_remove(&iter);
 					/* FIXME: delete sreq */
 				} /*else {
@@ -603,13 +605,16 @@ static void connectionContext_processSyncRequest(ConnectionContext *ctx,
 	transport = endpoint_getTransport(ctx->endpoint);
 
 	if (sreq->isClient) {
+		emo_printf("Req %s - %d, %d, %d" NL, sreq->url->all,
+				sreq->hasStarted, sreq->hasSentLocal, sreq->hasFinished);
 		if (!sreq->hasStarted) {
 			/* send start packet */
 			/* we dont have this object at all so use stamp 0 */
 			packet.packetTypeP.present = packetTypeP_PR_dataObjectSyncStartP;
 			protocol_syncStart(&packet.packetTypeP.choice.dataObjectSyncStartP,
 					sreq->url->all, 0, 0, sreq->sequenceID);
-			list_append(ctx->inprogressRequests, sreq->url->all);
+			emo_printf("Adding inprogredd %s" NL, sreq->url->all);
+			list_append(ctx->inprogressRequests, p_strdup(sreq->url->all));
 			emo_printf( "Sending SyncStart" NL);
 			connectionContext_packetSend(ctx, &packet);
 			dataobject_setState(sreq->dobj, DOS_SYNC);
@@ -628,7 +633,7 @@ static void connectionContext_processSyncRequest(ConnectionContext *ctx,
 			packet.packetTypeP.present = packetTypeP_PR_dataObjectSyncFinishP;
 			protocol_syncFinished(&packet.packetTypeP.choice.dataObjectSyncFinishP,
 					RequestResponseP_responseExpiredP, sreq->sequenceID);
-			emo_printf( "Sending SyncFinish" NL);
+			emo_printf( "Sending SyncFinish for %s, %d" NL, sreq->url->all, sreq->sequenceID);
 			connectionContext_packetSend(ctx, &packet);
 			sreq->hasFinished = 1;
 			return;
@@ -705,7 +710,7 @@ static SyncRequest *syncRequest_new(URL *url, int isClient)
 			"connection context sync reqeust new with NULL url")
 
 	output = p_malloc(sizeof(SyncRequest));
-	output->url = url;
+	output->url = url_parse(url->all, URL_ALL);
 	output->isClient = isClient;
 	output->hasFinished = 0;
 	output->hasSentLocal = 0;
