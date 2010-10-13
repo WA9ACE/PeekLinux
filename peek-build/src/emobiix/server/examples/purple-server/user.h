@@ -42,12 +42,13 @@ public:
 class Account {
 public:
 	Account(const char *username, const char *password, const char *protocol,
-			PurpleAccount *account);
+			PurpleAccount *account, int id);
 
 	std::string m_username;
 	std::string m_password;
 	std::string m_protocol;
 	PurpleAccount *m_account;
+	int m_Id;
 };
 
 typedef std::list<Message> MessageList;
@@ -82,6 +83,7 @@ public:
 	void addAccount(const char *username, const char *password,
 			const char *protocol, PurpleAccount *account);
 	void removeAccount(const char *username, const char *protocol);
+	Account *getAccount(const char *username, const char *protocol);
 	void addAccountRef(PurpleAccount *account);
 	void saveAccountDetails(void);
 	std::string buddyListUpdateString(void);
@@ -96,6 +98,7 @@ public:
     BuddyList m_buddyList;
     int m_messageID;
 	int m_lastBuddyUpdate;
+	int m_lastAccountId;
 };
 };
 

@@ -262,7 +262,8 @@ signed_on(PurpleConnection *gc, gpointer null)
 			user->m_task->m_username.c_str(),
 			user->m_task->m_password.c_str(),
 			user->m_task->m_protocol.c_str(),
-			account);
+			account,
+			user->m_task->m_Id);
 }
 
 static void received_im_msg(PurpleAccount *account, char *sender,
@@ -604,7 +605,7 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 		res += "</record>";
 
 
-		printf("%s buddylist: %s\n", __F__, res.c_str());
+		//printf("%s buddylist: %s\n", __F__, res.c_str());
 
 		std::string budlist;
 		budlist = user->buddyListUpdateString();;
@@ -679,6 +680,7 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
     		task->m_username = param["user"];
 			task->m_password = param["pass"];
 			task->m_protocol = param["proto"];
+			task->m_Id = user->m_lastAccountId++;;
 			Task::Push(task);
 			int loop = 0;
 			while (task->m_result == NULL) {
@@ -694,6 +696,34 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 			printf("%s login result: %s\n", __F__,
 					task->m_result->status.c_str());
 
+			std::string res = "<data reply=\"";
+			res += task->m_result->status.c_str();
+			res += "\"/>";
+
+			treeData = base64BinaryFromString(soap, res.c_str());
+			return SOAP_OK;
+		}
+
+		if (param["action"] == "delacc") {
+			Task *task = new Task();
+			task->m_event = "delacc";
+    		task->m_emobiixID = deviceId;
+    		task->m_username = param["user"];
+			task->m_password = "";
+			task->m_protocol = param["proto"];
+			task->m_Id = 0;
+			Task::Push(task);
+			int loop = 0;
+			while (task->m_result == NULL) {
+				usleep(100);
+				++loop;
+				if (loop > 5000) {
+					printf("%s login timed out\n", __F__);
+					treeData = base64BinaryFromString(soap,
+							"<data reply=\"Request timed out\"/>");
+					return SOAP_OK;
+				}
+			}
 			std::string res = "<data reply=\"";
 			res += task->m_result->status.c_str();
 			res += "\"/>";
@@ -759,6 +789,13 @@ void ms_newConnection(const char *emobiixID)
 void ms_newAccount(User *user, const char *username, const char *password,
 		const char *protocol)
 {
+	/* check the account doesnt already exist */
+	if (user->getAccount(username, protocol) != NULL) {
+		printf("Tried to log into the same account\n");
+		user->m_task->m_result = new Result("Already Connected");
+		return;
+	}
+
 	/* Create the account */
 	PurpleAccount *account;
 	if (strcmp(protocol, "prpl-gtalk") == 0) {

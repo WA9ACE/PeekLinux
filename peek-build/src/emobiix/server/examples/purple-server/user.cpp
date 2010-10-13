@@ -55,7 +55,8 @@ extern void ms_newAccount(User *user, const char *username,
 
 void AddUser(User *user)
 {
-	char username[50], password[50], protocol[50];
+	char idstr[50], username[50], password[50], protocol[50];
+	int id;
 	FILE *input;
 	std::string filename;
 
@@ -65,6 +66,9 @@ void AddUser(User *user)
 	input = fopen(filename.c_str(), "r");
 	if (input != NULL) {
 		do {
+			if (fgets(idstr, 50, input) == NULL)
+				break;
+			id = atoi(idstr);
 			if (fgets(username, 50, input) == NULL)
 				break;
 			if (fgets(password, 50, input) == NULL)
@@ -73,12 +77,13 @@ void AddUser(User *user)
 			username[strlen(username)-1] = 0;
 			password[strlen(password)-1] = 0;
 			protocol[strlen(protocol)-1] = 0;
-			printf("Loading account %s, %s, %s\n",
-					username, password, protocol);
+			printf("Loading account %d, %s, %s, %s\n",
+					id, username, password, protocol);
 			user->m_task = new Task();
 			user->m_task->m_username = username;
 			user->m_task->m_password = password;
 			user->m_task->m_protocol = protocol;
+			user->m_task->m_Id = id;
 			ms_newAccount(user, username, password, protocol);
 			int loop = 0;
 			while (user->m_task->m_result == NULL) {
@@ -132,12 +137,13 @@ Message::Message(const char *sender, const char *message, int id)
 }
 
 Account::Account(const char *username, const char *password,
-		const char *protocol, PurpleAccount *account)
+		const char *protocol, PurpleAccount *account, int id)
 {
 	m_username = username;
 	m_password = password;
 	m_protocol = protocol;
 	m_account = account;
+	m_Id = id;
 }
 
 User::User(const char *eID)
@@ -148,6 +154,7 @@ User::User(const char *eID)
 	m_messageID = 0;
 	m_pushMutex = g_mutex_new();
 	m_lastBuddyUpdate = 0;
+	m_lastAccountId = 1;
 }
 
 void User::pushMessage(const char *sender, const char *message) {
@@ -167,9 +174,10 @@ MessageList User::getPushList(void) {
 }
 
 void User::addAccount(const char *username, const char *password,
-		const char *protocol, PurpleAccount *account)
+		const char *protocol, PurpleAccount *account, int id)
 {
-	m_account.push_back(Account(username, password, protocol, account));
+	m_account.push_back(Account(username, password, protocol, account,
+			id));
 
 	saveAccountDetails();
 	addAccountRef(account);
@@ -177,7 +185,21 @@ void User::addAccount(const char *username, const char *password,
 
 void User::removeAccount(const char *username, const char *protocol)
 {
+	printf("removeAccount not implemented\n");
+}
 
+Account *User::getAccount(const char *username, const char *protocol)
+{
+	AccountList::iterator iter;
+
+	for (iter = m_account.begin(); iter != m_account.end(); ++iter) {
+		if ((*iter).m_username == username &&
+				(*iter).m_protocol == protocol)
+			return &(*iter);
+	}
+
+	printf("Didnt find account %s on %s\n", username, protocol);
+	return NULL;
 }
 
 void User::addAccountRef(PurpleAccount *account)
@@ -200,7 +222,8 @@ void User::saveAccountDetails(void)
 
 		for (iter = m_account.begin(); iter != m_account.end();
 				++iter) {
-			fprintf(output, "%s\n%s\n%s\n", (*iter).m_username.c_str(),
+			fprintf(output, "%d\n%s\n%s\n%s\n", 
+					(*iter).m_Id, (*iter).m_username.c_str(),
 					(*iter).m_password.c_str(), (*iter).m_protocol.c_str());
 		}
 		fclose(output);
@@ -231,7 +254,7 @@ std::string User::buddyListUpdateString(void)
 			else 
 				output += "<delete ";
 
-			output += "minorid=\"";
+			output += "idminor=\"";
 			snprintf(ibuf, 64, "%d", bId);
 			output += ibuf;
 
