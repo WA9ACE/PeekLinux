@@ -198,7 +198,9 @@ int connectionContext_loopIteration(ConnectionContext *ctx)
 
 	EMO_ASSERT_INT(ctx != NULL, 0,
 			"connection context loop iteration without context")
+#if 0
 	emo_printf("connectionContext_loopIteration()");
+#endif
 #ifdef SIMULATOR
 	transport = endpoint_getTransport(ctx->endpoint);
 
@@ -438,11 +440,12 @@ static void connectionContext_processSyncStart(ConnectionContext *ctx,
 	}
 	dobj = dataobject_locate(url);
 	if (dobj == NULL) {
-		emo_printf("Received a Sync request for non existing object :%s" NL,
+		emo_printf("Received a Sync request for non existing object :%s - creating it" NL,
 				tmpstr);
-		url_delete(url);
+		dobj = dataobject_construct(url, 0);
+		/*url_delete(url);
 		p_free(tmpstr);
-		return;
+		return;*/
 	}
 	dataobject_setStamp(dobj, 0, 0);
 	isLocal = dataobject_isLocal(dobj);
@@ -517,6 +520,8 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 				break;
 			}
 			emo_printf("Finished %s" NL, sreq->url->all);
+			//if (dataobject_getRecordType(sreq->dobj))
+			//	dataobject_debugPrint(sreq->dobj);
 			sreq->remoteResponse = packet->packetTypeP.choice.dataObjectSyncFinishP.responseP;
 			sreq->remoteFinished = 1;
 			if (sreq->isClient) {
@@ -542,7 +547,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 
 				dataobject_setState(sreq->dobj, DOS_OK);
 				if (field != NULL && field->type == DOF_STRING)
-					emo_printf("Finished Type: %s" NL, field->field.string); 
+					emo_printf("*** Finished Type: %s" NL, field->field.string);
 				if (field != NULL && field->type == DOF_STRING &&
 						strcmp(field->field.string, "application") == 0) {
 					if (sreq->newObject)
@@ -559,6 +564,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 	
 				renderman_markLayoutChanged();
 				renderman_clearQueue();
+				/*dataobject_debugPrint(sreq->dobj);*/
 
 				if (list_findIter(ctx->inprogressRequests, sreq->url->all,
 						(ListComparitor)strcmp, &iter)) {
@@ -998,7 +1004,7 @@ static void connectionContext_processRecordSyncList(ConnectionContext *ctx,
 			syncOp = rsl->recordFieldListP->list.array[j];
 			connectionContext_processSyncOperand(ctx, sreq, robj, syncOp);
 		}
-		if (rsl->deleteRecordP) {
+		if (rsl->deleteRecordP && !listIterator_finished(&iter)) {
 			emo_printf("Deleting record" NL);
 			listIterator_remove(&iter);
 			dataobject_delete(robj);
