@@ -62,18 +62,16 @@ void mme_setBacklightEvent(int event, int lightLevel)
 	}
 }
 
-#define BACKLIGHT_IDLE 30000
-static unsigned int backlight_timer = 0;
+#define BACKLIGHT_IDLE 60000
+static T_TIME backlight_timer = 0;
 static BOOL backlight_sleep = 0;
 static tDS *idleTime;
 
 extern T_HANDLE aci_handle;
 
-void blightSnaptime(void) {
-	T_TIME t;
-
-	vsi_t_time(aci_handle, &t);
-	backlight_timer = t / 1000;
+void blightSnaptime(void) 
+{
+	vsi_t_time(aci_handle, &backlight_timer);
 	if (backlight_sleep) 
 	{
 		backlight_sleep = 0;
@@ -91,6 +89,8 @@ static void idleBacklight(tDS *timeData, void *opaque)
 	vsi_t_time(aci_handle, &t);
 
 	timeElapsed = t - backlight_timer;
+
+	emo_printf("idleBacklight() t:%d bl:%d", t, backlight_timer);
 
 	/* Idle time out 60 seconds */
 	if(timeElapsed >= BACKLIGHT_IDLE) {

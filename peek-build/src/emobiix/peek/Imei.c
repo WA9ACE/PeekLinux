@@ -66,7 +66,13 @@ const char* EmoGetImei()
 	}
 #endif
 	static char ImeiBuffer[15];
-	BalGetImei(ImeiBuffer);
+
+	if(!simAutoDetect())
+	{
+		strcpy(ImeiBuffer, "12345678912345");
+	} else {
+		BalGetImei(ImeiBuffer);
+	}
 
 	return ImeiBuffer;
 }

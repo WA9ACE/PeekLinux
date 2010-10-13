@@ -515,6 +515,9 @@ nserror browser_window_callback(hlcache_handle *c,
 		break;
 
 	case CONTENT_MSG_DONE:
+	{
+		static int preload_init = 0;
+
 		assert(bw->current_content == c);
 
 		browser_window_update(bw, false);
@@ -525,10 +528,19 @@ nserror browser_window_callback(hlcache_handle *c,
 		history_update(bw->history, c);
 		hotlist_visited(c);
 
+		if(!preload_init)
+		{
+			// pause netsurf after page is done on preload
+			emo_printf("netsurf page loaded, blocking...");
+			netsurf_pause();
+			preload_init = 1;
+		}
+
 		if (bw->refresh_interval != -1)
 			schedule(bw->refresh_interval,
 					browser_window_refresh, bw);
 		break;
+	}
 
 	case CONTENT_MSG_ERROR:
 		browser_window_set_status(bw, event->data.error);

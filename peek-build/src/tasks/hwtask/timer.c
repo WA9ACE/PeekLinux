@@ -82,7 +82,7 @@ tDS *timerCreate(timerCB tcb, void *opaque)
 	List *timeEventQ = timer_get_queue();
 	tDS *timeData = (void *)malloc(sizeof(tDS));
 
-	emo_printf("timerCreate %08X", timeData);
+	//emo_printf("timerCreate %08X", timeData);
 
 	if(!timeData)		
 		return NULL;
@@ -99,7 +99,7 @@ static void timerInsert(tDS *timeData)
 	List *timeEventQ = timer_get_queue();
 	ListIterator iter;
 
-	emo_printf("timerInsert %08X", timeData);
+	//emo_printf("timerInsert %08X", timeData);
 
 	if (!list_size(timeEventQ))
 	{
@@ -110,16 +110,16 @@ static void timerInsert(tDS *timeData)
 	for(list_rbegin(timeEventQ, &iter); !listIterator_finished(&iter); listIterator_next(&iter))
 	{
 		tDS *iTimeData = listIterator_item(&iter);
-		emo_printf("timerInsert %08X left %d, %08X left %d", timeData, timeData->left, iTimeData, iTimeData->left);
+		//emo_printf("timerInsert %08X left %d, %08X left %d", timeData, timeData->left, iTimeData, iTimeData->left);
 		if (timeData->left >= iTimeData->left)
 		{
-			emo_printf("timerInsert after");
+			//emo_printf("timerInsert after");
 			listIterator_insertAfter(&iter, timeData);
 			return;
 		}
 	}
 
-	emo_printf("timerInsert front");
+	//emo_printf("timerInsert front");
 	list_prepend(timeEventQ, timeData);
 }
 
@@ -149,7 +149,7 @@ int timerStart(tDS *timeData, unsigned int time)
 	if(timeData->time <= 0)
 		return -1;
 
-	emo_printf("timerStart %08X", timeData);
+	//emo_printf("timerStart %08X", timeData);
 
 	if(timeData->time < timerPrecMs)
 		timeData->time = timerPrecMs;
@@ -185,7 +185,7 @@ int timerStart(tDS *timeData, unsigned int time)
 		}
 	}
 
-	emo_printf("timerStart() starting timer left - %d", left);
+	//emo_printf("timerStart() starting timer left - %d", left);
 //	timerSetExpected(left);
 	tmrStart(left); /* restart timer */
 
@@ -279,7 +279,7 @@ void timerSignal(void)
 //	int drift = timerGetDrift();
 	int timeout;
 
-	emo_printf("timerSignal");
+	//emo_printf("timerSignal");
 
 	if(!list_size(timeEventQ))
 		return;
@@ -290,14 +290,14 @@ void timerSignal(void)
 	{
 		timeData = (tDS *)listIterator_item(&iter);
 
-		emo_printf("timerSignal item %08X left %d", timeData, timeData->left);
+		//emo_printf("timerSignal item %08X left %d", timeData, timeData->left);
 	
 		if(timeData->left <= 0) 
 		{
 			/* Item has timed out. Add to Running queue */
 			timeData->left = -1;
 			list_append(timeEventR, (void *)timeData);
-			emo_printf("timerSignal timed out %08X", timeData);
+			//emo_printf("timerSignal timed out %08X", timeData);
 			listIterator_remove(&iter);
 		} else {
 			/* No more elements needing to run so break */
@@ -329,7 +329,7 @@ void timerSignal(void)
 			timeData = (tDS *)listIterator_item(&iter);
 
 			/* timer expired..  */
-			emo_printf("timerSignal expired %08X", timeData);
+			//emo_printf("timerSignal expired %08X", timeData);
 			listIterator_remove(&iter);
 
 			/* Call Handler */

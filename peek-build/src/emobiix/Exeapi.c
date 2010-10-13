@@ -92,9 +92,9 @@ uint32 ExeMsgCheck(ExeTaskIdT TaskId, ExeMailboxIdT MailboxId)
 void MonFault(MonFaultUnitT UnitNum, uint32 FaultCode1, uint32 FaultCode2, MonFaultTypeT FaultType)
 {
 	emo_printf("MonFault [ UnitNum:%d, FaultCode1:%d, FaultCode2:%d, FaultType:%d]\n", UnitNum, FaultCode1, FaultCode2, FaultType);
-	while(1) {
-		TCCE_Task_Sleep(10000);
-	}
+	//while(1) {
+	//	TCCE_Task_Sleep(10000);
+	//}
 }
 
 extern char BalMemoryPoolBuffer[];

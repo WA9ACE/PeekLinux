@@ -20,6 +20,13 @@ static DataObjectField* GPRS_EMOBIIX_ON;
 static DataObjectField* GPRS_LOCATION_LAC;
 static DataObjectField* GPRS_LOCATION_CI;
 
+void force_dataobject_redraw()
+{
+	renderman_markLayoutChanged(); 
+	lgui_set_dirty();
+	updateScreen();
+}
+
 void gprs_dataobject_init(void) 
 {
 	URL *url;
@@ -61,8 +68,7 @@ void gprs_set_status(BOOL status)
 	dataobjectfield_setIsModified(GPRS_STATUS, 1);
 	dataobject_setIsModified(GPRS_DO, 1);
 
-    lgui_set_dirty();
-	updateScreen();
+	force_dataobject_redraw();
 }
 
 void gprs_set_on(BOOL status)
@@ -75,8 +81,7 @@ void gprs_set_on(BOOL status)
 	dataobjectfield_setIsModified(GPRS_ON, 1);
 	dataobject_setIsModified(GPRS_DO, 1);
 
-    lgui_set_dirty();
-	updateScreen();
+	force_dataobject_redraw();
 }
 
 void gprs_set_emobiix_on(BOOL status)
@@ -89,8 +94,7 @@ void gprs_set_emobiix_on(BOOL status)
 	dataobjectfield_setIsModified(GPRS_EMOBIIX_ON, 1);
 	dataobject_setIsModified(GPRS_DO, 1);
 
-    lgui_set_dirty();
-	updateScreen();
+	force_dataobject_redraw();
 }
 
 void gprs_set_signal_level(U32 level)
@@ -103,8 +107,7 @@ void gprs_set_signal_level(U32 level)
 	dataobjectfield_setIsModified(GPRS_SIGNAL_LEVEL, 1);
 	dataobject_setIsModified(GPRS_DO, 1);
 
-    lgui_set_dirty();
-	updateScreen();
+	force_dataobject_redraw();
 }
 
 void gprs_set_location(U32 lac, U32 ci)

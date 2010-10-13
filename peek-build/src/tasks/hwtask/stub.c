@@ -77,16 +77,21 @@ void setEntryStub(void) {
 	entryInit = 1;
 }
 
-//const char *blah = "emo_printf";
+#include "typedefs.h"
+#include "vsi.h"
 
-void entry_stub(const char *name) {
-//	if(name[0] == 'e' && name[1] == 'm' && name[2] == 'o' && name[3] == '_')
-//	if (name == blah
-//		return;
+extern T_HANDLE aci_handle;
+static T_TIME t;
 
-//	if(entryInit) {
-		emo_printf("@@ %s @@", name);
-//	}
-	
+void entry_stub(const char *name) 
+{
+	vsi_t_time(aci_handle, &t);
+	emo_printf("@@ ENTER %s: %d", name, t);
+}
+
+void exit_stub(const char *name)
+{
+	vsi_t_time(aci_handle, &t);
+	emo_printf("@@ EXIT %s: %d", name, t);
 }
 

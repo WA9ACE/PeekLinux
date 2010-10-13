@@ -88,6 +88,7 @@ void select_peek_plotters()
 
 enum nsfb_key_code_e peek_sim_nsfb_map[] = {
 	NSFB_KEY_UNKNOWN,
+	NSFB_KEY_RSHIFT,
 	NSFB_KEY_0,
 	NSFB_KEY_1,
 	NSFB_KEY_2,
@@ -133,9 +134,9 @@ enum nsfb_key_code_e peek_sim_nsfb_map[] = {
 	NSFB_KEY_MINUS,
 	NSFB_KEY_PERIOD,
 	NSFB_KEY_COMMA,
-	NSFB_KEY_QUOTE,
 	NSFB_KEY_RETURN,
 	NSFB_KEY_ESCAPE,
+	NSFB_KEY_BACKSPACE,
 	NSFB_KEY_BACKSPACE,
 	NSFB_KEY_UNKNOWN,
 	NSFB_KEY_UP,
@@ -247,7 +248,7 @@ enum nsfb_key_code_e peek_nsfb_map[] = {
 
 static int peek_geometry(nsfb_t *nsfb, int width, int height, int bpp)
 {
-	emo_printf("peek_geometry()");
+	//emo_printf("peek_geometry()");
 
 	if (nsfb->frontend_priv != NULL)
 		return -1; /* if were already initialised fail */
@@ -282,7 +283,7 @@ static int peek_initialise(nsfb_t *nsfb)
 
 static int peek_finalise(nsfb_t *nsfb)
 {
-	emo_printf("peek_finalise()");
+	//emo_printf("peek_finalise()");
 	return 0;
 }
 
@@ -296,29 +297,17 @@ static bool peek_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
 	ListIterator keyItem;
 	int keystate = 0;
 
-	if(simAutoDetect()) 
+	if (list_size(keyqueue) > 0)
 	{
-		if (list_size(keyqueue) > 0)
-		{
-			list_begin(keyqueue, &keyItem);
-			keystate = (unsigned int)listIterator_item(&keyItem);
-			listIterator_remove(&keyItem);
+		list_begin(keyqueue, &keyItem);
+		keystate = (unsigned int)listIterator_item(&keyItem);
+		listIterator_remove(&keyItem);
 
 		kpd_key = keystate & 0xFFFF;
 		state = (keystate >> 16);
-		} else {
-			return false;
-		}	
 	} else {
-
-		kpd_key = SimReadKey();
-		state = SimReadKeyState();
-
-		if(!kpd_key) {
-			event->type = NSFB_EVENT_NONE;
-			return false;
-		}
-	}
+		return false;
+	}	
 
 	emo_printf("peek_input() key %d state %d", kpd_key, state);
 
@@ -407,12 +396,12 @@ static bool peek_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
 			}
             break;
 		default: /* Pass through the rest to the key map */
-            event->type = state ? NSFB_EVENT_KEY_DOWN : NSFB_EVENT_KEY_UP;
+      event->type = state ? NSFB_EVENT_KEY_DOWN : NSFB_EVENT_KEY_UP;
 			if(!simAutoDetect()) 
 				event->value.keycode = peek_sim_nsfb_map[kpd_key];
 			else
-            	event->value.keycode = peek_nsfb_map[kpd_key];
-            break;
+       	event->value.keycode = peek_nsfb_map[kpd_key];
+      break;
 	}
 
 	return true;
@@ -422,7 +411,7 @@ static int peek_claim(nsfb_t *nsfb, nsfb_bbox_t *box)
 {
 	struct nsfb_cursor_s *cursor = nsfb->cursor;
 
-	emo_printf("peek_claim()");
+	//emo_printf("peek_claim()");
 
 	if ((cursor != NULL) && 
 			(cursor->plotted == true) && 
@@ -445,7 +434,7 @@ static int peek_cursor(nsfb_t *nsfb, struct nsfb_cursor_s *cursor)
 {
 	nsfb_bbox_t sclip;
 
-	emo_printf("peek_cursor()");
+	//emo_printf("peek_cursor()");
 
 	if ((cursor != NULL) && (cursor->plotted == true) && (wheel_mode == true)) {
 		sclip = nsfb->clip;
@@ -474,7 +463,7 @@ static int peek_cursor(nsfb_t *nsfb, struct nsfb_cursor_s *cursor)
 static int peek_update(nsfb_t *nsfb, nsfb_bbox_t *box)
 {
 	struct nsfb_cursor_s *cursor = nsfb->cursor;
-	emo_printf("peek_update()");
+	//emo_printf("peek_update()");
 
 	if ((cursor != NULL) && (cursor->plotted == false) && (wheel_mode == true)) 
 	{

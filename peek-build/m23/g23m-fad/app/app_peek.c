@@ -196,6 +196,9 @@ int peek_tcp_read(int fd, void *buf, int len)
 	
 	if (!nitems)
 	{
+		if (context->waiting_for == RECEIVED_DISCONNECT)
+			return 0; // return EOF if disconnected and no data left
+
 		errno = EAGAIN;
 		return -1;
 	}
@@ -228,7 +231,7 @@ int peek_tcp_can_read(int fd)
 	emo_printf("peek_tcp_can_read(fd=%d) = %d", fd, nread);
 
 	if (context->waiting_for == RECEIVED_DISCONNECT && nread <= 0)
-		return -1;
+		return 1; // dont fail a disconnected socket, let it return 0 from read instead -1;
 
 	return nread > 0;
 }

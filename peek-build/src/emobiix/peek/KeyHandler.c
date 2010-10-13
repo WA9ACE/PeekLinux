@@ -164,16 +164,20 @@ void UiHandleKeyEvents(UINT32 MsgId, int UiKeyId)
 	
 		/* Snap key press time for idle timeout */
 		blightSnaptime();
+		//memmap();
+		
+		if(UiKeyId == SYS_PWR_KEY) 
+		{
+			emo_printf("Starting power off\n");
+			pwr_PowerOffMobile();
+			while(1); // Shouldn't get here
+		}
 
 		if(netsurf_start_flag) {
 			netsurf_key_enqueue(UiKeyId, MsgId);
 			return;
 		}
 		switch(UiKeyId) {
-			case SYS_PWR_KEY:
-				emo_printf("Starting power off\n");
-				pwr_PowerOffMobile();
-				while(1); // Shouldn't get here
 			case SYS_SHIFT:
 				/* Dont pass through shift.. wait for combo */
 				break;

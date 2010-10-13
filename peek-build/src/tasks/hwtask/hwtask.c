@@ -139,7 +139,7 @@ void hwStart(void) {
 				}
 			}
 
-			TCCE_Task_Sleep(10);
+			TCCE_Task_Sleep(50);
 	}
  }
 }

@@ -30,11 +30,7 @@ void system_set_time()
 
 static void updateTimeCB(tDS *timeData, void *opaque)
 {
-	emo_printf("awesome timer power!! %08X, %08X", timeData, opaque);
-
 	system_set_time();
-
-	emo_printf("updateTimeCB() timerstart ret %d", timerStart(timeData, TIME_UPDATE_INTERVAL));
 }
 
 void system_time_init()

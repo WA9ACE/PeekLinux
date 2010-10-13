@@ -32,6 +32,13 @@ static NU_SEMAPHORE mutex_netsurf;
 
 void netsurf_pause()
 {
+	static int init = 0;
+	if (!init)
+	{
+		emo_printf("netsurf_pause() initialized");
+		NU_Create_Semaphore(&mutex_netsurf, "mutex_netsurf", 0, NU_PRIORITY);
+		init = 1;
+	}
 	emo_printf("netsurf_pause() start");
 	NU_Obtain_Semaphore(&mutex_netsurf, NU_SUSPEND);
 	emo_printf("netsurf_pause() finish");
@@ -39,18 +46,9 @@ void netsurf_pause()
 
 void netsurf_resume()
 {
-	static int init = 0;
-	if (!init)
-	{
-		NU_Create_Semaphore(&mutex_netsurf, "mutex_netsurf", 0, NU_PRIORITY);
-		init = 1;
-	}
-	else
-	{
-		emo_printf("netsurf_resume() start");
-		NU_Release_Semaphore(&mutex_netsurf);
-		emo_printf("netsurf_resume() finish");
-	}
+	emo_printf("netsurf_resume() start");
+	NU_Release_Semaphore(&mutex_netsurf);
+	emo_printf("netsurf_resume() finish");
 }
 
 #define         NU_VARIABLE_SIZE                13

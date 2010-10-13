@@ -30,8 +30,7 @@ static void system_battery_set_battery_level(unsigned int level)
 	dataobjectfield_setIsModified(BATTERY_CHARGE_LEVEL, 1);
 	dataobject_setIsModified(SYSTEM_BATTERY, 1);
 
-    lgui_set_dirty();
-	updateScreen();
+	force_dataobject_redraw();
 }
 
 static void system_battery_set_charge_state(unsigned int state)

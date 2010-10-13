@@ -224,9 +224,13 @@ void emo_SendFullDraw(void)
 
 void emo_FullDraw(void)
 {
+	/*
 	manager_resolveLayout();
 	lgui_set_dirty();
 	updateScreen();
+	*/
+
+	manager_focusBootApp();
 }
 
 void updateScreen(void) 
@@ -291,7 +295,7 @@ void UIInit(void)
 	if(simAutoDetect())
 		backlightInit();
 
-	//TCCE_Task_Sleep(500); 
+	TCCE_Task_Sleep(500); 
 
 	display_init();
 

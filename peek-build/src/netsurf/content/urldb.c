@@ -3597,6 +3597,7 @@ void urldb_load_cookies(const char *filename)
 
 	assert(filename);
 
+	return;
 	fp = fopen(filename, "r");
 	if (!fp)
 		return;
