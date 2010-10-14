@@ -24,6 +24,7 @@
 #include "vsi.h"
 #include "system_battery.h"
 #include "exeapi.h"
+#include "hwtimer.h"
 
 #ifndef SIMULATOR
 #include "dspl.h"
@@ -66,11 +67,21 @@ ConnectionContext *connectionContext;
 DataObject *systemAppObject;
 Application *systemApplication;
 
+#define UI_SYNC_LOOP 3 * 1000
+
+void ui_timer_cb(tDS *tm, void *data)
+{
+	connectionContext_loopIteration(connectionContext);
+	timerStart(tm, UI_SYNC_LOOP);
+}
+
+
 void uiAppConn(void *connData)
 {
 	Endpoint *ep;
 	URL *url;
 	Transport *transport;
+	tDS *tm = timerCreate(ui_timer_cb, NULL);
 
 	emo_printf("uiAppConn()");
 
@@ -94,6 +105,8 @@ void uiAppConn(void *connData)
 		setRecvProcess(0);
 	//connectionContext_syncRequest(connectionContext, url);
 	//connectionContext_loopIteration(connectionContext);
+
+	timerStart(tm, UI_SYNC_LOOP);
 }
 
 

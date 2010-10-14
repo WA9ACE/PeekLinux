@@ -46,6 +46,13 @@
 #include "app.h"                /* Global entity definitions. */
 #include "p_8010_137_nas_include.h"
 #include "p_sim.h"
+#include "List.h"
+
+typedef struct PendingMsg
+{
+	void *buf;
+	int size;
+} PendingMsg;
 
 extern void* p_malloc(int);
 
@@ -170,12 +177,54 @@ extern void peek_process_socket_event(PROC_CONTEXT_T *context, unsigned int even
 static int s_tcp_socket_bearar_open = 0;
 static int s_udp_socket_bearer_open = 0;
 
+BOOL app_send_buf(PROC_CONTEXT_T *pcont, char *buffer, int size);
 
 /*==== Local functions =======================================================*/
 
 /*
  * Utility functions.
  */
+List *pending_msg_get_list()
+{
+	static List *pending = NULL;
+	if (!pending)
+		pending = list_new();
+
+	return pending;
+}
+
+void pending_msg_add_list(void *buf, int size)
+{
+	List *list = pending_msg_get_list();
+	PendingMsg *p = (PendingMsg *)p_malloc(sizeof(PendingMsg));
+	
+	p->buf = buf;
+	p->size = size;
+
+	list_append(list, (void *)p);
+}
+
+void pending_msg_retry()
+{
+	List *list = pending_msg_get_list();
+	ListIterator iter;
+
+	if (!list_size(list))
+		return;
+
+	for (list_begin(list, &iter); !listIterator_finished(&iter); listIterator_next(&iter))
+	{
+		PendingMsg *msg = listIterator_item(&iter);
+	
+		if (!app_send_buf(&proc_context_tcp, (char *)msg->buf, msg->size))
+			break;
+
+		p_free(msg->buf);
+		p_free(msg);
+		listIterator_remove(&iter);
+	}
+}
+
 
 
 static char *sock_bearer_type_string(T_SOCK_BEARER_TYPE btype)
@@ -1633,6 +1682,7 @@ static void app_comm_event(PROC_CONTEXT_T *pcont)
 		case SOCK_FLOW_READY_IND:
 			// XXX: Event notify ready to send again
 			app_ui_send(pcont, EMOBIIX_SOCK_SENT);
+			pending_msg_retry();
 			break ;
 		case SOCK_HOSTINFO_CNF: // result event of sock_gethostbyname
 			/*
@@ -1755,17 +1805,22 @@ void app_send(void *data)
 	T_EMOBIIX_WRITEMSG *writeMessage = (T_EMOBIIX_WRITEMSG *)data;
 	emo_printf("app_send()");
 
-	if(simAutoDetect()) {
-		//trace_dump_data((U8 *)writeMessage->data, writeMessage->size);
-		// XXX: Will have to split up bigger buffers
-		if(app_send_buf(&proc_context_tcp, (char *)writeMessage->data, writeMessage->size)) {
+	if(simAutoDetect()) 
+	{
+		if(app_send_buf(&proc_context_tcp, (char *)writeMessage->data, writeMessage->size)) 
+		{
 			// Handle Data sent ok
 			emo_printf("app_send(): Wrote data");
-		} else {
-			// handle failed to send data
-			emo_printf("app_send(): Failed to write data");
+			p_free(writeMessage->data);
+		} 
+		else 
+		{
+			emo_printf("app_send(): Failed to write data, will resend");
+			pending_msg_add_list((void *)writeMessage->data, writeMessage->size);
 		}
-	} else {
+	} 
+	else 
+	{
 		if (bal_send(emo_server_fd, writeMessage->data, writeMessage->size, 0) < 0)
 		{
 			emo_printf("app_send() Failed to send message");
@@ -1773,9 +1828,10 @@ void app_send(void *data)
 		}
 		else
 			app_ui_send(&proc_context_tcp, EMOBIIX_SOCK_SENT);
+
+		p_free(writeMessage->data);
 	}
 
-	p_free(writeMessage->data);
 }
 
 void app_sim_recv()

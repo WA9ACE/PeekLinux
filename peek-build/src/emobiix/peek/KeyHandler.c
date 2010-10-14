@@ -155,6 +155,7 @@ void main_test(void)
 #endif
 
 int netsurf_start_flag = 0;
+extern ConnectionContext *connectionContext;
 
 void UiHandleKeyEvents(UINT32 MsgId, int UiKeyId)
 {
@@ -193,6 +194,7 @@ void UiHandleKeyEvents(UINT32 MsgId, int UiKeyId)
 					manager_handleKey(MapKeyToInternal(UiKeyId));
 				}
 		}
+	//			connectionContext_loopIteration(connectionContext);
         updateScreen();
 }
 
