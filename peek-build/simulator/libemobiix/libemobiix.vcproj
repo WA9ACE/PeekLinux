@@ -49,7 +49,9 @@
 				RuntimeLibrary="1"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
+				WarnAsError="true"
 				DebugInformationFormat="4"
+				DisableSpecificWarnings="4100;4127"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -212,10 +214,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\emobiix\DataObjectMap.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\emobiix\Debug.h"
 				>
 			</File>
@@ -332,6 +330,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\RenderManager.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\RootApplication.h"
 				>
 			</File>
@@ -344,11 +346,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\ScrolledWidget.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\SetWidget.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\src\emobiix\SortedList.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\StackWidget.h"
 				>
 			</File>
 			<File
@@ -452,10 +462,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\emobiix\DataObjectMap.c"
-				>
-			</File>
-			<File
 				RelativePath="..\..\src\emobiix\emobiix_font.c"
 				>
 			</File>
@@ -524,6 +530,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\RenderManager.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\RootApplication.c"
 				>
 			</File>
@@ -536,7 +546,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\ScrollBarWidget.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\ScrolledWidget.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\SetWidget.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\StackWidget.c"
 				>
 			</File>
 			<File
