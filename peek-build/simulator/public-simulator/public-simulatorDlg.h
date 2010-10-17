@@ -55,4 +55,5 @@ public:
 //	afx_msg void OnDebugInternaldebugenabled();
 	afx_msg void OnDebugShowinternalmessages();
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnFileClearcacheandreboot();
 };

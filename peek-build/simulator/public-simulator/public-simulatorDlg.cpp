@@ -12,9 +12,12 @@
 #include "Platform.h"
 #include "ConnectionContext.h"
 #include "ApplicationManager.h"
+#include "RenderManager.h"
 #include "DataObject.h"
 #include "Mime.h"
 #include "KeyMappings.h"
+#include "Cache.h"
+#include "Font.h"
 
 #include "p_malloc.h"
 
@@ -22,6 +25,8 @@
 #include <vector>
 #include <stdarg.h>
 #include <string.h>
+#include <direct.h>
+#include <io.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -38,6 +43,80 @@ extern "C" int p_getTotalAllocated(void);
 extern "C" void emo_printf(const char *fmt, ...);
 
 CCriticalSection guiCritical;
+
+BOOL IsDots(const TCHAR* str) {
+   if(_tcscmp(str,_T(".")) && _tcscmp(str,_T(".."))) return FALSE;
+   return TRUE;
+}
+
+BOOL DeleteDirectory(const TCHAR* sPath) {
+   HANDLE hFind;    // file handle
+   WIN32_FIND_DATA FindFileData;
+
+   TCHAR DirPath[MAX_PATH];
+   TCHAR FileName[MAX_PATH];
+
+   _tcscpy(DirPath,sPath);
+   _tcscat(DirPath,_T("\\*"));    // searching all files
+   _tcscpy(FileName,sPath);
+   _tcscat(FileName,_T("\\"));
+
+   // find the first file
+   hFind = FindFirstFile(DirPath,&FindFileData);
+   if(hFind == INVALID_HANDLE_VALUE) return FALSE;
+   _tcscpy(DirPath,FileName);
+
+   bool bSearch = true;
+   while(bSearch) {    // until we find an entry
+      if(FindNextFile(hFind,&FindFileData)) {
+         if(IsDots(FindFileData.cFileName)) continue;
+         _tcscat(FileName,FindFileData.cFileName);
+         if((FindFileData.dwFileAttributes &
+            FILE_ATTRIBUTE_DIRECTORY)) {
+
+            // we have found a directory, recurse
+            if(!DeleteDirectory(FileName)) {
+                FindClose(hFind);
+                return FALSE;    // directory couldn't be deleted
+            }
+            // remove the empty directory
+            RemoveDirectory(FileName);
+             _tcscpy(FileName,DirPath);
+         }
+         else {
+			DeleteFile(FileName);
+#if 0
+			if(FindFileData.dwFileAttributes &
+               FILE_ATTRIBUTE_READONLY)
+               // change read-only file mode
+                  _chmod(FileName, _S_IWRITE);
+                  if(!DeleteFile(FileName)) {    // delete the file
+                    FindClose(hFind);
+                    return FALSE;
+               }
+#endif
+               _tcscpy(FileName,DirPath);
+         }
+      }
+      else {
+         // no more files there
+         if(GetLastError() == ERROR_NO_MORE_FILES)
+         bSearch = false;
+         else {
+            // some error occurred; close the handle and return FALSE
+               FindClose(hFind);
+               return FALSE;
+         }
+
+      }
+
+   }
+   FindClose(hFind);                  // close the file handle
+
+   return RemoveDirectory(sPath);     // remove the empty directory
+
+}
+
 
 // CAboutDlg dialog used for App About
 
@@ -107,6 +186,7 @@ BEGIN_MESSAGE_MAP(CpublicsimulatorDlg, CDialog)
 //	ON_COMMAND(ID_DEBUG_INTERNALDEBUGENABLED, &CpublicsimulatorDlg::OnDebugInternaldebugenabled)
 	ON_COMMAND(ID_DEBUG_INTERNAL, &CpublicsimulatorDlg::OnDebugShowinternalmessages)
 	ON_WM_TIMER()
+	ON_COMMAND(ID_FILE_CLEARCACHEANDREBOOT, &CpublicsimulatorDlg::OnFileClearcacheandreboot)
 END_MESSAGE_MAP()
 
 extern "C" void appProtocolStatus(int n)
@@ -135,6 +215,10 @@ void DataGenerator(LPVOID param)
 
 // CpublicsimulatorDlg message handlers
 
+//extern "C" {
+//CRITICAL_SECTION emoCrit;
+//}
+
 BOOL CpublicsimulatorDlg::OnInitDialog()
 {
 	CDialog::OnInitDialog();
@@ -161,7 +245,25 @@ BOOL CpublicsimulatorDlg::OnInitDialog()
 	//  when the application's main window is not a dialog
 	SetIcon(m_hIcon, TRUE);			// Set big icon
 	SetIcon(m_hIcon, FALSE);		// Set small icon
-	
+
+	//InitializeCriticalSection(&emoCrit);
+
+	FILE *input;
+	input = fopen("clean_cache", "r");
+	if (input != NULL) {
+		fclose(input);
+		_unlink("clean_cache");
+		DeleteDirectory(_T("cache"));
+	}
+
+	HMENU hmenu = AfxGetMainWnd()->GetMenu()->GetSafeHmenu();
+	m_menu.Attach(hmenu);
+
+	LoadSettings();
+
+	dataobject_platformInit();
+	renderman_init();
+	cache_init();
 	netThread = thread_run(net_thread, NULL);
 
 	manager_init();
@@ -173,12 +275,7 @@ BOOL CpublicsimulatorDlg::OnInitDialog()
 	m_graph.SetMinValue(0);
 	m_graph.StartUpdate();
 	m_graph.SetGraphMode(LINE_GRAPH);
-	AfxBeginThread((AFX_THREADPROC)DataGenerator,(LPVOID)&m_graph);
-
-	HMENU hmenu = AfxGetMainWnd()->GetMenu()->GetSafeHmenu();
-	m_menu.Attach(hmenu);
-
-	LoadSettings();
+	//AfxBeginThread((AFX_THREADPROC)DataGenerator,(LPVOID)&m_graph);
 
 	SetTimer(1, 200, 0);
 
@@ -251,23 +348,36 @@ extern void DrawPoint(CStatusGraphCtrl* TheCtrl,long int cury,bool Update);
 BOOL CpublicsimulatorDlg::PreTranslateMessage(MSG* pMsg)
 {
 	/*m_graph.SetCurrentValue(p_getTotalAllocated());*/
-	
+	bool used = false;
+
 	if (pMsg->message == WM_KEYDOWN)
-		if (pMsg->wParam == VK_ESCAPE)
+		if (pMsg->wParam == VK_ESCAPE) {
+			//EnterCriticalSection(&emoCrit);
+			used = true;
+			manager_debugPrint();
+			//LeaveCriticalSection(&emoCrit);
 			return TRUE;
+		}
 
 	POINT pt = pMsg->pt;
     ScreenToClient(&pt);
 
 	/* This needs to be better eventually */
-	if (pt.x > 423 || pt.y < 80)
+	if (pt.x > 423 || pt.y < 80) {
 		return CDialog::PreTranslateMessage(pMsg);
+	}
 
 	if (pMsg->message == WM_LBUTTONDOWN) {
-		manager_handleKey(46);
+		//EnterCriticalSection(&emoCrit);
+		used = true;
+		manager_handleKey(13);
+		//LeaveCriticalSection(&emoCrit);
 	}
 	if (pMsg->message == WM_RBUTTONDOWN) {
-		manager_handleKey(45);
+		//EnterCriticalSection(&emoCrit);
+		used = true;
+		manager_handleKey(12);
+		//LeaveCriticalSection(&emoCrit);
 	}
 	if (pMsg->message == WM_KEYDOWN) {
 		int key = pMsg->wParam;
@@ -279,12 +389,18 @@ BOOL CpublicsimulatorDlg::PreTranslateMessage(MSG* pMsg)
 			case VK_RETURN: key = 13; break;
 			case 106: key = 42; break;
 			case 40:
+				//EnterCriticalSection(&emoCrit);
+				used = true;
 				manager_handleKey(EKEY_FOCUSNEXT);
 				DrawScreen();
+				//LeaveCriticalSection(&emoCrit);
 				return CDialog::PreTranslateMessage(pMsg);
 			case 38:
+				//EnterCriticalSection(&emoCrit);
+				used = true;
 				manager_handleKey(EKEY_FOCUSPREV);
 				DrawScreen();
+				//LeaveCriticalSection(&emoCrit);
 				return CDialog::PreTranslateMessage(pMsg);
 			default:
 				break;
@@ -314,17 +430,28 @@ BOOL CpublicsimulatorDlg::PreTranslateMessage(MSG* pMsg)
 			}
 		}
 
-		if (key != -1 && (isprint(key) || key == '\b' || key == 13))
+		if (key != -1 && (isprint(key) || key == '\b' || key == 13)) {
+			//EnterCriticalSection(&emoCrit);		
+			used = true;
 			manager_handleKey(key);
+			//LeaveCriticalSection(&emoCrit);
+		}
 	} else
 	if (pMsg->message == WM_MOUSEWHEEL) {
+		//EnterCriticalSection(&emoCrit);
+		used = true;
 		if (GET_WHEEL_DELTA_WPARAM(pMsg->wParam) > 0)
 			manager_handleKey(EKEY_FOCUSPREV);
 		else
 			manager_handleKey(EKEY_FOCUSNEXT);
+		//LeaveCriticalSection(&emoCrit);
 	}
 
-	DrawScreen();
+	if (used || 1) {
+		//EnterCriticalSection(&emoCrit);
+		DrawScreen();
+		//LeaveCriticalSection(&emoCrit);
+	}
 	//if (pMsg->message == WM_KEYDOWN)
 	//	if (pMsg->wParam == VK_RETURN)
 			return TRUE;
@@ -335,6 +462,7 @@ BOOL CpublicsimulatorDlg::PreTranslateMessage(MSG* pMsg)
 void CpublicsimulatorDlg::DrawScreen(void)
 {
 	guiCritical.Lock();
+	renderman_flush();
 	manager_drawScreen();
 
 	if (!lgui_is_dirty())
@@ -567,6 +695,9 @@ DataObject *LoadObject(DOMNode *node)
 		/*fprintf(stderr, "LoadObject(%p) - child? - '%s'\n", node,
                 iastr);*/
 
+		if (strcmp(iastr, "#comment") == 0)
+			continue;
+
 		if (strcmp(iastr, "#text") == 0 || strcmp(iastr, "#cdata-section") == 0) {
 			ixstr = childNode->getNodeValue();
 
@@ -617,6 +748,8 @@ void CpublicsimulatorDlg::OnFileLoadapplication()
 	
 	CFileDialog *fDlg = NULL;
 	char filename[2048];
+	char wdbuffer[2048];
+	int len;
 
 	if (xmlLoadFilename.empty()) {
 		fDlg = new CFileDialog(TRUE, _T("xml"));
@@ -626,6 +759,9 @@ void CpublicsimulatorDlg::OnFileLoadapplication()
 			return;
 		}
 		wcstombs(filename, fDlg->m_ofn.lpstrFile, 2048);
+		_getcwd(wdbuffer, 2048);
+		len = strlen(wdbuffer)+1;
+		memmove(filename, filename+len, strlen(filename+len)+1);
 	} else {
 		strcpy(filename, xmlLoadFilename.c_str());
 	}
@@ -665,11 +801,19 @@ void CpublicsimulatorDlg::OnFileLoadapplication()
 	DataObjectField *type;
     dobj = LoadObject(static_cast<DOMNode *>(xmlDoc->getDocumentElement()));
 	if (dobj != NULL) {
+		URL *url;
+		std::string ustr;
+
+		ustr = "xml://local/";
+		ustr += filename;
+		url = url_parse(ustr.c_str(), URL_ALL);
+
+		cache_commitServerSide(dobj, url);
+
 		mime_loadAll(dobj);
+		dataobject_exportGlobal(dobj, url, 0);
 		type = dataobject_getValue(dobj, "type");
 		if (dataobjectfield_isString(type, "application")) {
-			URL *url;
-			url = url_parse("xml://local/NULL", URL_ALL);
 			manager_loadApplication(dobj, xmlLoadFilename.empty(),
 					url);
 			/*app = application_load(dobj);
@@ -703,8 +847,8 @@ void CpublicsimulatorDlg::OnHelpAbout()
 
 extern "C" void emo_printf(const char *fmt, ...)
 {
-	char dest[2048];
-	wchar_t wdest[2048];
+	char dest[16048];
+	wchar_t wdest[16048];
 	va_list ap;
 
 	if (!GlobalDialog->m_isDebug || !GlobalDialog->m_showInternalDebug)
@@ -784,7 +928,7 @@ void CpublicsimulatorDlg::LoadSettings()
 		m_menu.CheckMenuItem(ID_DEBUG_SCRIPTDEBUGENABLED, MF_BYCOMMAND|MF_UNCHECKED);
 	}
 
-	GetPrivateProfileString(_T("Debug"), _T("InternalDebug"), _T("true"), (LPWSTR)&strr, 1024, _T("peeksimulator.ini"));
+	GetPrivateProfileString(_T("Debug"), _T("InternalDebug"), _T("false"), (LPWSTR)&strr, 1024, _T("peeksimulator.ini"));
 	if (wcscmp(strr, _T("true")) == 0) {
 		m_showInternalDebug = true;
 		m_menu.CheckMenuItem(ID_DEBUG_INTERNAL, MF_BYCOMMAND|MF_CHECKED);
@@ -855,4 +999,109 @@ void CpublicsimulatorDlg::OnTimer(UINT_PTR nIDEvent)
 	DrawScreen();
 
 	CDialog::OnTimer(nIDEvent);
+}
+
+#if 0
+extern "C" {
+Font *defaultFont;
+Gradient *defaultGradient;
+}
+
+extern "C" DataObject *RootApplication(void)
+{
+	URL *rootAppURL;
+	static DataObject *output = NULL;
+	DataObject *fontObject1;
+	Color color;
+
+	if (output != NULL)
+		return output;
+
+	fontObject1 = dataobject_new();
+	dataobject_setValue(fontObject1, "type", dataobjectfield_string("font"));
+	dataobject_setValue(fontObject1, "data", dataobjectfield_string("DroidSans.ttf"));
+
+	defaultFont = font_load(fontObject1);
+	if (defaultFont != NULL)
+		font_setHeight(defaultFont, 12);
+	else {
+		AfxMessageBox(_T("Failed to load DroidSans.ttf"));
+		exit(1);
+	}
+
+	defaultGradient = gradient_new();
+	color.value = 0xF9F9F9FF;
+	gradient_addStop(defaultGradient, 0, color);
+	color.value = 0xC9C9C9FF;
+	gradient_addStop(defaultGradient, 50, color);
+	color.value = 0xB1B1B1FF;
+	gradient_addStop(defaultGradient, 50, color);
+	color.value = 0xDEDEDEFF;
+	gradient_addStop(defaultGradient, 100, color);
+
+	rootAppURL = url_parse("xml://local/RootApplication/RootApplication.xml", URL_ALL);
+	connectionContext_syncRequest(NULL, rootAppURL);
+	output = dataobject_locate(rootAppURL);
+
+	if (output == NULL) {
+		AfxMessageBox(_T("Unable to open root application xml://local/RootApplication/RootApplication.xml"));
+		exit(1);
+	}
+
+	return output;
+}
+
+extern "C" DataObject *BootApplication(void)
+{
+	URL *bootAppURL;
+	static DataObject *output = NULL;
+
+	if (output != NULL)
+		return output;
+
+	bootAppURL = url_parse("xml://local/RootApplication/BootApplication.xml", URL_ALL);
+	connectionContext_syncRequest(NULL, bootAppURL);
+	output = dataobject_locate(bootAppURL);
+
+	if (output == NULL) {
+		AfxMessageBox(_T("Unable to open root application xml://local/RootApplication/BootApplication.xml"));
+		exit(1);
+	}
+
+	dataobject_codePrint(output);
+
+	return output;
+}
+
+extern "C" DataObject *RootStyle(void)
+{
+	URL *rootStyleURL;
+	static DataObject *output = NULL;
+
+	if (output != NULL)
+		return output;
+
+	rootStyleURL = url_parse("xml://local/RootApplication/RootStyle.xml", URL_ALL);
+	connectionContext_syncRequest(NULL, rootStyleURL);
+	output = dataobject_locate(rootStyleURL);
+
+	if (output == NULL) {
+		AfxMessageBox(_T("Unable to open root application xml://local/RootApplication/RootStyle.xml"));
+		exit(1);
+	}
+
+	return output;
+}
+#endif
+
+void CpublicsimulatorDlg::OnFileClearcacheandreboot()
+{
+	FILE *input;
+
+	input = fopen("clean_cache", "w");
+	if (input != NULL) {
+		fprintf(input, "\n");
+		fclose(input);
+	}
+	_execl("peek-simulator.exe", "peek-simulator.exe", NULL);
 }

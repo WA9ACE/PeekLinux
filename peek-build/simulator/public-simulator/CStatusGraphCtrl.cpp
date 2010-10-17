@@ -119,7 +119,7 @@ UINT UpdateGraph(LPVOID param)
 void CStatusGraphCtrl::StartUpdate() 
 {
 	// TODO: Add your dispatch handler code here
-	UpdateThread=AfxBeginThread(UpdateGraph,this);
+	//UpdateThread=AfxBeginThread(UpdateGraph,this);
 }
 
 
