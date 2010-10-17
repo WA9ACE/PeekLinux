@@ -1679,9 +1679,10 @@ void widget_resolvePosition(Widget *w)
 		positionStatic = 1;
 
 	if (dataobjectfield_isString(field, "set")) {
-		singleChild = setwidget_activeItem(w);
+		/*singleChild = setwidget_activeItem(w);
 		if (singleChild == NULL)
-			return;
+			return;*/
+		positionStatic = 1;
 	}
 
 	if (dataobjectfield_isString(field, "frame")) {
