@@ -47,8 +47,7 @@
 static void
 dump_tk_tree(fbtk_widget_t *widget)
 {
-        int indent = 0;
-
+	int indent = 0;
 	widget = fbtk_get_root_widget(widget);
 
 	while (widget != NULL) {

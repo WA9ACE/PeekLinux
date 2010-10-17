@@ -31,21 +31,14 @@ void warn_user(const char *warning, const char *detail)
 {
 	emo_printf("warn_user() - %s", warning);
 	emo_printf("warn_user() - %s", detail);
-
 }
 
 void die(const char *error)
 {
-        emo_printf("Die(): %s", error);
-        while(1)
-                TCCE_Task_Sleep(1000);
+	emo_printf("die(): %s", error);
+	while(1)
+		TCCE_Task_Sleep(1000);
 }
-
-bool cookies_update(const char *domain, const struct cookie_data *data)
-{ 
-    return true; 
-}
-
 
 /**
  * Return the filename part of a full path

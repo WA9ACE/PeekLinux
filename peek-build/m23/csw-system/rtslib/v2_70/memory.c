@@ -199,14 +199,31 @@ void minit(void)
 /*	     This function only allocates in multiples of MIN_BLOCK bytes.   */
 /*									     */
 /*****************************************************************************/
+extern void emo_printf( const char* fmt, ...);
+static unsigned long stack_dump[40];
+
 void *malloc(size_t size)
 {
+		int stack_start = 0xBADAB00B;
     register PACKET *current;
     register size_t  newsize = (size + BLOCK_MASK) & ~BLOCK_MASK;
     register size_t  oldsize;
 
     if (size <= 0) return NULL;
 
+#if 0
+		if (size > 20 * 1024)
+		{
+			for (oldsize = 0; oldsize < 40; ++oldsize)
+				stack_dump[oldsize] = *(((unsigned int *)&stack_start) - oldsize);
+
+			emo_printf("@@ Stack");
+			emo_printf("@@ -------------------------------");
+			for (oldsize = 0; oldsize < 40; ++oldsize)
+				emo_printf("@@ 0x%08X", stack_dump[oldsize]);
+			emo_printf("@@ -------------------------------");
+		}
+#endif
     _lock();
     current = sys_free;
     /*-----------------------------------------------------------------------*/

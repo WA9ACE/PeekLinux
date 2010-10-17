@@ -1,3 +1,5 @@
+DEFINE = CACHE_DISABLE
+
 INCLUDE += ./
 INCLUDE += $(M23DIR)/g23m-aci/aci
 INCLUDE += $(M23DIR)/g23m/condat/ms/src/aci

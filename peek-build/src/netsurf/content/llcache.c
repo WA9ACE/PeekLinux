@@ -22,6 +22,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <time.h>
 
 #include <curl/curl.h>
@@ -37,8 +38,6 @@
 
 /** Define to enable tracing of llcache operations. */
 #define LLCACHE_TRACE
-
-extern char *strdup(const char *);
 
 /** State of a low-level cache object fetch */
 typedef enum {
@@ -328,16 +327,12 @@ nserror llcache_handle_retrieve(const char *url, uint32_t flags,
 	/* Create a new object user */
 	error = llcache_object_user_new(cb, pw, &user);
 	if (error != NSERROR_OK)
-	{
-		emo_printf("ANDREY() object user");
 		return error;
-	}
 
 	/* Retrieve a suitable object from the cache,
 	 * creating a new one if needed. */
 	error = llcache_object_retrieve(url, flags, referer, post, 0, &object);
 	if (error != NSERROR_OK) {
-		emo_printf("ANDREY() object retrieve");
 		llcache_object_user_destroy(user);
 		return error;
 	}
@@ -530,16 +525,14 @@ nserror llcache_object_user_new(llcache_handle_callback cb, void *pw,
 		llcache_object_user **user)
 {
 	llcache_object_user *u = calloc(1, sizeof(llcache_object_user));
-	if (u == NULL) {
-		emo_printf("llcache_object_user_new calloc failed");
+	if (u == NULL)
 		return NSERROR_NOMEM;
-	}
 
 	u->handle.cb = cb;
 	u->handle.pw = pw;
 
 #ifdef LLCACHE_TRACE
-	//LOG(("Created user %p (%p, %p)", u, (void *) cb, pw));
+	LOG(("Created user %p (%p, %p)", u, (void *) cb, pw));
 #endif
 
 	*user = u;
@@ -630,10 +623,7 @@ nserror llcache_object_retrieve(const char *url, uint32_t flags,
 	/* Look for a query segment */
 	res = url_get_components(url, &components);
 	if (res == URL_FUNC_NOMEM)
-	{
-		emo_printf("ANDREY() component url");
 		return NSERROR_NOMEM;
-	}
 
 	has_query = (components.query != NULL);
 	
@@ -644,16 +634,12 @@ nserror llcache_object_retrieve(const char *url, uint32_t flags,
 	url_destroy_components(&components);
 
 	if (defragmented_url == NULL)
-	{
-		emo_printf("ANDREY() url");
 		return NSERROR_NOMEM;
-	}
 
 	if (flags & LLCACHE_RETRIEVE_FORCE_FETCH || post != NULL) {
 		/* Create new object */
 		error = llcache_object_new(defragmented_url, &obj);
 		if (error != NSERROR_OK) {
-		emo_printf("ANDREY() component url force");
 			free(defragmented_url);
 			return error;
 		}
@@ -662,7 +648,6 @@ nserror llcache_object_retrieve(const char *url, uint32_t flags,
 		error = llcache_object_fetch(obj, flags, referer, post, 
 				redirect_count);
 		if (error != NSERROR_OK) {
-		emo_printf("ANDREY() component url force fetch");
 			llcache_object_destroy(obj);
 			free(defragmented_url);
 			return error;
@@ -674,7 +659,6 @@ nserror llcache_object_retrieve(const char *url, uint32_t flags,
 		error = llcache_object_retrieve_from_cache(defragmented_url, flags, referer,
 				post, redirect_count, &obj);
 		if (error != NSERROR_OK) {
-		emo_printf("ANDREY() component url retrieve");
 			free(defragmented_url);
 			return error;
 		}
@@ -882,10 +866,8 @@ nserror llcache_object_clone_cache_data(llcache_object *source,
 		if (deep) {
 			/* Copy the etag */
 			etag = strdup(source->cache.etag);
-			if (etag == NULL) {
-				emo_printf("llcache_object_clone_cache_data failed");
+			if (etag == NULL)
 				return NSERROR_NOMEM;
-			}
 		} else {
 			/* Destination takes ownership */
 			source->cache.etag = NULL;
@@ -950,10 +932,8 @@ nserror llcache_object_fetch(llcache_object *object, uint32_t flags,
 
 	if (referer != NULL) {
 		referer_clone = strdup(referer);
-		if (referer_clone == NULL) {
-			emo_printf("llcache_object_fetch failed");
+		if (referer_clone == NULL)
 			return NSERROR_NOMEM;
-		}
 	}
 
 	if (post != NULL) {
@@ -996,10 +976,8 @@ nserror llcache_object_refetch(llcache_object *object)
 
 	/* Generate cache-control headers */
 	headers = malloc(3 * sizeof(char *));
-	if (headers == NULL) {
-		emo_printf("llcache_object_refetch headers failed");
+	if (headers == NULL)
 		return NSERROR_NOMEM;
-	}
 
 	if (object->cache.etag != NULL) {
 		const size_t len = SLEN("If-None-Match: ") + 
@@ -1008,7 +986,6 @@ nserror llcache_object_refetch(llcache_object *object)
 		headers[header_idx] = malloc(len);
 		if (headers[header_idx] == NULL) {
 			free(headers);
-			emo_printf("llcache_object_refetch headers2 failed");
 			return NSERROR_NOMEM;
 		}
 
@@ -1026,7 +1003,6 @@ nserror llcache_object_refetch(llcache_object *object)
 			while (--header_idx >= 0)
 				free(headers[header_idx]);
 			free(headers);
-			emo_printf("llcache_object_refetch headers3 failed");
 			return NSERROR_NOMEM;
 		}
 
@@ -1070,10 +1046,8 @@ nserror llcache_object_refetch(llcache_object *object)
 	free(headers);
 
 	/* Did we succeed in creating a fetch? */
-	if (object->fetch.fetch == NULL) {
-		emo_printf("llcache_object_refetch fetch failed");
+	if (object->fetch.fetch == NULL)
 		return NSERROR_NOMEM;
-	}
 
 	return NSERROR_OK;
 }
@@ -1088,10 +1062,8 @@ nserror llcache_object_refetch(llcache_object *object)
 nserror llcache_object_new(const char *url, llcache_object **result)
 {
 	llcache_object *obj = calloc(1, sizeof(llcache_object));
-	if (obj == NULL) {
-		emo_printf("llcache_object_new calloc failed");
+	if (obj == NULL)
 		return NSERROR_NOMEM;
-	}
 
 #ifdef LLCACHE_TRACE
 	LOG(("Created object %p (%s)", obj, url));
@@ -1100,7 +1072,6 @@ nserror llcache_object_new(const char *url, llcache_object **result)
 	obj->url = strdup(url);
 	if (obj->url == NULL) {
 		free(obj);
-		emo_printf("llcache_object_new obj->url null failed");
 		return NSERROR_NOMEM;
 	}
 
@@ -1466,7 +1437,6 @@ nserror llcache_object_snapshot(llcache_object *object,
 		newobj->source_data = malloc(newobj->source_alloc);
 		if (newobj->source_data == NULL) {
 			llcache_object_destroy(newobj);
-			emo_printf("llcache_object_snapshot source_data malloc fail");
 			return NSERROR_NOMEM;
 		}
 		memcpy(newobj->source_data, object->source_data, 
@@ -1478,7 +1448,6 @@ nserror llcache_object_snapshot(llcache_object *object,
 				object->num_headers);
 		if (newobj->headers == NULL) {
 			llcache_object_destroy(newobj);
-			emo_printf("llcache_object_snapshot headers malloc fail");
 			return NSERROR_NOMEM;
 		}
 		while (newobj->num_headers < object->num_headers) {
@@ -1490,7 +1459,6 @@ nserror llcache_object_snapshot(llcache_object *object,
 			nh->name = strdup(oh->name);
 			nh->value = strdup(oh->value);
 			if (nh->name == NULL || nh->value == NULL) {
-				emo_printf("llcache_object_snapshot num_headers fail");
 				llcache_object_destroy(newobj);
 				return NSERROR_NOMEM;
 			}
@@ -1604,10 +1572,8 @@ nserror llcache_post_data_clone(const llcache_post_data *orig,
 	llcache_post_data *post_clone;
 
 	post_clone = calloc(1, sizeof(llcache_post_data));
-	if (post_clone == NULL) {
-		emo_printf("llcache_post_data_clone calloc fail");
+	if (post_clone == NULL)
 		return NSERROR_NOMEM;
-	}
 
 	post_clone->type = orig->type;
 
@@ -1616,8 +1582,7 @@ nserror llcache_post_data_clone(const llcache_post_data *orig,
 		post_clone->data.urlenc = strdup(orig->data.urlenc);
 		if (post_clone->data.urlenc == NULL) {
 			free(post_clone);
-	
-			emo_printf("llcache_post_data_clone posturl fail");
+
 			return NSERROR_NOMEM;
 		}
 	} else {
@@ -1625,8 +1590,7 @@ nserror llcache_post_data_clone(const llcache_post_data *orig,
 				orig->data.multipart);
 		if (post_clone->data.multipart == NULL) {
 			free(post_clone);
-		
-			emo_printf("llcache_post_data_clone multipart fail");
+
 			return NSERROR_NOMEM;
 		}
 	}
@@ -1893,7 +1857,6 @@ nserror llcache_fetch_redirect(llcache_object *object, const char *target,
 	/* Make target absolute */
 	result = url_join(target, object->url, &absurl);
 	if (result != URL_FUNC_OK) {
-		emo_printf("llcache_fetch_redirect url_join fail");
 		return NSERROR_NOMEM;
 	}
 
@@ -1904,7 +1867,6 @@ nserror llcache_fetch_redirect(llcache_object *object, const char *target,
 	free(absurl);
 
 	if (result != URL_FUNC_OK) {
-		emo_printf("llcache_fetch_redirect url_normalize fail");
 		return NSERROR_NOMEM;
 	}
 
@@ -1912,7 +1874,6 @@ nserror llcache_fetch_redirect(llcache_object *object, const char *target,
 	result = url_scheme(url, &scheme);
 	if (result != URL_FUNC_OK) {
 		free(url);
-		emo_printf("llcache_fetch_redirect url_scheme fail");
 		return NSERROR_NOMEM;
 	}
 
@@ -2031,15 +1992,12 @@ nserror llcache_fetch_split_header(const char *data, size_t len, char **name,
 	if (colon == NULL) {
 		/* Failed, assume a key with no value */
 		n = strdup(data);
-		if (n == NULL) {
-			emo_printf("llcache_fetch_split_header strdup fail");
+		if (n == NULL)
 			return NSERROR_NOMEM;
-		}
 
 		v = strdup("");
 		if (v == NULL) {
-			free(n); 
-			emo_printf("llcache_fetch_split_header strdup2 fail");
+			free(n);
 			return NSERROR_NOMEM;
 		}
 	} else {
@@ -2058,10 +2016,8 @@ nserror llcache_fetch_split_header(const char *data, size_t len, char **name,
 			colon--;
 
 		n = strndup(data, colon - data);
-		if (n == NULL) {
-			emo_printf("llcache_fetch_split_header strdup3 fail");
+		if (n == NULL)
 			return NSERROR_NOMEM;
-		}
 
 		/* Find colon again */
 		while (*colon != ':') {
@@ -2085,7 +2041,6 @@ nserror llcache_fetch_split_header(const char *data, size_t len, char **name,
 		v = strndup(colon, len - (colon - data));
 		if (v == NULL) {
 			free(n);
-			emo_printf("llcache_fetch_split_header strdup4 fail");
 			return NSERROR_NOMEM;
 		}
 	}
@@ -2178,10 +2133,8 @@ nserror llcache_fetch_parse_header(llcache_object *object, const char *data,
 		/* extract ETag header */
 		free(object->cache.etag);
 		object->cache.etag = strdup(*value);
-		if (object->cache.etag == NULL) {
-			emo_printf("llcache_fetch_parse_header etag fail");
+		if (object->cache.etag == NULL)
 			return NSERROR_NOMEM;
-		}
 	} else if (14 < len && strcasecmp(*name, "Last-Modified") == 0) {
 		/* extract Last-Modified header */
 		object->cache.last_modified = curl_getdate(*value, NULL);
@@ -2217,7 +2170,6 @@ nserror llcache_fetch_process_header(llcache_object *object, const char *data,
 	if (temp == NULL) {
 		free(name);
 		free(value);
-		emo_printf("llcache_fetch_process_header fail");
 		return NSERROR_NOMEM;
 	}
 
@@ -2246,10 +2198,8 @@ nserror llcache_fetch_process_data(llcache_object *object, const uint8_t *data,
 	if (object->source_len + len >= object->source_alloc) {
 		const size_t new_len = object->source_len + len + 64 * 1024;
 		uint8_t *temp = realloc(object->source_data, new_len);
-		if (temp == NULL) {
-			emo_printf("llcache_fetch_process_data realloc fail");
+		if (temp == NULL)
 			return NSERROR_NOMEM;
-		}
 
 		object->source_data = temp;
 		object->source_alloc = new_len;

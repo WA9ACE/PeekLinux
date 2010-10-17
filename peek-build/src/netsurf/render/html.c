@@ -167,7 +167,6 @@ error:
 		LOG(("Bad encoding: %s", html->encoding ? html->encoding : ""));
 		msg_data.error = messages_get("ParsingFail");
 	} else
-		emo_printf("html_create failed with error %d", error);
 		msg_data.error = messages_get("NoMemory");
 
 	content_broadcast(c, CONTENT_MSG_ERROR, msg_data);
@@ -194,7 +193,7 @@ bool html_process_data(struct content *c, const char *data, unsigned int size)
 			goto encoding_change;
 		} else if (err != BINDING_OK) {
 			union content_msg_data msg_data;
-			emo_printf("html_process_data - binding_parse_chunk 1 error %d", err);
+
 			msg_data.error = messages_get("NoMemory");
 			content_broadcast(c, CONTENT_MSG_ERROR, msg_data);
 
@@ -210,7 +209,7 @@ bool html_process_data(struct content *c, const char *data, unsigned int size)
 		goto encoding_change;
 	} else if (err != BINDING_OK) {
 		union content_msg_data msg_data;
-		emo_printf("html_process_data - binding_parse_chunk 2 error %d", err);
+
 		msg_data.error = messages_get("NoMemory");
 		content_broadcast(c, CONTENT_MSG_ERROR, msg_data);
 
@@ -232,7 +231,7 @@ encoding_change:
 	c->data.html.encoding = talloc_strdup(c, encoding);
 	if (c->data.html.encoding == NULL) {
 		union content_msg_data msg_data;
-		emo_printf("html_process_data - binding_get_encoding error ");
+
 		msg_data.error = messages_get("NoMemory");
 		content_broadcast(c, CONTENT_MSG_ERROR, msg_data);
 		return false;
@@ -470,7 +469,6 @@ void html_finish_conversion(struct content *c)
 	/* Create selection context */
 	error = css_select_ctx_create(ns_realloc, c, &c->data.html.select_ctx);
 	if (error != CSS_OK) {
-		emo_printf("html_finish_conversion - css_select_ctx_create error %d", error);
 		msg_data.error = messages_get("NoMemory");
 		content_broadcast(c, CONTENT_MSG_ERROR, msg_data);
 		c->status = CONTENT_MSG_ERROR;
@@ -504,7 +502,6 @@ void html_finish_conversion(struct content *c)
 					c->data.html.select_ctx, sheet,
 					origin, CSS_MEDIA_SCREEN);
 			if (error != CSS_OK) {
-				emo_printf("html_finish_conversion - css_select_ctx_append_sheet error %d", error);
 				msg_data.error = messages_get("NoMemory");
 				content_broadcast(c, CONTENT_MSG_ERROR, 
 						msg_data);
@@ -522,7 +519,6 @@ void html_finish_conversion(struct content *c)
 	content_set_status(c, messages_get("Processing"));
 	content_broadcast(c, CONTENT_MSG_STATUS, msg_data);
 	if (!xml_to_box(html, c)) {
-		emo_printf("html_finish_conversion() - xml_to_box failed");
 		msg_data.error = messages_get("NoMemory");
 		content_broadcast(c, CONTENT_MSG_ERROR, msg_data);
 		c->status = CONTENT_STATUS_ERROR;
@@ -1036,7 +1032,6 @@ bool html_find_stylesheets(struct content *c, xmlNode *html)
 	return true;
 
 no_memory:
-	emo_printf("html_find_stylesheets() - NoMemory");
 	msg_data.error = messages_get("NoMemory");
 	content_broadcast(c, CONTENT_MSG_ERROR, msg_data);
 	return false;
@@ -1145,7 +1140,6 @@ bool html_process_style_element(struct content *c, unsigned int *index,
 	return true;
 
 no_memory:
-	emo_printf("html_process_style_element() - no memory");
 	msg_data.error = messages_get("NoMemory");
 	content_broadcast(c, CONTENT_MSG_ERROR, msg_data);
 	return false;
@@ -2226,13 +2220,15 @@ hlcache_handle *html_get_favicon(hlcache_handle *h)
  * \param y        Updated to global y coord iff id found
  * \return  true iff id found
  */
-bool html_get_id_offset(hlcache_handle *h, char *frag_id, int *x, int *y)
+bool html_get_id_offset(hlcache_handle *h, const char *frag_id, int *x, int *y)
 {
 	struct box *pos;
-	struct box *layout = html_get_box_tree(h);
+	struct box *layout;
 
 	if (content_get_type(h) != CONTENT_HTML)
 		return false;
+
+	layout = html_get_box_tree(h);
 
 	if ((pos = box_find_by_id(layout, frag_id)) != 0) {
 		box_coords(pos, x, y);

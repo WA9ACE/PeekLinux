@@ -23,6 +23,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 
 #include "content/content.h"
 #include "content/hlcache.h"
@@ -32,8 +33,6 @@
 #include "utils/ring.h"
 #include "utils/url.h"
 #include "utils/utils.h"
-
-extern char *strdup(const char *);
 
 typedef struct hlcache_entry hlcache_entry;
 typedef struct hlcache_retrieval_ctx hlcache_retrieval_ctx;
@@ -191,14 +190,10 @@ nserror hlcache_handle_retrieve(const char *url, uint32_t flags,
 
 	ctx = calloc(1, sizeof(hlcache_retrieval_ctx));
 	if (ctx == NULL)
-	{
-	emo_printf("ANDREY() context");
 		return NSERROR_NOMEM;
-	}
 
 	ctx->handle = calloc(1, sizeof(hlcache_handle));
 	if (ctx->handle == NULL) {
-	emo_printf("ANDREY() handle");
 		free(ctx);
 		return NSERROR_NOMEM;
 	}
@@ -207,7 +202,6 @@ nserror hlcache_handle_retrieve(const char *url, uint32_t flags,
 		if (child->charset != NULL) {
 			ctx->child.charset = strdup(child->charset);
 			if (ctx->child.charset == NULL) {
-	emo_printf("ANDREY() charset");
 				free(ctx->handle);
 				free(ctx);
 				return NSERROR_NOMEM;
@@ -226,7 +220,6 @@ nserror hlcache_handle_retrieve(const char *url, uint32_t flags,
 			hlcache_llcache_callback, ctx, 
 			&ctx->llcache);
 	if (error != NSERROR_OK) {
-	emo_printf("ANDREY() retrieve");
 		free((char *) ctx->child.charset);
 		free(ctx->handle);
 		free(ctx);
@@ -582,8 +575,8 @@ nserror hlcache_find_content(hlcache_retrieval_ctx *ctx)
 
 	/* Search list of cached contents for a suitable one */
 	for (entry = hlcache_content_list; entry != NULL; entry = entry->next) {
-		const llcache_handle *entry_llcache;
 		hlcache_handle entry_handle;
+		const llcache_handle *entry_llcache;
 		entry_handle.entry = entry;
 		entry_handle.cb = NULL;
 		entry_handle.pw = NULL;

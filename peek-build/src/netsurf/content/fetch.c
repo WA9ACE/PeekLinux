@@ -229,10 +229,8 @@ struct fetch * fetch_start(const char *url, const char *referer,
 	res = url_host(url, &host);
 	if (res != URL_FUNC_OK) {
 		/* we only fail memory exhaustion */
-		if (res == URL_FUNC_NOMEM) {
-            emo_printf("fetch_start() - url_host failed");
+		if (res == URL_FUNC_NOMEM)
 			goto failed;
-		}
 
 		host = strdup("");
 		if (host == NULL)
@@ -248,10 +246,8 @@ struct fetch * fetch_start(const char *url, const char *referer,
 		res = url_scheme(referer, &ref_scheme);
 		if (res != URL_FUNC_OK) {
 			/* we only fail memory exhaustion */
-			if (res == URL_FUNC_NOMEM) {
-				emo_printf("fetch_start() - url_scheme failed");
+			if (res == URL_FUNC_NOMEM)
 				goto failed;
-			}
 
 			ref_scheme = NULL;
 		}

@@ -156,7 +156,6 @@ bool textplain_create_internal(struct content *c, const char *encoding)
 	return true;
 
 no_memory:
-	emo_printf("textplain_create_internal - no_memory failed");
 	msg_data.error = messages_get("NoMemory");
 	content_broadcast(c, CONTENT_MSG_ERROR, msg_data);
 	return false;
@@ -229,7 +228,6 @@ bool textplain_process_data(struct content *c,
 	return true;
 
 no_memory:
-	emo_printf("textplain_process_data() no_memory failed");
 	msg_data.error = messages_get("NoMemory");
 	content_broadcast(c, CONTENT_MSG_ERROR, msg_data);
 	return false;

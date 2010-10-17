@@ -1,17 +1,27 @@
 DEFINE  = strdup=p_strdup
 DEFINE += nsframebuffer
-#DEFINE += fprintf=emo_fprintf
 DEFINE += NETSURF_HOMEPAGE="\"file:///default.html\""
 #DEFINE += NETSURF_HOMEPAGE="\"file:///emo/index.html\""
 #DEFINE += NETSURF_HOMEPAGE="\"http://72.20.1.6\""
 #DEFINE += NETSURF_HOMEPAGE="\"http://www.cmw.me\""
 #DEFINE += NETSURF_HOMEPAGE="\"http://m.yahoo.com\""
+DEFINE += NETSURF_FB_FONT_SANS_SERIF="\"DroidSans.ttf\""
+DEFINE += NETSURF_FB_FONT_SANS_SERIF_BOLD="\"DroidSans.ttf\""
+DEFINE += NETSURF_FB_FONT_SANS_SERIF_ITALIC="\"DroidSans.ttf\""
+DEFINE += NETSURF_FB_FONT_SANS_SERIF_ITALIC_BOLD="\"DroidSans.ttf\""
+DEFINE += NETSURF_FB_FONT_SERIF="\"DroidSans.ttf\""
+DEFINE += NETSURF_FB_FONT_SERIF_BOLD="\"DroidSans.ttf\""
+DEFINE += NETSURF_FB_FONT_MONOSPACE="\"DroidSans.ttf\""
+DEFINE += NETSURF_FB_FONT_MONOSPACE_BOLD="\"DroidSans.ttf\""
+DEFINE += NETSURF_FB_FONT_CURSIVE="\"DroidSans.ttf\""
+DEFINE += NETSURF_FB_FONT_FANTASY="\"DroidSans.ttf\""
 DEFINE += NETSURF_FB_RESPATH="\"\""
 DEFINE += FB_USE_FREETYPE
 DEFINE += WITH_PNG
 DEFINE += WITH_GIF
 DEFINE += WITH_BMP
 DEFINE += WITH_JPEG
+DEFINE += NDEBUG
 
 INCLUDE  = $(SRCDIR)/netsurf/emoport
 INCLUDE += $(M23DIR)/gpf/inc
@@ -49,7 +59,7 @@ S_CONTENT := content.c dirlist.c fetch.c hlcache.c llcache.c urldb.c fetchers/fe
 S_CSS := css.c dump.c internal.c select.c utils.c
 S_RENDER := box.c box_construct.c box_normalise.c favicon.c font.c form.c html.c html_interaction.c html_redraw.c hubbub_binding.c imagemap.c layout.c list.c table.c textplain.c
 S_UTILS := base64.c filename.c hashtable.c http.c locale.c messages.c talloc.c url.c utf8.c utils.c useragent.c findresource.c
-S_DESKTOP := knockout.c options.c plot_style.c print.c search.c searchweb.c scroll.c textarea.c tree.c version.c
+S_DESKTOP := knockout.c options.c plot_style.c print.c search.c searchweb.c scroll.c textarea.c tree.c version.c hotlist.c tree_url_node.c cookies.c
 S_COMMON := $(addprefix emoport/,$(S_PORT)) $(addprefix content/,$(S_CONTENT)) $(addprefix css/,$(S_CSS)) $(addprefix render/,$(S_RENDER)) $(addprefix utils/,$(S_UTILS)) $(addprefix desktop/,$(S_DESKTOP))
 
 # S_IMAGE are sources related to image management

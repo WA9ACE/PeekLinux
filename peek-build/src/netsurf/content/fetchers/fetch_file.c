@@ -131,7 +131,6 @@ fetch_file_setup(struct fetch *fetchh,
 		return NULL;
 
 	ctx->path = url_to_path(url);
-	emo_printf("fetch_file_setup path: %s - url %s", ctx->path, url);
 	if (ctx->path == NULL) {
 		free(ctx);
 		return NULL;
@@ -256,7 +255,6 @@ static void fetch_file_process_plain(struct fetch_file_context *ctx,
 	ssize_t res;
 
 	int fd; /**< The file descriptor of the object */
-	emo_printf("fetch_file_process_plain");
 
 	/* Check if we can just return not modified */
 	if (ctx->file_etag != 0 && ctx->file_etag == fdstat->st_mtime) {
@@ -266,7 +264,6 @@ static void fetch_file_process_plain(struct fetch_file_context *ctx,
 		return;
 	}
 
-	emo_printf("fetch_file_process_plain - open %s", ctx->path);
 	fd = open(ctx->path, O_RDONLY, 0666);
 	if (fd < 0) {
 		/* process errors as appropriate */
@@ -277,7 +274,6 @@ static void fetch_file_process_plain(struct fetch_file_context *ctx,
 
 	/* set buffer size */
 	buf_size = fdstat->st_size;
-	emo_printf("fetch_file... %s size: %d", ctx->path, buf_size);
 	if (buf_size > FETCH_FILE_MAX_BUF_SIZE)
 		buf_size = FETCH_FILE_MAX_BUF_SIZE;
 
@@ -420,8 +416,6 @@ static void fetch_file_process_dir(struct fetch_file_context *ctx,
 	char datebuf[64]; /* buffer for date text */
 	char timebuf[64]; /* buffer for time text */
 	char urlpath[PATH_MAX]; /* buffer for leaf entry path */
-
-	emo_printf("fetch_file_process_dir() %s", ctx->path);
 
 	scandir = opendir(ctx->path);
 	if (scandir == NULL) {
@@ -577,8 +571,6 @@ fetch_file_process_dir_aborted:
 static void fetch_file_process(struct fetch_file_context *ctx)
 {
 	struct stat fdstat; /**< The objects stat */
-	
-	emo_printf("fetch_file_process %s",  ctx->path);
 
 	if (stat(ctx->path, &fdstat) != 0) {
 		/* process errors as appropriate */

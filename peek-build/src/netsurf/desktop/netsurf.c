@@ -153,7 +153,7 @@ nserror netsurf_init(int *pargc,
 
 	LOG(("Using '%s' for Options file", options));
 	options_read(options);
-	
+
 	messages_load(messages);
 
 	lwc_initialise(netsurf_lwc_alloc, NULL, 0);

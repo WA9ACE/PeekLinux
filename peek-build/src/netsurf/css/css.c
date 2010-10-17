@@ -80,7 +80,6 @@ bool nscss_create(struct content *c, const http_parameter *params)
 	if (nscss_create_css_data(&c->data.css, content__get_url(c),
 			charset, c->quirks) != NSERROR_OK) {
 		msg_data.error = messages_get("NoMemory");
-		emo_printf("nscss_create() - nscss_create_css_data failed");
 		content_broadcast(c, CONTENT_MSG_ERROR, msg_data);
 		return false;
 	}

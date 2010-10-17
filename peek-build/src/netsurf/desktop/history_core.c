@@ -617,24 +617,23 @@ bool history_redraw_entry(struct history *history,
 	size_t char_offset;
 	int actual_x;
 	struct history_entry *child;
-        int tailsize = 5;
-        int xoffset = x - x0;
-        int yoffset = y - y0;
-        plot_style_t pstyle_history_rect = {
-            PLOT_OP_TYPE_SOLID,
+	colour c = entry == history->current ? 0x0000ff : 0x333333;
+	int tailsize = 5;
+	int xoffset = x - x0;
+	int yoffset = y - y0;
+  plot_style_t pstyle_history_rect = {
+        PLOT_OP_TYPE_SOLID,
             0,
             0,
             0,
             0
         };
-
-        plot_font_style_t fstyle = *plot_style_font;
-
-	colour c = entry == history->current ? 0x0000ff : 0x333333;
+	plot_font_style_t fstyle;
 
 	pstyle_history_rect.stroke_width = entry == history->current ? 2 : 1; 
 	pstyle_history_rect.stroke_colour = c;
 
+	fstyle = *plot_style_font;
 
 	if (clip) {
 		if(!plot.clip(x0 + xoffset, y0 + yoffset, x1 + xoffset, y1 + yoffset))
