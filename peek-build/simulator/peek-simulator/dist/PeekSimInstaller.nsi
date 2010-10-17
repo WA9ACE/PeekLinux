@@ -14,7 +14,7 @@
   Name "Emobiix Peek Simulator"
   OutFile "PeekSimInstaller.exe"
 
-  RequestExecutionLevel admin
+  RequestExecutionLevel  "user"
 
   ;Default installation folder
   InstallDir "$PROGRAMFILES\Emobiix"
@@ -65,6 +65,7 @@
 Section "Peek Simulator" SecDummy
 
   SetOutPath "$INSTDIR"
+  SetFileAttributes "$INSTDIR" 0 
   
 File "battery1.png"
 File "battery2.png"
@@ -180,6 +181,22 @@ CreateDirectory "$INSTDIR\example-VerticalPacking"
 SetOutPath "$INSTDIR\example-VerticalPacking"
 File "example-VerticalPacking\VerticalPacking.xml"
 
+CreateDirectory "$INSTDIR\RootApplication"
+SetOutPath "$INSTDIR\RootApplication"
+File "RootApplication\aim.png"
+File "RootApplication\calc.png"
+File "RootApplication\facebook.png"
+File "RootApplication\hello.png"
+File "RootApplication\mail.png"
+File "RootApplication\maps.png"
+File "RootApplication\netsurf.png"
+File "RootApplication\sms.png"
+File "RootApplication\twitter.png"
+File "RootApplication\BootApplication.xml"
+File "RootApplication\RootApplication.xml"
+File "RootApplication\RootStyle.xml"
+File "RootApplication\WeatherStatus.xml"
+
 SetOutPath "$INSTDIR"
   ;Store installation folder
   WriteRegStr HKCU "Software\Emobiix" "" $INSTDIR
@@ -261,3 +278,39 @@ Delete "$INSTDIR\xerces-c_2_2_0.dll"
   DeleteRegKey /ifempty HKCU "Software\Emobiix"
 
 SectionEnd
+
+; Attempt to give the UAC plug-in a user process and an admin process.
+Function .OnInit
+ 
+UAC_Elevate:
+    UAC::RunElevated 
+    StrCmp 1223 $0 UAC_ElevationAborted ; UAC dialog aborted by user?
+    StrCmp 0 $0 0 UAC_Err ; Error?
+    StrCmp 1 $1 0 UAC_Success ;Are we the real deal or just the wrapper?
+    Quit
+ 
+UAC_Err:
+    MessageBox mb_iconstop "Unable to elevate, error $0"
+    Abort
+ 
+UAC_ElevationAborted:
+    # elevation was aborted, run as normal?
+    MessageBox mb_iconstop "This installer requires admin access, aborting!"
+    Abort
+ 
+UAC_Success:
+    StrCmp 1 $3 +4 ;Admin?
+    StrCmp 3 $1 0 UAC_ElevationAborted ;Try again?
+    MessageBox mb_iconstop "This installer requires admin access, try again"
+    goto UAC_Elevate 
+ 
+FunctionEnd
+
+Function .OnInstFailed
+    UAC::Unload ;Must call unload!
+FunctionEnd
+ 
+Function .OnInstSuccess
+    UAC::Unload ;Must call unload!
+FunctionEnd
+

@@ -38,6 +38,10 @@ extern "C" void *p_malloc_i(int size, const char *filename, int line,
 
 	//return malloc(size);
 
+	if (size == 153600) {
+		emo_printf("potential" NL);
+	}
+
 	if (mallocSemaphore == NULL) {
 		mallocSemaphore = semaphore_create(1);
 	}
