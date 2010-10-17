@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <malloc.h>
+#include <direct.h>
 
 const char *cacheBaseDir = "./";
 
@@ -113,7 +114,7 @@ int file_read(File *_f, int bytes, void *buffer)
 	f = (FILE *)_f;
 	return (int)fread(buffer, 1, bytes, f);
 }
-int file_write(File *_f, int bytes, void *buffer)
+int file_write(File *_f, int bytes, const void *buffer)
 {
 	FILE *f;
 	
@@ -166,6 +167,20 @@ int file_close(File *_f)
 
 	f = (FILE *)_f;
 	return fclose(f);
+}
+
+int file_mkdir(const char *directory)
+{
+	return _mkdir(directory);
+}
+
+int file_move(const char *fromstr, const char *tostr)
+{
+	struct _stat statstr;
+
+	if (_stat(tostr, &statstr) == 0)
+		_unlink(tostr);
+	return rename(fromstr, tostr);
 }
 
 extern unsigned char screenBuf[320*240*2];
