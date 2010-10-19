@@ -1653,15 +1653,23 @@ void widget_resolvePosition(Widget *w)
 	WidgetPacking packing;
 	Widget *cw;
 	int positionStatic = 0;
-	DataObjectField *field;
+	DataObjectField *field, *xfield, *yfield;
 	DataObject *singleChild = NULL, *child;
 	Application *app;
 
 	EMO_ASSERT(w != NULL, "widget resolve position missing widget")
 
-	xpos = w->box.x+w->margin.x;
+	xfield = dataobject_getValueAsInt(w, "x");
+	if (xfield != NULL)
+		w->box.x = xfield->field.integer;
+	xpos = w->box.x + w->margin.x;
+
+	yfield = dataobject_getValueAsInt(w, "y");
+	if (yfield != NULL)
+		w->box.y = yfield->field.integer;
+	ypos = w->box.y + w->margin.y;
+
 	oxpos = xpos;
-	ypos = w->box.y+w->margin.y;
 	oypos = ypos;
 	rowMax = 0;
 	width = w->box.width;
@@ -1669,6 +1677,8 @@ void widget_resolvePosition(Widget *w)
 	packing = widget_getPacking(w);
 
 	field = dataobject_getValue(w, "type");
+
+	
 
 #if 0
 	if (widget_typeNoChildRender(field))
