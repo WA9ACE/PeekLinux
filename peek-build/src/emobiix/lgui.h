@@ -68,10 +68,11 @@ void lgui_luminence_A4_blitC(int destx, int desy, int imgx, int imgy,
 		int imgdx, int imgdy, int imgwidth, int imgheight, unsigned char *img,
 		Color c, int mode, int isItalic);
 void lgui_blitRGB565(int destx, int desy, int imgx, int imgy,
-	 	int imgwidth, int imgheight, unsigned char *img, int isStencil,
-		unsigned char alpha);
+	 	int imgwidth, int imgheight, int rowstride,
+		unsigned char *img, int isStencil, unsigned char alpha);
 void lgui_blitRGB565A8(int destx, int desy, int imgx, int imgy,
-	 	int imgwidth, int imgheight, unsigned char *img, unsigned char alpha);
+	 	int imgwidth, int imgheight, int rowstride,
+		unsigned char *img, unsigned char alpha);
 void lgui_black_alpha_blitRGB(int destx, int desy, int imgx, int imgy,
 	 	int imgwidth, int imgheight, unsigned char *img);
 void lgui_alpha_blitRGBA(int destx, int desty, int imgx, int imgy,

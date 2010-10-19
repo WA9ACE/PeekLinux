@@ -328,8 +328,8 @@ void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 }
 
 void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
-        int imgwidth, int imgheight, unsigned char *img, int isStencil,
-		unsigned char alpha)
+        int imgwidth, int imgheight, int rowstride,
+		unsigned char *img, int isStencil, unsigned char alpha)
 {
     unsigned short *buf;
     unsigned char *imgbuf;
@@ -362,7 +362,7 @@ void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
             continue;
         }
         buf = lgui_buffer + destx + ypos*LGUI_WIDTH;
-        imgbuf = img + imgx + imgypos*imgwidth*2;
+        imgbuf = img + imgx + imgypos*rowstride*2;
 
 		buf += ccol;
 		imgbuf += ccol << 1;
@@ -389,7 +389,8 @@ void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
 }
 
 void lgui_blitRGB565A8(int destx, int desty, int imgx, int imgy,
-        int imgwidth, int imgheight, unsigned char *img, unsigned char alpha)
+        int imgwidth, int imgheight, int rowstride,
+		unsigned char *img, unsigned char alpha)
 {
     unsigned short *buf;
     unsigned char *imgbuf, scale;
@@ -422,7 +423,7 @@ void lgui_blitRGB565A8(int destx, int desty, int imgx, int imgy,
             continue;
         }
         buf = lgui_buffer + destx + ypos*LGUI_WIDTH;
-        imgbuf = img + (imgx + imgypos*imgwidth)*3;
+        imgbuf = img + (imgx + imgypos*rowstride)*3;
 
 		buf += ccol;
 		imgbuf += ccol *3;

@@ -17,6 +17,7 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj) {
 	Rectangle *box, *margin;
 	int width, height;
+	int imgx, imgy, imgwidth, imgheight;
 	PixelFormat pf;
 	void *data;
 	Color c;
@@ -42,6 +43,11 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		return;
 	height = (int)field->field.integer;
 
+	imgx = 0;
+	imgy = 0;
+	imgwidth = width;
+	imgheight = height;
+
 	field = dataobject_getValue(dobj, "pixelformat");
 	if (field == NULL)
 		return;
@@ -50,6 +56,19 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	field = dataobject_getValueAsInt(w, "alpha");
 	if (field != NULL)
 		alpha = field->field.integer;
+
+	field = dataobject_getValueAsInt(w, "imgx");
+	if (field != NULL)
+		imgx = field->field.integer;
+	field = dataobject_getValueAsInt(w, "imgy");
+	if (field != NULL)
+		imgy = field->field.integer;
+	field = dataobject_getValueAsInt(w, "imgwidth");
+	if (field != NULL)
+		imgwidth = field->field.integer;
+	field = dataobject_getValueAsInt(w, "imgheight");
+	if (field != NULL)
+		imgheight = field->field.integer;
 
 	field = dataobject_getValue(dobj, "data");
 	if (field == NULL)
@@ -68,11 +87,12 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	switch (pf) {
 		case RGB565:
 			lgui_blitRGB565(box->x+margin->x, box->y+margin->y,
-					0, 0, width, height, data, trans == TRANS_STENCIL, alpha);
+					imgx, imgy, imgwidth, imgheight, width, data,
+					trans == TRANS_STENCIL, alpha);
 			break;
 		case RGB565A8:
 			lgui_blitRGB565A8(box->x+margin->x, box->y+margin->y,
-					0, 0, width, height, data, alpha);
+					imgx, imgy, imgwidth, imgheight, width, data, alpha);
 			break;
 		case A4:
 			field = style_getPropertyAsInt(s, w, "color");
@@ -82,8 +102,8 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 				c.value = 0xFFFFFFFF;
 				style_getColor(s, w, "color", &c.value);
 			}
-			lgui_luminence_A4_blitC(box->x+margin->x, box->y+margin->y, 0, 0,
-					width, height, width, height, data, c, trans, 0);
+			lgui_luminence_A4_blitC(box->x+margin->x, box->y+margin->y,
+					imgx, imgy, imgwidth, imgheight, width, height, data, c, trans, 0);
 			break;
 		default:
 			emo_printf("Unsupported image format" NL);
@@ -121,6 +141,14 @@ static void image_measure(WidgetRenderer *wr, Style *s, Widget *w,
 		return;
 	}
 	output->y = field->field.integer;
+
+	field = dataobject_getValueAsInt(w, "imgwidth");
+	if (field != NULL)
+		output->x = field->field.integer;
+
+	field = dataobject_getValueAsInt(w, "imgheight");
+	if (field != NULL)
+		output->y = field->field.integer;
 }
 
 WidgetRenderer *widgetrenderer_image(void)
