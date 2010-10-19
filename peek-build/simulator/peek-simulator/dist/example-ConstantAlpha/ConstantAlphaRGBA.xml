@@ -1,0 +1,10 @@
+<application name="Example Application" description="Example of platform" icon="app-icon" startupview="mainview">
+<image src="example-Images/star.png" mime-type="png" name="star"/>
+<view name="mainview" width="320" height="220">
+	<box id="gradbox" width="100%" height="100%" packing="vertical">
+		<image alignment="center" reference="star" alpha="150"/>
+		<image alignment="center" reference="star" transparency="full" alpha="150"/>
+		<image alignment="center" reference="star" transparency="none" alpha="150"/>
+	</box>
+</view>
+</application>

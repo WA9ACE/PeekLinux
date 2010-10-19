@@ -328,11 +328,12 @@ void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 }
 
 void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
-        int imgwidth, int imgheight, unsigned char *img, int isStencil)
+        int imgwidth, int imgheight, unsigned char *img, int isStencil,
+		unsigned char alpha)
 {
     unsigned short *buf;
     unsigned char *imgbuf;
-    unsigned short pixel;
+    unsigned short opixel, pixel, srcpixel, imgpixel;
     int line, col, ypos, imgypos;
 	int cline, cwidth, ccol, cheight;
 	Rectangle rect;
@@ -367,11 +368,17 @@ void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
 		imgbuf += ccol << 1;
         for (col = ccol; col < cwidth; ++col) {
                 pixel = *((unsigned short *)(imgbuf));
+				opixel = pixel;
+				if (alpha != 0xFF) {
+					srcpixel = *buf;
+					imgpixel = pixel;
+					opixel = (unsigned short)(PIXEL_MODULATE_ALPHA(imgpixel, srcpixel, alpha));
+				}
 				if (isStencil) {
 					if (pixel > 0)
-						*buf = pixel;
+						*buf = opixel;
 				} else {
-					*buf = pixel;
+					*buf = opixel;
 				}
             ++buf;
             imgbuf +=2;
@@ -382,7 +389,7 @@ void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
 }
 
 void lgui_blitRGB565A8(int destx, int desty, int imgx, int imgy,
-        int imgwidth, int imgheight, unsigned char *img)
+        int imgwidth, int imgheight, unsigned char *img, unsigned char alpha)
 {
     unsigned short *buf;
     unsigned char *imgbuf, scale;
@@ -423,6 +430,9 @@ void lgui_blitRGB565A8(int destx, int desty, int imgx, int imgy,
             pixel = *(imgbuf);
             pixel |= *(imgbuf+1) << 8;
 			scale = *((unsigned char *)(imgbuf+2));
+			if (alpha != 0xFF) {
+				scale = (unsigned char)((int)scale*((int)alpha*100)/(0xFF*100));
+			}
 			srcpixel = *buf;
 			*buf = (unsigned short)(PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale));
             /* *buf = pixel;*/

@@ -22,6 +22,7 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	Color c;
 	DataObjectField *field;
 	int trans;
+	unsigned char alpha = 0xFF;
 
 	EMO_ASSERT(wr != NULL, "image render missing renderer")
 	EMO_ASSERT(s != NULL, "image render missing style")
@@ -46,6 +47,10 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		return;
 	pf = (int)field->field.integer;
 
+	field = dataobject_getValueAsInt(w, "alpha");
+	if (field != NULL)
+		alpha = field->field.integer;
+
 	field = dataobject_getValue(dobj, "data");
 	if (field == NULL)
 		return;
@@ -63,11 +68,11 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	switch (pf) {
 		case RGB565:
 			lgui_blitRGB565(box->x+margin->x, box->y+margin->y,
-					0, 0, width, height, data, trans == TRANS_STENCIL);
+					0, 0, width, height, data, trans == TRANS_STENCIL, alpha);
 			break;
 		case RGB565A8:
 			lgui_blitRGB565A8(box->x+margin->x, box->y+margin->y,
-					0, 0, width, height, data);
+					0, 0, width, height, data, alpha);
 			break;
 		case A4:
 			field = style_getPropertyAsInt(s, w, "color");
@@ -99,7 +104,7 @@ static void image_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	field = dataobject_getValue(dobj, "width");
 	if (field == NULL || field->type != DOF_INT) {
 		DataObject *parent = dataobject_parent(dobj);
-		dataobject_debugPrint(parent ? dataobject_parent(parent) : NULL);
+		/*dataobject_debugPrint(parent ? dataobject_parent(parent) : NULL);*/
 
 		emo_printf("width field not an int" NL);
 		output->x = 0;
