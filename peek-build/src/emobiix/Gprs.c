@@ -3,15 +3,6 @@
 #include "DataObject.h"
 #include "URL.h"
 
-/**
- *  GPRS call back function
- *  High-4 bit indicates the device signal and the Low-4 bit indicated GPRS attached whether.
- *
- **/
-
-//static uint8 mSignal;
-//static bool mGprs;
-
 static DataObject* GPRS_DO = NULL;
 static DataObjectField* GPRS_SIGNAL_LEVEL;
 static DataObjectField* GPRS_STATUS;
@@ -22,7 +13,6 @@ static DataObjectField* GPRS_LOCATION_CI;
 
 void force_dataobject_redraw()
 {
-	renderman_markLayoutChanged(); 
 	lgui_set_dirty();
 	updateScreen();
 }

@@ -12,28 +12,29 @@ char *p_strdup(const char *s)
 
 	len = strlen(s);
 	output = (char *)p_malloc(len+1);
+
+	EMO_ASSERT_NULL(output != NULL, "strdup malloc failed");
+
 	memcpy(output, s, len+1);
 	return output;
 }
 
 void *p_malloc(int size)
 {
-#ifdef SIMULATOR
-	return malloc(size);
-#else
-	return malloc(size);
-#endif
+	void *p = malloc(size);
+	
+	EMO_ASSERT_NULL(p != NULL, "malloc failed");
+
+	return p;
 }
 
 void *p_calloc(int elem, int size)
 {
-	return calloc(elem, size);
-/*
-	void *p = p_malloc(size * elem);
-	if(!p) return NULL;
-	memset(p, 0, size * elem);
+	void *p = calloc(elem, size);
+
+	EMO_ASSERT_NULL(p != NULL, "calloc failed");
+
 	return p;
-*/
 }
 
 void p_free(void *p)
@@ -49,11 +50,12 @@ void p_free(void *p)
 #endif
 }
 
-void *p_realloc(void *p, int s)
+void *p_realloc(void *ptr, int s)
 {
-#ifdef SIMULATOR
-	return realloc(p, s);
-#else
-	return realloc(p,s);
-#endif
+	void *p = realloc(ptr, s);
+
+	EMO_ASSERT_NULL(p != NULL, "realloc failed");
+
+	return p;
 }
+

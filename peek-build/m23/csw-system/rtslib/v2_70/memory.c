@@ -200,30 +200,43 @@ void minit(void)
 /*									     */
 /*****************************************************************************/
 extern void emo_printf( const char* fmt, ...);
-static unsigned long stack_dump[40];
+#define STACK_DUMP_SIZE  80
+static unsigned long stack_dump[STACK_DUMP_SIZE];
+
+void stack_trace()
+{
+	int stackstart = 0xcccccccc;
+	for (stackstart = 0; stackstart < STACK_DUMP_SIZE; ++stackstart)
+		stack_dump[stackstart] = *(((unsigned int *)&stackstart) - stackstart);
+
+	emo_printf("@@ Stack");
+	emo_printf("@@ -------------------------------");
+
+	for (stackstart = 0; stackstart < STACK_DUMP_SIZE; ++stackstart)
+		emo_printf("@@ 0x%08X", stack_dump[stackstart]);
+
+	emo_printf("@@ -------------------------------");
+
+//	while(1)
+//		TCCE_Task_Sleep(1000);
+}
+
+void memmap(void);
 
 void *malloc(size_t size)
 {
-		int stack_start = 0xBADAB00B;
     register PACKET *current;
     register size_t  newsize = (size + BLOCK_MASK) & ~BLOCK_MASK;
     register size_t  oldsize;
 
-    if (size <= 0) return NULL;
+		//memmap();
 
-#if 0
-		if (size > 20 * 1024)
+    if (size <= 0)
 		{
-			for (oldsize = 0; oldsize < 40; ++oldsize)
-				stack_dump[oldsize] = *(((unsigned int *)&stack_start) - oldsize);
-
-			emo_printf("@@ Stack");
-			emo_printf("@@ -------------------------------");
-			for (oldsize = 0; oldsize < 40; ++oldsize)
-				emo_printf("@@ 0x%08X", stack_dump[oldsize]);
-			emo_printf("@@ -------------------------------");
+			//stack_trace();
+			return NULL;
 		}
-#endif
+
     _lock();
     current = sys_free;
     /*-----------------------------------------------------------------------*/
@@ -234,9 +247,10 @@ void *malloc(size_t size)
 
     if (!current)
     {
-	_unlock();
-	return NULL;
-    }
+			_unlock();
+			//stack_trace();
+			return NULL;
+		}
     
     oldsize = current->packet_size;	    /* REMEMBER OLD SIZE	     */
     mremove(current);		            /* REMOVE PACKET FROM FREE LIST  */
@@ -601,12 +615,12 @@ void memmap()
 
     _unlock();
 
-    emo_printf("free_b_num:%d free_b_space:%d", free_block_num, free_block_space);
+//    emo_printf("free_b_num:%d free_b_space:%d", free_block_num, free_block_space);
 
-		emo_printf("free_b_max:%d used_b_num:%d", free_block_max, used_block_num);
+//		emo_printf("free_b_max:%d used_b_num:%d", free_block_max, used_block_num);
 
 		emo_printf("used_b_space:%d used_b_max:%d", used_block_space, used_block_max);
-		emo_printf("overhead:%d", (free_block_num + used_block_num) * BLOCK_OVERHEAD);
+//		emo_printf("overhead:%d", (free_block_num + used_block_num) * BLOCK_OVERHEAD);
 
     //fflush(stdout);
 }

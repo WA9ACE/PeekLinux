@@ -255,6 +255,8 @@ LOCAL SHORT pei_run (T_HANDLE TaskHandle, T_HANDLE ComHandle)
   while(!HwStatusGet())
     TCCE_Task_Sleep(100);
 
+	emo_printf("netsurf_main() starting");
+
 	netsurf_main(1, &argv);
   return RV_OK;
 }/* End pei_run(..) */
