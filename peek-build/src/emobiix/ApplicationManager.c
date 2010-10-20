@@ -36,6 +36,7 @@ struct ApplicationManager_t {
 	DataObject *rootApplicationPlaceHolder;
 	DataObject *rootApplicationMenuHolder;
 	DataObject *rootApplicationDialogHolder;
+	DataObject *rootTopBar;
 	Style *style;
 
 	DataObject *loadingApplication;
@@ -101,6 +102,9 @@ void manager_init(void)
 	appManager->rootApplicationDialogHolder =
 			dataobject_findByName(appManager->rootApplicationWindow,
 			"dialogholder");
+	appManager->rootTopBar =
+			dataobject_findByName(appManager->rootApplicationWindow,
+			"topbar");
 
 	list_delete(appManager->applications);
 	appManager->applications = list_new();
@@ -173,6 +177,9 @@ void manager_drawScreenPartial(void)
 void manager_resolveLayout(void)
 {
 	Style *style;
+
+	/*emo_printf("+++ Resolving Layout" NL);*/
+
 	style = application_getCurrentStyle(appManager->focus);
 	if (style == NULL)
 		style = appManager->style;
@@ -221,6 +228,12 @@ void manager_handleKey(unsigned int key)
 	/* access key */
 	if (key == EKEY_BACK) {
 		strcpy(keyStr, "BACK");
+	} else if (key == EKEY_ACTIVATE) {
+		strcpy(keyStr, "ACTIVATE");
+	} else if (key == EKEY_FOCUSPREV) {
+		strcpy(keyStr, "PREV");
+	} else if (key == EKEY_FOCUSNEXT) {
+		strcpy(keyStr, "NEXT");
 	} else {
 		((unsigned char *)keyStr)[0] = (unsigned char)key;
 		keyStr[1] = 0;
@@ -282,6 +295,14 @@ void manager_focusApplication(Application *app)
 			"Manager focusing NULL application")
 
 	appObj = application_getDataObject(app);
+
+	field = dataobject_getValueAsInt(appObj, "fullscreen");
+	if (field != NULL && field->field.integer) {
+		dataobject_setValue(appManager->rootTopBar, "height", dataobjectfield_string("0"));
+	} else {
+		dataobject_setValue(appManager->rootTopBar, "height", dataobjectfield_string("25"));
+	}
+
 	field = dataobject_getValue(appObj, "name");
 	emo_printf("Focusing Application %s" NL, field->field.string);
     currentScreen = application_getCurrentScreen(app);

@@ -52,8 +52,7 @@ DataObject *RootApplication(void)
 	DataObject *dobj1, *root, *dobj2, *frame;
 	DataObject *setw, *setiw, *setc, *settd;
 	DataObject *signalstack, *gprsstack, *emostack;
-	DataObject *batterystack, *testbattery, *testcharge;
-	DataObject *testweather, *testspkr;
+	DataObject *batterystack;
 
     if (output != NULL)
         return output;
@@ -68,7 +67,7 @@ DataObject *RootApplication(void)
 	root = widget_newTypeIdName("view", NULL, "rootview", output);
 	widget_setPacking(root, WP_VERTICAL);
 
-	dobj1 = widget_newTypeIdName("box", "darkgradbox", NULL, root);
+	dobj1 = widget_newTypeIdName("box", "darkgradbox", "topbar", root);
 	dataobject_setValue(dobj1, "width", dataobjectfield_string("320"));
 	dataobject_setValue(dobj1, "height", dataobjectfield_string(BARHEIGHT));
 	widget_setPacking(dobj1, WP_HORIZONTAL);
