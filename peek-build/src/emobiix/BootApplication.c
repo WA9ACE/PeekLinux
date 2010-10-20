@@ -20,7 +20,7 @@ extern DataObject *dobjFromFile(const char *filename, DataObject *root);
 DataObject *BootApplication(void)
 {
 	static Widget *w0 = NULL;
-	Widget *w1, *w2, *w3, *w4, *w5;
+	Widget *w1, *w2, *w3, *w4, *w5, *w6;
 
 	if (w0 != NULL)
 		return w0;
@@ -28,6 +28,7 @@ DataObject *BootApplication(void)
 	w0 = dataobject_new();
 	dataobject_setValue(w0, "type", dataobjectfield_string("application"));
 	dataobject_setValue(w0, "description", dataobjectfield_string("Construct program for loading other programs"));
+	dataobject_setValue(w0, "fullscreen", dataobjectfield_string("1"));
 	dataobject_setValue(w0, "name", dataobjectfield_string("Boot Environment"));
 	dataobject_setValue(w0, "onload", dataobjectfield_string("onLoad()"));
 	dataobject_setValue(w0, "startupview", dataobjectfield_string("mainview"));
@@ -36,76 +37,82 @@ DataObject *BootApplication(void)
 	dataobject_pack(w0, w1);
 	dataobject_setValue(w1, "type", dataobjectfield_string("script"));
 	dataobject_setValue(w1, "data", dataobjectfield_string(
-"	function onLoad()\n"
-"		print \"Boot application loaded\""
+"focusIndex = 1\n"
+"function onLoad()\n"
+"	print \"Boot application loaded\"\n"
+"end\n"
+"function helloworld()\n"
+"	DataObject.locate(\"tcp://69.114.111.9:12345/helloworld\")\n"
+"end\n"
+"function calculator()\n"
+"	DataObject.locate(\"tcp://69.114.111.9:12345/calc\")\n"
+"end\n"
+"function maps()\n"
+"	DataObject.locate(\"tcp://69.114.111.9:12345/whereami?40.702147,-74.015794\")\n"
+"end\n"
+"function aim()\n"
+"	DataObject.locate(\"tcp://69.114.111.9:12345/sample\")\n"
+"end\n"
+"function mail()\n"
+"	DataObject.locate(\"tcp://69.114.111.9:12345/mail\")\n"
+"end\n"
+"\n"
+"function launch()\n"
+"	if focusIndex == 1 then\n"
+"		helloworld()\n"
+"	elseif focusIndex == 2 then\n"
+"		calculator()\n"
+"	elseif focusIndex == 3 then\n"
+"		maps()\n"
+"	elseif focusIndex == 4 then\n"
+"		aim()\n"
+"	elseif focusIndex == 5 then\n"
+"		DataObject.netsurf()\n"
 "	end\n"
-"	function helloworld()\n"
-"		DataObject.locate(\"tcp://69.114.111.9:12345/helloworld\");\n"
+"end\n"
+"\n"
+"function focusNext()\n"
+"	focusIndex = focusIndex + 1\n"
+"	if focusIndex == 6 then\n"
+"		focusIndex = 1\n"
 "	end\n"
-"	function calculator()\n"
-"		DataObject.locate(\"tcp://69.114.111.9:12345/calc\");\n"
+"	refocus()\n"
+"end\n"
+"function focusPrev()\n"
+"	focusIndex = focusIndex - 1\n"
+"	if focusIndex == 0 then\n"
+"		focusIndex = 5\n"
 "	end\n"
-"	function maps()\n"
-"		DataObject.locate(\"tcp://69.114.111.9:12345/whereami?40.702147,-74.015794\");\n"
+"	refocus()\n"
+"end\n"
+"function refocus()\n"
+"	idx = focusIndex\n"
+"\n"
+"	for i=1,5 do\n"
+"		app = DataObject.find(\"app\" .. i)\n"
+"		app:setValue(\"reference\", \"img\" .. idx)\n"
+"		idx = idx + 1\n"
+"		if idx == 6 then idx = 1 end\n"
 "	end\n"
-"	function aim()\n"
-"		DataObject.locate(\"tcp://69.114.111.9:12345/sample\");\n"
-"	end\n"
-"	function mail()\n"
-"		DataObject.locate(\"tcp://69.114.111.9:12345/mail\");\n"
-"	end\n"));
+"end"));
+	w1 = dataobject_new();
+	dataobject_pack(w0, w1);
+	dataobject_setValue(w1, "type", dataobjectfield_string("data"));
+	dataobject_setValue(w1, "H1", dataobjectfield_string("1"));
+	dataobject_setValue(w1, "H2", dataobjectfield_string("9"));
+	dataobject_setValue(w1, "M1", dataobjectfield_string("5"));
+	dataobject_setValue(w1, "M2", dataobjectfield_string("9"));
+	dataobject_setValue(w1, "name", dataobjectfield_string("time"));
+	w1 = dobjFromFile("clock-numbers.png", w0);
+	dataobject_setValue(w1, "name", dataobjectfield_string("clock"));
 	w1 = dataobject_new();
 	dataobject_pack(w0, w1);
 	dataobject_setValue(w1, "type", dataobjectfield_string("style"));
 	dataobject_setValue(w1, "name", dataobjectfield_string("bootstyle"));
 	w2 = dataobject_new();
 	dataobject_pack(w1, w2);
-	dataobject_setValue(w2, "type", dataobjectfield_string("selbox"));
-	w3 = dataobject_new();
-	dataobject_pack(w2, w3);
-	dataobject_setValue(w3, "type", dataobjectfield_string("label"));
-	dataobject_setValue(w3, "font-color", dataobjectfield_string("#FFF"));
-	dataobject_setValue(w3, "renderer", dataobjectfield_string("label"));
-	w2 = dataobject_new();
-	dataobject_pack(w1, w2);
-	dataobject_setValue(w2, "type", dataobjectfield_string("selbox"));
-	dataobject_setValue(w2, "border", dataobjectfield_string("1234"));
-	dataobject_setValue(w2, "border-color", dataobjectfield_string("#000"));
-	dataobject_setValue(w2, "border-corners", dataobjectfield_string("1234"));
-	dataobject_setValue(w2, "fill", dataobjectfield_string("gradient"));
-	dataobject_setValue(w2, "hasfocus", dataobjectfield_string("1"));
-	dataobject_setValue(w2, "radius", dataobjectfield_string("7"));
-	dataobject_setValue(w2, "renderer", dataobjectfield_string("box"));
-	dataobject_setValue(w2, "rounded", dataobjectfield_string("1234"));
-	w3 = dataobject_new();
-	dataobject_pack(w2, w3);
-	dataobject_setValue(w3, "type", dataobjectfield_string("gradient"));
-	w4 = dataobject_new();
-	dataobject_pack(w3, w4);
-	dataobject_setValue(w4, "type", dataobjectfield_string("stop"));
-	dataobject_setValue(w4, "color", dataobjectfield_string("#F9F9F9FF"));
-	dataobject_setValue(w4, "position", dataobjectfield_string("0"));
-	w4 = dataobject_new();
-	dataobject_pack(w3, w4);
-	dataobject_setValue(w4, "type", dataobjectfield_string("stop"));
-	dataobject_setValue(w4, "color", dataobjectfield_string("#59DFFEFF"));
-	dataobject_setValue(w4, "position", dataobjectfield_string("50"));
-	w4 = dataobject_new();
-	dataobject_pack(w3, w4);
-	dataobject_setValue(w4, "type", dataobjectfield_string("stop"));
-	dataobject_setValue(w4, "color", dataobjectfield_string("#35dcfbFF"));
-	dataobject_setValue(w4, "position", dataobjectfield_string("50"));
-	w4 = dataobject_new();
-	dataobject_pack(w3, w4);
-	dataobject_setValue(w4, "type", dataobjectfield_string("stop"));
-	dataobject_setValue(w4, "color", dataobjectfield_string("#b7f1ffFF"));
-	dataobject_setValue(w4, "position", dataobjectfield_string("100"));
-	w3 = dataobject_new();
-	dataobject_pack(w2, w3);
-	dataobject_setValue(w3, "type", dataobjectfield_string("label"));
-	dataobject_setValue(w3, "font-color", dataobjectfield_string("#000"));
-	dataobject_setValue(w3, "renderer", dataobjectfield_string("label"));
-	dataobject_setValue(w3, "weight", dataobjectfield_string("bold"));
+	dataobject_setValue(w2, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w2, "renderer", dataobjectfield_string("image"));
 	w1 = dataobject_new();
 	dataobject_pack(w0, w1);
 	dataobject_setValue(w1, "type", dataobjectfield_string("view"));
@@ -114,112 +121,463 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w1, "packing", dataobjectfield_string("vertical"));
 	dataobject_setValue(w1, "width", dataobjectfield_string("320"));
 	w2 = dobjFromFile("background.png", w1);
+	dataobject_setValue(w2, "name", dataobjectfield_string("background"));
 	dataobject_setValue(w2, "packing", dataobjectfield_string("vertical"));
-	dataobject_setValue(w2, "width", dataobjectfield_int(320));
-	dataobject_setValue(w2, "height", dataobjectfield_int(240));
-	dataobject_setValue(w2, "pixelformat", dataobjectfield_int(0));
 	w3 = dataobject_new();
 	dataobject_pack(w2, w3);
-	dataobject_setValue(w3, "type", dataobjectfield_string("box"));
-	dataobject_setValue(w3, "alignment", dataobjectfield_string("center"));
-	dataobject_setValue(w3, "margintop", dataobjectfield_string("40"));
-	dataobject_setValue(w3, "packing", dataobjectfield_string("hgrid"));
-	dataobject_setValue(w3, "width", dataobjectfield_string("90%"));
+	dataobject_setValue(w3, "type", dataobjectfield_string("stack"));
+	dataobject_setValue(w3, "accesskey", dataobjectfield_string("ACTIVATE"));
+	dataobject_setValue(w3, "height", dataobjectfield_string("100%"));
+	dataobject_setValue(w3, "onreturn", dataobjectfield_string("dobj = DataObject.find(\"appmenu\");dobj:toScreen()"));
+	dataobject_setValue(w3, "width", dataobjectfield_string("100%"));
 	w4 = dataobject_new();
 	dataobject_pack(w3, w4);
-	dataobject_setValue(w4, "type", dataobjectfield_string("selbox"));
-	dataobject_setValue(w4, "canfocus", dataobjectfield_string("1"));
-	dataobject_setValue(w4, "margin", dataobjectfield_string("3"));
-	dataobject_setValue(w4, "onreturn", dataobjectfield_string("helloworld()"));
-	dataobject_setValue(w4, "packing", dataobjectfield_string("vertical"));
-	w5 = dobjFromFile("hello.png", w4);
-	dataobject_setValue(w5, "marginleft", dataobjectfield_string("4"));
-	dataobject_setValue(w5, "marginright", dataobjectfield_string("4"));
-	dataobject_setValue(w5, "margintop", dataobjectfield_string("4"));
-	dataobject_setValue(w5, "width", dataobjectfield_int(32));
-	dataobject_setValue(w5, "height", dataobjectfield_int(32));
-	dataobject_setValue(w5, "pixelformat", dataobjectfield_int(5));
+	dataobject_setValue(w4, "type", dataobjectfield_string("set"));
+	dataobject_setValue(w4, "fieldname", dataobjectfield_string("H1"));
+	dataobject_setValue(w4, "height", dataobjectfield_string("37"));
+	dataobject_setValue(w4, "reference", dataobjectfield_string("time"));
+	dataobject_setValue(w4, "width", dataobjectfield_string("6"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("227"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("90"));
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
-	dataobject_setValue(w5, "type", dataobjectfield_string("label"));
-	dataobject_setValue(w5, "alignment", dataobjectfield_string("center"));
-	dataobject_setValue(w5, "data", dataobjectfield_string("Hello"));
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("1"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("37"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("6"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("0"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("0"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
 	w4 = dataobject_new();
 	dataobject_pack(w3, w4);
-	dataobject_setValue(w4, "type", dataobjectfield_string("selbox"));
-	dataobject_setValue(w4, "canfocus", dataobjectfield_string("1"));
-	dataobject_setValue(w4, "margin", dataobjectfield_string("3"));
-	dataobject_setValue(w4, "onreturn", dataobjectfield_string("calculator()"));
-	dataobject_setValue(w4, "packing", dataobjectfield_string("vertical"));
-	w5 = dobjFromFile("calc.png", w4);
-	dataobject_setValue(w5, "marginleft", dataobjectfield_string("4"));
-	dataobject_setValue(w5, "marginright", dataobjectfield_string("4"));
-	dataobject_setValue(w5, "margintop", dataobjectfield_string("4"));
-	dataobject_setValue(w5, "width", dataobjectfield_int(32));
-	dataobject_setValue(w5, "height", dataobjectfield_int(32));
-	dataobject_setValue(w5, "pixelformat", dataobjectfield_int(5));
+	dataobject_setValue(w4, "type", dataobjectfield_string("set"));
+	dataobject_setValue(w4, "fieldname", dataobjectfield_string("H2"));
+	dataobject_setValue(w4, "height", dataobjectfield_string("53"));
+	dataobject_setValue(w4, "reference", dataobjectfield_string("time"));
+	dataobject_setValue(w4, "width", dataobjectfield_string("20"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("232"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("70"));
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
-	dataobject_setValue(w5, "type", dataobjectfield_string("label"));
-	dataobject_setValue(w5, "alignment", dataobjectfield_string("center"));
-	dataobject_setValue(w5, "data", dataobjectfield_string("Calc"));
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("0"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("52"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("20"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("170"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("0"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("1"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("37"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("9"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("160"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("2"));
+	dataobject_setValue(w6, "margintop", dataobjectfield_string("10"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("2"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("49"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("17"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("142"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("2"));
+	dataobject_setValue(w6, "margintop", dataobjectfield_string("4"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("3"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("51"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("19"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("122"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("1"));
+	dataobject_setValue(w6, "margintop", dataobjectfield_string("2"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("4"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("38"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("19"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("102"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("2"));
+	dataobject_setValue(w6, "margintop", dataobjectfield_string("2"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("5"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("52"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("18"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("84"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("1"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("6"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("52"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("19"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("64"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("1"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("7"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("40"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("20"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("46"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("1"));
+	dataobject_setValue(w6, "margintop", dataobjectfield_string("2"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("8"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("53"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("20"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("24"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("1"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("9"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("53"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("19"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("6"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("1"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
 	w4 = dataobject_new();
 	dataobject_pack(w3, w4);
-	dataobject_setValue(w4, "type", dataobjectfield_string("selbox"));
-	dataobject_setValue(w4, "canfocus", dataobjectfield_string("1"));
-	dataobject_setValue(w4, "margin", dataobjectfield_string("3"));
-	dataobject_setValue(w4, "onreturn", dataobjectfield_string("maps()"));
-	dataobject_setValue(w4, "packing", dataobjectfield_string("vertical"));
-	w5 = dobjFromFile("maps.png", w4);
-	dataobject_setValue(w5, "marginleft", dataobjectfield_string("4"));
-	dataobject_setValue(w5, "marginright", dataobjectfield_string("4"));
-	dataobject_setValue(w5, "margintop", dataobjectfield_string("4"));
-	dataobject_setValue(w5, "width", dataobjectfield_int(32));
-	dataobject_setValue(w5, "height", dataobjectfield_int(32));
-	dataobject_setValue(w5, "pixelformat", dataobjectfield_int(5));
+	dataobject_setValue(w4, "type", dataobjectfield_string("set"));
+	dataobject_setValue(w4, "fieldname", dataobjectfield_string("M1"));
+	dataobject_setValue(w4, "reference", dataobjectfield_string("time"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("256"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("42"));
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
-	dataobject_setValue(w5, "type", dataobjectfield_string("label"));
-	dataobject_setValue(w5, "alignment", dataobjectfield_string("center"));
-	dataobject_setValue(w5, "data", dataobjectfield_string("Maps"));
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("0"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("62"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("28"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("132"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("54"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("1"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("47"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("14"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("116"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("57"));
+	dataobject_setValue(w6, "marginleft", dataobjectfield_string("14"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("2"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("66"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("26"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("88"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("55"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("3"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("66"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("28"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("60"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("55"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("4"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("47"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("27"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("32"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("57"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("5"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("61"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("29"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("2"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("57"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
 	w4 = dataobject_new();
 	dataobject_pack(w3, w4);
-	dataobject_setValue(w4, "type", dataobjectfield_string("selbox"));
-	dataobject_setValue(w4, "canfocus", dataobjectfield_string("1"));
-	dataobject_setValue(w4, "margin", dataobjectfield_string("3"));
-	dataobject_setValue(w4, "onreturn", dataobjectfield_string("aim()"));
-	dataobject_setValue(w4, "packing", dataobjectfield_string("vertical"));
-	w5 = dobjFromFile("aim.png", w4);
-	dataobject_setValue(w5, "marginleft", dataobjectfield_string("4"));
-	dataobject_setValue(w5, "marginright", dataobjectfield_string("4"));
-	dataobject_setValue(w5, "margintop", dataobjectfield_string("4"));
-	dataobject_setValue(w5, "width", dataobjectfield_int(32));
-	dataobject_setValue(w5, "height", dataobjectfield_int(32));
-	dataobject_setValue(w5, "pixelformat", dataobjectfield_int(5));
+	dataobject_setValue(w4, "type", dataobjectfield_string("set"));
+	dataobject_setValue(w4, "fieldname", dataobjectfield_string("M2"));
+	dataobject_setValue(w4, "reference", dataobjectfield_string("time"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("280"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("5"));
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
-	dataobject_setValue(w5, "type", dataobjectfield_string("label"));
-	dataobject_setValue(w5, "alignment", dataobjectfield_string("center"));
-	dataobject_setValue(w5, "data", dataobjectfield_string("AIM"));
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("0"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("76"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("37"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("356"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("127"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("1"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("51"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("22"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("332"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("133"));
+	dataobject_setValue(w6, "marginleft", dataobjectfield_string("12"));
+	dataobject_setValue(w6, "margintop", dataobjectfield_string("15"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("2"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("76"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("38"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("292"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("129"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("3"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("77"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("38"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("252"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("129"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("4"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("55"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("40"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("212"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("129"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("5"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("80"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("42"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("170"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("125"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("6"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("76"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("40"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("128"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("125"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("7"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("53"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("39"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("88"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("128"));
+	dataobject_setValue(w6, "margintop", dataobjectfield_string("5"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("8"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("77"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("37"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("48"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("128"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w5 = dataobject_new();
+	dataobject_pack(w4, w5);
+	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("9"));
+	w6 = dataobject_new();
+	dataobject_pack(w5, w6);
+	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w6, "imgheight", dataobjectfield_string("76"));
+	dataobject_setValue(w6, "imgwidth", dataobjectfield_string("44"));
+	dataobject_setValue(w6, "imgx", dataobjectfield_string("2"));
+	dataobject_setValue(w6, "imgy", dataobjectfield_string("127"));
+	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
+	w1 = dobjFromFile("hello.png", w0);
+	dataobject_setValue(w1, "name", dataobjectfield_string("img1"));
+	w1 = dobjFromFile("calc.png", w0);
+	dataobject_setValue(w1, "name", dataobjectfield_string("img2"));
+	w1 = dobjFromFile("maps.png", w0);
+	dataobject_setValue(w1, "name", dataobjectfield_string("img3"));
+	w1 = dobjFromFile("aim.png", w0);
+	dataobject_setValue(w1, "name", dataobjectfield_string("img4"));
+	w1 = dobjFromFile("netsurf.png", w0);
+	dataobject_setValue(w1, "name", dataobjectfield_string("img5"));
+	w1 = dataobject_new();
+	dataobject_pack(w0, w1);
+	dataobject_setValue(w1, "type", dataobjectfield_string("view"));
+	dataobject_setValue(w1, "height", dataobjectfield_string("240"));
+	dataobject_setValue(w1, "name", dataobjectfield_string("appmenu"));
+	dataobject_setValue(w1, "packing", dataobjectfield_string("vertical"));
+	dataobject_setValue(w1, "width", dataobjectfield_string("320"));
+	w2 = dataobject_new();
+	dataobject_pack(w1, w2);
+	dataobject_setValue(w2, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w2, "accesskey", dataobjectfield_string("BACK"));
+	dataobject_setValue(w2, "onreturn", dataobjectfield_string("dobj = DataObject.find(\"mainview\");dobj:toScreen()"));
+	dataobject_setValue(w2, "packing", dataobjectfield_string("vertical"));
+	dataobject_setValue(w2, "reference", dataobjectfield_string("background"));
+	w3 = dataobject_new();
+	dataobject_pack(w2, w3);
+	dataobject_setValue(w3, "type", dataobjectfield_string("stack"));
+	dataobject_setValue(w3, "accesskey", dataobjectfield_string("ACTIVATE"));
+	dataobject_setValue(w3, "height", dataobjectfield_string("100%"));
+	dataobject_setValue(w3, "onreturn", dataobjectfield_string("launch()"));
+	dataobject_setValue(w3, "width", dataobjectfield_string("100%"));
+	w4 = dobjFromFile("glow.png", w3);
+	dataobject_setValue(w4, "x", dataobjectfield_string("74"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("0"));
 	w4 = dataobject_new();
 	dataobject_pack(w3, w4);
-	dataobject_setValue(w4, "type", dataobjectfield_string("selbox"));
-	dataobject_setValue(w4, "canfocus", dataobjectfield_string("1"));
-	dataobject_setValue(w4, "margin", dataobjectfield_string("3"));
-	dataobject_setValue(w4, "onreturn", dataobjectfield_string("DataObject.netsurf();"));
-	dataobject_setValue(w4, "packing", dataobjectfield_string("vertical"));
-	w5 = dobjFromFile("netsurf.png", w4);
-	dataobject_setValue(w5, "marginleft", dataobjectfield_string("4"));
-	dataobject_setValue(w5, "marginright", dataobjectfield_string("4"));
-	dataobject_setValue(w5, "margintop", dataobjectfield_string("4"));
-	dataobject_setValue(w5, "width", dataobjectfield_int(32));
-	dataobject_setValue(w5, "height", dataobjectfield_int(32));
-	dataobject_setValue(w5, "pixelformat", dataobjectfield_int(5));
-	w5 = dataobject_new();
-	dataobject_pack(w4, w5);
-	dataobject_setValue(w5, "type", dataobjectfield_string("label"));
-	dataobject_setValue(w5, "alignment", dataobjectfield_string("center"));
-	dataobject_setValue(w5, "data", dataobjectfield_string("Web"));
+	dataobject_setValue(w4, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w4, "name", dataobjectfield_string("app1"));
+	dataobject_setValue(w4, "reference", dataobjectfield_string("img1"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("132"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("30"));
+	w4 = dataobject_new();
+	dataobject_pack(w3, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w4, "accesskey", dataobjectfield_string("NEXT"));
+	dataobject_setValue(w4, "alpha", dataobjectfield_string("225"));
+	dataobject_setValue(w4, "name", dataobjectfield_string("app2"));
+	dataobject_setValue(w4, "onreturn", dataobjectfield_string("focusNext()"));
+	dataobject_setValue(w4, "reference", dataobjectfield_string("img2"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("193"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("63"));
+	w4 = dataobject_new();
+	dataobject_pack(w3, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w4, "accesskey", dataobjectfield_string("PREV"));
+	dataobject_setValue(w4, "alpha", dataobjectfield_string("200"));
+	dataobject_setValue(w4, "name", dataobjectfield_string("app3"));
+	dataobject_setValue(w4, "onreturn", dataobjectfield_string("focusPrev()"));
+	dataobject_setValue(w4, "reference", dataobjectfield_string("img3"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("193"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("127"));
+	w4 = dataobject_new();
+	dataobject_pack(w3, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w4, "alpha", dataobjectfield_string("175"));
+	dataobject_setValue(w4, "name", dataobjectfield_string("app4"));
+	dataobject_setValue(w4, "reference", dataobjectfield_string("img4"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("132"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("165"));
+	w4 = dataobject_new();
+	dataobject_pack(w3, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w4, "alpha", dataobjectfield_string("150"));
+	dataobject_setValue(w4, "name", dataobjectfield_string("app5"));
+	dataobject_setValue(w4, "reference", dataobjectfield_string("img5"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("72"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("124"));
 
 	return w0;
 }
