@@ -277,7 +277,7 @@ void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 			continue;
 		}
 		buf = lgui_buffer + destx + ypos*LGUI_WIDTH;
-		imgbuf = img + imgx + imgypos*((imgwidth+1)>>1);
+		imgbuf = img + (imgx >> 1) + imgypos*((imgwidth+1)>>1);
 
 		buf += ((ccol+1) >> 1) << 1;
 		if (isItalic)
