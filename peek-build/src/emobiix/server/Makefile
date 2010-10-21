@@ -27,7 +27,7 @@ LIB += $(BOOSTLIB)/libboost_system.a
 LIB += $(BOOSTLIB)/libboost_thread.a -lpthread
 LIB += -lxerces-c
 
-.PHONY: $(SUBDIR) peek peekclean
+.PHONY: $(SUBDIR) peek purple peekclean
 
 all: server
 
@@ -47,6 +47,9 @@ utils:
 peek:
 	$(MAKE) -C examples/peek_interface
 
+purple:
+	$(MAKE) -C examples/purple-server
+
 peekclean:
 	$(MAKE) -C examples/peek_interface clean
 
@@ -55,6 +58,7 @@ clean:
 	$(MAKE) -C application clean
 	$(MAKE) -C utils clean
 	$(MAKE) -C soaprpc clean
+	$(MAKE) -C examples/purple-server clean
 	$(RM) $(TARGET) *.o *.d
 
 include $(BASEDIR)/Makefile.rules
