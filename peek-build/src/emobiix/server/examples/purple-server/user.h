@@ -27,6 +27,7 @@ public:
     std::string m_username;
     std::string m_password;
 	std::string m_protocol;
+	int m_Id;
     Result *m_result;
 };
 
@@ -49,6 +50,8 @@ public:
 	std::string m_protocol;
 	PurpleAccount *m_account;
 	int m_Id;
+	bool m_changed;
+	enum {SIGNED_ON, SIGNED_OFF} m_status;
 };
 
 typedef std::list<Message> MessageList;
@@ -81,13 +84,14 @@ public:
     void pushMessage(const char *sender, const char *message);
     MessageList getPushList(void);
 	void addAccount(const char *username, const char *password,
-			const char *protocol, PurpleAccount *account);
+			const char *protocol, PurpleAccount *account, int id);
 	void removeAccount(const char *username, const char *protocol);
 	Account *getAccount(const char *username, const char *protocol);
 	void addAccountRef(PurpleAccount *account);
 	void saveAccountDetails(void);
 	std::string buddyListUpdateString(void);
 	void CleanBuddyList(void);
+	std::string accountListUpdateString(void);
 
     char *m_emobiixID;
     Task *m_task;

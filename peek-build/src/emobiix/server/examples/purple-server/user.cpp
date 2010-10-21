@@ -59,7 +59,7 @@ void AddUser(User *user)
 	int id;
 	FILE *input;
 	std::string filename;
-
+	int maxid = 0;
 
 	filename = "accounts/";
 	filename += user->m_emobiixID;
@@ -69,6 +69,8 @@ void AddUser(User *user)
 			if (fgets(idstr, 50, input) == NULL)
 				break;
 			id = atoi(idstr);
+			if (id > maxid)
+				maxid = id + 1;
 			if (fgets(username, 50, input) == NULL)
 				break;
 			if (fgets(password, 50, input) == NULL)
@@ -97,6 +99,7 @@ void AddUser(User *user)
 		} while (1);
 		fclose(input);
 	}
+	user->m_lastAccountId = maxid;
 
 	g_static_rw_lock_writer_lock(&userLock);
 	userMap[user->m_emobiixID] = user;
@@ -144,6 +147,8 @@ Account::Account(const char *username, const char *password,
 	m_protocol = protocol;
 	m_account = account;
 	m_Id = id;
+	m_changed = true;
+	m_status = SIGNED_ON;
 }
 
 User::User(const char *eID)
@@ -222,6 +227,8 @@ void User::saveAccountDetails(void)
 
 		for (iter = m_account.begin(); iter != m_account.end();
 				++iter) {
+			if ((*iter).m_status != Account::SIGNED_ON)
+				continue;
 			fprintf(output, "%d\n%s\n%s\n%s\n", 
 					(*iter).m_Id, (*iter).m_username.c_str(),
 					(*iter).m_password.c_str(), (*iter).m_protocol.c_str());
@@ -294,4 +301,46 @@ void User::CleanBuddyList(void)
 		if ((*iter).status == Buddy::SIGNED_ON)
 			(*iter).lastupdate = 0;
 	}
+}
+
+std::string User::accountListUpdateString(void)
+{
+	std::string output;
+	AccountList::iterator iter;
+	int bId = 0;
+	char ibuf[64];
+
+	output = "<record>";
+	g_mutex_lock(m_pushMutex);
+
+	for (iter = m_account.begin(); iter != m_account.end(); ++iter) {
+		std::string aproto = "prpl-aim";
+
+		(*iter).m_changed = true;
+		if ((*iter).m_changed) {
+			(*iter).m_changed = false;
+			if ((*iter).m_status == Account::SIGNED_ON)
+				output += "<item ";
+			else 
+				output += "<delete ";
+
+			output += "idminor=\"";
+			snprintf(ibuf, 64, "%d", (*iter).m_Id);
+			output += ibuf;
+
+			if ((*iter).m_status == Account::SIGNED_ON) {
+				output += "\" username=\"";
+				output += (*iter).m_username;
+				output += "\" protocol=\"";
+				output += (*iter).m_protocol;
+			}
+			output += "\"/>";
+		}
+	}
+	
+	output += "</record>";
+
+	g_mutex_unlock(m_pushMutex);
+
+	return output;
 }
