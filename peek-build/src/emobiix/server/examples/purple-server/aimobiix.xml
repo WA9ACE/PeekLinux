@@ -165,7 +165,7 @@ end
 				<box id="dialogu" width="80%" alignment="center" margintop="20">
 					<label alignment="center" font-color="#000">Accounts</label>
 				</box>
-				<box alignment="center" width="80%" height="40%" id="dialogl" rounded="4" border-corners="4" packing="horizontal">
+				<box alignment="center" width="80%" height="40%" id="dialogl" rounded="4" border-corners="4" packing="horizontal" onreturn="goscreen(&quot;welcome&quot;)">
 					<scrolled width="96%" height="100%" name="accscroll">
 						<array reference="tcp://127.0.0.1:5533/accounts">
 							<box width="100%" packing="horizontal">

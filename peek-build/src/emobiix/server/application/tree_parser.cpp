@@ -30,7 +30,7 @@ bool tree_parser::create(DOMNode *node, std::vector<FRIPacketP *>& packets)
     return createBox(node, packets);
   else if (nodeName == "button")
     return createButton(node, packets);
-  else if (nodeName == "label")
+  else if (nodeName == "label" || nodeName == "text")
     return createLabel(node, packets);
   else if (nodeName == "entry")
     return createEntry(node, packets);

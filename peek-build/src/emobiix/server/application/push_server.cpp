@@ -78,13 +78,16 @@ void push_server::stop()
 
 }
 
-int ns__DataObjectPushRequest(struct soap*, std::string deviceId, std::string dataObjectURI, std::vector<ns__KeyValue>* requestParam, bool &isDelivered)
+int ns__DataObjectPushRequest(struct soap*, std::string deviceId, std::string pushdata, std::vector<ns__KeyValue>* requestParam, bool &isDelivered)
 {
+	DEBUGLOG("Got push request");
+
 	emobiix::appdata data;
 	if (!emobiix::shared_appdata::instance().get(deviceId, data))
 		return 404;
 
-	data.device->push(dataObjectURI);
+	//data.device->push(pushdata, (*requestParam)[0].value);
+	data.device->push(pushdata);
 	return SOAP_OK;
 }
 

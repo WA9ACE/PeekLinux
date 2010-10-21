@@ -38,7 +38,7 @@ public:
   void start();
 
 	/// Handle push to device
-	void push(const std::string &data);
+	void push(const std::string &URI);
 
 private:
   /// Handle completion of a read operation.
@@ -55,6 +55,8 @@ private:
 
 	/// Handle a single packet
 	void handle_packet(FRIPacketP *packet, reply& rep);
+
+	void handle_push(std::string URI);
 
 private:
 	void handle_protocolHandshake(FRIPacketP*, reply& rep);
@@ -100,6 +102,7 @@ private:
   reply reply_;
 
 	int m_currentSyncId;
+	int m_localSyncId;
 
 	std::map<std::string, std::string> m_currentSyncParams;
 };

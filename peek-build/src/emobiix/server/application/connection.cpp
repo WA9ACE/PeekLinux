@@ -34,16 +34,18 @@ connection::connection(io_service& io_service, const std::string app_path)
 	: strand_(io_service),
 	socket_(io_service),
 	app_path_(app_path),
-	m_currentSyncId(0)
+	m_currentSyncId(0),
+	m_localSyncId(2)
 {
 }
 
 connection::~connection()
 {
+#if 1
 	if (connection_token_.length())
 		shared_appdata::instance().remove(connection_token_);
-
 	TRACELOG("Terminating connection: " << connection_token_);
+#endif
 }
 
 ip::tcp::socket& connection::socket()
@@ -302,7 +304,7 @@ void connection::handle_dataObjectSyncStart(FRIPacketP* packet, reply& rep)
 	}
 
 	if (char *slash = strrchr((const char *)s.urlP.buf, '/'))
-		url_request_ = slash + 1;
+		url_request_= slash + 1;
 	else
 		url_request_ = "sample";
 
@@ -410,9 +412,9 @@ void connection::handle_dataObjectSync(FRIPacketP* packet, reply& rep)
 void connection::handle_dataObjectSyncFinish(FRIPacketP* packet, reply& rep)
 {
 	DataObjectSyncFinishP &s = packet->packetTypeP.choice.dataObjectSyncFinishP;
-	DEBUGLOG("Client Sync finished, seqId: " << s.syncSequenceIDP << ", response: " << s.responseP);
+	DEBUGLOG("Client Sync finished, seqId: " << s.syncSequenceIDP << ", response: " << s.responseP << " url: " << url_request_);
 
-	if (!strncmp(url_request_.c_str(), "inbox", 5))
+	if (!strncmp(url_request_.c_str(), "inbox", 5) || !strncmp(url_request_.c_str(), "messages", 8))
 		start_arraySync(rep);
 	else
 		start_serverSync(rep);
@@ -447,7 +449,6 @@ void connection::start_arraySync(reply& rep)
 void connection::start_serverSync(reply& rep)
 {
 	DEBUGLOG("Starting server sync: " << m_currentSyncId);
-	rep.packets.push_back(dataobject_factory::blockSyncListP(m_currentSyncId));
 
 	string treeData;
 	if (!soap_request::GetTreeDataObject(app_path_, connection_token_, url_request_, m_currentSyncParams, treeData))
@@ -458,15 +459,47 @@ void connection::start_serverSync(reply& rep)
 
 	TRACELOG("Tree data received: " << treeData);
 	
-	tree_parser parser(treeData.c_str(), app_path_, connection_token_, m_currentSyncId);
-	parser.parse(rep.packets);
+	xml_parser *parser;
+
+	if (!strncmp(treeData.c_str(), "<record>", 8)) {
+		rep.packets.push_back(dataobject_factory::recordSyncListP(m_currentSyncId));
+		parser = new record_parser(treeData.c_str(), app_path_, connection_token_);
+	} else {
+		rep.packets.push_back(dataobject_factory::blockSyncListP(m_currentSyncId));
+		parser = new tree_parser(treeData.c_str(), app_path_, connection_token_, m_currentSyncId);
+	}
+	parser->parse(rep.packets);
 
 	DEBUGLOG("Finishing server sync: " << m_currentSyncId);
 	rep.packets.push_back(dataobject_factory::dataObjectSyncFinishP(RequestResponseP_responseOKP, m_currentSyncId));
+
+	delete parser;
 }
 
-void connection::push(const std::string &data)
+void connection::handle_push(std::string URI)
 {
+#if 1
+	reply rep, repA;
+	FRIPacketP *packet;
+
+	DEBUGLOG("push request to device " << URI);
+	packet = dataobject_factory::dataObjectSyncStartP(URI.c_str(), m_localSyncId);
+	handle_packet(packet, repA);
+	rep.packets.push_back(dataobject_factory::dataObjectSyncStartP(URI.c_str(), m_localSyncId));
+	// not async since rep is local and we are inside the strand 
+	socket_.send(rep.to_buffers());
+	m_localSyncId += 2;
+#endif
+}
+
+void connection::push(const std::string &URI)
+{
+	DEBUGLOG("Generating push request to device " << socket_.remote_endpoint().address().to_string()
+			<< " to URI " << URI);
+
+	strand_.dispatch(boost::bind(&connection::handle_push, shared_from_this(), URI)); 
+
+#if 0
 	DEBUGLOG("Generating push request to device " << socket_.remote_endpoint().address().to_string() << " port " << DEVICE_UDP_LISTEN_PORT << " with data: " << data);
 
 	using namespace boost::asio::ip;
@@ -487,6 +520,7 @@ void connection::push(const std::string &data)
 	{
 		ERRORLOG("Failed to send UDP notification to device: " << e.what());
 	}
+#endif
 }
 
 }

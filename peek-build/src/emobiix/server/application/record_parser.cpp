@@ -27,8 +27,22 @@ bool record_parser::parseTree(DOMNode *node, std::vector<FRIPacketP *>& packets)
 	int index = 0;
 	while (node) 
 	{
-		if (node->getNodeType() == DOMNode::ELEMENT_NODE) 
-			addElement(node, packets.back(), ++index);
+		if (node->getNodeType() == DOMNode::ELEMENT_NODE) {
+			DOMNamedNodeMap *attr = node->getAttributes();
+			if (attr) {
+				for (size_t i = 0; i < attr->getLength(); ++i)
+				{
+					string attribute = xml_parser::XMLToString(attr->item(i)->getNodeName());
+					string value = xml_parser::XMLToString(attr->item(i)->getNodeValue());
+					if (attribute == "idminor") {
+						index = atoi(value.c_str());
+						break;
+					}
+				}
+
+				addElement(node, packets.back(), ++index);
+			}
+		}
 
 		node = node->getNextSibling();
 	}
@@ -55,7 +69,18 @@ void record_parser::addElement(DOMNode *node, FRIPacketP* packet, int index)
 	if (!attr)
 		return;
 
-	RecordSyncListP_t *record =	dataobject_factory::recordSyncP(index, 0);
+	string prop = xml_parser::XMLToString(node->getNodeName());
+
+	for (size_t i = 0; i < attr->getLength(); ++i)
+	{
+		string attribute = xml_parser::XMLToString(attr->item(i)->getNodeName());
+		string value = xml_parser::XMLToString(attr->item(i)->getNodeValue());
+		if (attribute == "minorid")
+			index = atoi(value.c_str());
+	}
+	
+	RecordSyncListP_t *record =	dataobject_factory::recordSyncP(index, 0,
+			prop == "delete" ? 1 : 0);
 	for (size_t i = 0; i < attr->getLength(); ++i)
 	{
 		string attribute = xml_parser::XMLToString(attr->item(i)->getNodeName());

@@ -15,6 +15,7 @@ namespace emobiix
 class dataobject_factory
 {
 public:
+	static FRIPacketP* dataObjectSyncStartP(const char *url, int sequenceID);
 	static FRIPacketP* dataObjectSyncP();
 	static FRIPacketP* blockSyncListP(int sequenceId);
 	static FRIPacketP* recordSyncListP(int sequenceId);
@@ -25,7 +26,8 @@ public:
 	static SyncOperandP_t* syncOperandP_nodeGotoTreeP(int index);
 
 	static void syncOperandP_nodeGotoTreeP(FRIPacketP* packet, int index);
-	static RecordSyncListP_t* recordSyncP(int stampMinor, int stampMajor);
+	static RecordSyncListP_t* recordSyncP(int stampMinor, int stampMajor,
+			int isDelete = 0);
 
 	static void addStringAttribute(FRIPacketP *packet, const char *attribute, const char *value);
 	static void addDataAttribute(FRIPacketP *packet, const char *attribute, std::vector<std::pair<size_t, unsigned char *> >& data);

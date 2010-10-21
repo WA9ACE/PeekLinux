@@ -87,10 +87,10 @@ FRIPacketP* dataobject_factory::recordSyncListP(int sequenceId)
 	return packet;
 }
 
-RecordSyncListP_t* dataobject_factory::recordSyncP(int stampMinor, int stampMajor)
+RecordSyncListP_t* dataobject_factory::recordSyncP(int stampMinor, int stampMajor, int isDelete)
 {
 	RecordSyncListP_t *record = (RecordSyncListP_t *)malloc(sizeof(RecordSyncListP_t));
-	record->deleteRecordP = 0; //isDelete;
+	record->deleteRecordP = isDelete;
 	record->recordIdMinorP = stampMinor;
 	record->recordIdMajorP = stampMajor;
 
@@ -127,6 +127,19 @@ FRIPacketP* dataobject_factory::dataObjectSyncFinishP(RequestResponseP requestRe
 	packet->packetTypeP.present = packetTypeP_PR_dataObjectSyncFinishP;
 	packet->packetTypeP.choice.dataObjectSyncFinishP.responseP = requestResponse;
 	packet->packetTypeP.choice.dataObjectSyncFinishP.syncSequenceIDP = sequenceId;
+
+	return packet;
+}
+
+FRIPacketP* dataobject_factory::dataObjectSyncStartP(const char *url, int sequenceId)
+{
+	FRIPacketP *packet = new FRIPacketP;
+	packet->packetTypeP.present = packetTypeP_PR_dataObjectSyncStartP;
+	packet->packetTypeP.choice.dataObjectSyncStartP.dataObjectStampMinorP = 1;
+	packet->packetTypeP.choice.dataObjectSyncStartP.dataObjectStampMajorP = 1;
+	packet->packetTypeP.choice.dataObjectSyncStartP.urlP.buf = (uint8_t *)strdup(url);
+	packet->packetTypeP.choice.dataObjectSyncStartP.urlP.size = strlen(url);;
+	packet->packetTypeP.choice.dataObjectSyncStartP.syncSequenceIDP = sequenceId;;
 
 	return packet;
 }

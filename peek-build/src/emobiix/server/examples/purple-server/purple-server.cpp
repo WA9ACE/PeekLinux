@@ -46,6 +46,7 @@ static PurpleBuddyList *pblist = NULL;
 
 void ms_pushIM(User *user, const char *sender, const char *message);
 void ms_pushBuddy(User *user);
+void ms_pushAccounts(User *user);
 void ms_newAccount(const char *emobiixID, const char *protocol,
 		const char *username, const char *password);
 void ms_newConnection(const char *emobiixID);
@@ -264,6 +265,7 @@ signed_on(PurpleConnection *gc, gpointer null)
 			user->m_task->m_protocol.c_str(),
 			account,
 			user->m_task->m_Id);
+	//ms_pushAccounts(user);
 }
 
 static void received_im_msg(PurpleAccount *account, char *sender,
@@ -657,14 +659,20 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 		}
 		res += "</record>";
 
-		treeData = base64BinaryFromString(soap, res.c_str());
+		std::string nres;
+		nres = user->accountListUpdateString();;
+
+		treeData = base64BinaryFromString(soap, nres.c_str());
 
 		printf("%s accounts: %s\n", __F__, res.c_str());
+		printf("%s new accounts: %s\n", __F__, nres.c_str());
 
 		return SOAP_OK;
 	}
 
 	if (requestParam && requestParam->size() > 0) {
+		User *user;
+		user = GetUser(deviceId.c_str());
 		map<string, string> param;
         for (size_t i = 0; i < requestParam->size(); ++i) {
 			printf("Key(%s) -> Value(%s)\n",
@@ -680,7 +688,7 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
     		task->m_username = param["user"];
 			task->m_password = param["pass"];
 			task->m_protocol = param["proto"];
-			task->m_Id = user->m_lastAccountId++;;
+			task->m_Id = user->m_lastAccountId++;
 			Task::Push(task);
 			int loop = 0;
 			while (task->m_result == NULL) {
@@ -834,6 +842,23 @@ void ms_newAccount(Task *task)
 			task->m_protocol.c_str());
 }
 
+void ms_delAccount(Task *task)
+{
+	User *output;
+
+	printf("%s disconnecting account\n", __F__);
+
+	output = GetUser(task->m_emobiixID.c_str());
+	if (output == NULL) {
+		printf("delAccount: couldnt find user %s\n", task->m_emobiixID.c_str());
+		return;
+	}
+	output->m_task = task;
+
+	//purple_account_destroy(output);
+
+}
+
 
 void ms_sendIM(Task *task)
 {
@@ -929,8 +954,28 @@ void ms_pushBuddy(User *user)
 	std::string data;
 	bool isDelivered;
 
+	printf("Pushing buddy list\n");
+
     s = soap_new();
 	data = "tcp://127.0.0.1:5533/buddylist";
+
+	std::vector<ns__KeyValue> requestParams;
+    int ret = soap_call_ns__DataObjectPushRequest(s, "http://127.0.0.1:5522", NULL, user->m_emobiixID, data, &requestParams, isDelivered);
+
+    soap_end(s);
+    soap_free(s);
+}
+
+void ms_pushAccounts(User *user)
+{
+	soap *s;
+	std::string data;
+	bool isDelivered;
+
+	printf("Pushing account list\n");
+
+    s = soap_new();
+	data = "tcp://127.0.0.1:5533/accounts";
 
 	std::vector<ns__KeyValue> requestParams;
     int ret = soap_call_ns__DataObjectPushRequest(s, "http://127.0.0.1:5522", NULL, user->m_emobiixID, data, &requestParams, isDelivered);
@@ -974,6 +1019,8 @@ static gboolean event_processor(gpointer not_used)
 
 	if (task->m_event == "addacc") {
 		ms_newAccount(task);
+	} else if (task->m_event == "delacc") {
+		ms_delAccount(task);
 	} else if (task->m_event == "im") {
 		ms_sendIM(task);
 	}

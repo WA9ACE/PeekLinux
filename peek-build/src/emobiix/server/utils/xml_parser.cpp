@@ -34,6 +34,11 @@ DOMDocument* xml_parser::getDocument()
 	return m_parser->getDocument();
 }
 
+bool xml_parser::parse(std::vector<FRIPacketP *>& packets)
+{
+	return false;
+}
+
 std::string xml_parser::XMLToString(const XMLCh *xszValue)
 {
 	if (xszValue == NULL)
