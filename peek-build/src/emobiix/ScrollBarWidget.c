@@ -56,7 +56,8 @@ static void scrollbar_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		ytrans = ytransField->field.integer;
 
 	lgui_hline(box->x+margin->x, box->y+margin->y, box->width, box->height-1,
-				trackColor.rgba.red, trackColor.rgba.green, trackColor.rgba.blue);
+				trackColor.rgba.red, trackColor.rgba.green, trackColor.rgba.blue,
+				trackColor.rgba.alpha);
 	
 	if (isVertical) {
 		height = box->height-4;
@@ -67,7 +68,7 @@ static void scrollbar_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 				starti = (box->height*ytrans)/childBox->height;
 		}
 		lgui_roundedbox_fill(box->x+margin->x+1, box->y+margin->y+2+starti, box->width-2, height, 3,
-				thumbColor.rgba.red, thumbColor.rgba.green, thumbColor.rgba.blue,
+			thumbColor.rgba.red, thumbColor.rgba.green, thumbColor.rgba.blue, thumbColor.rgba.alpha,
 				LGUI_CORNERS_ALL);
 	} else {
 

@@ -188,17 +188,17 @@ static void box_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 
 		if (cornerFlags == 0 || radius == 0) {
 			lgui_hline(box->x+margin->x, box->y+margin->y, box->width, box->height,
-				color.rgba.red, color.rgba.green, color.rgba.blue);
+				color.rgba.red, color.rgba.green, color.rgba.blue, color.rgba.alpha);
 		} else {
 			lgui_roundedbox_fill(box->x+margin->x, box->y+margin->y, box->width, box->height, radius,
-				color.rgba.red, color.rgba.green, color.rgba.blue,
+				color.rgba.red, color.rgba.green, color.rgba.blue, color.rgba.alpha,
 				cornerFlags);
 		}
 	}
 	if (cornerFlags == 0 || radius == 0) {
 		lgui_box(box->x+margin->x, box->y+margin->y, box->width, box->height, 1,
 				outline.rgba.red, outline.rgba.green, outline.rgba.blue,
-				borderFlags);
+				outline.rgba.alpha, borderFlags);
 	} else {
 		lgui_roundedbox_line(box->x+margin->x, box->y+margin->y, box->width-1, box->height-1, radius,
 			outline.rgba.red, outline.rgba.green, outline.rgba.blue,

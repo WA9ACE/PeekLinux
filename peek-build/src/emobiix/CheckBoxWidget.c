@@ -125,7 +125,8 @@ static void checkbox_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	if (dataobjectfield_isString(field, valueStr) && 
 			style_getColor(s, w, "check-color", &checkColor.value) != NULL) {
 		lgui_hline(checkBox.x, checkBox.y, checkBox.width, checkBox.height,
-				checkColor.rgba.red, checkColor.rgba.green, checkColor.rgba.blue);
+				checkColor.rgba.red, checkColor.rgba.green, checkColor.rgba.blue,
+				checkColor.rgba.alpha);
 	}
 }
 

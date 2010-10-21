@@ -91,7 +91,7 @@ Style *RootStyle(void)
 	dataobject_setValue(solidbox, "border-color", dataobjectfield_uint(0x696969FF));
 	dataobject_setValue(solidbox, "border", dataobjectfield_string("1234"));
 	dataobject_setValue(solidbox, "fill", dataobjectfield_string("solid"));
-	dataobject_setValue(solidbox, "cursor-color", dataobjectfield_int(0x0000FF00));
+	dataobject_setValue(solidbox, "cursor-color", dataobjectfield_int(0x0000FFFF));
 
 	/* label */
 	solidbox = widget_newTypeIdName("label", NULL, NULL, defaultStyle);
@@ -106,7 +106,7 @@ Style *RootStyle(void)
 	dataobject_setValue(solidbox, "border-color", dataobjectfield_uint(0x0));
 	dataobject_setValue(solidbox, "border", dataobjectfield_string("1234"));
 	dataobject_setValue(solidbox, "fill", dataobjectfield_string("solid"));
-	dataobject_setValue(solidbox, "check-color", dataobjectfield_int(0x5050FF00));
+	dataobject_setValue(solidbox, "check-color", dataobjectfield_int(0x5050FFFF));
 	
 	/* checkbox */
 	solidbox = widget_newTypeIdName("checkbox", NULL, NULL, defaultStyle);
@@ -117,7 +117,7 @@ Style *RootStyle(void)
 	dataobject_setValue(solidbox, "border-color", dataobjectfield_uint(0x0));
 	dataobject_setValue(solidbox, "border", dataobjectfield_string("1234"));
 	dataobject_setValue(solidbox, "fill", dataobjectfield_string("solid"));
-	dataobject_setValue(solidbox, "check-color", dataobjectfield_int(0x5050FF00));
+	dataobject_setValue(solidbox, "check-color", dataobjectfield_int(0x5050FFFF));
 	dataobject_setValue(solidbox, "box-renderer", dataobjectfield_string("box"));
 
 	/* text */

@@ -32,29 +32,33 @@ extern "C" {
 void lgui_attach(void *buf);
 void lgui_clear(unsigned char pixel);
 
-void lgui_vertical_gradient(unsigned char start_red, unsigned char start_green, unsigned char start_blue,
+void lgui_vertical_gradient(unsigned char start_red, unsigned char start_green,
+	unsigned char start_blue, unsigned char start_alpha,
 	unsigned char end_red, unsigned char end_green, unsigned char end_blue,
-	int startx, int starty, int width, int height);
+	unsigned char end_alpha, int startx, int starty, int width, int height);
 
 void lgui_vertical_gradientG(Gradient *g,
 	int startx, int starty, int width, int height);
 
-void lgui_hline(int x, int y, int len, int width, unsigned char red, unsigned char green, unsigned char blue);
-void lgui_vline(int x, int y, int len, int width, unsigned char red, unsigned char green, unsigned char blue);
+void lgui_hline(int x, int y, int len, int width, unsigned char red, unsigned char green,
+				unsigned char blue, unsigned char alpha);
+void lgui_vline(int x, int y, int len, int width, unsigned char red, unsigned char green,
+				unsigned char blue, unsigned char alpha);
 
 void lgui_box(int x, int y, int width, int height, int linewidth,
-			  unsigned char red, unsigned char green, unsigned char blue,
+			  unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha,
 			  unsigned int cornerFlags);
 void lgui_roundedbox_line(int x, int y, int width, int height, int radius,
 						  unsigned char red, unsigned char green, unsigned char blue,
 						  unsigned int borderFlags, unsigned int borderCornerFlags);
 void lgui_roundedbox_fill(int x, int y, int width, int height, int radius,
 						  unsigned char red, unsigned char green, unsigned char blue,
-						  unsigned int cornerFlags);
+						  unsigned char alpha, unsigned int cornerFlags);
 void lgui_rbox_gradient(Gradient *g, int x, int y, int width, int height, int radius,
 						unsigned int cornerFlags);
 void lgui_circlefill(int xc, int yc, int r,
-		  unsigned char red, unsigned char green, unsigned char blue);
+		  unsigned char red, unsigned char green, unsigned char blue,
+		  unsigned char alpha);
 
 #define LGUI_TBLR			(LGUI_TOPRIGHT|LGUI_TOPLEFT|LGUI_BOTTOMRIGHT|LGUI_BOTTOMLEFT)
 void lgui_aacircle(int x, int y, int rad, int arcs,

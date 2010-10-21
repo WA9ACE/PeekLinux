@@ -49,10 +49,10 @@ DataObject *BootApplication(void)
 "	DataObject.locate(\"tcp://69.114.111.9:12345/calc\")\n"
 "end\n"
 "function maps()\n"
-"	DataObject.locate(\"tcp://69.114.111.9:12345/whereami?40.702147,-74.015794\")\n"
+"	DataObject.locate(\"tcp://69.114.111.9:12345/whereami?35621,10055\")\n"
 "end\n"
 "function aim()\n"
-"	DataObject.locate(\"tcp://69.114.111.9:12345/sample\")\n"
+"	DataObject.locate(\"tcp://69.114.111.9:12345/aimobiix\")\n"
 "end\n"
 "function mail()\n"
 "	DataObject.locate(\"tcp://69.114.111.9:12345/mail\")\n"
@@ -536,9 +536,21 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w2, "onreturn", dataobjectfield_string("dobj = DataObject.find(\"mainview\");dobj:toScreen()"));
 	dataobject_setValue(w2, "packing", dataobjectfield_string("vertical"));
 	dataobject_setValue(w2, "reference", dataobjectfield_string("background"));
+	
+	w4 = dataobject_new();
+	dataobject_pack(w2, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("box"));
+	dataobject_setValue(w4, "id", dataobjectfield_string("solid"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("0"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("0"));
+	dataobject_setValue(w4, "width", dataobjectfield_string("320"));
+	dataobject_setValue(w4, "height", dataobjectfield_string("240"));
+	dataobject_setValue(w4, "background-color", dataobjectfield_string("#000000AA"));
+
 	w4 = dobjFromFile("glow.png", w2);
 	dataobject_setValue(w4, "x", dataobjectfield_string("86"));
 	dataobject_setValue(w4, "y", dataobjectfield_string("59"));
+	
 	w3 = dataobject_new();
 	dataobject_pack(w4, w3);
 	dataobject_setValue(w3, "type", dataobjectfield_string("stack"));
@@ -546,6 +558,18 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w3, "height", dataobjectfield_string("100%"));
 	dataobject_setValue(w3, "onreturn", dataobjectfield_string("launch()"));
 	dataobject_setValue(w3, "width", dataobjectfield_string("100%"));
+
+	w4 = dataobject_new();
+	dataobject_pack(w3, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("text"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("126"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("100"));
+	dataobject_setValue(w4, "width", dataobjectfield_string("100"));
+	dataobject_setValue(w4, "font-color", dataobjectfield_string("#FFF"));
+	dataobject_setValue(w4, "name", dataobjectfield_string("appTitle"));
+	dataobject_setValue(w4, "multiline", dataobjectfield_string("1"));
+	dataobject_setValue(w4, "data", dataobjectfield_string("     <b>Text\nMessaging"));
+
 	w4 = dataobject_new();
 	dataobject_pack(w3, w4);
 	dataobject_setValue(w4, "type", dataobjectfield_string("image"));
