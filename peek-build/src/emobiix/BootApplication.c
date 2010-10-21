@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "p_malloc.h"
+#include "system_time.h"
 
 #ifdef SIMULATOR
 #include "Mime.h"
@@ -68,12 +69,14 @@ DataObject *BootApplication(void)
 "		aim()\n"
 "	elseif focusIndex == 5 then\n"
 "		DataObject.netsurf()\n"
+"	elseif focusIndex == 6 then\n"
+"		print(\"empty\")\n"
 "	end\n"
 "end\n"
 "\n"
 "function focusNext()\n"
 "	focusIndex = focusIndex + 1\n"
-"	if focusIndex == 6 then\n"
+"	if focusIndex == 7 then\n"
 "		focusIndex = 1\n"
 "	end\n"
 "	refocus()\n"
@@ -81,20 +84,25 @@ DataObject *BootApplication(void)
 "function focusPrev()\n"
 "	focusIndex = focusIndex - 1\n"
 "	if focusIndex == 0 then\n"
-"		focusIndex = 5\n"
+"		focusIndex = 6\n"
 "	end\n"
 "	refocus()\n"
 "end\n"
 "function refocus()\n"
 "	idx = focusIndex\n"
 "\n"
-"	for i=1,5 do\n"
+"	for i=1,6 do\n"
 "		app = DataObject.find(\"app\" .. i)\n"
 "		app:setValue(\"reference\", \"img\" .. idx)\n"
 "		idx = idx + 1\n"
-"		if idx == 6 then idx = 1 end\n"
+"		if idx == 7 then idx = 1 end\n"
 "	end\n"
-"end"));
+"end\n"
+"function showmenu()\n"
+"dobj = DataObject.find(\"appmenu\");\n"
+"dobj:toScreen()\n"
+"end\n"));
+#if 0
 	w1 = dataobject_new();
 	dataobject_pack(w0, w1);
 	dataobject_setValue(w1, "type", dataobjectfield_string("data"));
@@ -103,6 +111,7 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w1, "M1", dataobjectfield_string("5"));
 	dataobject_setValue(w1, "M2", dataobjectfield_string("9"));
 	dataobject_setValue(w1, "name", dataobjectfield_string("time"));
+#endif
 	w1 = dobjFromFile("clock-numbers.png", w0);
 	dataobject_setValue(w1, "name", dataobjectfield_string("clock"));
 	w1 = dataobject_new();
@@ -128,21 +137,21 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w3, "type", dataobjectfield_string("stack"));
 	dataobject_setValue(w3, "accesskey", dataobjectfield_string("ACTIVATE"));
 	dataobject_setValue(w3, "height", dataobjectfield_string("100%"));
-	dataobject_setValue(w3, "onreturn", dataobjectfield_string("dobj = DataObject.find(\"appmenu\");dobj:toScreen()"));
+	dataobject_setValue(w3, "onreturn", dataobjectfield_string("showmenu()"));
 	dataobject_setValue(w3, "width", dataobjectfield_string("100%"));
 	w4 = dataobject_new();
 	dataobject_pack(w3, w4);
 	dataobject_setValue(w4, "type", dataobjectfield_string("set"));
 	dataobject_setValue(w4, "fieldname", dataobjectfield_string("H1"));
 	dataobject_setValue(w4, "height", dataobjectfield_string("37"));
-	dataobject_setValue(w4, "reference", dataobjectfield_string("time"));
+	dataobject_setValue(w4, "reference", dataobjectfield_string(SYSTEM_TIME_URI));
 	dataobject_setValue(w4, "width", dataobjectfield_string("6"));
 	dataobject_setValue(w4, "x", dataobjectfield_string("227"));
 	dataobject_setValue(w4, "y", dataobjectfield_string("90"));
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("1"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(1));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -159,14 +168,14 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w4, "type", dataobjectfield_string("set"));
 	dataobject_setValue(w4, "fieldname", dataobjectfield_string("H2"));
 	dataobject_setValue(w4, "height", dataobjectfield_string("53"));
-	dataobject_setValue(w4, "reference", dataobjectfield_string("time"));
+	dataobject_setValue(w4, "reference", dataobjectfield_string(SYSTEM_TIME_URI));
 	dataobject_setValue(w4, "width", dataobjectfield_string("20"));
 	dataobject_setValue(w4, "x", dataobjectfield_string("232"));
 	dataobject_setValue(w4, "y", dataobjectfield_string("70"));
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("0"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(0));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -178,7 +187,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("1"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(1));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -191,7 +200,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("2"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(2));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -204,7 +213,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("3"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(3));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -217,7 +226,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(4));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -230,7 +239,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("5"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(5));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -242,7 +251,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("6"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(6));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -254,7 +263,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("7"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(7));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -267,7 +276,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("8"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(8));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -279,7 +288,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("9"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(9));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -295,13 +304,13 @@ DataObject *BootApplication(void)
 	dataobject_pack(w3, w4);
 	dataobject_setValue(w4, "type", dataobjectfield_string("set"));
 	dataobject_setValue(w4, "fieldname", dataobjectfield_string("M1"));
-	dataobject_setValue(w4, "reference", dataobjectfield_string("time"));
+	dataobject_setValue(w4, "reference", dataobjectfield_string(SYSTEM_TIME_URI));
 	dataobject_setValue(w4, "x", dataobjectfield_string("256"));
 	dataobject_setValue(w4, "y", dataobjectfield_string("42"));
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("0"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(0));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -313,7 +322,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("1"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(1));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -326,7 +335,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("2"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(2));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -338,7 +347,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("3"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(3));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -350,7 +359,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(4));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -362,7 +371,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("5"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(5));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -375,13 +384,13 @@ DataObject *BootApplication(void)
 	dataobject_pack(w3, w4);
 	dataobject_setValue(w4, "type", dataobjectfield_string("set"));
 	dataobject_setValue(w4, "fieldname", dataobjectfield_string("M2"));
-	dataobject_setValue(w4, "reference", dataobjectfield_string("time"));
+	dataobject_setValue(w4, "reference", dataobjectfield_string(SYSTEM_TIME_URI));
 	dataobject_setValue(w4, "x", dataobjectfield_string("280"));
 	dataobject_setValue(w4, "y", dataobjectfield_string("5"));
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("0"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(0));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -393,7 +402,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("1"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(1));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -407,7 +416,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("2"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(2));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -419,7 +428,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("3"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(3));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -431,7 +440,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("4"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(4));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -443,7 +452,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("5"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(5));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -455,7 +464,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("6"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(6));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -467,7 +476,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("7"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(7));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -480,7 +489,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("8"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(8));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -492,7 +501,7 @@ DataObject *BootApplication(void)
 	w5 = dataobject_new();
 	dataobject_pack(w4, w5);
 	dataobject_setValue(w5, "type", dataobjectfield_string("setitem"));
-	dataobject_setValue(w5, "fieldvalue", dataobjectfield_string("9"));
+	dataobject_setValue(w5, "fieldvalue", dataobjectfield_uint(9));
 	w6 = dataobject_new();
 	dataobject_pack(w5, w6);
 	dataobject_setValue(w6, "type", dataobjectfield_string("image"));
@@ -511,6 +520,8 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w1, "name", dataobjectfield_string("img4"));
 	w1 = dobjFromFile("netsurf.png", w0);
 	dataobject_setValue(w1, "name", dataobjectfield_string("img5"));
+	w1 = dobjFromFile("weather.png", w0);
+	dataobject_setValue(w1, "name", dataobjectfield_string("img6"));
 	w1 = dataobject_new();
 	dataobject_pack(w0, w1);
 	dataobject_setValue(w1, "type", dataobjectfield_string("view"));
@@ -525,23 +536,23 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w2, "onreturn", dataobjectfield_string("dobj = DataObject.find(\"mainview\");dobj:toScreen()"));
 	dataobject_setValue(w2, "packing", dataobjectfield_string("vertical"));
 	dataobject_setValue(w2, "reference", dataobjectfield_string("background"));
+	w4 = dobjFromFile("glow.png", w2);
+	dataobject_setValue(w4, "x", dataobjectfield_string("86"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("59"));
 	w3 = dataobject_new();
-	dataobject_pack(w2, w3);
+	dataobject_pack(w4, w3);
 	dataobject_setValue(w3, "type", dataobjectfield_string("stack"));
 	dataobject_setValue(w3, "accesskey", dataobjectfield_string("ACTIVATE"));
 	dataobject_setValue(w3, "height", dataobjectfield_string("100%"));
 	dataobject_setValue(w3, "onreturn", dataobjectfield_string("launch()"));
 	dataobject_setValue(w3, "width", dataobjectfield_string("100%"));
-	w4 = dobjFromFile("glow.png", w3);
-	dataobject_setValue(w4, "x", dataobjectfield_string("74"));
-	dataobject_setValue(w4, "y", dataobjectfield_string("0"));
 	w4 = dataobject_new();
 	dataobject_pack(w3, w4);
 	dataobject_setValue(w4, "type", dataobjectfield_string("image"));
 	dataobject_setValue(w4, "name", dataobjectfield_string("app1"));
 	dataobject_setValue(w4, "reference", dataobjectfield_string("img1"));
-	dataobject_setValue(w4, "x", dataobjectfield_string("132"));
-	dataobject_setValue(w4, "y", dataobjectfield_string("30"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("130"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("13"));
 	w4 = dataobject_new();
 	dataobject_pack(w3, w4);
 	dataobject_setValue(w4, "type", dataobjectfield_string("image"));
@@ -550,8 +561,8 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w4, "name", dataobjectfield_string("app2"));
 	dataobject_setValue(w4, "onreturn", dataobjectfield_string("focusNext()"));
 	dataobject_setValue(w4, "reference", dataobjectfield_string("img2"));
-	dataobject_setValue(w4, "x", dataobjectfield_string("193"));
-	dataobject_setValue(w4, "y", dataobjectfield_string("63"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("203"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("57"));
 	w4 = dataobject_new();
 	dataobject_pack(w3, w4);
 	dataobject_setValue(w4, "type", dataobjectfield_string("image"));
@@ -560,7 +571,7 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w4, "name", dataobjectfield_string("app3"));
 	dataobject_setValue(w4, "onreturn", dataobjectfield_string("focusPrev()"));
 	dataobject_setValue(w4, "reference", dataobjectfield_string("img3"));
-	dataobject_setValue(w4, "x", dataobjectfield_string("193"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("203"));
 	dataobject_setValue(w4, "y", dataobjectfield_string("127"));
 	w4 = dataobject_new();
 	dataobject_pack(w3, w4);
@@ -568,16 +579,24 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w4, "alpha", dataobjectfield_string("175"));
 	dataobject_setValue(w4, "name", dataobjectfield_string("app4"));
 	dataobject_setValue(w4, "reference", dataobjectfield_string("img4"));
-	dataobject_setValue(w4, "x", dataobjectfield_string("132"));
-	dataobject_setValue(w4, "y", dataobjectfield_string("165"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("130"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("172"));
 	w4 = dataobject_new();
 	dataobject_pack(w3, w4);
 	dataobject_setValue(w4, "type", dataobjectfield_string("image"));
 	dataobject_setValue(w4, "alpha", dataobjectfield_string("150"));
 	dataobject_setValue(w4, "name", dataobjectfield_string("app5"));
 	dataobject_setValue(w4, "reference", dataobjectfield_string("img5"));
-	dataobject_setValue(w4, "x", dataobjectfield_string("72"));
-	dataobject_setValue(w4, "y", dataobjectfield_string("124"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("58"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("127"));
+	w4 = dataobject_new();
+	dataobject_pack(w3, w4);
+	dataobject_setValue(w4, "type", dataobjectfield_string("image"));
+	dataobject_setValue(w4, "alpha", dataobjectfield_string("125"));
+	dataobject_setValue(w4, "name", dataobjectfield_string("app6"));
+	dataobject_setValue(w4, "reference", dataobjectfield_string("img6"));
+	dataobject_setValue(w4, "x", dataobjectfield_string("58"));
+	dataobject_setValue(w4, "y", dataobjectfield_string("57"));
 
 	return w0;
 }

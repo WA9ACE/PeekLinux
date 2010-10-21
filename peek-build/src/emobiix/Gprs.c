@@ -2,6 +2,7 @@
 #include "Debug.h"
 #include "DataObject.h"
 #include "URL.h"
+#include "ConnectionContext.h"
 
 static DataObject* GPRS_DO = NULL;
 static DataObjectField* GPRS_SIGNAL_LEVEL;
@@ -49,6 +50,31 @@ void gprs_dataobject_init(void)
 	}
 }
 
+#define SYSTEM_WEATHER_URI "tcp://remote/weather"
+
+extern ConnectionContext *connectionContext;
+
+void system_weather_request()
+{
+	static DataObject *WEATHER = NULL;
+	static URL *weatherUrl;
+
+	if (!WEATHER)
+	{
+		weatherUrl = url_parse(SYSTEM_WEATHER_URI, URL_ALL);
+		WEATHER = dataobject_construct(weatherUrl, 0);
+	}
+	
+	dataobject_setValue(WEATHER, "lac", dataobjectfield_uint(GPRS_LOCATION_LAC->field.uinteger));
+	dataobject_setValue(WEATHER, "ci", dataobjectfield_uint(GPRS_LOCATION_CI->field.uinteger));
+
+	if (connectionContext)
+	{
+		emo_printf("Requesting weather");
+		connectionContext_syncRequestForce(connectionContext, weatherUrl, WEATHER);
+	}
+}
+
 void gprs_set_status(BOOL status)
 {
 	if (!GPRS_DO)
@@ -83,6 +109,9 @@ void gprs_set_emobiix_on(BOOL status)
 	GPRS_EMOBIIX_ON->field.uinteger = status;
 	dataobjectfield_setIsModified(GPRS_EMOBIIX_ON, 1);
 	dataobject_setIsModified(GPRS_DO, 1);
+
+//	if (status == 1)
+//		system_weather_request();
 
 	force_dataobject_redraw();
 }

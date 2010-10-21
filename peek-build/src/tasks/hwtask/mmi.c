@@ -44,5 +44,4 @@ void mmi_main(void)
 		/* Start SIM which triggers network registration*/
 		sim_activate();
 	}
-
 }

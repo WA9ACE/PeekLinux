@@ -74,7 +74,7 @@ void hwStart(void) {
  hw_td_init();
 
  // Unlock UI
- HwStatusSet();
+ //HwStatusSet();
  //emo_printf("hwStart() time: %s", hw_td_get_clock_str());
 
  if(simAutoDetect()) {
@@ -82,6 +82,7 @@ void hwStart(void) {
 		emo_printf("IMEI: %s", EmoGetImei());
  // Enter main notify loop
     while(1) {
+				HwStatusSet();
         EvtStatus = BOSEventWait(EXE_BAL_ID, BOS_SIGNAL_TRUE, BOS_MESSAGE_TRUE,BOS_TIMEOUT_FALSE);//BOSCalMsec(10000)
         if(EvtStatus & BOS_MESSAGE_TYPE)
         {

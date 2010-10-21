@@ -34,7 +34,7 @@ DataObject *dataobject_new(void);
 DataObject *dataobject_copy(DataObject *dobj);
 DataObject *dataobject_copyTree(DataObject *dobj);
 void dataobject_delete(DataObject *dobj);
-void dataobject_setValue(DataObject *dobj, const char *key, DataObjectField *v);
+void dataobject_setValue(DataObject *dobj, const char *, DataObjectField *);
 void dataobject_setIsModified(DataObject *dobj, int isModified);
 DataObjectField *dataobject_getValue(DataObject *obj, const char *key);
 DataObjectField *dataobject_getValueAsInt(DataObject *dobj, const char *key);

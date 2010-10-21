@@ -16,6 +16,7 @@
 #include "DataObject_private.h"
 
 #include <string.h>
+#include <stdarg.h>
 
 void dataobjectfield_free(DataObjectField *f)
 {
@@ -191,6 +192,30 @@ void dataobject_setValue(DataObject *dobj, const char *key, DataObjectField *v)
 	}
 	map_append(dobj->data, key, v);
 }
+
+#if 0
+DataObject* dataobject_setValue(DataObject *dobj, ...) //const char *key, DataObjectField *value)
+{
+	va_list ap;
+	const char *key;
+	DataObjectField *value;
+
+	va_start(ap, dobj);
+	for (;;)
+	{
+		key = va_arg(ap, char *);
+		value = va_arg(ap, DataObjectField *);
+
+		if (!key || !value)
+			break;
+
+		dataobject_set(dobj, key, value);
+	}
+	va_end(ap);
+
+	return dobj;
+}
+#endif
 
 void dataobject_unsetValue(DataObject *dobj, const char *key)
 {

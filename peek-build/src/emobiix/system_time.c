@@ -49,6 +49,8 @@ static void updateTimeCB(tDS *timeData, void *opaque)
 
 	lgui_set_dirty();
 	updateScreen();
+
+	emo_printf("system_time_init() timer returned %d", timerStart(timeData, TIME_UPDATE_INTERVAL));
 }
 
 void system_time_init()

@@ -303,14 +303,15 @@ int uiGetStatus(void)
 {
 	return uiStatus;
 }
+
 void UIInit(void)
 {	
 	if(simAutoDetect())
 		backlightInit();
 
-	TCCE_Task_Sleep(500); 
-
 	display_init();
+
+	TCCE_Task_Sleep(500); 
 
 	dataobject_platformInit();
 	renderman_init();
