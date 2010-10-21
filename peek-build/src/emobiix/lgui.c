@@ -115,6 +115,8 @@ void lgui_vertical_gradient(
 			}
 			*buf = pixel;
 			++buf;
+			if (alpha < 255)
+				pixel = ipixel;
 		}
 		++ypos;
 	}
