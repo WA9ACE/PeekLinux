@@ -1259,7 +1259,9 @@ next_childop:
 	}
 	if (dataobject_getTreeNextOp(sobj, &childOp))
 		sreq->childOp = childOp;
-	else
-		sreq->hasFinished = 1;
+	else {
+		if(sreq->forcedObject == NULL)
+			sreq->hasFinished = 1;
+	}
 }
 
