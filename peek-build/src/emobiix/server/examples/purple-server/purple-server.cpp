@@ -1210,8 +1210,8 @@ void *soap_startup(void *not_used)
 
 	soap_init(&soap1);
 	soap1.bind_flags = SO_REUSEADDR;
-	if (soap_bind(&soap1, "0.0.0.0", 7777, 5) < 0) {
-		fprintf(stderr, "Soap failed to bind on 0.0.0.0:7777\n");
+	if (soap_bind(&soap1, "0.0.0.0", 5533, 5) < 0) {
+		fprintf(stderr, "Soap failed to bind on 0.0.0.0:5533\n");
 		exit(1);
 	}
 	while (1) {
