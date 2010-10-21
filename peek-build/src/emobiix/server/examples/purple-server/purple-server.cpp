@@ -684,7 +684,7 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__BlockDataObjectRequest(struct soap* soap, std::str
 			double lat = 0, lon = 0;
 			json_location_request(lac, ci, zipcode, lat, lon);
 
-			sprintf(url, "http://maps.google.com/maps/api/staticmap?center=%f,%f&zoom=14&size=320x240&maptype=roadmap&sensor=false", lat, lon);
+			sprintf(url, "http://maps.google.com/maps/api/staticmap?center=%f,%f&zoom=14&size=100x100&maptype=roadmap&sensor=false", lat, lon);
 			if (!curl_get_file(dataObjectURI, url))
 				return 404;
 		}

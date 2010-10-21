@@ -63,11 +63,19 @@ void system_weather_request()
 	{
 		weatherUrl = url_parse(SYSTEM_WEATHER_URI, URL_ALL);
 		WEATHER = dataobject_construct(weatherUrl, 0);
-	}
+		dataobject_setValue(WEATHER, "data", dataobjectfield_string(""));
+		dataobject_setValue(WEATHER, "onsyncfinished", dataobjectfield_string(
+				"me = DataObject.this()\n"
+				"d = DataObject.locate(\"weatherinfo\")\n"
+				"lbl = \"ZIP: \" .. me:getValue(\"zipcode\") .. \" TEMP:\" .. me:getValue(\"temp\")\n"
+				"print(lbl)\n"
+				"d:setValue(\"data\", lbl)\n"
+			)
+		);
 	
 	dataobject_setValue(WEATHER, "lac", dataobjectfield_uint(GPRS_LOCATION_LAC->field.uinteger));
 	dataobject_setValue(WEATHER, "ci", dataobjectfield_uint(GPRS_LOCATION_CI->field.uinteger));
-
+	}
 	if (connectionContext)
 	{
 		emo_printf("Requesting weather");
@@ -110,8 +118,8 @@ void gprs_set_emobiix_on(BOOL status)
 	dataobjectfield_setIsModified(GPRS_EMOBIIX_ON, 1);
 	dataobject_setIsModified(GPRS_DO, 1);
 
-//	if (status == 1)
-//		system_weather_request();
+	if (status == 1)
+		system_weather_request();
 
 	force_dataobject_redraw();
 }

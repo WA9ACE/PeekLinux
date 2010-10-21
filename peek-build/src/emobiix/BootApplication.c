@@ -49,7 +49,8 @@ DataObject *BootApplication(void)
 "	DataObject.locate(\"tcp://69.114.111.9:12345/calc\")\n"
 "end\n"
 "function maps()\n"
-"	DataObject.locate(\"tcp://69.114.111.9:12345/whereami?35621,10055\")\n"
+" gprs = DataObject.locate(\"system://local/gprs\")\n"
+"	DataObject.locate(\"tcp://69.114.111.9:12345/whereami?\" .. gprs:getValue(\"lac\") .. \",\" .. gprs:getValue(\"ci\"))\n"
 "end\n"
 "function aim()\n"
 "	DataObject.locate(\"tcp://69.114.111.9:12345/aimobiix\")\n"
@@ -97,21 +98,15 @@ DataObject *BootApplication(void)
 "		idx = idx + 1\n"
 "		if idx == 7 then idx = 1 end\n"
 "	end\n"
+" app = DataObject.find(\"app1\")\n"
+" img = DataObject.find(app:getValue(\"reference\"))\n"
+" title = DataObject.find(\"appTitle\")\n"
+" title:setValue(img:getValue(\"title\"))\n"
 "end\n"
 "function showmenu()\n"
 "dobj = DataObject.find(\"appmenu\");\n"
 "dobj:toScreen()\n"
 "end\n"));
-#if 0
-	w1 = dataobject_new();
-	dataobject_pack(w0, w1);
-	dataobject_setValue(w1, "type", dataobjectfield_string("data"));
-	dataobject_setValue(w1, "H1", dataobjectfield_string("1"));
-	dataobject_setValue(w1, "H2", dataobjectfield_string("9"));
-	dataobject_setValue(w1, "M1", dataobjectfield_string("5"));
-	dataobject_setValue(w1, "M2", dataobjectfield_string("9"));
-	dataobject_setValue(w1, "name", dataobjectfield_string("time"));
-#endif
 	w1 = dobjFromFile("clock-numbers.png", w0);
 	dataobject_setValue(w1, "name", dataobjectfield_string("clock"));
 	w1 = dataobject_new();
@@ -132,6 +127,17 @@ DataObject *BootApplication(void)
 	w2 = dobjFromFile("background.png", w1);
 	dataobject_setValue(w2, "name", dataobjectfield_string("background"));
 	dataobject_setValue(w2, "packing", dataobjectfield_string("vertical"));
+	w3 = dataobject_new();
+	dataobject_pack(w2, w3);
+	dataobject_setValue(w3, "type", dataobjectfield_string("label"));
+	dataobject_setValue(w3, "name", dataobjectfield_string("weatherinfo"));
+	dataobject_setValue(w3, "x", dataobjectfield_string("150"));
+	dataobject_setValue(w3, "y", dataobjectfield_string("5"));
+	dataobject_setValue(w3, "width", dataobjectfield_string("100"));
+	dataobject_setValue(w3, "height", dataobjectfield_string("12"));
+	dataobject_setValue(w3, "font-color", dataobjectfield_string("#FFF"));
+	dataobject_setValue(w3, "weight", dataobjectfield_string("bold"));
+	dataobject_setValue(w3, "data", dataobjectfield_string(" --- "));
 	w3 = dataobject_new();
 	dataobject_pack(w2, w3);
 	dataobject_setValue(w3, "type", dataobjectfield_string("stack"));
@@ -512,16 +518,22 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w6, "reference", dataobjectfield_string("clock"));
 	w1 = dobjFromFile("hello.png", w0);
 	dataobject_setValue(w1, "name", dataobjectfield_string("img1"));
+	dataobject_setValue(w1, "title", dataobjectfield_string("Text\nMessaging"));
 	w1 = dobjFromFile("calc.png", w0);
 	dataobject_setValue(w1, "name", dataobjectfield_string("img2"));
+	dataobject_setValue(w1, "title", dataobjectfield_string("Calculator"));
 	w1 = dobjFromFile("maps.png", w0);
 	dataobject_setValue(w1, "name", dataobjectfield_string("img3"));
+	dataobject_setValue(w1, "title", dataobjectfield_string("Maps"));
 	w1 = dobjFromFile("aim.png", w0);
 	dataobject_setValue(w1, "name", dataobjectfield_string("img4"));
+	dataobject_setValue(w1, "title", dataobjectfield_string("Instant\nMessenger"));
 	w1 = dobjFromFile("netsurf.png", w0);
 	dataobject_setValue(w1, "name", dataobjectfield_string("img5"));
+	dataobject_setValue(w1, "title", dataobjectfield_string("Web\nBrowser"));
 	w1 = dobjFromFile("weather.png", w0);
 	dataobject_setValue(w1, "name", dataobjectfield_string("img6"));
+	dataobject_setValue(w1, "title", dataobjectfield_string("Weather"));
 	w1 = dataobject_new();
 	dataobject_pack(w0, w1);
 	dataobject_setValue(w1, "type", dataobjectfield_string("view"));
@@ -536,7 +548,6 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w2, "onreturn", dataobjectfield_string("dobj = DataObject.find(\"mainview\");dobj:toScreen()"));
 	dataobject_setValue(w2, "packing", dataobjectfield_string("vertical"));
 	dataobject_setValue(w2, "reference", dataobjectfield_string("background"));
-	
 	w4 = dataobject_new();
 	dataobject_pack(w2, w4);
 	dataobject_setValue(w4, "type", dataobjectfield_string("box"));
@@ -546,7 +557,6 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w4, "width", dataobjectfield_string("320"));
 	dataobject_setValue(w4, "height", dataobjectfield_string("240"));
 	dataobject_setValue(w4, "background-color", dataobjectfield_string("#000000AA"));
-
 	w4 = dobjFromFile("glow.png", w2);
 	dataobject_setValue(w4, "x", dataobjectfield_string("86"));
 	dataobject_setValue(w4, "y", dataobjectfield_string("59"));
@@ -564,7 +574,7 @@ DataObject *BootApplication(void)
 	dataobject_setValue(w4, "type", dataobjectfield_string("text"));
 	dataobject_setValue(w4, "x", dataobjectfield_string("126"));
 	dataobject_setValue(w4, "y", dataobjectfield_string("100"));
-	dataobject_setValue(w4, "width", dataobjectfield_string("100"));
+	dataobject_setValue(w4, "width", dataobjectfield_string("80"));
 	dataobject_setValue(w4, "font-color", dataobjectfield_string("#FFF"));
 	dataobject_setValue(w4, "name", dataobjectfield_string("appTitle"));
 	dataobject_setValue(w4, "multiline", dataobjectfield_string("1"));

@@ -122,7 +122,7 @@ void hwStart(void) {
  } else  {
 	setRecvProcess(1);
 	while(1) {
-
+			HwStatusSet();
 			if(uiGetStatus())
 			{
 				key = SimReadKey();
