@@ -167,14 +167,16 @@ static void entry_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 			&cursorBox);
 
 	if (dataobjectfield_isTrue(multiline)) {
-		lgui_vline(box->x+margin->x+box->width-8, box->y+margin->y+1, box->height-1, 4, 0x44, 0x44, 0xFF);
+		lgui_vline(box->x+margin->x+box->width-8, box->y+margin->y+1, box->height-1, 4,
+				0x44, 0x44, 0xFF, 0xFF);
 		lgui_vline(box->x+margin->x+box->width-8, box->y+margin->y+1+offset*(box->height-1)/100,
-				percent*(box->height-1)/100, 4, 0xCC, 0xCC, 0xFF);
+				percent*(box->height-1)/100, 4, 0xCC, 0xCC, 0xFF, 0xFF);
 	}
 
 	if (style_getColor(s, w, "cursor-color", &cursorColor.value) != NULL) {
 		lgui_hline(cursorBox.x, cursorBox.y, cursorBox.width, cursorBox.height,
-				cursorColor.rgba.red, cursorColor.rgba.green, cursorColor.rgba.blue);
+				cursorColor.rgba.red, cursorColor.rgba.green, cursorColor.rgba.blue,
+				cursorColor.rgba.alpha);
 	}
 }
 
