@@ -1,7 +1,7 @@
 include Makefile.globals
 
 TARGET=server
-SUBDIR=protocol application utils soaprpc
+SUBDIR=protocol application utils soaprpc purple
 
 INCLUDE  = $(GSOAPINC)
 INCLUDE += $(BOOSTINC)
@@ -47,11 +47,14 @@ utils:
 peek:
 	$(MAKE) -C examples/peek_interface
 
+peekclean:
+	$(MAKE) -C examples/peek_interface clean
+
 purple:
 	$(MAKE) -C examples/purple-server
 
-peekclean:
-	$(MAKE) -C examples/peek_interface clean
+purpleclean:
+	$(MAKE) -C examples/purple-server clean
 
 clean: 
 	$(MAKE) -C protocol clean

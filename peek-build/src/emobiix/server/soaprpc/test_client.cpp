@@ -26,8 +26,11 @@ int main(int argc, char **argv)
 	if (emobiix::soap_request::GetAuthentication(url, "1234567", "peek", "peek123", param))
 		cerr << "Authentication successful!" << endl;
 
+	param["lac"] = "35621";
+	param["ci"] = "10055";
+
 	string tree;
-	if (emobiix::soap_request::GetTreeDataObject(url, "1234567", "dataobject", param, tree))
+	if (emobiix::soap_request::GetTreeDataObject(url, "1234567", "weather", param, tree))
 		cerr << "Tree data request successful: " << endl << tree << endl;
 
 	return 0;

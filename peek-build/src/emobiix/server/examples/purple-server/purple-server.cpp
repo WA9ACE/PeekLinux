@@ -20,6 +20,9 @@
 #include <fstream>
 #include <sstream>
 
+#include "curl/curl.h"
+#include "xml_parser.h"
+
 #include "defines.h"
 
 #include "stdsoap2.h"
@@ -32,6 +35,164 @@
 
 using namespace std;
 using namespace IM;
+
+static char errorBuffer[CURL_ERROR_SIZE];
+
+bool curl_get_file(const std::string& filename, const char *szUrl)
+{
+	cerr << "Will fetch: " << szUrl << endl;
+
+	// Our curl objects
+	CURL *curl;
+	CURLcode result;
+
+	// Create our curl handle
+	curl = curl_easy_init();
+	if (!curl)
+		return false;
+
+	FILE *file = fopen(filename.c_str(), "w");
+	if (!file)
+		return false;
+
+	// Now set up all of the curl options
+	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
+	curl_easy_setopt(curl, CURLOPT_URL, szUrl);
+	curl_easy_setopt(curl, CURLOPT_HEADER, 0);
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1);
+	//    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writer);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
+
+	// Attempt to retrieve the remote page
+	result = curl_easy_perform(curl);
+
+	// Always cleanup
+	curl_easy_cleanup(curl);
+
+	fclose(file);
+
+	// Did we succeed?
+	if (result != CURLE_OK)
+	{
+		cout << "Error: [" << result << "] - " << errorBuffer;
+		return false;
+	}
+
+	return true;
+}
+
+
+size_t stream_consume(void *ptr, size_t size, size_t nmemb, void *userdata)
+{
+	size_t sizeRead = size * nmemb;
+	string block((char *)ptr, sizeRead);
+
+	cerr << "Read block: " << block << endl;
+
+	*((stringstream *)userdata) << block;
+	return sizeRead;
+}
+
+bool json_location_request(size_t lac, size_t ci, int &zipcode, double &lat, double &lon)
+{
+	CURL *curl;
+	CURLcode result;
+
+	curl = curl_easy_init();
+	if (!curl)
+		return false;
+
+	stringstream reply;
+	char output[1024] = "";
+	sprintf(output, "{\"cell_towers\": [{\"location_area_code\": \"%d\", \"mobile_network_code\": \"260\", \"cell_id\": \"%d\", \"mobile_cou    ntry_code\": \"310\"}], \"version\": \"1.1.0\", \"request_address\": \"true\"}", lac, ci);
+
+	curl_easy_setopt(curl, CURLOPT_URL, "http://www.google.com/loc/json");
+	curl_easy_setopt(curl, CURLOPT_POST, 1);
+	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, output);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&reply);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, stream_consume);
+	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
+
+	result = curl_easy_perform(curl);
+
+	curl_easy_cleanup(curl);
+
+	if (result != CURLE_OK)
+	{
+		cout << "Error: [" << result << "] - " << errorBuffer;
+		return false;
+	}
+
+	const string &location = reply.str();
+
+	string postal = "\"postal_code\":\"";
+	size_t pos = location.find(postal);
+	if (pos != string::npos)
+		zipcode = atoi(location.c_str() + pos + postal.length());
+
+	string latitude = "\"latitude\":";
+	pos = location.find(latitude);
+	if (pos != string::npos)
+		lat = atof(location.c_str() + pos + latitude.length());
+
+	string longitude = "\"longitude\":";
+	pos = location.find(longitude);
+	if (pos != string::npos)
+		lon = atof(location.c_str() + pos + longitude.length());
+
+	return true;
+}
+
+bool weather_forecast_request(int zipcode, std::string& icon, std::string& tmp)
+{
+	CURL *curl;
+	CURLcode result;
+
+	curl = curl_easy_init();
+	if (!curl)
+		return false;
+
+	stringstream reply;
+	char url[1024] = "";
+	sprintf(url, "http://xoap.weather.com/weather/local/%d?cc=*&dayf=5&link=xoap&prod=xoap&par=1203593248&key=59bfeda2a528c5ed", zipcode);
+
+	curl_easy_setopt(curl, CURLOPT_URL, url);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&reply);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, stream_consume);
+	curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
+
+	result = curl_easy_perform(curl);
+
+	curl_easy_cleanup(curl);
+
+	if (result != CURLE_OK)
+	{
+		cout << "Error: [" << result << "] - " << errorBuffer;
+		return false;
+	}
+
+	emobiix::xml_parser parser(reply.str().c_str());
+	DOMDocument *doc = parser.getDocument();
+
+	DOMNodeList *current = parser.GetNodesByName("cc");
+	if (!current || current->getLength() == 0)
+		return false;
+
+	DOMNode *node = current->item(0)->getFirstChild();
+	while (node)
+	{
+		string name = emobiix::xml_parser::XMLToString(node->getNodeName());
+		if (name == "icon")
+			icon = emobiix::xml_parser::XMLToString(node->getFirstChild()->getNodeValue());
+		else if (name == "tmp")
+			tmp = emobiix::xml_parser::XMLToString(node->getFirstChild()->getNodeValue());
+
+		node = node->getNextSibling();
+	}
+
+	return true;
+}
+
 
 /**
  * The following eventloop functions are used in both pidgin and purple-text. If your
@@ -73,13 +234,13 @@ static gboolean purple_glib_io_invoke(GIOChannel *source, GIOCondition condition
 		purple_cond = (PurpleInputCondition)(purple_cond | PURPLE_INPUT_WRITE);
 
 	closure->function(closure->data, g_io_channel_unix_get_fd(source),
-			  purple_cond);
+			purple_cond);
 
 	return TRUE;
 }
 
 static guint glib_input_add(gint fd, PurpleInputCondition condition, PurpleInputFunction function,
-							   gpointer data)
+		gpointer data)
 {
 	PurpleGLibIOClosure *closure = g_new0(PurpleGLibIOClosure, 1);
 	GIOChannel *channel;
@@ -99,7 +260,7 @@ static guint glib_input_add(gint fd, PurpleInputCondition condition, PurpleInput
 	channel = g_io_channel_unix_new(fd);
 #endif
 	closure->result = g_io_add_watch_full(channel, G_PRIORITY_DEFAULT, cond,
-					      purple_glib_io_invoke, closure, purple_glib_io_destroy);
+			purple_glib_io_invoke, closure, purple_glib_io_destroy);
 
 	g_io_channel_unref(channel);
 	return closure->result;
@@ -126,9 +287,9 @@ static PurpleEventLoopUiOps glib_eventloops =
 /*** End of the eventloop functions. ***/
 
 /*** Conversation uiops ***/
-static void
+	static void
 null_write_conv(PurpleConversation *conv, const char *who, const char *alias,
-			const char *message, PurpleMessageFlags flags, time_t mtime)
+		const char *message, PurpleMessageFlags flags, time_t mtime)
 {
 	const char *name;
 	if (alias && *alias)
@@ -138,7 +299,7 @@ null_write_conv(PurpleConversation *conv, const char *who, const char *alias,
 	else
 		name = NULL;
 
-	printf("%s: (%s) %s %s: %s\n", __F__, purple_conversation_get_name(conv),
+	fprintf(stderr, "%s: (%s) %s %s: %s\n", __F__, purple_conversation_get_name(conv),
 			purple_utf8_strftime("(%H:%M:%S)", localtime(&mtime)),
 			name, message);
 }
@@ -166,7 +327,7 @@ static PurpleConversationUiOps null_conv_uiops =
 	NULL
 };
 
-static void
+	static void
 null_ui_init(void)
 {
 	/**
@@ -190,7 +351,7 @@ static PurpleCoreUiOps null_core_uiops =
 	NULL
 };
 
-static void
+	static void
 init_libpurple(void)
 {
 	/* Set a custom user directory (optional) */
@@ -243,21 +404,21 @@ init_libpurple(void)
 	purple_pounces_load();
 }
 
-static void
+	static void
 signed_on(PurpleConnection *gc, gpointer null)
 {
 	PurpleAccount *account = purple_connection_get_account(gc);
-	printf("%s Account connected: %s %s\n", __F__, account->username,
+	fprintf(stderr, "%s Account connected: %s %s\n", __F__, account->username,
 			account->protocol_id);
 
 	User *user;
 	user = GetUserByAccount(account);
 	if (user == NULL) {
-		printf("%s account connected for NULL user\n", __F__);
+		fprintf(stderr, "%s account connected for NULL user\n", __F__);
 		return;
 	}
 	user->m_task->m_result = new Result("connected");
-	printf("%s account connected for user : %s\n", __F__,
+	fprintf(stderr, "%s account connected for user : %s\n", __F__,
 			user->m_emobiixID);
 	user->addAccount(
 			user->m_task->m_username.c_str(),
@@ -273,19 +434,19 @@ static void received_im_msg(PurpleAccount *account, char *sender,
 		gpointer null)
 {
 	if (conv==NULL)	{
-  		conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, sender);
-		printf("%s New conversation: %s\n", __F__, 
+		conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, sender);
+		fprintf(stderr, "%s New conversation: %s\n", __F__, 
 				purple_conversation_get_name(conv));
-  	}
+	}
 
-	printf("%s (%s) %s (%s): %s\n", __F__,
+	fprintf(stderr, "%s (%s) %s (%s): %s\n", __F__,
 			purple_utf8_strftime("%H:%M:%S", NULL),
 			sender, purple_conversation_get_name(conv), message);
 
 	User *user;
 	user = GetUserByAccount(account);
 	if (user == NULL) {
-		printf("%s account connected for NULL user\n", __F__);
+		fprintf(stderr, "%s account connected for NULL user\n", __F__);
 		return;
 	}
 
@@ -303,18 +464,18 @@ static void buddy_signed_on(PurpleBuddy *buddy)
 {
 	User *user;
 
-	printf("%s Buddy \"%s\" (%s) signed on\n", __F__,
+	fprintf(stderr, "%s Buddy \"%s\" (%s) signed on\n", __F__,
 			purple_buddy_get_name(buddy),
 			purple_account_get_protocol_id(purple_buddy_get_account(buddy)));
 	user = GetUserByAccount(purple_buddy_get_account(buddy));
 	if (user != NULL) {
 		BuddyList::iterator buditer = 
-				std::find(user->m_buddyList.begin(), user->m_buddyList.end(),
-				Buddy(purple_buddy_get_name(buddy),
-				purple_buddy_get_account(buddy)));
+			std::find(user->m_buddyList.begin(), user->m_buddyList.end(),
+					Buddy(purple_buddy_get_name(buddy),
+						purple_buddy_get_account(buddy)));
 		if (buditer == user->m_buddyList.end()) {
 			user->m_buddyList.push_back(Buddy(purple_buddy_get_name(buddy),
-            	    purple_buddy_get_account(buddy)));
+						purple_buddy_get_account(buddy)));
 		} else {
 			(*buditer).status = Buddy::SIGNED_ON;
 			(*buditer).lastupdate = 0;
@@ -332,19 +493,19 @@ static void buddy_signed_off(PurpleBuddy *buddy)
 	std::list<Buddy>::iterator iter;
 	IM::User *user;
 
-	printf("%s Buddy \"%s\" (%s) signed off\n", __F__,
+	fprintf(stderr, "%s Buddy \"%s\" (%s) signed off\n", __F__,
 			purple_buddy_get_name(buddy),
 			purple_account_get_protocol_id(purple_buddy_get_account(buddy)));
 
 	user = GetUserByAccount(purple_buddy_get_account(buddy));
 	if (user == NULL) {
-		printf("+++ Buddy not for an active account\n");
+		fprintf(stderr, "+++ Buddy not for an active account\n");
 		return;
 	}
 
 	iter = std::find(user->m_buddyList.begin(), user->m_buddyList.end(),
 			Buddy(purple_buddy_get_name(buddy),
-			purple_buddy_get_account(buddy)));
+				purple_buddy_get_account(buddy)));
 	(*iter).status = Buddy::SIGNED_OFF;
 	(*iter).lastupdate = 0;
 
@@ -356,7 +517,7 @@ static void buddy_signed_off(PurpleBuddy *buddy)
 
 static void buddy_away(PurpleBuddy *buddy, PurpleStatus *old_status, PurpleStatus *status)
 {
-	printf("%s Buddy \"%s\" (%s) changed status to %s\n", __F__,
+	fprintf(stderr, "%s Buddy \"%s\" (%s) changed status to %s\n", __F__,
 			purple_buddy_get_name(buddy),
 			purple_account_get_protocol_id(purple_buddy_get_account(buddy)),
 			purple_status_get_id(status));
@@ -364,7 +525,7 @@ static void buddy_away(PurpleBuddy *buddy, PurpleStatus *old_status, PurpleStatu
 
 static void buddy_idle(PurpleBuddy *buddy, gboolean old_idle, gboolean idle)
 {
-	printf("%s Buddy \"%s\" (%s) changed idle state to %s\n", __F__,
+	fprintf(stderr, "%s Buddy \"%s\" (%s) changed idle state to %s\n", __F__,
 			purple_buddy_get_name(buddy),
 			purple_account_get_protocol_id(purple_buddy_get_account(buddy)),
 			(idle) ? "idle" : "not idle");
@@ -372,26 +533,26 @@ static void buddy_idle(PurpleBuddy *buddy, gboolean old_idle, gboolean idle)
 
 static void buddy_typing(PurpleAccount *account, const char *name)
 {
-	printf("%s User \"%s\" (%s) is typing...\n", __F__,
+	fprintf(stderr, "%s User \"%s\" (%s) is typing...\n", __F__,
 			name, purple_account_get_protocol_id(account));
 }
 
 static void buddy_typed(PurpleAccount *account, const char *name) //not supported on all protocols
 {
-	printf("%s User \"%s\" (%s) has typed something...\n", __F__,
+	fprintf(stderr, "%s User \"%s\" (%s) has typed something...\n", __F__,
 			name, purple_account_get_protocol_id(account));
 }
 
 static void buddy_typing_stopped(PurpleAccount *account, const char *name)
 {
-	printf("%s User \"%s\" (%s) has stopped typing...\n", __F__,
+	fprintf(stderr, "%s User \"%s\" (%s) has stopped typing...\n", __F__,
 			name, purple_account_get_protocol_id(account));
 }
 
 static int account_authorization_requested(PurpleAccount *account,
 		const char *user)
 {
-	printf("%s User \"%s\" (%s) has sent a buddy request\n", __F__,
+	fprintf(stderr, "%s User \"%s\" (%s) has sent a buddy request\n", __F__,
 			user, purple_account_get_protocol_id(account));
 	return 1; //authorize buddy request automatically (-1 denies it)
 }
@@ -400,40 +561,40 @@ static void account_error_changed(PurpleAccount *acc,
 		const PurpleConnectionErrorInfo *old_error,
 		const PurpleConnectionErrorInfo *current_error) {
 	if (current_error) {
-    	printf("new account error : <%s>\n", current_error->description);
+		fprintf(stderr, "new account error : <%s>\n", current_error->description);
 		User *user;
 		user = GetUserByAccount(acc);
 		if (user == NULL) {
-			printf("%s account error for NULL user\n", __F__);
+			fprintf(stderr, "%s account error for NULL user\n", __F__);
 			return;
 		}
-		printf("%s account connected for user : %s\n", __F__,
+		fprintf(stderr, "%s account connected for user : %s\n", __F__,
 				user->m_emobiixID);
 		if (strstr(current_error->description, "frequently") != NULL) {
 			user->m_task->m_result = new Result("Too Frequent");
 		} else if (strstr(current_error->description,
-				"Incorrect password") != NULL) {
+					"Incorrect password") != NULL) {
 			user->m_task->m_result = new Result("Incorrect password");
 		} else {
 			user->m_task->m_result = new Result("Unknown Error");
 		}
-    }
- }
- 
- static void account_connecting(PurpleAccount *acc) {
- 	printf("trying to connect with <%s>\n", acc->username);
- }
- 
- static void account_enabled(PurpleAccount *acc) {
- 	printf("account <%s> enabled...\n", acc->username);
- }
- 
- static void account_disabled(PurpleAccount *acc) {
- 	printf("account <%s> disabled...\n", acc->username);
- }
+	}
+}
+
+static void account_connecting(PurpleAccount *acc) {
+	fprintf(stderr, "trying to connect with <%s>\n", acc->username);
+}
+
+static void account_enabled(PurpleAccount *acc) {
+	fprintf(stderr, "account <%s> enabled...\n", acc->username);
+}
+
+static void account_disabled(PurpleAccount *acc) {
+	fprintf(stderr, "account <%s> disabled...\n", acc->username);
+}
 
 
-static void
+	static void
 connect_to_signals(void)
 {
 	static int handle;
@@ -469,30 +630,30 @@ connect_to_signals(void)
 
 	purple_signal_connect(purple_accounts_get_handle(),
 			"account-error-changed", &handle,
-            PURPLE_CALLBACK(account_error_changed), NULL);
-    purple_signal_connect(purple_accounts_get_handle(),
+			PURPLE_CALLBACK(account_error_changed), NULL);
+	purple_signal_connect(purple_accounts_get_handle(),
 			"account-connecting", &handle,
-            PURPLE_CALLBACK(account_connecting), NULL);
-    purple_signal_connect(purple_accounts_get_handle(),
+			PURPLE_CALLBACK(account_connecting), NULL);
+	purple_signal_connect(purple_accounts_get_handle(),
 			"account-enabled", &handle,
-            PURPLE_CALLBACK(account_enabled), NULL);
+			PURPLE_CALLBACK(account_enabled), NULL);
 	purple_signal_connect(purple_accounts_get_handle(),
 			"account-disabled", &handle,
-            PURPLE_CALLBACK(account_disabled), NULL);
+			PURPLE_CALLBACK(account_disabled), NULL);
 
 }
 
 xsd__base64Binary base64BinaryFromString(struct soap* soap, const char *str)
 {
-        xsd__base64Binary raw;
-        raw = xsd__base64Binary(soap, strlen(str), "text");
-        memcpy((char *)raw.getPtr(), str, raw.getSize());
-        return raw;
+	xsd__base64Binary raw;
+	raw = xsd__base64Binary(soap, strlen(str), "text");
+	memcpy((char *)raw.getPtr(), str, raw.getSize());
+	return raw;
 }
 
 SOAP_FMAC5 int SOAP_FMAC6 ns__AuthenticationRequest(struct soap*, std::string deviceId, std::string userName, std::string password, std::vector<ns__KeyValue >*requestParam, bool &isAuthenticated)
 {
-	printf("%s userName(%s) password(%s)\n", __F__, userName.c_str(),
+	fprintf(stderr, "%s userName(%s) password(%s)\n", __F__, userName.c_str(),
 			password.c_str());
 	isAuthenticated = true;
 
@@ -502,31 +663,55 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__AuthenticationRequest(struct soap*, std::string de
 
 SOAP_FMAC5 int SOAP_FMAC6 ns__BlockDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, std::vector<ns__KeyValue >*requestParam, xsd__base64Binary &binaryData)
 {
-	printf("%s deviceId(%s) URI(%s)\n", __F__, deviceId.c_str(),
-			dataObjectURI.c_str());
+	fprintf(stderr, "%s deviceId(%s) URI(%s)\n", __F__, deviceId.c_str(), dataObjectURI.c_str());
+
+	if (dataObjectURI == "map.png")
+	{
+		char url[4096] = "";
+		const char *tok = strchr(deviceId.c_str(), '|');
+		if (!tok && !curl_get_file(dataObjectURI, "http://maps.google.com/maps/api/staticmap?center=Brooklyn+Bridge,New+York,NY&zoom=14&size=3    20x240&maptype=roadmap&markers=color:blue|label:S|40.702147,-74.015794&markers=color:green|label:G|40.711614,-74.012318&markers=color:red|    color:red|label:C|40.718217,-73.998284&sensor=false"))
+			return 404;
+		else if (tok)
+		{
+			int lac = 0, ci = 0;
+			if (const char *comma = strchr(tok + 1, ','))
+			{
+				lac = atoi(tok + 1);
+				ci = atoi(comma + 1);
+			}
+
+			int zipcode = 12345;
+			double lat = 0, lon = 0;
+			json_location_request(lac, ci, zipcode, lat, lon);
+
+			sprintf(url, "http://maps.google.com/maps/api/staticmap?center=%f,%f&zoom=14&size=320x240&maptype=roadmap&sensor=false", lat, lon);
+			if (!curl_get_file(dataObjectURI, url))
+				return 404;
+		}
+	}
 
 	struct stat st;
-         if (stat(dataObjectURI.c_str(), &st) != 0)
-                 return 404;
- 
-         ifstream file(dataObjectURI.c_str(), ios::in | ios::binary);
-         if (!file)
-                 return 404;
- 
-         char *type = "unknown";
-         if (char *dot = strrchr(dataObjectURI.c_str(), '.'))
-                 type = dot + 1;
- 
-         binaryData = xsd__base64Binary(soap, st.st_size, type);
- 
-         file.read((char *)binaryData.getPtr(), binaryData.getSize());
- 
+	if (stat(dataObjectURI.c_str(), &st) != 0)
+		return 404;
+
+	ifstream file(dataObjectURI.c_str(), ios::in | ios::binary);
+	if (!file)
+		return 404;
+
+	char *type = "unknown";
+	if (char *dot = strrchr(dataObjectURI.c_str(), '.'))
+		type = dot + 1;
+
+	binaryData = xsd__base64Binary(soap, st.st_size, type);
+
+	file.read((char *)binaryData.getPtr(), binaryData.getSize());
+
 	return SOAP_OK;
 }
 
 SOAP_FMAC5 int SOAP_FMAC6 ns__RecordDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timestamp, std::vector<ns__KeyValue >*requestParam, xsd__base64Binary &recordData)
 {
-	printf("%s deviceId(%s) URI(%s)\n", __F__, deviceId.c_str(),
+	fprintf(stderr, "%s deviceId(%s) URI(%s)\n", __F__, deviceId.c_str(),
 			dataObjectURI.c_str());
 
 	if (dataObjectURI == "messages") {
@@ -554,7 +739,7 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__RecordDataObjectRequest(struct soap* soap, std::st
 
 		recordData = base64BinaryFromString(soap, res.c_str());
 
-		printf("%s messages: %s\n", __F__, res.c_str());
+		fprintf(stderr, "%s messages: %s\n", __F__, res.c_str());
 
 		return SOAP_OK;
 	}
@@ -573,8 +758,42 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__DataObjectPushRequest(struct soap* soap, std::stri
 
 SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::string deviceId, std::string dataObjectURI, ns__Timestamp timeStamp, std::vector<ns__KeyValue >*requestParam, xsd__base64Binary &treeData)
 {
-	printf("%s deviceId(%s) URI(%s)\n", __F__, deviceId.c_str(),
+	fprintf(stderr, "%s deviceId(%s) URI(%s)\n", __F__, deviceId.c_str(),
 			dataObjectURI.c_str());
+
+	if (dataObjectURI == "weather")
+	{
+		int lac = 0, ci = 0;
+		if (requestParam && requestParam->size() > 0) 
+		{
+			for (size_t i = 0; i < requestParam->size(); ++i) 
+			{
+				if ((*requestParam)[i].key == "lac")
+					lac = atoi((*requestParam)[i].value.c_str());
+				else if ((*requestParam)[i].key == "ci")
+					ci = atoi((*requestParam)[i].value.c_str());
+			}
+		}
+
+		fprintf(stderr, "received weather request for lac:%d ci:%d\n", lac, ci);
+
+		int zipcode = 12345;
+		double lat = 0, lon = 0;
+		json_location_request(lac, ci, zipcode, lat, lon);
+
+		fprintf(stderr, "found zipcode for location %d %f %f\n", zipcode, lat, lon);
+
+		string icon, tmp;
+		weather_forecast_request(zipcode, icon, tmp);
+
+		cerr << "Weather icon: " << icon << " and temperature: " << tmp << endl;
+
+		stringstream data;
+		data << "<data zipcode=\"" << zipcode << "\" temp=\"" << tmp << "\" icon=\"" << icon << "\" />";
+
+		treeData = base64BinaryFromString(soap, data.str().c_str());
+		return SOAP_OK;
+	}
 
 	if (dataObjectURI == "buddylist") {
 		User *user;
@@ -607,11 +826,11 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 		res += "</record>";
 
 
-		//printf("%s buddylist: %s\n", __F__, res.c_str());
+		//fprintf(stderr, "%s buddylist: %s\n", __F__, res.c_str());
 
 		std::string budlist;
 		budlist = user->buddyListUpdateString();;
-		printf("%s new buddy list: %s\n", __F__, budlist.c_str());
+		fprintf(stderr, "%s new buddy list: %s\n", __F__, budlist.c_str());
 
 		treeData = base64BinaryFromString(soap, budlist.c_str());
 
@@ -638,7 +857,7 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 
 		treeData = base64BinaryFromString(soap, res.c_str());
 
-		printf("%s messages: %s\n", __F__, res.c_str());
+		fprintf(stderr, "%s messages: %s\n", __F__, res.c_str());
 
 		return SOAP_OK;
 	}
@@ -664,8 +883,8 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 
 		treeData = base64BinaryFromString(soap, nres.c_str());
 
-		printf("%s accounts: %s\n", __F__, res.c_str());
-		printf("%s new accounts: %s\n", __F__, nres.c_str());
+		fprintf(stderr, "%s accounts: %s\n", __F__, res.c_str());
+		fprintf(stderr, "%s new accounts: %s\n", __F__, nres.c_str());
 
 		return SOAP_OK;
 	}
@@ -674,8 +893,8 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 		User *user;
 		user = GetUser(deviceId.c_str());
 		map<string, string> param;
-        for (size_t i = 0; i < requestParam->size(); ++i) {
-			printf("Key(%s) -> Value(%s)\n",
+		for (size_t i = 0; i < requestParam->size(); ++i) {
+			fprintf(stderr, "Key(%s) -> Value(%s)\n",
 					(*requestParam)[i].key.c_str(),
 					(*requestParam)[i].value.c_str());
 			param[(*requestParam)[i].key] = (*requestParam)[i].value;
@@ -684,8 +903,8 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 		if (param["action"] == "addacc") {
 			Task *task = new Task();
 			task->m_event = "addacc";
-    		task->m_emobiixID = deviceId;
-    		task->m_username = param["user"];
+			task->m_emobiixID = deviceId;
+			task->m_username = param["user"];
 			task->m_password = param["pass"];
 			task->m_protocol = param["proto"];
 			task->m_Id = user->m_lastAccountId++;
@@ -695,13 +914,13 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 				usleep(100);
 				++loop;
 				if (loop > 5000) {
-					printf("%s login timed out\n", __F__);
+					fprintf(stderr, "%s login timed out\n", __F__);
 					treeData = base64BinaryFromString(soap,
 							"<data reply=\"Request timed out\"/>");
 					return SOAP_OK;
 				}
 			}
-			printf("%s login result: %s\n", __F__,
+			fprintf(stderr, "%s login result: %s\n", __F__,
 					task->m_result->status.c_str());
 
 			std::string res = "<data reply=\"";
@@ -715,8 +934,8 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 		if (param["action"] == "delacc") {
 			Task *task = new Task();
 			task->m_event = "delacc";
-    		task->m_emobiixID = deviceId;
-    		task->m_username = param["user"];
+			task->m_emobiixID = deviceId;
+			task->m_username = param["user"];
 			task->m_password = "";
 			task->m_protocol = param["proto"];
 			task->m_Id = 0;
@@ -726,7 +945,7 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 				usleep(100);
 				++loop;
 				if (loop > 5000) {
-					printf("%s login timed out\n", __F__);
+					fprintf(stderr, "%s login timed out\n", __F__);
 					treeData = base64BinaryFromString(soap,
 							"<data reply=\"Request timed out\"/>");
 					return SOAP_OK;
@@ -743,8 +962,8 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 		if (param["action"] == "im") {
 			Task *task = new Task();
 			task->m_event = "im";
-    		task->m_emobiixID = deviceId;
-    		task->m_username = param["user"];
+			task->m_emobiixID = deviceId;
+			task->m_username = param["user"];
 			task->m_password = param["pass"];
 			Task::Push(task);
 
@@ -763,15 +982,15 @@ SOAP_FMAC5 int SOAP_FMAC6 ns__TreeDataObjectRequest(struct soap* soap, std::stri
 	struct stat st;
 	if (stat(path, &st) != 0)
 	{
-			treeData = base64BinaryFromString(soap, "<emobiix-gui></emobiix-gui>");
-			return SOAP_OK;
+		treeData = base64BinaryFromString(soap, "<emobiix-gui></emobiix-gui>");
+		return SOAP_OK;
 	}
 
 	ifstream file(path, ios::in);
 	if (!file)
 	{
-			treeData = base64BinaryFromString(soap, "<emobiix-gui></emobiix-gui>");
-			return SOAP_OK;
+		treeData = base64BinaryFromString(soap, "<emobiix-gui></emobiix-gui>");
+		return SOAP_OK;
 	}
 
 	treeData = xsd__base64Binary(soap, st.st_size, "xml");
@@ -799,7 +1018,7 @@ void ms_newAccount(User *user, const char *username, const char *password,
 {
 	/* check the account doesnt already exist */
 	if (user->getAccount(username, protocol) != NULL) {
-		printf("Tried to log into the same account\n");
+		fprintf(stderr, "Tried to log into the same account\n");
 		user->m_task->m_result = new Result("Already Connected");
 		return;
 	}
@@ -829,11 +1048,11 @@ void ms_newAccount(Task *task)
 {
 	User *output;
 
-	printf("%s Initiating new account\n", __F__);
+	fprintf(stderr, "%s Initiating new account\n", __F__);
 
 	output = GetUser(task->m_emobiixID.c_str());
 	if (output == NULL) {
-		printf("newAccount: couldnt find user %s\n", task->m_emobiixID.c_str());
+		fprintf(stderr, "newAccount: couldnt find user %s\n", task->m_emobiixID.c_str());
 		return;
 	}
 	output->m_task = task;
@@ -846,11 +1065,11 @@ void ms_delAccount(Task *task)
 {
 	User *output;
 
-	printf("%s disconnecting account\n", __F__);
+	fprintf(stderr, "%s disconnecting account\n", __F__);
 
 	output = GetUser(task->m_emobiixID.c_str());
 	if (output == NULL) {
-		printf("delAccount: couldnt find user %s\n", task->m_emobiixID.c_str());
+		fprintf(stderr, "delAccount: couldnt find user %s\n", task->m_emobiixID.c_str());
 		return;
 	}
 	output->m_task = task;
@@ -864,16 +1083,16 @@ void ms_sendIM(Task *task)
 {
 	User *output;
 
-	printf("%s sending im\n", __F__);
+	fprintf(stderr, "%s sending im\n", __F__);
 
 	output = GetUser(task->m_emobiixID.c_str());
 	if (output == NULL) {
-		printf("sendIM: couldnt find user %s\n", task->m_emobiixID.c_str());
+		fprintf(stderr, "sendIM: couldnt find user %s\n", task->m_emobiixID.c_str());
 		return;
 	}
 
 	PurpleConversation *gconv; 
-    PurpleConvIm *im; 
+	PurpleConvIm *im; 
 	PurpleAccount *account;
 	BuddyList::iterator iter;
 
@@ -886,16 +1105,16 @@ void ms_sendIM(Task *task)
 		return;
 	account = (*iter).account;
 
-    gconv = purple_conversation_new(PURPLE_CONV_TYPE_IM,
+	gconv = purple_conversation_new(PURPLE_CONV_TYPE_IM,
 			account, task->m_username.c_str()); 
 
-    im = purple_conversation_get_im_data(gconv); 
-    purple_conv_im_send(im, task->m_password.c_str()); 
+	im = purple_conversation_get_im_data(gconv); 
+	purple_conv_im_send(im, task->m_password.c_str()); 
 }
 
 void ms_pushIM(User *user, const char *sender, const char *message)
 {
-	printf("%s pushing IM from %s : %s\n", __F__, sender, message);
+	fprintf(stderr, "%s pushing IM from %s : %s\n", __F__, sender, message);
 
 	char *newbuf = new char[ strlen(message) ];
 	int len = strlen(message);
@@ -904,16 +1123,16 @@ void ms_pushIM(User *user, const char *sender, const char *message)
 	// scan string
 	for( int i=0; i<len ; i++ )
 	{
-	   // found an open '<', scan for its close
-	   if ( message[i] == '<' )
-	   {
-		 // charge ahead in the string until it runs out or we find what we're looking for
-		 for( ; i<len && message[i] != '>'; i++ );
-	   }
-	   else
-	   {
-		  newbuf[j++] = message[i];
-	   }
+		// found an open '<', scan for its close
+		if ( message[i] == '<' )
+		{
+			// charge ahead in the string until it runs out or we find what we're looking for
+			for( ; i<len && message[i] != '>'; i++ );
+		}
+		else
+		{
+			newbuf[j++] = message[i];
+		}
 	}
 
 	newbuf[j] = 0;
@@ -935,7 +1154,7 @@ void ms_pushIM(User *user, const char *sender, const char *message)
 	data += "\" conversation=\"";
 	data += sender;
 	data += "\" mine=\"0\"/></array>";
-	printf("Pushing : %s\n", data.c_str());
+	fprintf(stderr, "Pushing : %s\n", data.c_str());
 #else
 	data = "tcp://127.0.0.1:5533/messages";
 #endif
@@ -954,9 +1173,9 @@ void ms_pushBuddy(User *user)
 	std::string data;
 	bool isDelivered;
 
-	printf("Pushing buddy list\n");
+	fprintf(stderr, "Pushing buddy list\n");
 
-    s = soap_new();
+	s = soap_new();
 	data = "tcp://127.0.0.1:5533/buddylist";
 
 	std::vector<ns__KeyValue> requestParams;
@@ -972,7 +1191,7 @@ void ms_pushAccounts(User *user)
 	std::string data;
 	bool isDelivered;
 
-	printf("Pushing account list\n");
+	fprintf(stderr, "Pushing account list\n");
 
     s = soap_new();
 	data = "tcp://127.0.0.1:5533/accounts";
@@ -991,8 +1210,8 @@ void *soap_startup(void *not_used)
 
 	soap_init(&soap1);
 	soap1.bind_flags = SO_REUSEADDR;
-	if (soap_bind(&soap1, "0.0.0.0", 5533, 5) < 0) {
-		fprintf(stderr, "Soap failed to bind on 0.0.0.0:5533\n");
+	if (soap_bind(&soap1, "0.0.0.0", 7777, 5) < 0) {
+		fprintf(stderr, "Soap failed to bind on 0.0.0.0:7777\n");
 		exit(1);
 	}
 	while (1) {
@@ -1047,7 +1266,7 @@ int main(int argc, char *argv[])
 
 	init_libpurple();
 
-	printf("libpurple initialized.\n");
+	fprintf(stderr, "libpurple initialized.\n");
 
 	purple_plugins_get_protocols();
 
