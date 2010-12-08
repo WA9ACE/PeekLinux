@@ -103,20 +103,18 @@ void lgui_vertical_gradient(
 		GRADIENT_STEP(alpha, start_alpha, end_alpha, height, line)
 
 		pixel = RGB_TO_565(red, green, blue);
+		ipixel = pixel;
 
 		buf = lgui_buffer + startx + ypos*LGUI_WIDTH;
 
 		buf += ccol;
 		for (i = ccol; i < cwidth; ++i) {
 			if (alpha < 255) {
-				ipixel = pixel;
 				srcpixel = *buf;
 				pixel = PIXEL_MODULATE_ALPHA(ipixel, srcpixel, alpha);
 			}
 			*buf = pixel;
 			++buf;
-			if (alpha < 255)
-				pixel = ipixel;
 		}
 		++ypos;
 	}
@@ -186,6 +184,7 @@ void lgui_vline(int x, int y, int len, int width,
 
 	ypos = y;
 	pixel = RGB_TO_565(red, green, blue);
+	ipixel = pixel;
 	ypos += cline;
 	for (line = cline; line < cheight; ++line) {
 		if (ypos < 0 || ypos >= LGUI_HEIGHT) {
@@ -199,13 +198,10 @@ void lgui_vline(int x, int y, int len, int width,
 		for (i = ccol; i < cwidth; ++i) {
 			if (alpha < 255) {
 				srcpixel = *buf;
-				ipixel = pixel;
 				pixel = PIXEL_MODULATE_ALPHA(ipixel, srcpixel, alpha);
 			}
 			*buf = pixel;
 			++buf;
-			if (alpha < 255)
-				pixel = ipixel;
 		}
 
 		++ypos;
