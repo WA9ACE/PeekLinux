@@ -67,17 +67,16 @@ void lgui_attach(void *buf)
 
 void lgui_clear(unsigned char pixel)
 {
-	memset(lgui_buffer, pixel, 320*240*2);
+	memset(lgui_buffer, pixel, LGUI_WIDTH*LGUI_HEIGHT*2);
 }
 
-/* potential optimization, err*100 => err, remove res /= 100 */
 #if 0
 #define GRADIENT_STEP(res, sr, er, val, idx) res = (unsigned short)(((sr)<<7) * (((val-1)-idx)<<7)/((val-1)<<7)); \
 		res += 127+(unsigned short)(((er)<<7) * (idx<<7)/((val-1)<<7)); \
 		res >>= 7;
 #else
-#define GRADIENT_STEP(res, sr, er, val, idx) res = (unsigned short)(((sr)) * (((val-1)-idx))/((val-1))); \
-		res += 1+(unsigned short)(((er)) * (idx)/((val-1))); 
+#define GRADIENT_STEP(res, sr, er, val, idx) res = (unsigned short)(((sr) * ((val)-idx))/((val))); \
+		res += 1+(unsigned short)(((er) * (idx))/((val))); 
 #endif
 void lgui_vertical_gradient(
 	unsigned char start_red, unsigned char start_green, unsigned char start_blue,
@@ -303,6 +302,7 @@ void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 
 	lgui_set_dirty();
 
+	pixel = RGB_TO_565(c.rgba.red, c.rgba.green, c.rgba.blue);
 	ypos += cline;
 	imgypos += cline;
 	for (line = cline; line < cheight; ++line) {
@@ -324,7 +324,6 @@ void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 			if (mode == LGUI_MODE_ALPHA) {	
 				if (scale > 0) {
 					srcpixel = *buf;
-					pixel = RGB_TO_565(c.rgba.red, c.rgba.green, c.rgba.blue);
 					PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale, *buf)
 				}
 			} else if (mode == LGUI_MODE_STENCIL) {
@@ -341,7 +340,6 @@ void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 			if (mode == LGUI_MODE_ALPHA) {
 				if (scale > 0) {
 					srcpixel = *buf;
-					pixel = RGB_TO_565(c.rgba.red, c.rgba.green, c.rgba.blue);
 					PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale, *buf)
 				}
 			} else if (mode == LGUI_MODE_STENCIL) {
@@ -404,7 +402,7 @@ void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
         for (col = ccol; col < cwidth; ++col) {
                 pixel = *((unsigned short *)(imgbuf));
 				opixel = pixel;
-				if (alpha != 0xFF) {
+				if (alpha < 255) {
 					srcpixel = *buf;
 					imgpixel = pixel;
 					PIXEL_MODULATE_ALPHA(imgpixel, srcpixel, alpha, opixel)
@@ -466,8 +464,8 @@ void lgui_blitRGB565A8(int destx, int desty, int imgx, int imgy,
             pixel = *(imgbuf);
             pixel |= *(imgbuf+1) << 8;
 			scale = *((unsigned char *)(imgbuf+2));
-			if (alpha != 0xFF) {
-				scale = (unsigned char)((int)scale*((int)alpha*100)/(0xFF*100));
+			if (alpha < 255) {
+				scale = (unsigned char)((int)scale*((int)alpha<<7)/(0xFF<<7));
 			}
 			srcpixel = *buf;
 			PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale, *buf)
@@ -584,10 +582,10 @@ static int POWERES_OF_TEN[] = { 1, 10, 100, 1000, 10000, 100000, 1000000, 100000
 
 static int putpixelX = 0;
 static int putpixelY = 0;
-static void putpixelAlpha(int x, int y, unsigned char red, unsigned char green, unsigned char blue,
+static void putpixelAlpha(int x, int y, unsigned short pixel,
 					 unsigned char intensity)
 {
-	unsigned short pixel, srcpixel;
+	unsigned short srcpixel;
 	unsigned short *buf;
 
 	x += translate_x;
@@ -607,7 +605,6 @@ static void putpixelAlpha(int x, int y, unsigned char red, unsigned char green, 
 	lgui_set_dirty();
 
 	buf = lgui_buffer+x+y*LGUI_WIDTH;
-	pixel = RGB_TO_565(red, green, blue);
 	srcpixel = *buf;
 	PIXEL_MODULATE_ALPHA(pixel, srcpixel, intensity, *buf)
 }
@@ -618,45 +615,48 @@ static void putpixelAlpha(int x, int y, unsigned char red, unsigned char green, 
     int x=R;
     int d=0;
 	unsigned char dnew;
+	unsigned short pixel;
+
+	pixel = RGB_TO_565(red, green, blue);
     while( y<x ) {
         dnew = D[R*R-y*y];
         if( dnew < d ) x--;
 		/* lower half or circle */
 		if (arcs & LGUI_CORNER_BOTTOMRIGHT) {
 		/* / upper */
-        putpixelAlpha(x-1,y,   red, green, blue, dnew);
-        putpixelAlpha(x,  y,   red, green, blue, (I-dnew));
+        putpixelAlpha(x-1,y,   pixel, dnew);
+        putpixelAlpha(x,  y,   pixel, (I-dnew));
 		/* / lower */
-        putpixelAlpha(y, x-1,   red, green, blue, dnew);
-        putpixelAlpha(y,   x,   red, green, blue, (I-dnew));
+        putpixelAlpha(y, x-1,   pixel, dnew);
+        putpixelAlpha(y,   x,   pixel, (I-dnew));
 		}
 
 		if (arcs & LGUI_CORNER_BOTTOMLEFT) {
 		/* \ upper */
-        putpixelAlpha(-(x-1),y,   red, green, blue, dnew);
-        putpixelAlpha(-x,  y,   red, green, blue, (I-dnew));
+        putpixelAlpha(-(x-1),y, pixel, dnew);
+        putpixelAlpha(-x,  y,   pixel, (I-dnew));
 		/* \ lower */
-		putpixelAlpha(-y, x-1,   red, green, blue, dnew);
-        putpixelAlpha(-y,   x,   red, green, blue, (I-dnew));
+		putpixelAlpha(-y, x-1,  pixel, dnew);
+        putpixelAlpha(-y,   x,  pixel, (I-dnew));
 		}
 
 		/* upper half or circle */
 		if (arcs & LGUI_CORNER_TOPRIGHT) {
 		/* \ upper */
-		putpixelAlpha(x-1,-y,   red, green, blue, dnew);
-        putpixelAlpha(x,  -y,   red, green, blue, (I-dnew));
+		putpixelAlpha(x-1,-y,   pixel, dnew);
+        putpixelAlpha(x,  -y,   pixel, (I-dnew));
 		/* \ lower */
-        putpixelAlpha(y, -(x-1),   red, green, blue, dnew);
-        putpixelAlpha(y,   -x,   red, green, blue, (I-dnew));
+        putpixelAlpha(y, -(x-1),   pixel, dnew);
+        putpixelAlpha(y,   -x,   pixel, (I-dnew));
 		}
 
 		if (arcs & LGUI_CORNER_TOPLEFT) {
 		/* / upper */
-        putpixelAlpha(-(x-1),-y,   red, green, blue, dnew);
-        putpixelAlpha(-x,  -y,   red, green, blue, (I-dnew));
+        putpixelAlpha(-(x-1),-y,   pixel, dnew);
+        putpixelAlpha(-x,  -y,   pixel, (I-dnew));
 		/* / lower */
-		putpixelAlpha(-y, -(x-1),   red, green, blue, dnew);
-        putpixelAlpha(-y,   -x,   red, green, blue, (I-dnew));
+		putpixelAlpha(-y, -(x-1),   pixel, dnew);
+        putpixelAlpha(-y,   -x,   pixel, (I-dnew));
 		}
 
         y++;
@@ -882,22 +882,32 @@ skip_gradient_step:
 	} while(stop < maxStop);
 }
 
-
-#define SQR(x) ((x)*(x))
-#define ROUND(x) (int)((x)+0.5f)
 void lgui_circlefill(int xc, int yc, int r,
 		  unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha)
 {
-	int x1, x2;
-	int y;
-	float wid;
-    for (y=yc-r; y<=yc+r; ++y)
-    {
-		wid = (float)sqrt((float)(SQR(r) - SQR(y - yc))); 
-		x1 = ROUND(xc - wid);
-		x2 = ROUND(xc + wid);
-		lgui_hline(x1, y, x2-x1, 1, red, green, blue, alpha);
-    }
+	short x = 0;
+	short y = r-1;
+	short d = 3 - 2*r;
+	short diagonalInc = 10 - 4*r;
+	short rightInc = 6;
+
+	while (x <= y) {
+		lgui_hline(xc-x, yc+y, (x<<1)+1, 1, red, green, blue, alpha);
+		lgui_hline(xc-x, yc-y, (x<<1)+1, 1, red, green, blue, alpha);
+		lgui_hline(xc-y, yc+x, (y<<1)+1, 1, red, green, blue, alpha);
+		lgui_hline(xc-y, yc-x, (y<<1)+1, 1, red, green, blue, alpha);
+
+		if (d >=  0) {
+			d += diagonalInc;
+			diagonalInc += 8;
+			y -= 1;
+		} else {
+			d += rightInc;
+			diagonalInc += 4;
+		}
+		rightInc += 4;
+		x += 1;
+	}
 }
 
 void lgui_draw_font(int x, int y, int maxw, int maxh, const char *utf8, Font *f, Color c,
