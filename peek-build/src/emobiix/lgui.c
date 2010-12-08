@@ -27,13 +27,25 @@ static int translate_x = 0, translate_y = 0;
 	(((((unsigned short)(g))*scale) >> 5) & 0x7E0) | \
 	(((((unsigned short)(b))*scale) >> 11) & 0x1F))
 
-#define PIXEL_MODULATE_ALPHA(pixel, srcpixel, alpha) \
-	( (( (((unsigned short)(pixel & 0xF800)) * (unsigned short)(alpha))/255)&0xF800) + \
-    (( (((unsigned short)(srcpixel & 0xF800)) * (255-(unsigned short)(alpha)))/255)&0xF800) ) | \
-	( (( (((unsigned short)(pixel & 0x7E0)) * (unsigned short)(alpha))/255)&0x7E0) + \
-    (( (((unsigned short)(srcpixel & 0x7E0)) * (255-(unsigned short)(alpha)))/255)&0x7E0) ) | \
-	( (( (((unsigned short)(pixel & 0x1F)) * (unsigned short)(alpha))/255)&0x1F) + \
-    (( (((unsigned short)(srcpixel & 0x1F)) * (255-(unsigned short)(alpha)))/255)&0x1F))
+#if 0
+#define PIXEL_MODULATE_ALPHA(pixel, srcpixel, alpha, result) \
+	(result) = ( (( (((unsigned short)(pixel & 0xF800)) * (unsigned short)(alpha))>>8)&0xF800) + \
+    (( (((unsigned short)(srcpixel & 0xF800)) * (256-(unsigned short)(alpha)))>>8)&0xF800) ) | \
+	( (( (((unsigned short)(pixel & 0x7E0)) * (unsigned short)(alpha))>>8)&0x7E0) + \
+    (( (((unsigned short)(srcpixel & 0x7E0)) * (256-(unsigned short)(alpha)))>>8)&0x7E0) ) | \
+	( (( (((unsigned short)(pixel & 0x1F)) * (unsigned short)(alpha))>>8)&0x1F) + \
+    (( (((unsigned short)(srcpixel & 0x1F)) * (256-(unsigned short)(alpha)))>>8)&0x1F));
+#else
+#define PIXEL_MODULATE_ALPHA(__pixel, __srcpixel, __alpha, __result) \
+{ \
+	unsigned int __s = (__pixel), __d = (__srcpixel); \
+	__s = (__s | __s << 16) & 0x07e0f81f; \
+	__d = (__d | __d << 16) & 0x07e0f81f; \
+	__d += (__s - __d) * ((__alpha) >> 3) >> 5; \
+	__d &= 0x07e0f81f; \
+	(__result) = (unsigned short)(__d | __d >> 16); \
+}
+#endif
 
 #define FONT_HEADER_SIZE (6*4)
 
@@ -111,7 +123,7 @@ void lgui_vertical_gradient(
 		for (i = ccol; i < cwidth; ++i) {
 			if (alpha < 255) {
 				srcpixel = *buf;
-				pixel = PIXEL_MODULATE_ALPHA(ipixel, srcpixel, alpha);
+				PIXEL_MODULATE_ALPHA(ipixel, srcpixel, alpha, pixel)
 			}
 			*buf = pixel;
 			++buf;
@@ -198,7 +210,7 @@ void lgui_vline(int x, int y, int len, int width,
 		for (i = ccol; i < cwidth; ++i) {
 			if (alpha < 255) {
 				srcpixel = *buf;
-				pixel = PIXEL_MODULATE_ALPHA(ipixel, srcpixel, alpha);
+				PIXEL_MODULATE_ALPHA(ipixel, srcpixel, alpha, pixel)
 			}
 			*buf = pixel;
 			++buf;
@@ -249,7 +261,7 @@ void lgui_luminence_alpha_blitC(int destx, int desty, int imgx, int imgy, int im
 			if (scale > 0) {
 				srcpixel = *buf;
 				pixel = RGB_TO_565(red, green, blue);
-				*buf = (unsigned short)(PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale));
+				PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale, *buf)
 			}
 			++buf;
 			++imgbuf;
@@ -308,7 +320,7 @@ void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 				if (scale > 0) {
 					srcpixel = *buf;
 					pixel = RGB_TO_565(c.rgba.red, c.rgba.green, c.rgba.blue);
-					*buf = (unsigned short)(PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale));
+					PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale, *buf)
 				}
 			} else if (mode == LGUI_MODE_STENCIL) {
 				if (scale > 0) {
@@ -325,7 +337,7 @@ void lgui_luminence_A4_blitC(int destx, int desty, int imgx, int imgy,
 				if (scale > 0) {
 					srcpixel = *buf;
 					pixel = RGB_TO_565(c.rgba.red, c.rgba.green, c.rgba.blue);
-					*buf = (unsigned short)(PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale));
+					PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale, *buf)
 				}
 			} else if (mode == LGUI_MODE_STENCIL) {
 				if (scale > 0) {
@@ -390,7 +402,7 @@ void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
 				if (alpha != 0xFF) {
 					srcpixel = *buf;
 					imgpixel = pixel;
-					opixel = (unsigned short)(PIXEL_MODULATE_ALPHA(imgpixel, srcpixel, alpha));
+					PIXEL_MODULATE_ALPHA(imgpixel, srcpixel, alpha, opixel)
 				}
 				if (isStencil) {
 					if (pixel > 0)
@@ -453,7 +465,7 @@ void lgui_blitRGB565A8(int destx, int desty, int imgx, int imgy,
 				scale = (unsigned char)((int)scale*((int)alpha*100)/(0xFF*100));
 			}
 			srcpixel = *buf;
-			*buf = (unsigned short)(PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale));
+			PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale, *buf)
             /* *buf = pixel;*/
             ++buf;
             imgbuf +=3;
@@ -526,7 +538,7 @@ void lgui_alpha_blitRGBA(int destx, int desty, int imgx, int imgy,
 				scale = imgbuf[3];
 				srcpixel = *buf;
 				pixel = RGB_TO_565(imgbuf[0], imgbuf[1], imgbuf[2]);
-				*buf = (unsigned short)(PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale));
+				PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale, *buf)
 			++buf;
 			imgbuf +=4;
 		}
@@ -592,7 +604,7 @@ static void putpixelAlpha(int x, int y, unsigned char red, unsigned char green, 
 	buf = lgui_buffer+x+y*LGUI_WIDTH;
 	pixel = RGB_TO_565(red, green, blue);
 	srcpixel = *buf;
-	*buf = (unsigned short)(PIXEL_MODULATE_ALPHA(pixel, srcpixel, intensity));
+	PIXEL_MODULATE_ALPHA(pixel, srcpixel, intensity, *buf)
 }
 
      /*Input: uses precalculated variables D and I.*/
