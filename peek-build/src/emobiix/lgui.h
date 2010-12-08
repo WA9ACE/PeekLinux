@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-#define RGB_TO_565(r,g,b) (((((unsigned short)(r)) << 8) & 0xF800) | ((((unsigned short)(g)) << 3) & 0x7E0) | ((((unsigned short)(b)) >> 3) & 0x1F))
+#define RGB_TO_565(r,g,b) (((((unsigned short)(r)) << 8) & 0xF800) | ((((unsigned short)(g)) << 3) & 0x7E0) | ((((unsigned short)(b)) >> 3) ))
 
 #define LGUI_MODE_REPLACE		0
 #define LGUI_MODE_STENCIL		1
