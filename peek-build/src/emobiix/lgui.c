@@ -23,9 +23,9 @@ static short clip_index = 0;
 
 static int translate_x = 0, translate_y = 0;
 
-#define SCALE_PIXEL(scale, r, g, b) ((( (((unsigned short)(r))*scale/255) << 8) & 0xF800) | \
-	(((((unsigned short)(g))*scale/255) << 3) & 0x7E0) | \
-	(((((unsigned short)(b))*scale/255) >> 3) & 0x1F))
+#define SCALE_PIXEL(scale, r, g, b) ((( ((unsigned short)(r))*scale) & 0xF800) | \
+	(((((unsigned short)(g))*scale) >> 5) & 0x7E0) | \
+	(((((unsigned short)(b))*scale) >> 11) & 0x1F))
 
 #define PIXEL_MODULATE_ALPHA(pixel, srcpixel, alpha) \
 	( (( (((unsigned short)(pixel & 0xF800)) * (unsigned short)(alpha))/255)&0xF800) + \
