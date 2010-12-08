@@ -71,9 +71,14 @@ void lgui_clear(unsigned char pixel)
 }
 
 /* potential optimization, err*100 => err, remove res /= 100 */
-#define GRADIENT_STEP(res, sr, er, val, idx) res = (unsigned short)(sr*100 * (((val-1)-idx)*100)/((val-1)*100)); \
-		res += 99+(unsigned short)(er*100 * (idx*100)/((val-1)*100)); \
-		res /= 100;
+#if 0
+#define GRADIENT_STEP(res, sr, er, val, idx) res = (unsigned short)(((sr)<<7) * (((val-1)-idx)<<7)/((val-1)<<7)); \
+		res += 127+(unsigned short)(((er)<<7) * (idx<<7)/((val-1)<<7)); \
+		res >>= 7;
+#else
+#define GRADIENT_STEP(res, sr, er, val, idx) res = (unsigned short)(((sr)) * (((val-1)-idx))/((val-1))); \
+		res += 1+(unsigned short)(((er)) * (idx)/((val-1))); 
+#endif
 void lgui_vertical_gradient(
 	unsigned char start_red, unsigned char start_green, unsigned char start_blue,
 	unsigned char start_alpha,
