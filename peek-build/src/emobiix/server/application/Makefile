@@ -11,7 +11,7 @@ INCLUDE += $(BASEDIR)/soaprpc/include
 
 DEFINE = BOOST_ALL_NO_LIB=1
 
-OBJ = $(patsubst %.cpp,%.o,$(wildcard *.cpp))
+OBJ = $(patsubst %.cpp,%.o,$(wildcard *.cpp)) $(patsubst %.c,%.o,$(wildcard *.c))
 
 all: $(TARGET)
 

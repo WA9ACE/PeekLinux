@@ -22,6 +22,8 @@
 #include "shared_appdata.h"
 #include "dataobject_factory.h"
 
+#include "EmobiixField.h"
+
 #define DEVICE_UDP_LISTEN_PORT  "7"
 
 using namespace std;
@@ -327,7 +329,30 @@ void connection::handle_dataObjectSync(FRIPacketP* packet, reply& rep)
 			for (size_t i = 0; i < sync.syncListP.choice.blockSyncListP.list.count; ++i)
 			{
 				SyncOperandP_t *syncOp = sync.syncListP.choice.blockSyncListP.list.array[i];
-				string operand((const char *)syncOp->fieldNameP.buf, syncOp->fieldNameP.size);
+				string operand;
+
+				switch (syncOp->fieldNameP.present)
+				{
+					case FieldNameP_PR_fieldNameStringP:
+					{
+				 		operand = string((const char *)syncOp->fieldNameP.choice.fieldNameStringP.buf, syncOp->fieldNameP.choice.fieldNameStringP.size);
+					}
+					break;
+
+					case FieldNameP_PR_fieldNameEnumP:
+					{
+						if (const char *fieldName = emo_field_to_string(syncOp->fieldNameP.choice.fieldNameEnumP))
+						{
+							operand = fieldName;
+						}
+						else
+						{
+							ERRORLOG("Uknown field name enum: " << syncOp->fieldNameP.choice.fieldNameEnumP);
+							operand = "???";
+						}
+					}
+					break;
+				}
 
 				TRACELOG("Got syncOperand: " << operand);
 

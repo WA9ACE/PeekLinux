@@ -3,6 +3,7 @@
 #include "xml_parser.h"
 #include "logger.h"
 #include "soap_request.h"
+#include "EmobiixField.h"
 
 using namespace std;
 
@@ -36,9 +37,21 @@ void dataobject_factory::addDataAttribute(FRIPacketP *packet, const char *attrib
 SyncOperandP_t* dataobject_factory::syncOperandP(const char *fieldName)
 {
 	SyncOperandP_t *syncOp = new SyncOperandP_t;
-	syncOp->fieldNameP.buf = NULL;
-	OCTET_STRING_fromString(&syncOp->fieldNameP, fieldName);
-
+	int fieldId = emo_field_to_int(fieldName);
+	if (fieldId == EMO_FIELD_UNKNOWN_FIELD)
+	{
+		TRACELOG("Custom fieldName = " << fieldName << " detected, will not map"); 
+		syncOp->fieldNameP.present = FieldNameP_PR_fieldNameStringP;
+		syncOp->fieldNameP.choice.fieldNameStringP.buf = NULL;
+		OCTET_STRING_fromString(&syncOp->fieldNameP.choice.fieldNameStringP, fieldName);
+	}
+	else
+	{
+		TRACELOG("Mapping fieldName = " << fieldName << " to " << fieldId);
+		syncOp->fieldNameP.present = FieldNameP_PR_fieldNameEnumP;
+		syncOp->fieldNameP.choice.fieldNameEnumP = fieldId;
+	}
+	
 	return syncOp;
 }
 
