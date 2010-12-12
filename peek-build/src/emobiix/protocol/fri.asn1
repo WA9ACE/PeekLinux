@@ -48,7 +48,10 @@ BEGIN
         syncModifyP
     }
 
-    FieldNameP ::= VisibleString
+    FieldNameP ::= CHOICE {
+        fieldNameStringP    VisibleString,
+        fieldNameEnumP      INTEGER
+    }
 
     DataObjectStampP ::= INTEGER
     RecordIDP ::= INTEGER
