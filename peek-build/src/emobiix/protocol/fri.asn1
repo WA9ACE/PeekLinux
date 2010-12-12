@@ -50,7 +50,7 @@ BEGIN
 
     FieldNameP ::= CHOICE {
         fieldNameStringP    VisibleString,
-        fieldNameEnumP      INTEGER
+        fieldNameEnumP      INTEGER (0 .. 1024)
     }
 
     DataObjectStampP ::= INTEGER
