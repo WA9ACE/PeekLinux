@@ -25,8 +25,8 @@ Style *RootStyle(void)
 		return defaultStyle;
 
 	fontObject1 = dataobject_new();
-	dataobject_setValue(fontObject1, "type", dataobjectfield_string("font"));
-	dataobject_setValue(fontObject1, "data", dataobjectfield_string("DroidSans.ttf"));
+	dataobject_setEnum(fontObject1, EMO_FIELD_TYPE, dataobjectfield_string("font"));
+	dataobject_setEnum(fontObject1, EMO_FIELD_DATA, dataobjectfield_string("DroidSans.ttf"));
 
 #ifndef SIMULATOR
 	file_openWrite("test0");
@@ -61,248 +61,248 @@ Style *RootStyle(void)
 	gradient_addStop(defaultGradient, 100, color);
 
 	defaultStyle = dataobject_new();
-	dataobject_setValue(defaultStyle, "type", dataobjectfield_string("style"));
+	dataobject_setEnum(defaultStyle, EMO_FIELD_TYPE, dataobjectfield_string("style"));
 
 	/* Entry */
 	solidbox = widget_newTypeIdName("entry", NULL, NULL, defaultStyle);
-	dataobject_setValue(solidbox, "renderer", dataobjectfield_string("entry"));
-	dataobject_setValue(solidbox, "font-color", dataobjectfield_int(0));
-	dataobject_setValue(solidbox, "margin", dataobjectfield_int(2));
-	dataobject_setValue(solidbox, "multiline", dataobjectfield_string("0"));
-	dataobject_setValue(solidbox, "box-renderer", dataobjectfield_string("box"));
-	dataobject_setValue(solidbox, "rounded", dataobjectfield_string("1234"));
-	dataobject_setValue(solidbox, "background-color", dataobjectfield_int(0xFFFFFFFF));
-	dataobject_setValue(solidbox, "border-corners", dataobjectfield_string("1234"));
-	dataobject_setValue(solidbox, "border-color", dataobjectfield_uint(0x696969FF));
-	dataobject_setValue(solidbox, "border", dataobjectfield_string("1234"));
-	dataobject_setValue(solidbox, "fill", dataobjectfield_string("solid"));
+	dataobject_setEnum(solidbox, EMO_FIELD_RENDERER, dataobjectfield_string("entry"));
+	dataobject_setEnum(solidbox, EMO_FIELD_FONTCOLOR, dataobjectfield_int(0));
+	dataobject_setEnum(solidbox, EMO_FIELD_MARGIN, dataobjectfield_int(2));
+	dataobject_setEnum(solidbox, EMO_FIELD_MULTILINE, dataobjectfield_string("0"));
+	dataobject_setEnum(solidbox, EMO_FIELD_BOXRENDERER, dataobjectfield_string("box"));
+	dataobject_setEnum(solidbox, EMO_FIELD_ROUNDED, dataobjectfield_string("1234"));
+	dataobject_setEnum(solidbox, EMO_FIELD_BACKGROUNDCOLOR, dataobjectfield_int(0xFFFFFFFF));
+	dataobject_setEnum(solidbox, EMO_FIELD_BORDERCORNERS, dataobjectfield_string("1234"));
+	dataobject_setEnum(solidbox, EMO_FIELD_BORDERCOLOR, dataobjectfield_uint(0x696969FF));
+	dataobject_setEnum(solidbox, EMO_FIELD_BORDER, dataobjectfield_string("1234"));
+	dataobject_setEnum(solidbox, EMO_FIELD_FILL, dataobjectfield_string("solid"));
 
 	/* Entry - focused */
 	solidbox = widget_newTypeIdName("entry", NULL, NULL, defaultStyle);
 	widget_setFocus(solidbox, 1);
-	dataobject_setValue(solidbox, "renderer", dataobjectfield_string("entry"));
-	dataobject_setValue(solidbox, "font-color", dataobjectfield_int(0));
-	dataobject_setValue(solidbox, "margin", dataobjectfield_int(2));
-	dataobject_setValue(solidbox, "multiline", dataobjectfield_string("0"));
-	dataobject_setValue(solidbox, "box-renderer", dataobjectfield_string("box"));
-	dataobject_setValue(solidbox, "rounded", dataobjectfield_string("1234"));
-	dataobject_setValue(solidbox, "background-color", dataobjectfield_int(0xb7f1ffFF));
-	dataobject_setValue(solidbox, "border-corners", dataobjectfield_string("1234"));
-	dataobject_setValue(solidbox, "border-color", dataobjectfield_uint(0x696969FF));
-	dataobject_setValue(solidbox, "border", dataobjectfield_string("1234"));
-	dataobject_setValue(solidbox, "fill", dataobjectfield_string("solid"));
-	dataobject_setValue(solidbox, "cursor-color", dataobjectfield_int(0x0000FFFF));
+	dataobject_setEnum(solidbox, EMO_FIELD_RENDERER, dataobjectfield_string("entry"));
+	dataobject_setEnum(solidbox, EMO_FIELD_FONTCOLOR, dataobjectfield_int(0));
+	dataobject_setEnum(solidbox, EMO_FIELD_MARGIN, dataobjectfield_int(2));
+	dataobject_setEnum(solidbox, EMO_FIELD_MULTILINE, dataobjectfield_string("0"));
+	dataobject_setEnum(solidbox, EMO_FIELD_BOXRENDERER, dataobjectfield_string("box"));
+	dataobject_setEnum(solidbox, EMO_FIELD_ROUNDED, dataobjectfield_string("1234"));
+	dataobject_setEnum(solidbox, EMO_FIELD_BACKGROUNDCOLOR, dataobjectfield_int(0xb7f1ffFF));
+	dataobject_setEnum(solidbox, EMO_FIELD_BORDERCORNERS, dataobjectfield_string("1234"));
+	dataobject_setEnum(solidbox, EMO_FIELD_BORDERCOLOR, dataobjectfield_uint(0x696969FF));
+	dataobject_setEnum(solidbox, EMO_FIELD_BORDER, dataobjectfield_string("1234"));
+	dataobject_setEnum(solidbox, EMO_FIELD_FILL, dataobjectfield_string("solid"));
+	dataobject_setEnum(solidbox, EMO_FIELD_CURSORCOLOR, dataobjectfield_int(0x0000FFFF));
 
 	/* label */
 	solidbox = widget_newTypeIdName("label", NULL, NULL, defaultStyle);
-	dataobject_setValue(solidbox, "renderer", dataobjectfield_string("label"));
-	dataobject_setValue(solidbox, "font-color", dataobjectfield_int(0));
+	dataobject_setEnum(solidbox, EMO_FIELD_RENDERER, dataobjectfield_string("label"));
+	dataobject_setEnum(solidbox, EMO_FIELD_FONTCOLOR, dataobjectfield_int(0));
 
 	/* checkbox */
 	solidbox = widget_newTypeIdName("checkbox", NULL, NULL, defaultStyle);
-	dataobject_setValue(solidbox, "renderer", dataobjectfield_string("checkbox"));
-	dataobject_setValue(solidbox, "box-renderer", dataobjectfield_string("box"));
-	dataobject_setValue(solidbox, "background-color", dataobjectfield_uint(0xFFFFFFFF));
-	dataobject_setValue(solidbox, "border-color", dataobjectfield_uint(0x0));
-	dataobject_setValue(solidbox, "border", dataobjectfield_string("1234"));
-	dataobject_setValue(solidbox, "fill", dataobjectfield_string("solid"));
-	dataobject_setValue(solidbox, "check-color", dataobjectfield_int(0x5050FFFF));
+	dataobject_setEnum(solidbox, EMO_FIELD_RENDERER, dataobjectfield_string("checkbox"));
+	dataobject_setEnum(solidbox, EMO_FIELD_BOXRENDERER, dataobjectfield_string("box"));
+	dataobject_setEnum(solidbox, EMO_FIELD_BACKGROUNDCOLOR, dataobjectfield_uint(0xFFFFFFFF));
+	dataobject_setEnum(solidbox, EMO_FIELD_BORDERCOLOR, dataobjectfield_uint(0x0));
+	dataobject_setEnum(solidbox, EMO_FIELD_BORDER, dataobjectfield_string("1234"));
+	dataobject_setEnum(solidbox, EMO_FIELD_FILL, dataobjectfield_string("solid"));
+	dataobject_setEnum(solidbox, EMO_FIELD_CHECKCOLOR, dataobjectfield_int(0x5050FFFF));
 	
 	/* checkbox */
 	solidbox = widget_newTypeIdName("checkbox", NULL, NULL, defaultStyle);
 	widget_setFocus(solidbox, 1);
-	dataobject_setValue(solidbox, "renderer", dataobjectfield_string("checkbox"));
-	dataobject_setValue(solidbox, "box-renderer", dataobjectfield_string("box"));
-	dataobject_setValue(solidbox, "background-color", dataobjectfield_uint(0xCFCFFFFF));
-	dataobject_setValue(solidbox, "border-color", dataobjectfield_uint(0x0));
-	dataobject_setValue(solidbox, "border", dataobjectfield_string("1234"));
-	dataobject_setValue(solidbox, "fill", dataobjectfield_string("solid"));
-	dataobject_setValue(solidbox, "check-color", dataobjectfield_int(0x5050FFFF));
-	dataobject_setValue(solidbox, "box-renderer", dataobjectfield_string("box"));
+	dataobject_setEnum(solidbox, EMO_FIELD_RENDERER, dataobjectfield_string("checkbox"));
+	dataobject_setEnum(solidbox, EMO_FIELD_BOXRENDERER, dataobjectfield_string("box"));
+	dataobject_setEnum(solidbox, EMO_FIELD_BACKGROUNDCOLOR, dataobjectfield_uint(0xCFCFFFFF));
+	dataobject_setEnum(solidbox, EMO_FIELD_BORDERCOLOR, dataobjectfield_uint(0x0));
+	dataobject_setEnum(solidbox, EMO_FIELD_BORDER, dataobjectfield_string("1234"));
+	dataobject_setEnum(solidbox, EMO_FIELD_FILL, dataobjectfield_string("solid"));
+	dataobject_setEnum(solidbox, EMO_FIELD_CHECKCOLOR, dataobjectfield_int(0x5050FFFF));
+	dataobject_setEnum(solidbox, EMO_FIELD_BOXRENDERER, dataobjectfield_string("box"));
 
 	/* text */
 	solidbox = widget_newTypeIdName("text", NULL, NULL, defaultStyle);
-	dataobject_setValue(solidbox, "renderer", dataobjectfield_string("text"));
-	dataobject_setValue(solidbox, "font-color", dataobjectfield_int(0));
+	dataobject_setEnum(solidbox, EMO_FIELD_RENDERER, dataobjectfield_string("text"));
+	dataobject_setEnum(solidbox, EMO_FIELD_FONTCOLOR, dataobjectfield_int(0));
 
 	/* scroll bar */
 	solidbox = widget_newTypeIdName("scrollbar", NULL, NULL, defaultStyle);
-	dataobject_setValue(solidbox, "renderer", dataobjectfield_string("scrollbar"));
-	dataobject_setValue(solidbox, "thumb-color", dataobjectfield_int(0xAAAAAAFF));
-	dataobject_setValue(solidbox, "track-color", dataobjectfield_int(0x444444FF));
+	dataobject_setEnum(solidbox, EMO_FIELD_RENDERER, dataobjectfield_string("scrollbar"));
+	dataobject_setEnum(solidbox, EMO_FIELD_THUMBCOLOR, dataobjectfield_int(0xAAAAAAFF));
+	dataobject_setEnum(solidbox, EMO_FIELD_TRACKCOLOR, dataobjectfield_int(0x444444FF));
 
 	/* scrolled */
 	solidbox = widget_newTypeIdName("scrolled", NULL, NULL, defaultStyle);
-	dataobject_setValue(solidbox, "renderer", dataobjectfield_string("scrolled"));
+	dataobject_setEnum(solidbox, EMO_FIELD_RENDERER, dataobjectfield_string("scrolled"));
 
 	/* label */
 	solidbox = widget_newTypeIdName("array", NULL, NULL, defaultStyle);
-	dataobject_setValue(solidbox, "renderer", dataobjectfield_string("array"));
+	dataobject_setEnum(solidbox, EMO_FIELD_RENDERER, dataobjectfield_string("array"));
 
 	/* Image */
 	solidbox = widget_newTypeIdName("image", NULL, NULL, defaultStyle);
-	dataobject_setValue(solidbox, "renderer", dataobjectfield_string("image"));
+	dataobject_setEnum(solidbox, EMO_FIELD_RENDERER, dataobjectfield_string("image"));
 
 	/* Solid */
 	solidbox = widget_newTypeIdName("solid", NULL, NULL, defaultStyle);
-	dataobject_setValue(solidbox, "renderer", dataobjectfield_string("box"));
-	dataobject_setValue(solidbox, "fill", dataobjectfield_string("solid"));
+	dataobject_setEnum(solidbox, EMO_FIELD_RENDERER, dataobjectfield_string("box"));
+	dataobject_setEnum(solidbox, EMO_FIELD_FILL, dataobjectfield_string("solid"));
 
 	/* Gradbox */
 	gradbox = widget_newTypeIdName("gradbox", NULL, NULL, defaultStyle);
-	dataobject_setValue(gradbox, "renderer", dataobjectfield_string("box"));
-	dataobject_setValue(gradbox, "fill", dataobjectfield_string("gradient"));
-	dataobject_setValue(gradbox, "background-color", dataobjectfield_uint(0x878787FF));
+	dataobject_setEnum(gradbox, EMO_FIELD_RENDERER, dataobjectfield_string("box"));
+	dataobject_setEnum(gradbox, EMO_FIELD_FILL, dataobjectfield_string("gradient"));
+	dataobject_setEnum(gradbox, EMO_FIELD_BACKGROUNDCOLOR, dataobjectfield_uint(0x878787FF));
 
 	gradient = widget_newTypeIdName("gradient", NULL, NULL, gradbox);
 	
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(0));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xF9F9F9FF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(0));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xF9F9F9FF));
 
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(50));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xC9C9C9FF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(50));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xC9C9C9FF));
 	
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(50));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xB1B1B1FF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(50));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xB1B1B1FF));
 
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(100));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xDEDEDEFF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(100));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xDEDEDEFF));
 
 	/* Dark Gradbox */
 	gradbox = widget_newTypeIdName("darkgradbox", NULL, NULL, defaultStyle);
-	dataobject_setValue(gradbox, "renderer", dataobjectfield_string("box"));
-	dataobject_setValue(gradbox, "fill", dataobjectfield_string("gradient"));
-	dataobject_setValue(gradbox, "background-color", dataobjectfield_uint(0x878787FF));
+	dataobject_setEnum(gradbox, EMO_FIELD_RENDERER, dataobjectfield_string("box"));
+	dataobject_setEnum(gradbox, EMO_FIELD_FILL, dataobjectfield_string("gradient"));
+	dataobject_setEnum(gradbox, EMO_FIELD_BACKGROUNDCOLOR, dataobjectfield_uint(0x878787FF));
 
 	gradient = widget_newTypeIdName("gradient", NULL, NULL, gradbox);
 	
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(0));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0x666666FF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(0));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0x666666FF));
 
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(100));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0x000000FF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(100));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0x000000FF));
 
 	/* Gradboxr */
 	gradbox = widget_newTypeIdName("gradboxr", NULL, NULL, defaultStyle);
-	dataobject_setValue(gradbox, "renderer", dataobjectfield_string("box"));
-	dataobject_setValue(gradbox, "fill", dataobjectfield_string("gradient"));
-	dataobject_setValue(gradbox, "radius", dataobjectfield_int(7));
-	dataobject_setValue(gradbox, "rounded", dataobjectfield_string("1234"));
-	dataobject_setValue(gradbox, "border", dataobjectfield_string("1234"));
-	dataobject_setValue(gradbox, "border-corners", dataobjectfield_string("1234"));
-	dataobject_setValue(gradbox, "border-color", dataobjectfield_uint(0x696969FF));
+	dataobject_setEnum(gradbox, EMO_FIELD_RENDERER, dataobjectfield_string("box"));
+	dataobject_setEnum(gradbox, EMO_FIELD_FILL, dataobjectfield_string("gradient"));
+	dataobject_setEnum(gradbox, EMO_FIELD_RADIUS, dataobjectfield_int(7));
+	dataobject_setEnum(gradbox, EMO_FIELD_ROUNDED, dataobjectfield_string("1234"));
+	dataobject_setEnum(gradbox, EMO_FIELD_BORDER, dataobjectfield_string("1234"));
+	dataobject_setEnum(gradbox, EMO_FIELD_BORDERCORNERS, dataobjectfield_string("1234"));
+	dataobject_setEnum(gradbox, EMO_FIELD_BORDERCOLOR, dataobjectfield_uint(0x696969FF));
 
 	gradient = widget_newTypeIdName("gradient", NULL, NULL, gradbox);
 	
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(0));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xF9F9F9FF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(0));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xF9F9F9FF));
 
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(50));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xC9C9C9FF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(50));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xC9C9C9FF));
 	
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(50));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xB1B1B1FF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(50));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xB1B1B1FF));
 
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(100));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xDEDEDEFF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(100));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xDEDEDEFF));
 
 	/* Gradboxr - focused */
 	gradbox = widget_newTypeIdName("gradboxr", NULL, NULL, defaultStyle);
 	widget_setFocus(gradbox, 1);
-	dataobject_setValue(gradbox, "renderer", dataobjectfield_string("box"));
-	dataobject_setValue(gradbox, "fill", dataobjectfield_string("gradient"));
-	dataobject_setValue(gradbox, "radius", dataobjectfield_int(7));
-	dataobject_setValue(gradbox, "rounded", dataobjectfield_string("1234"));
-	dataobject_setValue(gradbox, "border", dataobjectfield_string("1234"));
-	dataobject_setValue(gradbox, "border-corners", dataobjectfield_string("1234"));
-	dataobject_setValue(gradbox, "border-color", dataobjectfield_uint(0x696989FF));
+	dataobject_setEnum(gradbox, EMO_FIELD_RENDERER, dataobjectfield_string("box"));
+	dataobject_setEnum(gradbox, EMO_FIELD_FILL, dataobjectfield_string("gradient"));
+	dataobject_setEnum(gradbox, EMO_FIELD_RADIUS, dataobjectfield_int(7));
+	dataobject_setEnum(gradbox, EMO_FIELD_ROUNDED, dataobjectfield_string("1234"));
+	dataobject_setEnum(gradbox, EMO_FIELD_BORDER, dataobjectfield_string("1234"));
+	dataobject_setEnum(gradbox, EMO_FIELD_BORDERCORNERS, dataobjectfield_string("1234"));
+	dataobject_setEnum(gradbox, EMO_FIELD_BORDERCOLOR, dataobjectfield_uint(0x696989FF));
 
 	gradient = widget_newTypeIdName("gradient", NULL, NULL, gradbox);
 	
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(0));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xF9F9F9FF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(0));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xF9F9F9FF));
 
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(50));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0x59DFFEFF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(50));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0x59DFFEFF));
 	
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(50));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0x35dcfbFF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(50));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0x35dcfbFF));
 
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(100));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xb7f1ffFF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(100));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xb7f1ffFF));
 
 	/* Button */
 	gradbox = widget_newTypeIdName("button", NULL, NULL, defaultStyle);
-	dataobject_setValue(gradbox, "margin", dataobjectfield_int(2));
-	dataobject_setValue(gradbox, "renderer", dataobjectfield_string("box"));
-	dataobject_setValue(gradbox, "fill", dataobjectfield_string("gradient"));
-	dataobject_setValue(gradbox, "radius", dataobjectfield_int(7));
-	dataobject_setValue(gradbox, "rounded", dataobjectfield_string("1234"));
-	dataobject_setValue(gradbox, "border", dataobjectfield_string("1234"));
-	dataobject_setValue(gradbox, "border-corners", dataobjectfield_string("1234"));
-	dataobject_setValue(gradbox, "border-color", dataobjectfield_uint(0x696969FF));
+	dataobject_setEnum(gradbox, EMO_FIELD_MARGIN, dataobjectfield_int(2));
+	dataobject_setEnum(gradbox, EMO_FIELD_RENDERER, dataobjectfield_string("box"));
+	dataobject_setEnum(gradbox, EMO_FIELD_FILL, dataobjectfield_string("gradient"));
+	dataobject_setEnum(gradbox, EMO_FIELD_RADIUS, dataobjectfield_int(7));
+	dataobject_setEnum(gradbox, EMO_FIELD_ROUNDED, dataobjectfield_string("1234"));
+	dataobject_setEnum(gradbox, EMO_FIELD_BORDER, dataobjectfield_string("1234"));
+	dataobject_setEnum(gradbox, EMO_FIELD_BORDERCORNERS, dataobjectfield_string("1234"));
+	dataobject_setEnum(gradbox, EMO_FIELD_BORDERCOLOR, dataobjectfield_uint(0x696969FF));
 
 	gradient = widget_newTypeIdName("gradient", NULL, NULL, gradbox);
 	
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(0));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xF9F9F9FF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(0));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xF9F9F9FF));
 
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(50));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xC9C9C9FF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(50));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xC9C9C9FF));
 	
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(50));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xB1B1B1FF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(50));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xB1B1B1FF));
 
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(100));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xDEDEDEFF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(100));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xDEDEDEFF));
 
 	/* Button - focused */
 	gradbox = widget_newTypeIdName("button", NULL, NULL, defaultStyle);
 	widget_setFocus(gradbox, 1);
-	dataobject_setValue(gradbox, "renderer", dataobjectfield_string("box"));
-	dataobject_setValue(gradbox, "margin", dataobjectfield_int(2));
-	dataobject_setValue(gradbox, "fill", dataobjectfield_string("gradient"));
-	dataobject_setValue(gradbox, "radius", dataobjectfield_int(7));
-	dataobject_setValue(gradbox, "rounded", dataobjectfield_string("1234"));
-	dataobject_setValue(gradbox, "border", dataobjectfield_string("1234"));
-	dataobject_setValue(gradbox, "border-corners", dataobjectfield_string("1234"));
-	dataobject_setValue(gradbox, "border-color", dataobjectfield_uint(0x696989FF));
+	dataobject_setEnum(gradbox, EMO_FIELD_RENDERER, dataobjectfield_string("box"));
+	dataobject_setEnum(gradbox, EMO_FIELD_MARGIN, dataobjectfield_int(2));
+	dataobject_setEnum(gradbox, EMO_FIELD_FILL, dataobjectfield_string("gradient"));
+	dataobject_setEnum(gradbox, EMO_FIELD_RADIUS, dataobjectfield_int(7));
+	dataobject_setEnum(gradbox, EMO_FIELD_ROUNDED, dataobjectfield_string("1234"));
+	dataobject_setEnum(gradbox, EMO_FIELD_BORDER, dataobjectfield_string("1234"));
+	dataobject_setEnum(gradbox, EMO_FIELD_BORDERCORNERS, dataobjectfield_string("1234"));
+	dataobject_setEnum(gradbox, EMO_FIELD_BORDERCOLOR, dataobjectfield_uint(0x696989FF));
 
 	gradient = widget_newTypeIdName("gradient", NULL, NULL, gradbox);
 	
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(0));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xF9F9F9FF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(0));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xF9F9F9FF));
 
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(50));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0x59DFFEFF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(50));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0x59DFFEFF));
 	
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(50));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0x35dcfbFF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(50));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0x35dcfbFF));
 
 	gradientStop = widget_newTypeIdName("stop", NULL, NULL, gradient);
-	dataobject_setValue(gradientStop, "position", dataobjectfield_int(100));
-	dataobject_setValue(gradientStop, "color", dataobjectfield_uint(0xb7f1ffFF));
+	dataobject_setEnum(gradientStop, EMO_FIELD_POSITION, dataobjectfield_int(100));
+	dataobject_setEnum(gradientStop, EMO_FIELD_COLOR, dataobjectfield_uint(0xb7f1ffFF));
 
 
 	return defaultStyle;

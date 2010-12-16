@@ -4,6 +4,7 @@
 /*#include "Widget_internal.h"*/
 #include "WidgetRenderer.h"
 #include "Gradient.h"
+#include "DataObject.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -17,11 +18,11 @@ struct WidgetRenderer_t;
 void style_renderWidgetTree(Style *s, Widget *w);
 Style *style_getID(Style *styleRoot, const char *type, const char *id, int isFocused,
 		int *wentUp);
-DataObjectField *style_getProperty(Style *s, DataObject *dobj, const char *key);
-DataObjectField *style_getPropertyAsInt(Style *s, DataObject *dobj, const char *key);
-DataObjectField *style_getColor(Style *s, DataObject *dobj, const char *key,
+DataObjectField *style_getProperty(Style *s, DataObject *dobj, EmoField eenum);
+DataObjectField *style_getPropertyAsInt(Style *s, DataObject *dobj, EmoField eenum);
+DataObjectField *style_getColor(Style *s, DataObject *dobj, EmoField eenum,
 		unsigned int *color);
-DataObjectField *style_getRenderer(Style *s, DataObject *dobj, const char *key,
+DataObjectField *style_getRenderer(Style *s, DataObject *dobj, EmoField eenum,
 		struct WidgetRenderer_t **wr);
 Gradient *style_getGradient(Style *s);
 

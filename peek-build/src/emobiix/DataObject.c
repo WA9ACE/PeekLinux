@@ -60,6 +60,7 @@ DataObject *dataobject_new(void)
 		return NULL;
 	}
 	output->data = map_string();
+	output->enumData = map_int();
 	output->children = list_new();
 	output->referenced = list_new();
 	output->arrayChildren = list_new();
@@ -84,6 +85,7 @@ DataObject *dataobject_copy(DataObject *dobj)
 	DataObject *output;
 	DataObjectField *field;
 	char *key;
+	EmoField ekey;
 	MapIterator iter;
 
 	EMO_ASSERT_NULL(dobj != NULL, "copying NULL DataObject")
@@ -105,6 +107,12 @@ DataObject *dataobject_copy(DataObject *dobj)
 			mapIterator_next(&iter)) {
 		field = dataobjectfield_copy((DataObjectField *)mapIterator_item(&iter, (void **)&key));
 		dataobject_setValue(output, key, field);
+	}
+
+	for (map_begin(dobj->enumData, &iter); !mapIterator_finished(&iter);
+			mapIterator_next(&iter)) {
+		field = dataobjectfield_copy((DataObjectField *)mapIterator_item(&iter, (void **)&ekey));
+		dataobject_setEnum(output, ekey, field);
 	}
 
 	return output;
@@ -170,6 +178,100 @@ void dataobject_delete(DataObject *dobj)
 	/*renderman_dequeue(dobj);*/
 	p_free(dobj);
 }
+
+void dataobject_setEnum(DataObject *dobj, EmoField enu, DataObjectField *v)
+{
+	DataObjectField *old;
+
+	EMO_ASSERT(dobj != NULL, "setEnum on NULL DataObject")
+	EMO_ASSERT(enu != -1, "setEnum missing key")
+	EMO_ASSERT(v != NULL, "setEnum missing value")
+
+	old = (DataObjectField *)map_find(dobj->enumData, (const void *)enu);
+	if (old == v)
+		return;
+	if (old != NULL) {
+		map_remove(dobj->enumData, (const void *)enu);
+		dataobjectfield_free(old);
+	}
+	map_append(dobj->enumData, (const void *)enu, v);
+}
+
+DataObjectField *dataobject_getEnum(DataObject *dobj, EmoField enu)
+{
+	DataObjectField *output;
+	DataObject *child;
+
+	EMO_ASSERT_NULL(dobj != NULL, "getEnum on NULL DataObject")
+	EMO_ASSERT_NULL(enu != -1, "getEnum missing key")
+
+	output = (DataObjectField *)map_find(dobj->enumData, (const void *)enu);
+	if (output != NULL && output->type == DOF_STRING) {
+		if (output->flags & DOFF_ARRAYSOURCE) {
+			child = widget_getDataObject(dobj);
+			if (output->type == DOF_STRING)
+				output = dataobject_getValue(child, output->field.string);
+			else if (output->type == DOF_INT)
+				output = dataobject_getEnum(child, output->field.integer);
+			else {
+				EMO_ASSERT_NULL(0, "field is array source but faild value is neither int nor string")
+			}
+		}
+	}
+
+	return output;
+}
+
+DataObjectField *dataobject_getEnumAsInt(DataObject *dobj, EmoField enu)
+{
+	DataObjectField *output;
+	char *str;
+	int len;
+	unsigned int tmpcol;
+
+	EMO_ASSERT_NULL(dobj != NULL, "getEnumAsInt on NULL DataObject")
+	EMO_ASSERT_NULL(enu != -1, "getEnumAsInt missing key")
+
+	output = dataobject_getEnum(dobj, enu);
+	if (output == NULL)
+		return output;
+
+	if (output->type == DOF_INT || output->type == DOF_UINT)
+		return output;
+
+	if (output->type == DOF_STRING) {
+		str = output->field.string;
+		if (str[0] == '#') {
+			len = strlen(str+1);
+			switch (len) {
+				case 8:
+				default:
+					sscanf(str+1, "%X", &output->field.uinteger);
+					break;
+				case 6:
+					sscanf(str+1, "%X", &output->field.uinteger);
+					output->field.uinteger <<= 8;
+					output->field.uinteger |= 0xFF;
+					break;
+				case 3:
+					sscanf(str+1, "%X", &tmpcol);
+					output->field.uinteger = ((tmpcol & 0xF00) << 20) | ((tmpcol & 0xF00) << 16);
+					output->field.uinteger |= ((tmpcol & 0x0F0) << 16) | ((tmpcol & 0x0F0) << 12);
+					output->field.uinteger |= ((tmpcol & 0x00F) << 12) | (tmpcol & 0x00F);
+					output->field.uinteger |= 0xFF;
+					break;
+			}
+		} else {
+			output->field.integer = atoi(str);
+		}
+		output->type = DOF_INT;
+		p_free(str);
+		return output;
+	}
+
+	return NULL;
+}
+
 
 void dataobject_setValue(DataObject *dobj, const char *key, DataObjectField *v)
 {
@@ -393,7 +495,7 @@ void dataobject_childIterator(DataObject *dobj, ListIterator *iter)
 	if (list_size(dobj->children) > 0) {
 		item = (DataObject *)listIterator_item(iter);
 		/*if (list_size(item->arrayChildren) > 0) {*/
-		type = dataobject_getValue(item, "type");
+		type = dataobject_getEnum(item, EMO_FIELD_TYPE);
 		if (dataobjectfield_isString(type, "array")) {
 			list_begin(item->arrayChildren, iter);
 			return;
@@ -638,13 +740,13 @@ DataObject *dataobject_findByName(DataObject *dobj, const char *name)
 	EMO_ASSERT_NULL(dobj != NULL, "findByName on NULL DataObject")
 	EMO_ASSERT_NULL(name != NULL, "findByName without name")
 
-	field = dataobject_getValue(dobj, "name");
+	field = dataobject_getEnum(dobj, EMO_FIELD_NAME);
 	if (dataobjectfield_isString(field, name)) {
 		/*emo_printf("Found, returning" NL);*/
 		return dobj;
 	}
 
-	dtype = dataobject_getValue(dobj, "type");
+	dtype = dataobject_getEnum(dobj, EMO_FIELD_TYPE);
 	if (dataobjectfield_isString(dtype, "frame")) {
 		child = widget_getDataObject(dobj);
 		if (child != NULL) {
@@ -733,7 +835,7 @@ void dataobject_setLayoutDirtyAll(DataObject *dobj)
 	dobj->flags1 |= DO_FLAG_LAYOUT_DIRTY_WIDTH;
 	dobj->flags1 |= DO_FLAG_LAYOUT_DIRTY_HEIGHT;
 
-	type = dataobject_getValue(dobj, "type");
+	type = dataobject_getEnum(dobj, EMO_FIELD_TYPE);
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(dobj);
 		if (child != NULL && child != dobj) {
@@ -820,7 +922,7 @@ static void dataobject_debugPrintR(DataObject *dobj, int level)
 	}
 	emo_printf(">" NL);
 
-	dof = dataobject_getValue(dobj, "type");
+	dof = dataobject_getEnum(dobj, EMO_FIELD_TYPE);
 	if (dataobjectfield_isString(dof, "frame")) {
 		child = widget_getDataObject(dobj);
 		if (child != NULL) {
@@ -1158,7 +1260,7 @@ void dataobject_resolveReferences(DataObject *dobj)
 	ref = widget_getDataObject(dobj);
 
 	/*if (ref == dobj) {*/
-	field = dataobject_getValue(dobj, "reference");
+	field = dataobject_getEnum(dobj, EMO_FIELD_REFERENCE);
 	if (field != NULL && field->type == DOF_STRING) {
 		if (strchr(field->field.string, ':') != NULL) {
 			url = url_parse(field->field.string, URL_ALL);	
@@ -1190,7 +1292,7 @@ void dataobject_resolveReferences(DataObject *dobj)
 	}
 	/*listIterator_delete(iter);*/
 
-	field = dataobject_getValue(dobj, "type");
+	field = dataobject_getEnum(dobj, EMO_FIELD_TYPE);
 	if (dataobjectfield_isString(field, "array")) {
 		array_expand(dobj);
 		renderman_clearQueue();
@@ -1274,7 +1376,7 @@ void dataobject_setIsModified(DataObject *dobj, int isModified)
 		dobj->flags1 &= ~DO_FLAG_CHANGED;
 	}
 
-	type = dataobject_getValue(dobj, "type");
+	type = dataobject_getEnum(dobj, EMO_FIELD_TYPE);
 	if (dataobjectfield_isString(type, "array")) {
 		array_expand(dobj);
 		renderman_clearQueue();

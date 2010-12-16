@@ -20,6 +20,8 @@ void array_expand(Widget *w)
 	EMO_ASSERT(w != NULL,
 			"Attempting to expand array with NULL Widget")
 
+	/*emo_printf("Array expand" NL);*/
+
 	childCount = dataobject_getChildCount(w);
 	if (childCount == 0)
 		return;
@@ -32,8 +34,8 @@ void array_expand(Widget *w)
 	if (dobj == w)
 		return;
 
-	filterfield = dataobject_getValue(w, "filterfield");
-	filtervalue = dataobject_getValue(w, "filtervalue");
+	filterfield = dataobject_getEnum(w, EMO_FIELD_FILTERFIELD);
+	filtervalue = dataobject_getEnum(w, EMO_FIELD_FILTERVALUE);
 	if (filtervalue == NULL || filtervalue->type != DOF_STRING)
 		filterfield = NULL;
 	
@@ -47,8 +49,8 @@ void array_expand(Widget *w)
 	list_begin(w->children, &iter);
 	arrtemplate = (DataObject *)listIterator_item(&iter);
 
-	direction = dataobject_getValue(w, "direction");
-	startfield = dataobject_getValueAsInt(w, "startcount");
+	direction = dataobject_getEnum(w, EMO_FIELD_DIRECTION);
+	startfield = dataobject_getEnumAsInt(w, EMO_FIELD_STARTCOUNT);
 	
 	if (startfield != NULL && startfield->type == DOF_INT)
 		startNumber = startfield->field.integer;
@@ -65,7 +67,13 @@ void array_expand(Widget *w)
 		rec = (DataObject *)listIterator_item(&iter);
 
 		if (filterfield != NULL) {
-			filteredObj = dataobject_getValue(rec, filterfield->field.string);
+			if (filterfield->type == DOF_STRING)
+				filteredObj = dataobject_getValue(rec, filterfield->field.string);
+			else if (filterfield->type == DOF_INT)
+				filteredObj = dataobject_getEnum(rec, filterfield->field.integer);
+			else {
+				EMO_ASSERT(0, "field neither string nor int");
+			}
 			if (!dataobjectfield_isString(filteredObj, filtervalue->field.string))
 				goto skip_record;
 		}
@@ -83,6 +91,8 @@ skip_record:
 		if (recordIdx >= startNumber)
 			break;
 	}
+
+	//dataobject_debugPrint(w);
 }
 
 #if 0
@@ -117,18 +127,18 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	packing = widget_getPacking(w);
 
 	/* start index */
-	startindex = dataobject_getValue(w, "startindex");
+	startindex = dataobject_getEnum(w, EMO_FIELD_STARTINDEX);
 	if (startindex == NULL) {
 		startindex = dataobjectfield_int(0);
-		dataobject_setValue(w, "startindex", startindex);
+		dataobject_setEnum(w, EMO_FIELD_STARTINDEX, startindex);
 	}
 	startidx = startindex->field.integer;
 
 	/* focus index */
-	focusindex = dataobject_getValue(w, "focusindex");
+	focusindex = dataobject_getEnum(w, EMO_FIELD_FOCUSINDEX);
 	if (focusindex == NULL) {
 		focusindex = dataobjectfield_int(-1);
-		dataobject_setValue(w, "focusindex", focusindex);
+		dataobject_setEnum(w, EMO_FIELD_FOCUSINDEX, focusindex);
 	}
 	focusidx = focusindex->field.integer;
 
@@ -146,7 +156,7 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	canFocus = widget_canFocus(wchild);
 
 	shim = dataobject_new();
-	dataobject_setValue(shim, "type", dataobjectfield_string("box"));
+	dataobject_setEnum(shim, EMO_FIELD_TYPE, dataobjectfield_string("box"));
 
 	shimMargin = widget_getMargin(shim);
 	shimMargin->x = 0;
@@ -211,10 +221,10 @@ static void array_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	endidx = idx;
 
 	/* end index */
-	endindex = dataobject_getValue(w, "endindex");
+	endindex = dataobject_getEnum(w, EMO_FIELD_ENDINDEX);
 	if (endindex == NULL) {
 		endindex = dataobjectfield_int(endidx);
-		dataobject_setValue(w, "endindex", endindex);
+		dataobject_setEnum(w, EMO_FIELD_ENDINDEX, endindex);
 	}
 	endindex->field.integer = endidx;
 
@@ -281,24 +291,24 @@ int arraywidget_focusNext(Widget *w, int *alreadyUnset, int *alreadySet)
 	EMO_ASSERT_INT(alreadySet != NULL, 0,
 			"Focus next on array with NULL alreadySet")
 
-	startindex = dataobject_getValue(w, "startindex");
+	startindex = dataobject_getEnum(w, EMO_FIELD_STARTINDEX);
 	if (startindex == NULL) {
 		startindex = dataobjectfield_int(0);
-		dataobject_setValue(w, "startindex", startindex);
+		dataobject_setEnum(w, EMO_FIELD_STARTINDEX, startindex);
 	}
 
 	/* focus index */
-	focusindex = dataobject_getValue(w, "focusindex");
+	focusindex = dataobject_getEnum(w, EMO_FIELD_FOCUSINDEX);
 	if (focusindex == NULL) {
 		focusindex = dataobjectfield_int(-1);
-		dataobject_setValue(w, "focusindex", focusindex);
+		dataobject_setEnum(w, EMO_FIELD_FOCUSINDEX, focusindex);
 	}
 
 	/* end index */
-	endindex = dataobject_getValue(w, "endindex");
+	endindex = dataobject_getEnum(w, EMO_FIELD_ENDINDEX);
 	if (endindex == NULL) {
 		endindex = dataobjectfield_int(dataobject_getChildCount(w));
-		dataobject_setValue(w, "endindex", endindex);
+		dataobject_setEnum(w, EMO_FIELD_ENDINDEX, endindex);
 	}
 
 	if (*alreadyUnset == 0 && focusindex->field.integer < 0) {
@@ -338,24 +348,24 @@ int arraywidget_focusPrev(Widget *w)
 	EMO_ASSERT_INT(w != NULL, 0,
 			"Focus prev on array with NULL widget")
 
-	startindex = dataobject_getValue(w, "startindex");
+	startindex = dataobject_getEnum(w, EMO_FIELD_STARTINDEX);
 	if (startindex == NULL) {
 		startindex = dataobjectfield_int(0);
-		dataobject_setValue(w, "startindex", startindex);
+		dataobject_setEnum(w, EMO_FIELD_STARTINDEX, startindex);
 	}
 
 	/* focus index */
-	focusindex = dataobject_getValue(w, "focusindex");
+	focusindex = dataobject_getEnum(w, EMO_FIELD_FOCUSINDEX);
 	if (focusindex == NULL) {
 		focusindex = dataobjectfield_int(-1);
-		dataobject_setValue(w, "focusindex", focusindex);
+		dataobject_setEnum(w, EMO_FIELD_FOCUSINDEX, focusindex);
 	}
 
 	/* end index */
-	endindex = dataobject_getValue(w, "endindex");
+	endindex = dataobject_getEnum(w, EMO_FIELD_ENDINDEX);
 	if (endindex == NULL) {
 		endindex = dataobjectfield_int(dataobject_getChildCount(w));
-		dataobject_setValue(w, "endindex", endindex);
+		dataobject_setEnum(w, EMO_FIELD_ENDINDEX, endindex);
 	}
 	
 	emo_printf("Focus was %d" NL, focusindex->field.integer);

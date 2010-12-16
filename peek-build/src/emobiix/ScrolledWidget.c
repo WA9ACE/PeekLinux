@@ -19,8 +19,8 @@ int scrolled_focusNext(Widget *w)
 	box = widget_getBox(w);
 	childBox = widget_getChildBox(w);
 
-	xtransField = dataobject_getValueAsInt(w, "xoffset");
-	ytransField = dataobject_getValueAsInt(w, "yoffset");
+	xtransField = dataobject_getEnumAsInt(w, EMO_FIELD_XOFFSET);
+	ytransField = dataobject_getEnumAsInt(w, EMO_FIELD_YOFFSET);
 
 	xtrans = 0;
 	ytrans = 0;
@@ -28,14 +28,14 @@ int scrolled_focusNext(Widget *w)
 		xtrans = xtransField->field.integer;
 	} else {
 		xtransField = dataobjectfield_int(0);
-		dataobject_setValue(w, "xoffset", xtransField);
+		dataobject_setEnum(w, EMO_FIELD_XOFFSET, xtransField);
 		xtrans = 0;
 	}
 	if (ytransField != NULL) {
 		ytrans = ytransField->field.integer;
 	} else {
 		ytransField = dataobjectfield_int(0);
-		dataobject_setValue(w, "yoffset", ytransField);
+		dataobject_setEnum(w, EMO_FIELD_YOFFSET, ytransField);
 		ytrans = 0;
 	}
 
@@ -64,8 +64,8 @@ int scrolled_focusPrev(Widget *w)
 	box = widget_getBox(w);
 	childBox = widget_getChildBox(w);
 
-	xtransField = dataobject_getValueAsInt(w, "xoffset");
-	ytransField = dataobject_getValueAsInt(w, "yoffset");
+	xtransField = dataobject_getEnumAsInt(w, EMO_FIELD_XOFFSET);
+	ytransField = dataobject_getEnumAsInt(w, EMO_FIELD_YOFFSET);
 
 	xtrans = 0;
 	ytrans = 0;
@@ -73,14 +73,14 @@ int scrolled_focusPrev(Widget *w)
 		xtrans = xtransField->field.integer;
 	} else {
 		xtransField = dataobjectfield_int(0);
-		dataobject_setValue(w, "xoffset", xtransField);
+		dataobject_setEnum(w, EMO_FIELD_XOFFSET, xtransField);
 		xtrans = 0;
 	}
 	if (ytransField != NULL) {
 		ytrans = ytransField->field.integer;
 	} else {
 		ytransField = dataobjectfield_int(0);
-		dataobject_setValue(w, "yoffset", ytransField);
+		dataobject_setEnum(w, EMO_FIELD_YOFFSET, ytransField);
 		ytrans = 0;
 	}
 
@@ -115,8 +115,8 @@ void scrolled_forceVisible(Widget *w)
 	childBox = widget_getChildBox(scrolled);
 	widgetBox = widget_getBox(w);
 
-	xtransField = dataobject_getValueAsInt(scrolled, "xoffset");
-	ytransField = dataobject_getValueAsInt(scrolled, "yoffset");
+	xtransField = dataobject_getEnumAsInt(scrolled, EMO_FIELD_XOFFSET);
+	ytransField = dataobject_getEnumAsInt(scrolled, EMO_FIELD_YOFFSET);
 
 	xtrans = 0;
 	ytrans = 0;
@@ -124,14 +124,14 @@ void scrolled_forceVisible(Widget *w)
 		xtrans = xtransField->field.integer;
 	} else {
 		xtransField = dataobjectfield_int(0);
-		dataobject_setValue(scrolled, "xoffset", xtransField);
+		dataobject_setEnum(scrolled, EMO_FIELD_XOFFSET, xtransField);
 		xtrans = 0;
 	}
 	if (ytransField != NULL) {
 		ytrans = ytransField->field.integer;
 	} else {
 		ytransField = dataobjectfield_int(0);
-		dataobject_setValue(scrolled, "yoffset", ytransField);
+		dataobject_setEnum(scrolled, EMO_FIELD_YOFFSET, ytransField);
 		ytrans = 0;
 	}
 
@@ -161,14 +161,14 @@ void scrolled_autoscroll(Widget *w)
 	/*emo_printf("Height: %d, Child Height: %d, pos: %d" NL,
 			box->height, childBox->height, (childBox->height-box->height));*/
 
-	autoscroll = dataobject_getValue(w, "autoscroll");
+	autoscroll = dataobject_getEnum(w, EMO_FIELD_AUTOSCROLL);
 	if (dataobjectfield_isString(autoscroll, "bottom")) {
 		if (childBox->height <= box->height)
-			dataobject_setValue(w, "yoffset", dataobjectfield_int(0));
+			dataobject_setEnum(w, EMO_FIELD_YOFFSET, dataobjectfield_int(0));
 		else
-			dataobject_setValue(w, "yoffset", dataobjectfield_int((childBox->height-box->height)));
+			dataobject_setEnum(w, EMO_FIELD_YOFFSET, dataobjectfield_int((childBox->height-box->height)));
 	} else if (autoscroll != NULL) {
-		dataobject_setValue(w, "yoffset", dataobjectfield_int(0));
+		dataobject_setEnum(w, EMO_FIELD_YOFFSET, dataobjectfield_int(0));
 	}
 }
 
@@ -187,8 +187,8 @@ static void scrolled_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 
 	box = widget_getBox(w);
 
-	xtransField = dataobject_getValueAsInt(w, "xoffset");
-	ytransField = dataobject_getValueAsInt(w, "yoffset");
+	xtransField = dataobject_getEnumAsInt(w, EMO_FIELD_XOFFSET);
+	ytransField = dataobject_getEnumAsInt(w, EMO_FIELD_YOFFSET);
 
 	xtrans = 0;
 	ytrans = 0;
@@ -216,8 +216,8 @@ static void scrolled_postrenderer(WidgetRenderer *wr, Style *s, Widget *w,
 	EMO_ASSERT(w != NULL, "scrolled render missing widget")
 	EMO_ASSERT(dobj != NULL, "scrolled render missing DataObject")
 
-	xtransField = dataobject_getValueAsInt(w, "xoffset");
-	ytransField = dataobject_getValueAsInt(w, "yoffset");
+	xtransField = dataobject_getEnumAsInt(w, EMO_FIELD_XOFFSET);
+	ytransField = dataobject_getEnumAsInt(w, EMO_FIELD_YOFFSET);
 
 	xtrans = 0;
 	ytrans = 0;

@@ -27,7 +27,7 @@ void style_renderWidgetTree(Style *s, Widget *w)
 	EMO_ASSERT(s != NULL, "style render tree missing style")
 	EMO_ASSERT(w != NULL, "style render tree missing tree")
 
-	type = dataobject_getValue(w, "type");
+	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	hasFocus = widget_hasFocusOrParent(w);
 	id = widget_getID(w);
 	style = style_getID(s, type == NULL ? NULL : type->field.string, id, hasFocus, &wentUp);
@@ -44,7 +44,7 @@ void style_renderWidgetTree(Style *s, Widget *w)
 	wr = NULL;
 	if (dataobject_isDirty(w)) {
 		dobj = widget_getDataObject(w);
-		style_getRenderer(style, w, "renderer", &wr);
+		style_getRenderer(style, w, EMO_FIELD_RENDERER, &wr);
 		if (wr != NULL)
 			wr->render(wr, style, w, dobj);
 		dataobject_setClean(w);
@@ -124,7 +124,7 @@ Style *style_getID(Style *styleRoot, const char *otype, const char *id, int isFo
 	for (dataobject_childIterator(styleRoot, &iter);
 			!listIterator_finished(&iter); listIterator_next(&iter)) {
 		child = listIterator_item(&iter);
-		type = dataobject_getValue(child, "type");
+		type = dataobject_getEnum(child, EMO_FIELD_TYPE);
 		if (!dataobjectfield_isString(type, id))
 			continue;
 		focus = widget_hasFocusOrParent(child);
@@ -152,21 +152,20 @@ Style *style_getID(Style *styleRoot, const char *otype, const char *id, int isFo
 	return styleRoot;
 }
 
-DataObjectField *style_getProperty(Style *os, DataObject *dobj, const char *key)
+DataObjectField *style_getProperty(Style *os, DataObject *dobj, EmoField key)
 {
 	DataObjectField *output;
 	Style *rootStyle, *s;
 	
 	EMO_ASSERT_NULL(os != NULL, "style get property missing style")
 	EMO_ASSERT_NULL(dobj != NULL, "style get property missing object")
-	EMO_ASSERT_NULL(key != NULL, "style get property missing key")
 
 	s = os;
-	output = dataobject_getValue(dobj, key);
+	output = dataobject_getEnum(dobj, key);
 	if (output != NULL)
 		return output;
 	while (s != NULL) {
-		output = dataobject_getValue(s, key);
+		output = dataobject_getEnum(s, key);
 		if (output != NULL)
 			return output;
 		s = dataobject_parent(s);
@@ -179,7 +178,7 @@ DataObjectField *style_getProperty(Style *os, DataObject *dobj, const char *key)
 	return NULL;
 }
 
-DataObjectField *style_getPropertyAsInt(Style *os, DataObject *dobj, const char *key)
+DataObjectField *style_getPropertyAsInt(Style *os, DataObject *dobj, EmoField key)
 {
 	DataObjectField *output;
 	Style *rootStyle;
@@ -187,14 +186,13 @@ DataObjectField *style_getPropertyAsInt(Style *os, DataObject *dobj, const char 
 
 	EMO_ASSERT_NULL(os != NULL, "style get propertyAsInt missing style")
 	EMO_ASSERT_NULL(dobj != NULL, "style get propertyAsInt missing object")
-	EMO_ASSERT_NULL(key != NULL, "style get propertyAsInt missing key")
 
 	s = os;
-	output = dataobject_getValueAsInt(dobj, key);
+	output = dataobject_getEnumAsInt(dobj, key);
 	if (output != NULL)
 		return output;
 	while (s != NULL) {
-		output = dataobject_getValueAsInt(s, key);
+		output = dataobject_getEnumAsInt(s, key);
 		if (output != NULL)
 			return output;
 		s = dataobject_parent(s);
@@ -207,14 +205,13 @@ DataObjectField *style_getPropertyAsInt(Style *os, DataObject *dobj, const char 
 	return NULL;
 }
 
-DataObjectField *style_getColor(Style *s, DataObject *dobj, const char *key,
+DataObjectField *style_getColor(Style *s, DataObject *dobj, EmoField key,
 		unsigned int *color)
 {
 	DataObjectField *output;
 
 	EMO_ASSERT_NULL(s != NULL, "style get color missing style")
 	EMO_ASSERT_NULL(dobj != NULL, "style get color missing object")
-	EMO_ASSERT_NULL(key != NULL, "style get color missing key")
 	EMO_ASSERT_NULL(color != NULL, "style get color missing color")
 
 	output = style_getPropertyAsInt(s, dobj, key);
@@ -226,14 +223,13 @@ DataObjectField *style_getColor(Style *s, DataObject *dobj, const char *key,
 	}
 	return NULL;
 }
-DataObjectField *style_getRenderer(Style *s, DataObject *dobj, const char *key,
+DataObjectField *style_getRenderer(Style *s, DataObject *dobj, EmoField key,
 		struct WidgetRenderer_t **wr)
 {
 	DataObjectField *output;
 
 	EMO_ASSERT_NULL(s != NULL, "style get renderer missing style")
 	EMO_ASSERT_NULL(dobj != NULL, "style get renderer missing object")
-	EMO_ASSERT_NULL(key != NULL, "style get renderer missing key")
 	EMO_ASSERT_NULL(wr != NULL, "style get renderer missing renderer")
 
 	output = style_getProperty(s, dobj, key);
@@ -256,7 +252,7 @@ Gradient *style_getGradient(Style *s)
 
 	EMO_ASSERT_NULL(s != NULL, "style get gradient missing style")
 
-	type = dataobject_getValue(s, "type");
+	type = dataobject_getEnum(s, EMO_FIELD_TYPE);
 	if (!dataobjectfield_isString(type, "gradient"))
 		return NULL;
 
@@ -264,11 +260,11 @@ Gradient *style_getGradient(Style *s)
 	for (dataobject_childIterator(s, &iter);
 			!listIterator_finished(&iter); listIterator_next(&iter)) {
 		child = (DataObject *)listIterator_item(&iter);
-		pos = dataobject_getValueAsInt(child, "position");
+		pos = dataobject_getEnumAsInt(child, EMO_FIELD_POSITION);
 		position = 0;
 		if (pos != NULL)
 			position = pos->field.integer;
-		colorF = dataobject_getValueAsInt(child, "color");
+		colorF = dataobject_getEnumAsInt(child, EMO_FIELD_COLOR);
 		color.value = 0;
 		if (colorF != NULL)
 			color.value = colorF->field.uinteger;

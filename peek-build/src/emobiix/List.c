@@ -90,10 +90,15 @@ void *list_find(List *l, void *obj, ListComparitor lc)
 	EMO_ASSERT_NULL(l != NULL, "list find on NULL list")
 	EMO_ASSERT_NULL(lc != NULL, "list find missing comparitor")
 
-	result = list_findIter(l, obj, lc, &iter);
-	if (!result)
-		return NULL;
+	emo_printf("Searching for %s" NL, obj);
 
+	result = list_findIter(l, obj, lc, &iter);
+	if (!result) {
+		emo_printf("Not found" NL);
+		return NULL;
+	}
+
+	emo_printf("Found" NL);
 	return listIterator_item(&iter);
 }
 

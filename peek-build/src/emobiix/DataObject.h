@@ -4,6 +4,7 @@
 #include "DataObjectMap.h"
 #include "URL.h"
 #include "Map.h"
+#include "EmobiixField.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -39,6 +40,11 @@ void dataobject_setIsModified(DataObject *dobj, int isModified);
 DataObjectField *dataobject_getValue(DataObject *obj, const char *key);
 DataObjectField *dataobject_getValueAsInt(DataObject *dobj, const char *key);
 void dataobject_unsetValue(DataObject *dobj, const char *key);
+
+void dataobject_setEnum(DataObject *obj, EmoField enu, DataObjectField *);
+DataObjectField *dataobject_getEnum(DataObject *dobj, EmoField enu);
+DataObjectField *dataobject_getEnumAsInt(DataObject *dobj, EmoField enu);
+
 void dataobject_setRecordType(DataObject *dobj, int isRecord);
 int dataobject_getRecordType(DataObject *dobj);
 void dataobject_appendRecord(DataObject *dobj, DataObject *robj);

@@ -8,7 +8,7 @@ int stackwidget_focusStack(DataObject *w)
 {
 	DataObjectField *field;
 
-	field = dataobject_getValueAsInt(w, "focusstack");
+	field = dataobject_getEnumAsInt(w, EMO_FIELD_FOCUSSTACK);
 	if (field == NULL)
 		return -1;
 	return field->field.integer;

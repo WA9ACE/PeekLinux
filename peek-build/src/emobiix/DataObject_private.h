@@ -11,6 +11,7 @@
 
 struct DataObject_t {
 	Map *data;
+	Map *enumData;
 	int isLocal;
 	DataObjectState state;
 	unsigned int stampMinor;

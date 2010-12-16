@@ -160,7 +160,7 @@ CpublicsimulatorDlg::CpublicsimulatorDlg(CWnd* pParent /*=NULL*/)
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	GlobalDialog = this;
 	m_isDebug = true;
-	m_showInternalDebug = false;
+	m_showInternalDebug = true;
 	m_showScriptDebug = true;
 }
 
@@ -633,7 +633,7 @@ DataObject *LoadObject(DOMNode *node)
 
 	xstr = node->getNodeName();
 	astr = XMLString::transcode(xstr);
-	dataobject_setValue(output, "type", dataobjectfield_string(astr));
+	dataobject_setEnum(output, EMO_FIELD_TYPE, dataobjectfield_string(astr));
 	XMLString::release(&astr);
 
     /* parse attributes of node */
@@ -673,7 +673,7 @@ DataObject *LoadObject(DOMNode *node)
 			data = p_malloc(filesize);
 			fread(data, 1, filesize, input);
 			fclose(input);
-			dataobject_setValue(output, "data",
+			dataobject_setEnum(output, EMO_FIELD_DATA,
 					dataobjectfield_data(data, filesize));
 		}
 		dataobject_setValue(output, attrName.c_str(),
@@ -717,7 +717,7 @@ DataObject *LoadObject(DOMNode *node)
 				XMLString::trim((char * const)res);
 
 			if (res[0] != 0) {
-					dataobject_setValue(output, "data", dataobjectfield_string((const char *)res));
+					dataobject_setEnum(output, EMO_FIELD_DATA, dataobjectfield_string((const char *)res));
 			}
 			delete res;
 		} else {
@@ -812,7 +812,7 @@ void CpublicsimulatorDlg::OnFileLoadapplication()
 
 		mime_loadAll(dobj);
 		dataobject_exportGlobal(dobj, url, 0);
-		type = dataobject_getValue(dobj, "type");
+		type = dataobject_getEnum(dobj, EMO_FIELD_TYPE);
 		if (dataobjectfield_isString(type, "application")) {
 			manager_loadApplication(dobj, xmlLoadFilename.empty(),
 					url);
@@ -854,13 +854,14 @@ extern "C" void emo_printf(const char *fmt, ...)
 	if (!GlobalDialog->m_isDebug || !GlobalDialog->m_showInternalDebug)
 		return;
 
+	GlobalDialog->m_debugOuput.SetLimitText(0);
 	int nLength = GlobalDialog->m_debugOuput.GetWindowTextLength();
 	GlobalDialog->m_debugOuput.SetSel(nLength, nLength);
 	va_start(ap, fmt);
     vsprintf(dest, fmt, ap);
     va_end(ap);
 
-	mbstowcs(wdest, dest, 2048);
+	mbstowcs(wdest, dest, 8192);
 	GlobalDialog->m_debugOuput.ReplaceSel(wdest);
 }
 
@@ -928,7 +929,7 @@ void CpublicsimulatorDlg::LoadSettings()
 		m_menu.CheckMenuItem(ID_DEBUG_SCRIPTDEBUGENABLED, MF_BYCOMMAND|MF_UNCHECKED);
 	}
 
-	GetPrivateProfileString(_T("Debug"), _T("InternalDebug"), _T("false"), (LPWSTR)&strr, 1024, _T("peeksimulator.ini"));
+	GetPrivateProfileString(_T("Debug"), _T("InternalDebug"), _T("true"), (LPWSTR)&strr, 1024, _T("peeksimulator.ini"));
 	if (wcscmp(strr, _T("true")) == 0) {
 		m_showInternalDebug = true;
 		m_menu.CheckMenuItem(ID_DEBUG_INTERNAL, MF_BYCOMMAND|MF_CHECKED);
@@ -1018,8 +1019,8 @@ extern "C" DataObject *RootApplication(void)
 		return output;
 
 	fontObject1 = dataobject_new();
-	dataobject_setValue(fontObject1, "type", dataobjectfield_string("font"));
-	dataobject_setValue(fontObject1, "data", dataobjectfield_string("DroidSans.ttf"));
+	dataobject_setEnum(fontObject1, EMO_FIELD_TYPE, dataobjectfield_string("font"));
+	dataobject_setEnum(fontObject1, EMO_FIELD_DATA, dataobjectfield_string("DroidSans.ttf"));
 
 	defaultFont = font_load(fontObject1);
 	if (defaultFont != NULL)

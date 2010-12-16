@@ -215,7 +215,7 @@ void manager_handleKey(unsigned int key)
 
 	if (focus != NULL) {
 		DataObjectField *field;
-		field = dataobject_getValue(focus, "type");
+		field = dataobject_getEnum(focus, EMO_FIELD_TYPE);
 		if (dataobjectfield_isString(field, "entry")) {
 			if (entryWidget_handleKey(focus, key, style))
 				return;
@@ -296,14 +296,14 @@ void manager_focusApplication(Application *app)
 
 	appObj = application_getDataObject(app);
 
-	field = dataobject_getValueAsInt(appObj, "fullscreen");
+	field = dataobject_getEnumAsInt(appObj, EMO_FIELD_FULLSCREEN);
 	if (field != NULL && field->field.integer) {
-		dataobject_setValue(appManager->rootTopBar, "height", dataobjectfield_string("0"));
+		dataobject_setEnum(appManager->rootTopBar, EMO_FIELD_HEIGHT, dataobjectfield_string("0"));
 	} else {
-		dataobject_setValue(appManager->rootTopBar, "height", dataobjectfield_string("25"));
+		dataobject_setEnum(appManager->rootTopBar, EMO_FIELD_HEIGHT, dataobjectfield_string("25"));
 	}
 
-	field = dataobject_getValue(appObj, "name");
+	field = dataobject_getEnum(appObj, EMO_FIELD_NAME);
 	emo_printf("Focusing Application %s" NL, field->field.string);
     currentScreen = application_getCurrentScreen(app);
 	if (currentScreen == NULL) {
@@ -312,7 +312,7 @@ void manager_focusApplication(Application *app)
 	}
 
 	appURL = application_getURL(app);
-	dataobject_setValue(appManager->rootApplicationPlaceHolder, "reference",
+	dataobject_setEnum(appManager->rootApplicationPlaceHolder, EMO_FIELD_REFERENCE,
 			dataobjectfield_string(appURL->all));
 	dataobject_resolveReferences(appManager->rootApplicationPlaceHolder);
 	/*widget_setDataObject(appManager->rootApplicationPlaceHolder, appObj);*/
@@ -428,12 +428,12 @@ void manager_showDialog(const char *name)
 
 	field = dataobjectfield_string(name);
 	dataobjectfield_setIsModified(field, 1);
-	dataobject_setValue(appManager->rootApplicationDialogHolder,
-			"reference", field);
+	dataobject_setEnum(appManager->rootApplicationDialogHolder,
+			EMO_FIELD_REFERENCE, field);
 	dataobject_resolveReferences(appManager->rootApplicationDialogHolder);
 	dataobject_setIsModified(appManager->rootApplicationDialogHolder, 1);
-	dataobject_setValue(dataobject_parent(appManager->rootApplicationDialogHolder),
-			"focusstack", dataobjectfield_int(2));
+	dataobject_setEnum(dataobject_parent(appManager->rootApplicationDialogHolder),
+			EMO_FIELD_FOCUSSTACK, dataobjectfield_int(2));
 
 	widget_resolveLayout(appManager->rootApplicationWindow,
 			appManager->style);
@@ -450,8 +450,8 @@ void manager_finishDialog(void)
 	dataobject_unsetValue(appManager->rootApplicationDialogHolder,
 			"reference");
 	dataobject_resolveReferences(appManager->rootApplicationDialogHolder);
-	dataobject_setValue(dataobject_parent(appManager->rootApplicationDialogHolder),
-			"focusstack", dataobjectfield_int(-1));
+	dataobject_setEnum(dataobject_parent(appManager->rootApplicationDialogHolder),
+			EMO_FIELD_FOCUSSTACK, dataobjectfield_int(-1));
 	
 	widget_resolveLayout(appManager->rootApplicationWindow,
 			appManager->style);

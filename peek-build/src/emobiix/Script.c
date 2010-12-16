@@ -51,19 +51,28 @@ static int __dataobject_getValue(lua_State *L)
 	DataObjectField *field;
 	DataObject *dobj;
 	const char *fieldName = NULL;
+	EmoField fieldEnum;
 
 	EMO_ASSERT_INT(L != NULL, 0, "script get value missing state")
 
 	dobj = checkDataObject(L, 1);
 	if (lua_isstring(L, 2))
 		fieldName = luaL_checkstring(L, 2);
-	if (fieldName == NULL)
-		fieldName = "data";
+	else if (lua_isnumber(L, 2))
+		fieldEnum = luaL_checknumber(L, 3);
+	else
+		fieldEnum = EMO_FIELD_DATA;
 
-	field = dataobject_getValue(dobj, fieldName);
+	if (fieldName != NULL)
+		field = dataobject_getValue(dobj, fieldName);
+	else
+		field = dataobject_getEnum(dobj, fieldEnum);
 	if (field == NULL) {
 		dobj = widget_getDataObject(dobj);
-		field = dataobject_getValue(dobj, fieldName);
+		if (fieldName != NULL)
+			field = dataobject_getValue(dobj, fieldName);
+		else
+			field = dataobject_getEnum(dobj, fieldEnum);
 	}
 
 	if (field == NULL)
@@ -398,6 +407,29 @@ static int __dataobject_append(lua_State *L)
 	return 0;
 }
 
+static int __dataobject_remove(lua_State *L)
+{
+	DataObject *dobj, *nobj;
+	ListIterator iter;
+
+	EMO_ASSERT_INT(L != NULL, 0, "script remove missing state")
+
+	dobj = checkDataObject(L, 1);
+	nobj = checkDataObject(L, 2);
+	
+	for (dataobject_childIterator(dobj, &iter); !listIterator_finished(&iter);
+			listIterator_next(&iter)) {
+		if (listIterator_item(&iter) == nobj) {
+			listIterator_remove(&iter);
+			dataobject_delete(nobj);
+		}
+	}
+
+	dataobject_setIsModified(dobj, 1);
+
+	return 0;
+}
+
 #ifndef SIMULATOR
 extern void netsurfStart(void);
 #endif
@@ -431,6 +463,7 @@ static const luaL_reg script_methods[] = {
 {"data",    __dataobject_data},
 {"new",    __dataobject_new},
 {"append",    __dataobject_append},
+{"remove",    __dataobject_remove},
 {0,0}
 };
 
@@ -502,7 +535,7 @@ lua_State *script_getContext(DataObject *dobj, int *isTemporary)
         for (dataobject_childIterator(sobj, &iter); !listIterator_finished(&iter);
 				listIterator_next(&iter)) {
 			sobj = (DataObject *)listIterator_item(&iter);
-			script = dataobject_getValue(sobj, "type");
+			script = dataobject_getEnum(sobj, EMO_FIELD_TYPE);
 			if (dataobjectfield_isString(script, "script"))
 				break;
 			sobj = NULL;
@@ -517,7 +550,7 @@ lua_State *script_getContext(DataObject *dobj, int *isTemporary)
 
         script_register(output);
         if (sobj != NULL) {
-            script = dataobject_getValue(sobj, "data");
+            script = dataobject_getEnum(sobj, EMO_FIELD_DATA);
             /*luaL_loadstring(output, script->field.string);*/
 			if (script != NULL && script->type == DOF_STRING) {
 					luaL_dostring(output, script->field.string);

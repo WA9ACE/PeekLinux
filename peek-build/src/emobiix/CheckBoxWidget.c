@@ -20,6 +20,7 @@ int checkboxWidget_handleKey(Widget *w, unsigned int key, Style *s)
 	DataObjectField *field, *cbfield, *cbvalue = NULL;
 	const char *fieldStr = NULL, *valueStr;
 	int isChecked;
+	EmoField fieldEnum = -1;
 
 	EMO_ASSERT_INT(w != NULL, 0,
 			"CheckBox Key handler passed NULL widget")
@@ -31,23 +32,29 @@ int checkboxWidget_handleKey(Widget *w, unsigned int key, Style *s)
 
 	dobj = widget_getDataObject(w);
 
-	cbfield = dataobject_getValue(w, "checkfield");
-	if (cbfield != NULL && cbfield->type == DOF_STRING) {
-		cbvalue = dataobject_getValue(w, "checkvalue");
+	cbfield = dataobject_getEnum(w, EMO_FIELD_CHECKFIELD);
+	if (cbfield != NULL) {
+		cbvalue = dataobject_getEnum(w, EMO_FIELD_CHECKVALUE);
 		if (cbvalue != NULL && cbvalue->type == DOF_STRING) {
-			fieldStr = cbfield->field.string;
 			valueStr = cbvalue->field.string;
+			if (cbfield->type == DOF_INT) {
+				fieldEnum = cbfield->field.integer;
+			} else if (cbfield->type == DOF_STRING) {
+				fieldStr = cbfield->field.string;
+			}
 		}
 	}
 	if (fieldStr == NULL) {
-		fieldStr = "data";
+		fieldEnum = EMO_FIELD_DATA;
 		valueStr =  "1";
-	}
-
-	field = dataobject_getValue(dobj, fieldStr);
-	if (field == NULL) {
 		field = dataobjectfield_string("0");
-		dataobject_setValue(dobj, "data", field);
+		dataobject_setEnum(dobj, EMO_FIELD_DATA, field);
+	} else {
+		field = dataobject_getEnum(dobj, fieldEnum);
+		if (field == NULL) {
+			field = dataobjectfield_string("0");
+			dataobject_setEnum(dobj, EMO_FIELD_DATA, field);
+		}
 	}
 	isChecked = dataobjectfield_isString(field, valueStr);
 
@@ -82,6 +89,7 @@ static void checkbox_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	DataObject *text;
 	DataObjectField *field, *cbfield, *cbvalue;
 	const char *fieldStr = NULL, *valueStr;
+	EmoField fieldEnum = -1;
 	Color checkColor;
 	WidgetRenderer *iwr;
 
@@ -102,28 +110,37 @@ static void checkbox_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	checkBox.height = box->height-6;
 
 	iwr = NULL;
-	style_getRenderer(s, w, "box-renderer", &iwr);
+	style_getRenderer(s, w, EMO_FIELD_BOXRENDERER, &iwr);
 	if (iwr != NULL)
 		iwr->render(wr, s, w, dobj);
 
-	cbfield = dataobject_getValue(w, "checkfield");
-	if (cbfield != NULL && cbfield->type == DOF_STRING) {
-		cbvalue = dataobject_getValue(w, "checkvalue");
+	cbfield = dataobject_getEnum(w, EMO_FIELD_CHECKFIELD);
+	if (cbfield != NULL) {
+		cbvalue = dataobject_getEnum(w, EMO_FIELD_CHECKVALUE);
 		if (cbvalue != NULL && cbvalue->type == DOF_STRING) {
-			fieldStr = cbfield->field.string;
+			if (cbfield->type == DOF_STRING) {
+				fieldStr = cbfield->field.string;
+			} else if (cbfield->type == DOF_INT) {
+				fieldEnum = cbfield->field.integer;
+			} else {
+				EMO_ASSERT(0, "CheckField not string nor enum")
+			}
 			valueStr = cbvalue->field.string;
-		}
+		} 
 	}
-	if (fieldStr == NULL) {
-		fieldStr = "data";
+	if (fieldStr == NULL && fieldEnum == -1) {
+		fieldEnum = EMO_FIELD_DATA;
 		valueStr =  "1";
 	}
 
 	text = widget_getDataObject(w);
-	field = dataobject_getValue(text, fieldStr);
+	if (fieldStr != NULL)
+		field = dataobject_getValue(text, fieldStr);
+	else
+		field = dataobject_getEnum(text, fieldEnum);
 
 	if (dataobjectfield_isString(field, valueStr) && 
-			style_getColor(s, w, "check-color", &checkColor.value) != NULL) {
+			style_getColor(s, w, EMO_FIELD_CHECKCOLOR, &checkColor.value) != NULL) {
 		lgui_hline(checkBox.x, checkBox.y, checkBox.width, checkBox.height,
 				checkColor.rgba.red, checkColor.rgba.green, checkColor.rgba.blue,
 				checkColor.rgba.alpha);

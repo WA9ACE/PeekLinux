@@ -34,19 +34,19 @@ static void scrollbar_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	childBox = widget_getChildBox(dobj);
 
 	thumbColor.value = 0;
-	style_getColor(s, w, "thumb-color", &thumbColor.value);
+	style_getColor(s, w, EMO_FIELD_THUMBCOLOR, &thumbColor.value);
 
 	trackColor.value = 0;
-	style_getColor(s, w, "track-color", &trackColor.value);
+	style_getColor(s, w, EMO_FIELD_TRACKCOLOR, &trackColor.value);
 
-	orientationField = style_getProperty(s, w, "orientation");
+	orientationField = style_getProperty(s, w, EMO_FIELD_ORIENTATION);
 	if (dataobjectfield_isString(orientationField, "horizontal"))
 		isVertical = 0;
 	else
 		isVertical = 1;
 
-	xtransField = dataobject_getValueAsInt(dobj, "xoffset");
-	ytransField = dataobject_getValueAsInt(dobj, "yoffset");
+	xtransField = dataobject_getEnumAsInt(dobj, EMO_FIELD_XOFFSET);
+	ytransField = dataobject_getEnumAsInt(dobj, EMO_FIELD_YOFFSET);
 
 	xtrans = 0;
 	ytrans = 0;

@@ -46,11 +46,11 @@ Widget *widget_newTypeIdName(const char *type, const char *id,
 
     output = widget_new();
     if (type != NULL)
-        dataobject_setValue(output, "type", dataobjectfield_string(type));
+        dataobject_setEnum(output, EMO_FIELD_TYPE, dataobjectfield_string(type));
     if (id != NULL)
-        dataobject_setValue(output, "id", dataobjectfield_string(id));
+        dataobject_setEnum(output, EMO_FIELD_ID, dataobjectfield_string(id));
     if (name != NULL)
-        dataobject_setValue(output, "name", dataobjectfield_string(name));
+        dataobject_setEnum(output, EMO_FIELD_NAME, dataobjectfield_string(name));
     if (parent != NULL)
         widget_pack(output, parent);
 
@@ -88,7 +88,7 @@ int widget_isArraySource(Widget *w)
 
 	EMO_ASSERT_INT(w != NULL, 0, "widget is array source missing widget")
 
-	field = dataobject_getValue(w, "arraysource");
+	field = dataobject_getEnum(w, EMO_FIELD_ARRAYSOURCE);
     return dataobjectfield_isTrue(field);
 }
 
@@ -127,9 +127,9 @@ void widget_setPacking(Widget *w, WidgetPacking p)
 
 	EMO_ASSERT(w != NULL, "widget get object missing widget")
 
-	field = dataobject_getValue(w, "packing");
+	field = dataobject_getEnum(w, EMO_FIELD_PACKING);
 	if (!field)
-		dataobject_setValue(w, "packing", dataobjectfield_int(p));
+		dataobject_setEnum(w, EMO_FIELD_PACKING, dataobjectfield_int(p));
 	else
 		field->field.integer = p;
 }
@@ -140,7 +140,7 @@ WidgetPacking widget_getPacking(Widget *w)
 	
 	EMO_ASSERT_INT(w != NULL, WP_VERTICAL, "widget get packing missing widget")
 
-	field = dataobject_getValue(w, "packing");
+	field = dataobject_getEnum(w, EMO_FIELD_PACKING);
 	if (!field)
 		return (WidgetPacking)WP_VERTICAL;
 	if (field->type == DOF_STRING) {
@@ -161,7 +161,7 @@ WidgetPacking widget_getPacking(Widget *w)
 
 		/*p_free(field->field.string);
 		p_free(field);*/
-		dataobject_setValue(w, "packing", newField);
+		dataobject_setEnum(w, EMO_FIELD_PACKING, newField);
 		field = newField;
 	}
 	return (WidgetPacking)field->field.integer;
@@ -183,9 +183,9 @@ void widget_setClass(Widget *w, const char *className)
 	EMO_ASSERT(w != NULL, "widget set class missing widget")
 	EMO_ASSERT(className != NULL, "widget set class missing name")
 
-	field = dataobject_getValue(w, "name");
+	field = dataobject_getEnum(w, EMO_FIELD_NAME);
 	if (!field)
-		dataobject_setValue(w, "name", dataobjectfield_string(className));
+		dataobject_setEnum(w, EMO_FIELD_NAME, dataobjectfield_string(className));
 	else {
 		p_free(field->field.string);
 		field->field.string = p_strdup(className);
@@ -198,7 +198,7 @@ const char *widget_getClass(Widget *w)
 
 	EMO_ASSERT_NULL(w != NULL, "widget get class missing widget")
 	
-	field = dataobject_getValue(w, "name");
+	field = dataobject_getEnum(w, EMO_FIELD_NAME);
 	if (!field)
 		return NULL;
 	return field->field.string;
@@ -211,9 +211,9 @@ void widget_setID(Widget *w, const char *idName)
 	EMO_ASSERT(w != NULL, "widget set id missing widget")
 	EMO_ASSERT(idName != NULL, "widget set id missing id")
 
-	field = dataobject_getValue(w, "id");
+	field = dataobject_getEnum(w, EMO_FIELD_ID);
 	if (!field)
-		dataobject_setValue(w, "id", dataobjectfield_string(idName));
+		dataobject_setEnum(w, EMO_FIELD_ID, dataobjectfield_string(idName));
 	else {
 		p_free(field->field.string);
 		field->field.string = p_strdup(idName);
@@ -226,7 +226,7 @@ const char *widget_getID(Widget *w)
 
 	EMO_ASSERT_NULL(w != NULL, "widget get id missing widget")
 
-	field = dataobject_getValue(w, "id");
+	field = dataobject_getEnum(w, EMO_FIELD_ID);
 	if (!field)
 		return NULL;
 	return field->field.string;
@@ -238,7 +238,7 @@ int widget_canFocus(Widget *w)
 
 	EMO_ASSERT_INT(w != NULL, 0, "widget can focus missing widget")
 	
-	field = dataobject_getValue(w, "canfocus");
+	field = dataobject_getEnum(w, EMO_FIELD_CANFOCUS);
 	return dataobjectfield_isTrue(field);
 }
 
@@ -248,9 +248,9 @@ void widget_setCanFocus(Widget *w, int canFocus)
 
 	EMO_ASSERT(w != NULL, "widget set can focus missing widget")
 
-	field = dataobject_getValue(w, "canfocus");
+	field = dataobject_getEnum(w, EMO_FIELD_CANFOCUS);
 	if (!field)
-		dataobject_setValue(w, "canfocus", dataobjectfield_int(canFocus));
+		dataobject_setEnum(w, EMO_FIELD_CANFOCUS, dataobjectfield_int(canFocus));
 	else
 		field->field.integer = canFocus;
 }
@@ -261,7 +261,7 @@ int widget_hasFocus(Widget *w)
 
 	EMO_ASSERT_INT(w != NULL, 0, "widget has focus missing widget")
 	
-	field = dataobject_getValueAsInt(w, "hasfocus");
+	field = dataobject_getEnumAsInt(w, EMO_FIELD_HASFOCUS);
 	if (!field)
 		return 0;
 	return field->field.integer;
@@ -290,9 +290,9 @@ void widget_setFocus(Widget *w, int isFocus)
 
 	EMO_ASSERT(w != NULL, "widget set focus missing widget")
 
-	field = dataobject_getValue(w, "hasfocus");
+	field = dataobject_getEnum(w, EMO_FIELD_HASFOCUS);
 	if (!field)
-		dataobject_setValue(w, "hasfocus", dataobjectfield_int(isFocus));
+		dataobject_setEnum(w, EMO_FIELD_HASFOCUS, dataobjectfield_int(isFocus));
 	else
 		field->field.integer = isFocus;
 
@@ -371,7 +371,7 @@ int widget_focusFirst(Widget *w, List *l)
 		return 1;
 	}
 
-	type = dataobject_getValue(w, "type");
+	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 #if 0
 	if (widget_typeNoChildRender(type))
 		return 0;
@@ -439,7 +439,7 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 	/*printf("Widget(%p) %d, %d, %d\n", w, parentRedraw, alreadyUnset, alreadySet);*/
 
 	thisUnset = 0;
-	type = dataobject_getValue(w, "type");
+	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	if (!*alreadyUnset && widget_hasFocus(w)) {
 		/*printf("UnFocus(%d)\n", w);*/
 
@@ -620,7 +620,7 @@ Widget *widget_focusPrevD(Widget *w)
 
 	EMO_ASSERT_NULL(w != NULL, "widget focus prevD missing widget")
 
-	type = dataobject_getValue(w, "type");
+	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	if (type != NULL /*&& !widget_typeNoChildRender(type)*/) {
 		if (dataobjectfield_isString(type, "frame")) {
 			child = widget_getDataObject(w);
@@ -734,7 +734,7 @@ static Widget *widget_focusLast(Widget *w)
 
 	EMO_ASSERT_NULL(w != NULL, "widget focus last missing widget")
 		
-	type = dataobject_getValue(w, "type");
+	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	/*if (!widget_typeNoChildRender(type)) {*/
 		if (dataobjectfield_isString(type, "frame")) {
 			child = widget_getDataObject(w);
@@ -806,7 +806,7 @@ void widget_focusPrev(Widget *tree, Style *s)
 		goto focus_last;
 	}
 
-	type = dataobject_getValue(oldW, "type");
+	type = dataobject_getEnum(oldW, EMO_FIELD_TYPE);
 	if (dataobjectfield_isString(type, "scrolled")) {
 		if (scrolled_focusPrev(oldW) == 1) {
 			/* focus WhichOne unsets focus so reset it */
@@ -887,7 +887,7 @@ Widget *widget_focusNoneR(Widget *w)
 		return w;
 	}
 
-	type = dataobject_getValue(w, "type");
+	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
@@ -969,7 +969,7 @@ Widget *widget_focusWhichOneNF(Widget *w)
 		return w;
 	}
 
-	type = dataobject_getValue(w, "type");
+	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
@@ -1030,7 +1030,7 @@ Widget *widget_focusWhichOne(Widget *w)
 		return w;
 	}
 
-	type = dataobject_getValue(w, "type");
+	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
@@ -1085,7 +1085,7 @@ static void widget_markDirtyChild(Widget *w)
 
 	dataobject_setDirty(w);
 
-	type = dataobject_getValue(w, "type");
+	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
@@ -1147,7 +1147,7 @@ Widget *widget_findStringField(Widget *w, const char *key, const char *value)
 	if (dataobjectfield_isString(field, value))
 		return w;
 
-	type = dataobject_getValue(w, "type");
+	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	if (dataobjectfield_isString(type, "frame")) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
@@ -1215,7 +1215,7 @@ static void widget_layoutMeasureFinal(Widget *w, Style *s)
 	dobj = widget_getDataObject(w);
 	className = widget_getClass(w);
 	id = widget_getID(w);
-	type = dataobject_getValue(w, "type");
+	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	style = style_getID(s, type == NULL ? NULL : type->field.string, id,
 			widget_hasFocus(w), &wentUp);
 
@@ -1225,7 +1225,7 @@ static void widget_layoutMeasureFinal(Widget *w, Style *s)
 		childStyle = style;
 
 	wr = NULL;
-	style_getRenderer(style, w, "renderer", &wr);
+	style_getRenderer(style, w, EMO_FIELD_RENDERER, &wr);
 	if (wr != NULL && wr->measure != NULL && strcmp(type->field.string, "text") == 0) {
 		p.x = w->box.width;
 		wr->measure(wr, s, w, dobj, &p);
@@ -1280,7 +1280,7 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 	dobj = widget_getDataObject(w);
 	className = widget_getClass(w);
 	id = widget_getID(w);
-	type = dataobject_getValue(w, "type");
+	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	style = style_getID(s, type == NULL ? NULL : type->field.string, id,
 			widget_hasFocus(w), &wentUp);
 
@@ -1290,7 +1290,7 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 		childStyle = style;
 
 	wr = NULL;
-	style_getRenderer(style, w, "renderer", &wr);
+	style_getRenderer(style, w, EMO_FIELD_RENDERER, &wr);
 	if (wr != NULL && wr->measure != NULL && !dataobjectfield_isString(type, "text")) {
 		wr->measure(wr, s, w, dobj, &p);
 		w->box.width = p.x;
@@ -1371,7 +1371,7 @@ void widget_layoutForceResolveParent(Widget *w, unsigned int flag)
 	if (w->parent == NULL)
 		return;
 
-	field = dataobject_getValue(w, "type");
+	field = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	if (dataobjectfield_isString(field, "view"))
 		return;
 
@@ -1432,7 +1432,7 @@ void widget_resolveMeasureRelative(Widget *w)
 	widthStillDirty = 0;
 	heightStillDirty = 0;
 
-	sField = dataobject_getValue(w, "type");
+	sField = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	/*if (!widget_typeNoChildRender(sField)) {*/
 		pack = widget_getPacking(w);
 		if (dataobjectfield_isString(sField, "frame")) {
@@ -1531,7 +1531,7 @@ start_child:
 		dataobject_setLayoutClean(w, LAYOUT_DIRTY_WIDTH);
 	}
 	if (!heightStillDirty && dataobject_isLayoutDirty(w, LAYOUT_DIRTY_HEIGHT)) {
-		sField = dataobject_getValue(w, "type");
+		sField = dataobject_getEnum(w, EMO_FIELD_TYPE);
 		if (!dataobjectfield_isString(sField, "text")) {
 			w->box.height = sumHeight;
 			dataobject_setLayoutClean(w, LAYOUT_DIRTY_HEIGHT);
@@ -1560,7 +1560,7 @@ void widget_resolveMargin(Widget *w, Style *s)
 	dobj = widget_getDataObject(w);
 	className = widget_getClass(w);
 	id = widget_getID(w);
-	type = dataobject_getValue(w, "type");
+	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 
 #if 0
 	/* for debugging css on buttons */
@@ -1584,28 +1584,28 @@ void widget_resolveMargin(Widget *w, Style *s)
 		childStyle = style;
 
 	wr = NULL;
-	style_getRenderer(style, w, "renderer", &wr);
+	style_getRenderer(style, w, EMO_FIELD_RENDERER, &wr);
 	if (wr != NULL)
 		wr->margin(wr, style, w, dobj, &w->margin);
 
 	/* Apply specified margin */
-	field = style_getPropertyAsInt(style, w, "margin");
+	field = style_getPropertyAsInt(style, w, EMO_FIELD_MARGIN);
 	if (field != NULL) {
 		w->margin.x = field->field.integer;
 		w->margin.y = field->field.integer;
 		w->margin.width = field->field.integer;
 		w->margin.height = field->field.integer;
 	} else {
-		field = style_getPropertyAsInt(style, w, "marginleft");
+		field = style_getPropertyAsInt(style, w, EMO_FIELD_MARGINLEFT);
 		if (field != NULL)
 			w->margin.x = field->field.integer;
-		field = style_getPropertyAsInt(style, w, "marginright");
+		field = style_getPropertyAsInt(style, w, EMO_FIELD_MARGINRIGHT);
 		if (field != NULL)
 			w->margin.width = field->field.integer;
-		field = style_getPropertyAsInt(style, w, "margintop");
+		field = style_getPropertyAsInt(style, w, EMO_FIELD_MARGINTOP);
 		if (field != NULL)
 			w->margin.y = field->field.integer;
-		field = style_getPropertyAsInt(style, w, "marginbottom");
+		field = style_getPropertyAsInt(style, w, EMO_FIELD_MARGINBOTTOM);
 		if (field != NULL)
 			w->margin.height = field->field.integer;
 	}
@@ -1659,12 +1659,12 @@ void widget_resolvePosition(Widget *w)
 
 	EMO_ASSERT(w != NULL, "widget resolve position missing widget")
 
-	xfield = dataobject_getValueAsInt(w, "x");
+	xfield = dataobject_getEnumAsInt(w, EMO_FIELD_X);
 	if (xfield != NULL)
 		w->box.x = xfield->field.integer;
 	xpos = w->box.x + w->margin.x;
 
-	yfield = dataobject_getValueAsInt(w, "y");
+	yfield = dataobject_getEnumAsInt(w, EMO_FIELD_Y);
 	if (yfield != NULL)
 		w->box.y = yfield->field.integer;
 	ypos = w->box.y + w->margin.y;
@@ -1676,7 +1676,7 @@ void widget_resolvePosition(Widget *w)
 	height = w->box.height;
 	packing = widget_getPacking(w);
 
-	field = dataobject_getValue(w, "type");
+	field = dataobject_getEnum(w, EMO_FIELD_TYPE);
 
 	
 
@@ -1890,9 +1890,9 @@ void widget_setAlignment(Widget *w, WidgetAlignment a)
 
 	EMO_ASSERT(w != NULL, "widget set alignment missing widget")
 
-	field = dataobject_getValue(w, "alignment");
+	field = dataobject_getEnum(w, EMO_FIELD_ALIGNMENT);
 	if (!field)
-		dataobject_setValue(w, "alignment", dataobjectfield_int(a));
+		dataobject_setEnum(w, EMO_FIELD_ALIGNMENT, dataobjectfield_int(a));
 	else
 		field->field.integer = a;
 }
@@ -1903,7 +1903,7 @@ WidgetAlignment widget_getAlignment(Widget *w)
 
 	EMO_ASSERT_INT(w != NULL, WA_LEFT, "widget get alignment missing widget")
 	
-	field = dataobject_getValue(w, "alignment");
+	field = dataobject_getEnum(w, EMO_FIELD_ALIGNMENT);
 	if (!field)
 		return (WidgetAlignment)WA_LEFT;
 	if (field->type == DOF_STRING) {
@@ -1922,7 +1922,7 @@ WidgetAlignment widget_getAlignment(Widget *w)
 
 		/*p_free(field->field.string);
 		p_free(field);*/
-		dataobject_setValue(w, "alignment", newField);
+		dataobject_setEnum(w, EMO_FIELD_ALIGNMENT, newField);
 		field = newField;
 	}
 	return (WidgetAlignment)field->field.integer;

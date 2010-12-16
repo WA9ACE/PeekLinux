@@ -315,7 +315,7 @@ int connectionContext_syncRequestForce(ConnectionContext *ctx, URL *url,
 			dataobject_resolveReferences(cobj);
 			mime_loadAll(cobj);
 
-			field = dataobject_getValue(cobj, "type");
+			field = dataobject_getEnum(cobj, EMO_FIELD_TYPE);
 			if (dataobjectfield_isString(field, "application"))
 				manager_loadApplication(cobj, 1, url);
 			return 1;
@@ -530,7 +530,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 				dataobject_setState(sreq->dobj, DOS_OK);
 				/*widget_resolveLayout(sreq->dobj, currentStyle);*/
 				widget_markDirty(sreq->dobj);
-				field = dataobject_getValue(sreq->dobj, "type");
+				field = dataobject_getEnum(sreq->dobj, EMO_FIELD_TYPE);
 
 				/* call onsyncfinish handlers */
 				if (!sreq->newObject) {
@@ -855,7 +855,8 @@ static void connectionContext_processSync(ConnectionContext *ctx,
 static void connectionContext_processSyncOperand(ConnectionContext *ctx,
 		SyncRequest *sreq, DataObject *sobj, SyncOperandP_t *syncOp)
 {
-	const char *fieldName;
+	const char *fieldName = NULL;
+	EmoField fieldEnum = -1;
 	DataObjectField *dof;
 	void *data;
 	DataObject *cobj;
@@ -869,19 +870,32 @@ static void connectionContext_processSyncOperand(ConnectionContext *ctx,
 	EMO_ASSERT(syncOp != NULL,
 			"connection context process sync operand missing operand")
 
-	fieldName = (char *)syncOp->fieldNameP.buf;
+	// PROTOCOLFIX - needs to handle enum
+	if (syncOp->fieldNameP.present == FieldNameP_PR_fieldNameStringP)
+		fieldName = (char *)syncOp->fieldNameP.choice.fieldNameStringP.buf;
+	else
+		fieldEnum = syncOp->fieldNameP.choice.fieldNameEnumP;
 	/*emo_printf("Field is '%s'" NL, fieldName);*/
 	if (syncOp->syncP.present == syncP_PR_syncSetP) {
 		dof = dataobjectfield_string((const char *)syncOp->syncP.choice.syncSetP.buf);
-		dataobject_setValue(sobj, fieldName, dof);
+		if (fieldEnum == -1)
+			dataobject_setValue(sobj, fieldName, dof);
+		else
+			dataobject_setEnum(sobj, fieldEnum, dof);
 	} else if (syncOp->syncP.present == syncP_PR_syncModifyP) {
-		dof = dataobject_getValue(sobj, fieldName);
+		if (fieldName != NULL)
+			dof = dataobject_getValue(sobj, fieldName);
+		else
+			dof = dataobject_getEnum(sobj, fieldEnum);
 		if (dof == NULL) {
 			data = p_malloc(syncOp->syncP.choice.syncSetP.size);
 			memcpy(data, syncOp->syncP.choice.syncSetP.buf,
 					syncOp->syncP.choice.syncSetP.size);
 			dof = dataobjectfield_data(data, syncOp->syncP.choice.syncSetP.size);
-			dataobject_setValue(sobj, fieldName, dof);
+			if (fieldEnum == -1)
+				dataobject_setValue(sobj, fieldName, dof);
+			else
+				dataobject_setEnum(sobj, fieldEnum, dof);
 		} else {
 			if (dof->type == DOF_DATA) {
 				/* we assume they are always doing an append atm */

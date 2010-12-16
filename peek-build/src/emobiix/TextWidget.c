@@ -34,13 +34,15 @@ static void text_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	margin = widget_getMargin(w);
 	f = (Font *)defaultFont;/*style_getProperty(s, NULL, ltype, dtype, "font");*/
 	c.value = 0;
-	style_getColor(s, w, "font-color", &c.value);
+	style_getColor(s, w, EMO_FIELD_FONTCOLOR, &c.value);
 	text = widget_getDataObject(w);
-	sourceField = dataobject_getValue(w, "datafield");
+	sourceField = dataobject_getEnum(w, EMO_FIELD_DATAFIELD);
 	if (sourceField != NULL && sourceField->type == DOF_STRING)
 		field = dataobject_getValue(dobj, sourceField->field.string);
+	else if (sourceField != NULL && sourceField->type == DOF_INT)
+		field = dataobject_getEnum(dobj, sourceField->field.integer);
 	else
-		field = dataobject_getValue(dobj, "data");
+		field = dataobject_getEnum(dobj, EMO_FIELD_DATA);
 	if (field != NULL) {
 		str = field->field.string;
 	} else {
@@ -66,11 +68,13 @@ static void text_measure(WidgetRenderer *wr, Style *s, Widget *w,
 
 	f = (Font *)defaultFont;/*style_getProperty(s, NULL, ltype, dtype, "font");*/
 	/*str = (const char *)dataobject_getValue(dobj, "data")->field.data.bytes;*/
-	sourceField = dataobject_getValue(w, "datafield");
+	sourceField = dataobject_getEnum(w, EMO_FIELD_DATAFIELD);
 	if (sourceField != NULL && sourceField->type == DOF_STRING)
 		field = dataobject_getValue(dobj, sourceField->field.string);
+	else if (sourceField != NULL && sourceField->type == DOF_INT)
+		field = dataobject_getEnum(dobj, sourceField->field.integer);
 	else
-		field = dataobject_getValue(dobj, "data");
+		field = dataobject_getEnum(dobj, EMO_FIELD_DATA);
 	if (field != NULL) {
 		str = field->field.string;
 	} else {

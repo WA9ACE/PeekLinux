@@ -33,12 +33,12 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
 	
-	field = dataobject_getValue(dobj, "width");
+	field = dataobject_getEnum(dobj, EMO_FIELD_WIDTH);
 	if (field == NULL)
 		return;
 	width = (int)field->field.integer;
 	
-	field = dataobject_getValue(dobj, "height");
+	field = dataobject_getEnum(dobj, EMO_FIELD_HEIGHT);
 	if (field == NULL)
 		return;
 	height = (int)field->field.integer;
@@ -48,35 +48,35 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	imgwidth = width;
 	imgheight = height;
 
-	field = dataobject_getValue(dobj, "pixelformat");
+	field = dataobject_getEnum(dobj, EMO_FIELD_PIXELFORMAT);
 	if (field == NULL)
 		return;
 	pf = (int)field->field.integer;
 
-	field = dataobject_getValueAsInt(w, "alpha");
+	field = dataobject_getEnumAsInt(w, EMO_FIELD_ALPHA);
 	if (field != NULL)
 		alpha = field->field.integer;
 
-	field = dataobject_getValueAsInt(w, "imgx");
+	field = dataobject_getEnumAsInt(w, EMO_FIELD_IMGX);
 	if (field != NULL)
 		imgx = field->field.integer;
-	field = dataobject_getValueAsInt(w, "imgy");
+	field = dataobject_getEnumAsInt(w, EMO_FIELD_IMGY);
 	if (field != NULL)
 		imgy = field->field.integer;
-	field = dataobject_getValueAsInt(w, "imgwidth");
+	field = dataobject_getEnumAsInt(w, EMO_FIELD_IMGWIDTH);
 	if (field != NULL)
 		imgwidth = field->field.integer;
-	field = dataobject_getValueAsInt(w, "imgheight");
+	field = dataobject_getEnumAsInt(w, EMO_FIELD_IMGHEIGHT);
 	if (field != NULL)
 		imgheight = field->field.integer;
 
-	field = dataobject_getValue(dobj, "data");
+	field = dataobject_getEnum(dobj, EMO_FIELD_DATA);
 	if (field == NULL)
 		return;
 	data = field->field.data.bytes;
 
 	trans = TRANS_FULL;
-	field = style_getProperty(s, w, "transparency");
+	field = style_getProperty(s, w, EMO_FIELD_TRANSPARENCY);
 	if (field != NULL && field->type == DOF_STRING) {
 		if (strcmp(field->field.string, "none") == 0)
 			trans = TRANS_NONE;
@@ -95,12 +95,12 @@ static void image_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 					imgx, imgy, imgwidth, imgheight, width, data, alpha);
 			break;
 		case A4:
-			field = style_getPropertyAsInt(s, w, "color");
+			field = style_getPropertyAsInt(s, w, EMO_FIELD_COLOR);
 			if (field != NULL) {
 				c.value = field->field.uinteger;
 			} else {
 				c.value = 0xFFFFFFFF;
-				style_getColor(s, w, "color", &c.value);
+				style_getColor(s, w, EMO_FIELD_COLOR, &c.value);
 			}
 			lgui_luminence_A4_blitC(box->x+margin->x, box->y+margin->y,
 					imgx, imgy, imgwidth, imgheight, width, height, data, c, trans, 0);
@@ -121,7 +121,7 @@ static void image_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	EMO_ASSERT(dobj != NULL, "image measure missing DataObject")
 	EMO_ASSERT(output != NULL, "image measure missing the point")
 
-	field = dataobject_getValue(dobj, "width");
+	field = dataobject_getEnum(dobj, EMO_FIELD_WIDTH);
 	if (field == NULL || field->type != DOF_INT) {
 		DataObject *parent = dataobject_parent(dobj);
 		/*dataobject_debugPrint(parent ? dataobject_parent(parent) : NULL);*/
@@ -133,7 +133,7 @@ static void image_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	}
 	output->x = field->field.integer;
 
-	field = dataobject_getValue(dobj, "height");
+	field = dataobject_getEnum(dobj, EMO_FIELD_HEIGHT);
 	if (field == NULL || field->type != DOF_INT) {
 		emo_printf("height field not an int" NL);
 		output->x = 0;
@@ -142,11 +142,11 @@ static void image_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	}
 	output->y = field->field.integer;
 
-	field = dataobject_getValueAsInt(w, "imgwidth");
+	field = dataobject_getEnumAsInt(w, EMO_FIELD_IMGWIDTH);
 	if (field != NULL)
 		output->x = field->field.integer;
 
-	field = dataobject_getValueAsInt(w, "imgheight");
+	field = dataobject_getEnumAsInt(w, EMO_FIELD_IMGHEIGHT);
 	if (field != NULL)
 		output->y = field->field.integer;
 }

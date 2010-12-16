@@ -22,24 +22,24 @@ DataObject *LoadingApplication(void)
         return output;
 
 				output = dataobject_new();
-				dataobject_setValue(output, "type", dataobjectfield_string("application"));
-				dataobject_setValue(output, "name", dataobjectfield_string("Load Screen"));
-				dataobject_setValue(output, "description", dataobjectfield_string("load mobile"));
-				dataobject_setValue(output, "startupview", dataobjectfield_string("mainview"));
-				dataobject_setValue(output, "fullscreen", dataobjectfield_string("true"));
+				dataobject_setEnum(output, EMO_FIELD_TYPE, dataobjectfield_string("application"));
+				dataobject_setEnum(output, EMO_FIELD_NAME, dataobjectfield_string("Load Screen"));
+				dataobject_setEnum(output, EMO_FIELD_DESCRIPTION, dataobjectfield_string("load mobile"));
+				dataobject_setEnum(output, EMO_FIELD_STARTUPVIEW, dataobjectfield_string("mainview"));
+				dataobject_setEnum(output, EMO_FIELD_FULLSCREEN, dataobjectfield_string("true"));
 
 				root = widget_newTypeIdName("view", NULL, "mainview", output);
 				widget_setPacking(root, WP_VERTICAL);
 
 				dobj1 = widget_newTypeIdName("box", "gradbox", NULL, root);
-				dataobject_setValue(dobj1, "width", dataobjectfield_string("320"));
-				dataobject_setValue(dobj1, "height", dataobjectfield_string("240"));
-				dataobject_setValue(dobj1, "alignment", dataobjectfield_string("center"));
+				dataobject_setEnum(dobj1, EMO_FIELD_WIDTH, dataobjectfield_string("320"));
+				dataobject_setEnum(dobj1, EMO_FIELD_HEIGHT, dataobjectfield_string("240"));
+				dataobject_setEnum(dobj1, EMO_FIELD_ALIGNMENT, dataobjectfield_string("center"));
 				widget_setPacking(dobj1, WP_VERTICAL);
 
 				setw = widget_newTypeIdName("label", NULL, NULL, dobj1);
-				dataobject_setValue(setw, "data", dataobjectfield_string("Downloading Application"));
-				dataobject_setValue(setw, "alignment", dataobjectfield_string("center"));
+				dataobject_setEnum(setw, EMO_FIELD_DATA, dataobjectfield_string("Downloading Application"));
+				dataobject_setEnum(setw, EMO_FIELD_ALIGNMENT, dataobjectfield_string("center"));
 				//        dobj1 = dobjFromFile("loading.png", root);
 				//        widget_setPacking(dobj1, WP_VERTICAL);
 
@@ -55,13 +55,13 @@ DataObject *LockApplication(void)
         return output;
 
     output = dataobject_new();
-    dataobject_setValue(output, "type", dataobjectfield_string("application"));
-    dataobject_setValue(output, "name", dataobjectfield_string("Lock Screen"));
-    dataobject_setValue(output, "description",
+    dataobject_setEnum(output, EMO_FIELD_TYPE, dataobjectfield_string("application"));
+    dataobject_setEnum(output, EMO_FIELD_NAME, dataobjectfield_string("Lock Screen"));
+    dataobject_setEnum(output, EMO_FIELD_DESCRIPTION,
             dataobjectfield_string("Lock screen for mobile"));
-    dataobject_setValue(output, "startupview",
+    dataobject_setEnum(output, EMO_FIELD_STARTUPVIEW,
             dataobjectfield_string("mainview"));
-	dataobject_setValue(output, "fullscreen",
+	dataobject_setEnum(output, EMO_FIELD_FULLSCREEN,
             dataobjectfield_string("true"));
  
 	root = widget_newTypeIdName("view", NULL, "mainview", output);

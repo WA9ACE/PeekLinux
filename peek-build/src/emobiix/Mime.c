@@ -23,7 +23,7 @@ int mime_load(DataObject *dobj)
 
 	EMO_ASSERT_INT(dobj != NULL, 0, "mime loader on NULL DataObject")
 
-	mimeType = dataobject_getValue(dobj, "mime-type");
+	mimeType = dataobject_getEnum(dobj, EMO_FIELD_MIMETYPE);
 	if (mimeType == NULL)
 		return 0;
 
@@ -106,7 +106,7 @@ static int load_png(DataObject *dobj)
 
 	EMO_ASSERT_INT(dobj != NULL, 0, "png loader on NULL DataObject")
 
-	data = dataobject_getValue(dobj, "data");
+	data = dataobject_getEnum(dobj, EMO_FIELD_DATA);
 	if (data == NULL || data->type != DOF_DATA)
 		return 0;
 
@@ -221,9 +221,9 @@ static int load_png(DataObject *dobj)
     /*
      * Set return vales
      */
-	dataobject_setValue(dobj, "width", dataobjectfield_int(width));
-	dataobject_setValue(dobj, "height", dataobjectfield_int(height));
-	dataobject_setValue(dobj, "pixelformat", dataobjectfield_int(outputFormat));
+	dataobject_setEnum(dobj, EMO_FIELD_WIDTH, dataobjectfield_int(width));
+	dataobject_setEnum(dobj, EMO_FIELD_HEIGHT, dataobjectfield_int(height));
+	dataobject_setEnum(dobj, EMO_FIELD_PIXELFORMAT, dataobjectfield_int(outputFormat));
 
     /*
      * Free the row pointers
@@ -240,7 +240,7 @@ static int load_png(DataObject *dobj)
 
 	data = dataobjectfield_data(convertedOutput, outSize);
 	dataobjectfield_setIsDerived(data, 1);
-	dataobject_setValue(dobj, "data", data);
+	dataobject_setEnum(dobj, EMO_FIELD_DATA, data);
 
 	return 1;
 }

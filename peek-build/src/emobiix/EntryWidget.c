@@ -36,13 +36,13 @@ int entryWidget_handleKey(Widget *w, unsigned int key, Style *s)
 		return 0;
 
 	dobj = widget_getDataObject(w);
-	field = dataobject_getValue(dobj, "data");
+	field = dataobject_getEnum(dobj, EMO_FIELD_DATA);
 	if (field == NULL) {
 		field = dataobjectfield_string("");
-		dataobject_setValue(dobj, "data", field);
+		dataobject_setEnum(dobj, EMO_FIELD_DATA, field);
 	}
 
-	cursorfield = dataobject_getValueAsInt(w, "cursor");
+	cursorfield = dataobject_getEnumAsInt(w, EMO_FIELD_CURSOR);
 	cursorindex = cursorfield->field.integer;
 	cursorbytes = 0;
 	pos = field->field.string;
@@ -128,12 +128,12 @@ static void entry_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	ltype = widget_getID(w);*/
 
 	iwr = NULL;
-	style_getRenderer(s, w, "box-renderer", &iwr);
+	style_getRenderer(s, w, EMO_FIELD_BOXRENDERER, &iwr);
 	if (iwr != NULL)
 		iwr->render(wr, s, w, dobj);
 
 	text = widget_getDataObject(w);
-	field = dataobject_getValue(text, "data");
+	field = dataobject_getEnum(text, EMO_FIELD_DATA);
 	if (field != NULL) {
 		str = field->field.string;
 	} else {
@@ -142,24 +142,24 @@ static void entry_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 
 	f = (Font *)defaultFont;
 	c.value = 0;
-	style_getColor(s, w, "font-color", &c.value);
+	style_getColor(s, w, EMO_FIELD_FONTCOLOR, &c.value);
 
-	cursor = dataobject_getValueAsInt(w, "cursor");
+	cursor = dataobject_getEnumAsInt(w, EMO_FIELD_CURSOR);
 	if (cursor == NULL) {
 		cursor = dataobjectfield_int(strlen(str));
-		dataobject_setValue(w, "cursor", cursor);
+		dataobject_setEnum(w, EMO_FIELD_CURSOR, cursor);
 	}
 
-	startindex = dataobject_getValueAsInt(w, "startindex");
+	startindex = dataobject_getEnumAsInt(w, EMO_FIELD_STARTINDEX);
 	if (startindex == NULL) {
 		startindex = dataobjectfield_int(0);
-		dataobject_setValue(w, "startindex", startindex);
+		dataobject_setEnum(w, EMO_FIELD_STARTINDEX, startindex);
 	}
 
-	multiline = dataobject_getValue(w, "multiline");
+	multiline = dataobject_getEnum(w, EMO_FIELD_MULTILINE);
 	if (multiline == NULL) {
 		multiline = dataobjectfield_string("false");
-		dataobject_setValue(w, "multiline", multiline);
+		dataobject_setEnum(w, EMO_FIELD_MULTILINE, multiline);
 	}
 
 	lgui_complex_draw_font(box->x+4+margin->x, box->y+margin->y, box->width-9, box->height, str,
@@ -173,7 +173,7 @@ static void entry_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 				percent*(box->height-1)/100, 4, 0xCC, 0xCC, 0xFF, 0xFF);
 	}
 
-	if (style_getColor(s, w, "cursor-color", &cursorColor.value) != NULL) {
+	if (style_getColor(s, w, EMO_FIELD_CURSORCOLOR, &cursorColor.value) != NULL) {
 		lgui_hline(cursorBox.x, cursorBox.y, cursorBox.width, cursorBox.height,
 				cursorColor.rgba.red, cursorColor.rgba.green, cursorColor.rgba.blue,
 				cursorColor.rgba.alpha);
@@ -198,10 +198,10 @@ static void entry_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	dtype = (const char *)dataobject_getValue(dobj, "type")->field.string;
 	ltype = widget_getID(w);
 	f = (Font *)defaultFont;
-	field = dataobject_getValue(dobj, "data");
+	field = dataobject_getEnum(dobj, EMO_FIELD_DATA);
 	if (field == NULL) {
 		field = dataobjectfield_string("");	
-		dataobject_setValue(dobj, "data", field);
+		dataobject_setEnum(dobj, EMO_FIELD_DATA, field);
 	}
 	str = (const char *)field->field.data.bytes;
 

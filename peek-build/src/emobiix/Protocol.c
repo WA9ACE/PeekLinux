@@ -38,9 +38,56 @@ SyncOperandP_t *protocol_serializeField(DataObject *sobj, const char *fieldName)
 	/*emo_printf("Serializing field: %s\n", fieldName);*/
 
 	syncOp = (SyncOperandP_t *)p_malloc(sizeof(SyncOperandP_t));
-	syncOp->fieldNameP.buf = NULL;
-	OCTET_STRING_fromString(&syncOp->fieldNameP, fieldName);
+	syncOp->fieldNameP.present = FieldNameP_PR_fieldNameStringP;
+	syncOp->fieldNameP.choice.fieldNameStringP.buf = NULL;
+	OCTET_STRING_fromString(&syncOp->fieldNameP.choice.fieldNameStringP, fieldName);
     field = dataobject_getValue(sobj, fieldName);
+	if (field->type == DOF_STRING) {
+		syncOp->syncP.present = syncP_PR_syncSetP;
+		syncOp->syncP.choice.syncSetP.buf = NULL;
+        OCTET_STRING_fromBuf(&syncOp->syncP.choice.syncSetP,
+				field->field.string, strlen(field->field.string));
+	} else if (field->type == DOF_DATA) {
+		syncOp->syncP.present = syncP_PR_syncModifyP;
+		syncOp->syncP.choice.syncModifyP.modifyDataP.buf = NULL;
+        OCTET_STRING_fromBuf(&syncOp->syncP.choice.syncModifyP.modifyDataP, 
+                (const char *)field->field.data.bytes,
+                field->field.data.size);
+		syncOp->syncP.choice.syncModifyP.modifySizeP = field->field.data.size;
+		syncOp->syncP.choice.syncModifyP.modifyOffsetP = 0;
+	} else if (field->type == DOF_INT || field->type == DOF_UINT) {
+		if (field->type == DOF_INT)
+			snprintf(fieldstr, 64, "%d", field->field.integer);
+		else
+			snprintf(fieldstr, 64, "%ud", field->field.uinteger);
+		syncOp->syncP.present = syncP_PR_syncSetP;
+		syncOp->syncP.choice.syncSetP.buf = NULL;
+        OCTET_STRING_fromBuf(&syncOp->syncP.choice.syncSetP,
+				fieldstr, strlen(fieldstr));
+	} else {
+        emo_printf("Unsupported field type in sync" NL);
+		emo_abort;
+		p_free(syncOp);
+		return NULL;
+	}
+
+	return syncOp;
+}
+
+SyncOperandP_t *protocol_serializeFieldEnum(DataObject *sobj, EmoField fieldEnum)
+{
+	SyncOperandP_t *syncOp;
+	DataObjectField *field;
+	char fieldstr[64];
+
+	EMO_ASSERT_NULL(sobj != NULL, "protocol serialize field missing DataObject")
+
+	/*emo_printf("Serializing field: %s\n", fieldName);*/
+
+	syncOp = (SyncOperandP_t *)p_malloc(sizeof(SyncOperandP_t));
+	syncOp->fieldNameP.present = FieldNameP_PR_fieldNameEnumP;
+	syncOp->fieldNameP.choice.fieldNameEnumP = fieldEnum;
+    field = dataobject_getEnum(sobj, fieldEnum);
 	if (field->type == DOF_STRING) {
 		syncOp->syncP.present = syncP_PR_syncSetP;
 		syncOp->syncP.choice.syncSetP.buf = NULL;
@@ -79,8 +126,9 @@ SyncOperandP_t *protocol_goToTree(int tree)
 
 	syncOp = (SyncOperandP_t *)p_malloc(sizeof(SyncOperandP_t));
 
-	syncOp->fieldNameP.buf = NULL;
-	OCTET_STRING_fromString(&syncOp->fieldNameP, "");
+	syncOp->fieldNameP.present = FieldNameP_PR_fieldNameStringP;
+	syncOp->fieldNameP.choice.fieldNameStringP.buf = NULL;
+	OCTET_STRING_fromString(&syncOp->fieldNameP.choice.fieldNameStringP, "");
 	syncOp->syncP.present = syncP_PR_nodeOperationP;
 	syncOp->syncP.choice.nodeOperationP.present = nodeOperationP_PR_nodeGotoTreeP;
 	syncOp->syncP.choice.nodeOperationP.choice.nodeGotoTreeP = tree;
@@ -94,8 +142,9 @@ SyncOperandP_t *protocol_addChild(void)
 
 	syncOp = (SyncOperandP_t *)p_malloc(sizeof(SyncOperandP_t));
 
-	syncOp->fieldNameP.buf = NULL;
-	OCTET_STRING_fromString(&syncOp->fieldNameP, "");
+	syncOp->fieldNameP.present = FieldNameP_PR_fieldNameStringP;
+	syncOp->fieldNameP.choice.fieldNameStringP.buf = NULL;
+	OCTET_STRING_fromString(&syncOp->fieldNameP.choice.fieldNameStringP, "");
 	syncOp->syncP.present = syncP_PR_nodeOperationP;
 	syncOp->syncP.choice.nodeOperationP.present = nodeOperationP_PR_nodeAddP;
 	syncOp->syncP.choice.nodeOperationP.choice.nodeAddP = nodeAddP_nodeChildP;

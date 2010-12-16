@@ -43,8 +43,8 @@ int cache_commitIndexs(URL *url, int *serverIndex, int *resourceIndex, int creat
 	for (dataobject_childIterator(cacheManager, &iter); !listIterator_finished(&iter);
 			listIterator_next(&iter)) {
 		sobj = (DataObject *)listIterator_item(&iter);
-		field = dataobject_getValue(sobj, "url");
-		indexField = dataobject_getValueAsInt(sobj, "index");
+		field = dataobject_getEnum(sobj, EMO_FIELD_URL);
+		indexField = dataobject_getEnumAsInt(sobj, EMO_FIELD_INDEX);
 		if (indexField != NULL)
 			index = indexField->field.integer;
 		else
@@ -62,9 +62,9 @@ int cache_commitIndexs(URL *url, int *serverIndex, int *resourceIndex, int creat
 		emo_printf("Cache record does not exist for authorty" NL);
 		index = maxIndex + 1;
 		sobj = dataobject_new();
-		dataobject_setValue(sobj, "type", dataobjectfield_string("authority"));
-		dataobject_setValue(sobj, "url", dataobjectfield_string(url->authority));
-		dataobject_setValue(sobj, "index", dataobjectfield_int(index));
+		dataobject_setEnum(sobj, EMO_FIELD_TYPE, dataobjectfield_string("authority"));
+		dataobject_setEnum(sobj, EMO_FIELD_URL, dataobjectfield_string(url->authority));
+		dataobject_setEnum(sobj, EMO_FIELD_INDEX, dataobjectfield_int(index));
 		dataobject_pack(cacheManager, sobj);
 	}
 	*serverIndex = index;
@@ -75,8 +75,8 @@ int cache_commitIndexs(URL *url, int *serverIndex, int *resourceIndex, int creat
 	for (dataobject_childIterator(sobj, &iter); !listIterator_finished(&iter);
 			listIterator_next(&iter)) {
 		robj = (DataObject *)listIterator_item(&iter);
-		field = dataobject_getValue(robj, "url");
-		indexField = dataobject_getValueAsInt(robj, "index");
+		field = dataobject_getEnum(robj, EMO_FIELD_URL);
+		indexField = dataobject_getEnumAsInt(robj, EMO_FIELD_INDEX);
 		if (indexField != NULL)
 			index = indexField->field.integer;
 		else
@@ -94,9 +94,9 @@ int cache_commitIndexs(URL *url, int *serverIndex, int *resourceIndex, int creat
 		emo_printf("Cache record does not exist for path" NL);
 		index = maxIndex + 1;
 		robj = dataobject_new();
-		dataobject_setValue(robj, "type", dataobjectfield_string("path"));
-		dataobject_setValue(robj, "url", dataobjectfield_string(url->path));
-		dataobject_setValue(robj, "index", dataobjectfield_int(index));
+		dataobject_setEnum(robj, EMO_FIELD_TYPE, dataobjectfield_string("path"));
+		dataobject_setEnum(robj, EMO_FIELD_URL, dataobjectfield_string(url->path));
+		dataobject_setEnum(robj, EMO_FIELD_INDEX, dataobjectfield_int(index));
 		dataobject_pack(sobj, robj);
 	}
 	*resourceIndex = index;
@@ -237,6 +237,7 @@ static int cache_readObjectR(SyncListP_t *sp, DataObject *root, File *rcFile, in
 	char *fieldName;
 	void *data;
 	int i, treeIndex;
+	EmoField fieldEnum = -1;
 	struct blockSyncListP *p;
 
 	dobj = root;
@@ -244,19 +245,29 @@ static int cache_readObjectR(SyncListP_t *sp, DataObject *root, File *rcFile, in
 
 	for (i = 0; i < p->list.count; ++i) {
 		syncOp = p->list.array[i];
-		fieldName = (char *)syncOp->fieldNameP.buf;
+		// PROTOCOLFIX
+		if (syncOp->fieldNameP.present == FieldNameP_PR_fieldNameEnumP)
+			fieldEnum = syncOp->fieldNameP.choice.fieldNameEnumP;
+		else
+			fieldName = (char *)syncOp->fieldNameP.choice.fieldNameStringP.buf;
 		switch (syncOp->syncP.present) {
 			case syncP_PR_syncSetP:
 				dof = dataobjectfield_string(
 						(const char *)syncOp->syncP.choice.syncSetP.buf);
-				dataobject_setValue(dobj, fieldName, dof);
+				if (fieldEnum == -1)
+					dataobject_setValue(dobj, fieldName, dof);
+				else
+					dataobject_setEnum(dobj, fieldEnum, dof);
 				break;
 			case syncP_PR_syncModifyP:
 				data = p_malloc(syncOp->syncP.choice.syncSetP.size);
 				memcpy(data, syncOp->syncP.choice.syncSetP.buf,
 						syncOp->syncP.choice.syncSetP.size);
 				dof = dataobjectfield_data(data, syncOp->syncP.choice.syncSetP.size);
-				dataobject_setValue(dobj, fieldName, dof);
+				if (fieldEnum == -1)
+					dataobject_setValue(dobj, fieldName, dof);
+				else
+					dataobject_setEnum(dobj, fieldEnum, dof);
 				break;
 			case syncP_PR_nodeOperationP:
 				if (syncOp->syncP.choice.nodeOperationP.present == nodeOperationP_PR_nodeAddP) {
@@ -369,7 +380,7 @@ static DataObject *load_manager(void)
 
 	emo_printf("Cache metadata not found, recreating" NL);
 	output = dataobject_new();
-	dataobject_setValue(output, "type", dataobjectfield_string("CacheManager"));
+	dataobject_setEnum(output, EMO_FIELD_TYPE, dataobjectfield_string("CacheManager"));
 	return output;
 }
 

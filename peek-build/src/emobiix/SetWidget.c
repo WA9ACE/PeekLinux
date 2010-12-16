@@ -40,24 +40,29 @@ DataObject *setwidget_activeItem(DataObject *w)
 	DataObjectField *fieldname, *fieldvalue;
 	DataObjectField *itemvalue;
 	ListIterator iter;
+	EmoField fieldEnum;
 
 	EMO_ASSERT_NULL(w != NULL, "Set widget active item missing set");
 
 	dobj = widget_getDataObject(w);
 
-	fieldname = dataobject_getValue(w, "fieldname");
+	fieldname = dataobject_getEnum(w, EMO_FIELD_FIELDNAME);
 	if (fieldname == NULL || fieldname->type != DOF_STRING) {
 		return NULL;
 	}
 
-	fieldvalue = dataobject_getValue(dobj, fieldname->field.string);
+	fieldEnum = emo_field_to_int(fieldname->field.string);
+	if (fieldEnum != EMO_FIELD_UNKNOWN_FIELD)
+		fieldvalue = dataobject_getEnum(dobj, fieldEnum);
+	else
+		fieldvalue = dataobject_getValue(dobj, fieldname->field.string);
 	if (!fieldvalue)
 		return NULL;
 
 	dataobject_childIterator(w, &iter);
 	while (!listIterator_finished(&iter)) {
 		itemobj = (DataObject *)listIterator_item(&iter);
-		itemvalue = dataobject_getValue(itemobj, "fieldvalue");
+		itemvalue = dataobject_getEnum(itemobj, EMO_FIELD_FIELDVALUE);
 		if (itemvalue == NULL || setwidget_fieldCompare(itemvalue, fieldvalue))
 		{
 			dataobject_childIterator(itemobj, &iter);

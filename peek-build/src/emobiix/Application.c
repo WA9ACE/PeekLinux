@@ -39,16 +39,16 @@ Application *application_load(DataObject *dobj)
     output->flags = 0;
 	dataobject_resolveReferences(dobj);
 	
-	field = dataobject_getValue(dobj, "iconified");
+	field = dataobject_getEnum(dobj, EMO_FIELD_ICONIFIED);
     if (dataobjectfield_isTrue(field))
         output->flags |= APP_ICONIFIED;
 	
 	output->currentStyle = NULL;
-	field = dataobject_getValue(dobj, "style");
+	field = dataobject_getEnum(dobj, EMO_FIELD_STYLE);
 	if (field != NULL && field->type == DOF_STRING)
 		output->currentStyle = dataobject_findByName(dobj, field->field.string);
 
-	field = dataobject_getValue(dobj, "startupview");
+	field = dataobject_getEnum(dobj, EMO_FIELD_STARTUPVIEW);
 	if (field != NULL && field->type == DOF_STRING)
 		output->currentScreen = dataobject_findByName(dobj, field->field.string);
 	if (output->currentScreen != NULL)
@@ -98,7 +98,7 @@ void application_setCurrentScreen(Application *app, DataObject *screen)
 	EMO_ASSERT(app != NULL,
 			"Setting application current screen on NULL Application")
 
-	field = dataobject_getValue(screen, "type");
+	field = dataobject_getEnum(screen, EMO_FIELD_TYPE);
 	if (!dataobjectfield_isString(field, "view")) {
 		if (field != NULL && field->type == DOF_STRING)
 			fieldValue = field->field.string;

@@ -107,7 +107,7 @@ void renderman_flush(void)
 			widget_getClipRectangle(widget, &rect);
 			scrolled = widget_findStringFieldParent(widget, "type", "scrolled");
 			if (scrolled != NULL) {
-				ytrans = dataobject_getValueAsInt(scrolled, "yoffset");
+				ytrans = dataobject_getEnumAsInt(scrolled, EMO_FIELD_YOFFSET);
 				if (ytrans != NULL) {
 					emo_printf("YTrans %d -> %d" NL, rect.y, rect.y-ytrans->field.integer);
 					rect.y -= ytrans->field.integer;
@@ -130,7 +130,7 @@ void renderman_flush(void)
 		widget_getClipRectangle(widget, &rect);
 		scrolled = widget_findStringFieldParent(widget, "type", "scrolled");
 		if (scrolled != NULL) {
-			ytrans = dataobject_getValueAsInt(scrolled, "yoffset");
+			ytrans = dataobject_getEnumAsInt(scrolled, EMO_FIELD_YOFFSET);
 			if (ytrans != NULL) {
 				emo_printf("YTrans %d -> %d" NL, rect.y, rect.y-ytrans->field.integer);
 				rect.y -= ytrans->field.integer;

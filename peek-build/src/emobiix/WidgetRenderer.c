@@ -101,17 +101,17 @@ static void box_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
 	id = widget_getID(w);
-	type = dataobject_getValue(w, "type");
+	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	if (type != NULL && type->type == DOF_STRING)
 		typestr = type->field.string;
-	fill = style_getProperty(s, w, "fill");
+	fill = style_getProperty(s, w, EMO_FIELD_FILL);
 	isGradient = dataobjectfield_isString(fill, "gradient");
-	radiusF = style_getProperty(s, w, "radius");
-	rounded = style_getProperty(s, w, "rounded");
-	border = style_getProperty(s, w, "border");
-	bordercorners = style_getProperty(s, w, "border-corners");
+	radiusF = style_getProperty(s, w, EMO_FIELD_RADIUS);
+	rounded = style_getProperty(s, w, EMO_FIELD_ROUNDED);
+	border = style_getProperty(s, w, EMO_FIELD_BORDER);
+	bordercorners = style_getProperty(s, w, EMO_FIELD_BORDERCORNERS);
 	outline.value = 0;
-	style_getColor(s, w, "border-color", &outline.value);
+	style_getColor(s, w, EMO_FIELD_BORDERCOLOR, &outline.value);
 
 	if (rounded == NULL || rounded->type != DOF_STRING) {
 		cornerFlags = 0;
@@ -184,7 +184,7 @@ static void box_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		}
 	} else if (dataobjectfield_isString(fill, "solid")) {
 		color.value = 0;
-		style_getColor(s, w, "background-color", &color.value);
+		style_getColor(s, w, EMO_FIELD_BACKGROUNDCOLOR, &color.value);
 
 		if (cornerFlags == 0 || radius == 0) {
 			lgui_hline(box->x+margin->x, box->y+margin->y, box->width, box->height,

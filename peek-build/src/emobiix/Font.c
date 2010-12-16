@@ -71,7 +71,7 @@ Font *font_load(DataObject *dobj)
 		return NULL;
 	}
 
-	data = dataobject_getValue(dobj, "data")->field.string;
+	data = dataobject_getEnum(dobj, EMO_FIELD_DATA)->field.string;
 	if (data == NULL) {
 		emo_printf("Attempting to load a NULL font file name" NL);
 		return NULL;
