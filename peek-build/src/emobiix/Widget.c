@@ -1298,11 +1298,11 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 	}
 
 	/* get specified absolute values */
-#define ABSOLUTE_FIELD(_x, _y) \
-	sField = dataobject_getValue(w, #_x); \
+#define ABSOLUTE_FIELD(_x, _h, _y) \
+	sField = dataobject_getEnum(w, _x); \
 	if (sField != NULL) { \
 		if (sField->type == DOF_INT) { \
-			w->box._x = sField->field.integer; \
+			w->box._h = sField->field.integer; \
 			dataobject_setLayoutClean(w, _y); \
 		} else { \
 			slen = strlen(sField->field.string); \
@@ -1310,14 +1310,14 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 			if (sField->field.string[slen-1] == '%') { \
 				/* do nothing - this is a relative measure */ \
 			} else if (slen > 0) { \
-				w->box._x = tmpint; \
+				w->box._h = tmpint; \
 				dataobject_setLayoutClean(w, _y); \
 			} \
 		} \
 	}
 
-	ABSOLUTE_FIELD(width, LAYOUT_DIRTY_WIDTH);
-	ABSOLUTE_FIELD(height, LAYOUT_DIRTY_HEIGHT);
+	ABSOLUTE_FIELD(EMO_FIELD_WIDTH, width, LAYOUT_DIRTY_WIDTH);
+	ABSOLUTE_FIELD(EMO_FIELD_HEIGHT, height, LAYOUT_DIRTY_HEIGHT);
 
 #undef ABSOLUTE_FIELD
 
@@ -1401,8 +1401,8 @@ void widget_resolveMeasureRelative(Widget *w)
 	EMO_ASSERT(w != NULL, "widget layout measure relative missing widget")
 
 	/* get specified absolute values */
-#define RELATIVE_FIELD(_x, _y, _z) \
-	sField = dataobject_getValue(w, #_x); \
+#define RELATIVE_FIELD(_x, _h, _y, _z) \
+	sField = dataobject_getEnum(w, _x); \
 	if (sField != NULL) { \
 		if (sField->type == DOF_STRING) { \
 			slen = strlen(sField->field.string); \
@@ -1410,15 +1410,15 @@ void widget_resolveMeasureRelative(Widget *w)
 			if (sField->field.string[slen-1] == '%') { \
 				if (dataobject_isLayoutDirty(w->parent, _y)) \
 					widget_layoutForceResolveParent(w->parent, _y); \
-				w->box._x = (int)(w->parent->box._x * ((float)tmpint)/100.0); \
-				w->box._x -= w->margin._z + w->margin._x; \
+				w->box._h = (int)(w->parent->box._h * ((float)tmpint)/100.0); \
+				w->box._h -= w->margin._z + w->margin._h; \
 				dataobject_setLayoutClean(w, _y); \
 			} \
 		} \
 	}
 
-	RELATIVE_FIELD(width, LAYOUT_DIRTY_WIDTH, x)
-	RELATIVE_FIELD(height, LAYOUT_DIRTY_HEIGHT, y)
+	RELATIVE_FIELD(EMO_FIELD_WIDTH, width, LAYOUT_DIRTY_WIDTH, x)
+	RELATIVE_FIELD(EMO_FIELD_HEIGHT, height, LAYOUT_DIRTY_HEIGHT, y)
 
 #undef RELATIVE_FIELD
 
