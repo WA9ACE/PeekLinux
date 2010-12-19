@@ -241,13 +241,13 @@ void manager_handleKey(unsigned int key)
 	accessKey = widget_findStringField(appManager->rootApplicationWindow, EMO_FIELD_ACCESSKEY, keyStr);
 	if (accessKey != NULL) {
 		widget_forceFocus(appManager->rootApplicationWindow, accessKey, style);
-		script_event(accessKey, "onreturn");
+		script_event(accessKey, EMO_FIELD_ONRETURN);
 		return;
 	}
 
 	switch (key) {
 		case EKEY_ACTIVATE:
-			script_event(focus != NULL ? focus : appManager->rootApplicationWindow, "onreturn");
+			script_event(focus != NULL ? focus : appManager->rootApplicationWindow, EMO_FIELD_ONRETURN);
 			break;
 		case EKEY_FOCUSPREV: // up on scroll
 			/*case 103:*/ /* GLUT a */

@@ -56,7 +56,7 @@ Application *application_load(DataObject *dobj)
 	else
 		emo_printf("No startupview for applicaton" NL);
 
-	script_event(dobj, "onload");
+	script_event(dobj, EMO_FIELD_ONLOAD);
 
 	return output;
 }

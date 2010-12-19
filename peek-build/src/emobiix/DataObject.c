@@ -1330,7 +1330,7 @@ static void dataobject_onsyncfinishedR(DataObject *dobj, int *doneForced)
 	EMO_ASSERT(doneForced != NULL,"syncfinishedcallbackR missing complete flag")
 
 	if (!*doneForced && dobj->flags1 & DO_FLAG_FORCE_SYNC) {
-		script_event(dobj, "onsyncfinished");
+		script_event(dobj, EMO_FIELD_ONSYNCFINISHED);
 		dataobject_forceSyncFlag(dobj, 0);
 		*doneForced = 1;
 	}
@@ -1349,7 +1349,7 @@ void dataobject_onsyncfinished(DataObject *dobj)
 
 	EMO_ASSERT(dobj != NULL, "syncfinishedcallback missing DataObject")
 	
-	script_event(dobj, "onsyncfinished");
+	script_event(dobj, EMO_FIELD_ONSYNCFINISHED);
 #if 0
 	emo_printf("Sync finished start" NL);
 	dataobject_onsyncfinishedR(dobj, &doneForced);

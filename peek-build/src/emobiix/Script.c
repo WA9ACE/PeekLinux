@@ -581,7 +581,7 @@ lua_State *script_getContext(DataObject *dobj, int *isTemporary)
     return output;
 }
 
-int script_event(DataObject *context, const char *eventname)
+int script_event(DataObject *context, EmoField eventname)
 {
 	lua_State *L;
 	DataObjectField *field;
@@ -590,7 +590,7 @@ int script_event(DataObject *context, const char *eventname)
 
 	EMO_ASSERT_INT(context != NULL, 0, "script event missing object")
 
-	field = dataobject_getValue(context, eventname);
+	field = dataobject_getEnum(context, eventname);
 	if (field == NULL || field->type != DOF_STRING)
 		return 0;
 
