@@ -53,7 +53,7 @@ static int __dataobject_getValue(lua_State *L)
 	DataObjectField *field;
 	DataObject *dobj;
 	const char *fieldName = NULL;
-	EmoField fieldEnum;
+	EmoField fieldEnum = -1;
 
 	EMO_ASSERT_INT(L != NULL, 0, "script get value missing state")
 
@@ -77,16 +77,23 @@ static int __dataobject_getValue(lua_State *L)
 			field = dataobject_getEnum(dobj, fieldEnum);
 	}
 
-	if (field == NULL)
+	if (field == NULL) {
 		lua_pushnil(L);
-	else if (field->type == DOF_STRING)
+		emo_printf("script_getValue(%s:%d) = nil" NL, fieldName, fieldEnum);
+	}
+	else if (field->type == DOF_STRING) {
+		emo_printf("script_getValue(%s:%d) = %s" NL, fieldName, fieldEnum, field->field.string);
 		lua_pushstring(L, field->field.string);
-	else if (field->type == DOF_INT)
+	} else if (field->type == DOF_INT) {
+		emo_printf("script_getValue(%s:%d) = %d" NL, fieldName, fieldEnum, field->field.integer);
 		lua_pushnumber(L, field->field.integer);
-	else if (field->type == DOF_UINT)
+	} else if (field->type == DOF_UINT) {
+		emo_printf("script_getValue(%s:%d) = %d" NL, fieldName, fieldEnum, field->field.uinteger);
 		lua_pushnumber(L, field->field.uinteger);
-	else
+	} else {
+		emo_printf("script_getValue(%s:%d) = nil" NL, fieldName, fieldEnum);
 		lua_pushnil(L);
+	}
 
 	return 1;
 }
@@ -139,8 +146,9 @@ static int __dataobject_setValue(lua_State *L)
 	DataObject *dobj;/*, *parent;*/
 	DataObjectField *dstr;
 	/*Rectangle rectb4, rectAfter, *rect;*/
-	const char *fieldName;
+	const char *fieldName = NULL;
 	int dstrIdx;
+	EmoField fieldEnum = -1;
 
 	EMO_ASSERT_INT(L != NULL, 0, "script set value missing state")
 
@@ -148,10 +156,13 @@ static int __dataobject_setValue(lua_State *L)
 	
 	if (lua_isstring(L, 3)) {
 		dstrIdx = 3;
-		fieldName = luaL_checkstring(L, 2);
+		if (lua_isstring(L, 2))
+			fieldEnum = luaL_checknumber(L, 2);
+		else
+			fieldName = luaL_checkstring(L, 2);
 	} else {
 		dstrIdx = 2;
-		fieldName = "data";
+		fieldEnum = EMO_FIELD_DATA;
 	}
 
 	if (lua_isstring(L, dstrIdx)) {
@@ -162,9 +173,18 @@ static int __dataobject_setValue(lua_State *L)
 		emo_printf("Set value to %d" NL, dstr->field.integer);
 	}
 
-    dataobject_setValue(dobj, fieldName, dstr);
+	if (fieldName != NULL) {
+		fieldEnum = emo_field_to_int(fieldName);
+		if (fieldEnum != EMO_FIELD_UNKNOWN_FIELD)
+			fieldName = NULL;
+	}
 
-	if (strcmp(fieldName, "reference") == 0)
+	if (fieldName != NULL)
+	    dataobject_setValue(dobj, fieldName, dstr);
+	else
+		dataobject_setEnum(dobj, fieldEnum, dstr);
+
+	if (fieldEnum == EMO_FIELD_REFERENCE)
 		dataobject_resolveReferences(dobj);
 
 	dataobjectfield_setIsModified(dstr, 1);
