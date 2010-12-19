@@ -125,6 +125,7 @@ extern "C" {
 #define EMO_FIELD_ICON_STR "icon"
 #define EMO_FIELD_SETITEM_STR "setitem"
 #define EMO_FIELD_FONTALIGNMENT_STR "font-alignment"
+#define EMO_FIELD_ONSYNCFINISHED_STR "onsyncfinished"
 
 typedef enum EmoField_t
 {
@@ -249,6 +250,7 @@ typedef enum EmoField_t
 	EMO_FIELD_ICON,
 	EMO_FIELD_SETITEM,
 	EMO_FIELD_FONTALIGNMENT,
+	EMO_FIELD_ONSYNCFINISHED,
 
 	EMO_FIELD_UNKNOWN_FIELD
 } EmoField;

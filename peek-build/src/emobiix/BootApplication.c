@@ -99,7 +99,7 @@ DataObject *BootApplication(void)
 "		if idx == 7 then idx = 1 end\n"
 "	end\n"
 " app = DataObject.find(\"app1\")\n"
-" img = DataObject.find(app:getValue(\"reference\"))\n"
+" img = DataObject.find(app:getValue(emo.reference))\n"
 " title = DataObject.find(\"appTitle\")\n"
 " title:setValue(img:getValue(\"title\"))\n"
 "end\n"
@@ -518,22 +518,22 @@ DataObject *BootApplication(void)
 	dataobject_setEnum(w6, EMO_FIELD_REFERENCE, dataobjectfield_string("clock"));
 	w1 = dobjFromFile("hello.png", w0);
 	dataobject_setEnum(w1, EMO_FIELD_NAME, dataobjectfield_string("img1"));
-	dataobject_setEnum(w1, EMO_FIELD_TITLE, dataobjectfield_string("Text\nMessaging"));
+	dataobject_setValue(w1, "title", dataobjectfield_string("Text\nMessaging"));
 	w1 = dobjFromFile("calc.png", w0);
 	dataobject_setEnum(w1, EMO_FIELD_NAME, dataobjectfield_string("img2"));
-	dataobject_setEnum(w1, EMO_FIELD_TITLE, dataobjectfield_string("Calculator"));
+	dataobject_setValue(w1, "title", dataobjectfield_string("Calculator"));
 	w1 = dobjFromFile("maps.png", w0);
 	dataobject_setEnum(w1, EMO_FIELD_NAME, dataobjectfield_string("img3"));
-	dataobject_setEnum(w1, EMO_FIELD_TITLE, dataobjectfield_string("Maps"));
+	dataobject_setValue(w1, "title", dataobjectfield_string("Maps"));
 	w1 = dobjFromFile("aim.png", w0);
 	dataobject_setEnum(w1, EMO_FIELD_NAME, dataobjectfield_string("img4"));
-	dataobject_setEnum(w1, EMO_FIELD_TITLE, dataobjectfield_string("Instant\nMessenger"));
+	dataobject_setValue(w1, "title", dataobjectfield_string("Instant\nMessenger"));
 	w1 = dobjFromFile("netsurf.png", w0);
 	dataobject_setEnum(w1, EMO_FIELD_NAME, dataobjectfield_string("img5"));
-	dataobject_setEnum(w1, EMO_FIELD_TITLE, dataobjectfield_string("Web\nBrowser"));
+	dataobject_setValue(w1, "title", dataobjectfield_string("Web\nBrowser"));
 	w1 = dobjFromFile("weather.png", w0);
 	dataobject_setEnum(w1, EMO_FIELD_NAME, dataobjectfield_string("img6"));
-	dataobject_setEnum(w1, EMO_FIELD_TITLE, dataobjectfield_string("Weather"));
+	dataobject_setValue(w1, "title", dataobjectfield_string("Weather"));
 	w1 = dataobject_new();
 	dataobject_pack(w0, w1);
 	dataobject_setEnum(w1, EMO_FIELD_TYPE, dataobjectfield_string("view"));

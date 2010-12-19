@@ -13,6 +13,8 @@
 #include "lauxlib.h"
 #include "lualib.h"
 
+#include "emofield.lua.inc"
+
 #include <string.h>
 
 static DataObject *contextObject;
@@ -56,21 +58,21 @@ static int __dataobject_getValue(lua_State *L)
 	EMO_ASSERT_INT(L != NULL, 0, "script get value missing state")
 
 	dobj = checkDataObject(L, 1);
-	if (lua_isstring(L, 2))
+	if (lua_isnumber(L, 2))
+		fieldEnum = luaL_checknumber(L, 2);
+	else if (lua_isstring(L, 2))
 		fieldName = luaL_checkstring(L, 2);
-	else if (lua_isnumber(L, 2))
-		fieldEnum = luaL_checknumber(L, 3);
 	else
 		fieldEnum = EMO_FIELD_DATA;
 
 	if (fieldName != NULL)
-		field = dataobject_getValue(dobj, fieldName);
+		field = dataobject_getValueReal(dobj, fieldName);
 	else
 		field = dataobject_getEnum(dobj, fieldEnum);
 	if (field == NULL) {
 		dobj = widget_getDataObject(dobj);
 		if (fieldName != NULL)
-			field = dataobject_getValue(dobj, fieldName);
+			field = dataobject_getValueReal(dobj, fieldName);
 		else
 			field = dataobject_getEnum(dobj, fieldEnum);
 	}
@@ -549,6 +551,8 @@ lua_State *script_getContext(DataObject *dobj, int *isTemporary)
         luaopen_debug(output);
 
         script_register(output);
+		luaL_loadstring(output, emoinit);
+		lua_call(output, 0, LUA_MULTRET ); 
         if (sobj != NULL) {
             script = dataobject_getEnum(sobj, EMO_FIELD_DATA);
             /*luaL_loadstring(output, script->field.string);*/
