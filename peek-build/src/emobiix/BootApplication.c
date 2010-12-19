@@ -94,7 +94,7 @@ DataObject *BootApplication(void)
 "\n"
 "	for i=1,6 do\n"
 "		app = DataObject.find(\"app\" .. i)\n"
-"		app:setValue(\"reference\", \"img\" .. idx)\n"
+"		app:setValue(emo.reference, \"img\" .. idx)\n"
 "		idx = idx + 1\n"
 "		if idx == 7 then idx = 1 end\n"
 "	end\n"
