@@ -55,7 +55,7 @@ DataObject *setwidget_activeItem(DataObject *w)
 	if (fieldEnum != EMO_FIELD_UNKNOWN_FIELD)
 		fieldvalue = dataobject_getEnum(dobj, fieldEnum);
 	else
-		fieldvalue = dataobject_getValue(dobj, fieldname->field.string);
+		fieldvalue = dataobject_getValueReal(dobj, fieldname->field.string);
 	if (!fieldvalue)
 		return NULL;
 

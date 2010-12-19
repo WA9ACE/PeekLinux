@@ -38,6 +38,7 @@ void dataobject_delete(DataObject *dobj);
 void dataobject_setValue(DataObject *dobj, const char *, DataObjectField *);
 void dataobject_setIsModified(DataObject *dobj, int isModified);
 DataObjectField *dataobject_getValue(DataObject *obj, const char *key);
+DataObjectField *dataobject_getValueReal(DataObject *obj, const char *key);
 DataObjectField *dataobject_getValueAsInt(DataObject *dobj, const char *key);
 void dataobject_unsetValue(DataObject *dobj, const char *key);
 

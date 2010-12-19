@@ -352,6 +352,25 @@ DataObjectField *dataobject_getValue(DataObject *dobj, const char *key)
 	return output;
 }
 
+DataObjectField *dataobject_getValueReal(DataObject *dobj, const char *key)
+{
+	DataObjectField *output;
+	DataObject *child;
+
+	EMO_ASSERT_NULL(dobj != NULL, "getValue on NULL DataObject")
+	EMO_ASSERT_NULL(key != NULL, "getValue missing key")
+
+	output = (DataObjectField *)map_find(dobj->data, key);
+	if (output != NULL && output->type == DOF_STRING) {
+		if (output->flags & DOFF_ARRAYSOURCE) {
+			child = widget_getDataObject(dobj);
+			output = dataobject_getValue(child, output->field.string);
+		}
+	}
+
+	return output;
+}
+
 DataObjectField *dataobject_getValueAsInt(DataObject *dobj, const char *key)
 {
 	DataObjectField *output;
