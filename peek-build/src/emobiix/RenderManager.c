@@ -105,7 +105,7 @@ void renderman_flush(void)
 		for (i = 0; i < len; ++i) {
 			widget = *(DataObject **)array_item(renderman->queue, i);
 			widget_getClipRectangle(widget, &rect);
-			scrolled = widget_findStringFieldParent(widget, "type", "scrolled");
+			scrolled = widget_findStringFieldParent(widget, EMO_FIELD_TYPE, "scrolled");
 			if (scrolled != NULL) {
 				ytrans = dataobject_getEnumAsInt(scrolled, EMO_FIELD_YOFFSET);
 				if (ytrans != NULL) {
@@ -128,7 +128,7 @@ void renderman_flush(void)
 		widget_markDirty(widget);
 		lgui_clip_identity();
 		widget_getClipRectangle(widget, &rect);
-		scrolled = widget_findStringFieldParent(widget, "type", "scrolled");
+		scrolled = widget_findStringFieldParent(widget, EMO_FIELD_TYPE, "scrolled");
 		if (scrolled != NULL) {
 			ytrans = dataobject_getEnumAsInt(scrolled, EMO_FIELD_YOFFSET);
 			if (ytrans != NULL) {

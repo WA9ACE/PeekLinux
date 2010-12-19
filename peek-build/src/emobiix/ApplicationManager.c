@@ -238,7 +238,7 @@ void manager_handleKey(unsigned int key)
 		((unsigned char *)keyStr)[0] = (unsigned char)key;
 		keyStr[1] = 0;
 	}
-	accessKey = widget_findStringField(appManager->rootApplicationWindow, "accesskey", keyStr);
+	accessKey = widget_findStringField(appManager->rootApplicationWindow, EMO_FIELD_ACCESSKEY, keyStr);
 	if (accessKey != NULL) {
 		widget_forceFocus(appManager->rootApplicationWindow, accessKey, style);
 		script_event(accessKey, "onreturn");

@@ -1131,7 +1131,7 @@ void widget_markDirty(Widget *w)
 	}
 }
 
-Widget *widget_findStringField(Widget *w, const char *key, const char *value)
+Widget *widget_findStringField(Widget *w, EmoField key, const char *value)
 {
 	DataObjectField *field, *type;
 	DataObject *child;
@@ -1140,10 +1140,9 @@ Widget *widget_findStringField(Widget *w, const char *key, const char *value)
 	Application *app;
 
 	EMO_ASSERT_NULL(w != NULL, "widget find string field missing widget")
-	EMO_ASSERT_NULL(key != NULL, "widget find string field missing key")
 	EMO_ASSERT_NULL(value != NULL, "widget find string field missing value")
 
-	field = dataobject_getValue(w, key);
+	field = dataobject_getEnum(w, key);
 	if (dataobjectfield_isString(field, value))
 		return w;
 
@@ -1178,15 +1177,14 @@ Widget *widget_findStringField(Widget *w, const char *key, const char *value)
 	return NULL;
 }
 
-Widget *widget_findStringFieldParent(Widget *w, const char *key, const char *value)
+Widget *widget_findStringFieldParent(Widget *w, EmoField key, const char *value)
 {
 	DataObjectField *field;
 
 	EMO_ASSERT_NULL(w != NULL, "widget find string field missing widget")
-	EMO_ASSERT_NULL(key != NULL, "widget find string field missing key")
 	EMO_ASSERT_NULL(value != NULL, "widget find string field missing value")
 
-	field = dataobject_getValue(w, key);
+	field = dataobject_getEnum(w, key);
 	if (dataobjectfield_isString(field, value))
 		return w;
 

@@ -40,8 +40,8 @@ void widget_forceFocus(Widget *tree, Widget *node, Style *s);
 Widget *widget_focusWhichOne(Widget *w);
 Widget *widget_focusWhichOneNF(Widget *w);
 void widget_markDirty(Widget *w);
-Widget *widget_findStringField(Widget *screen, const char *key, const char *value);
-Widget *widget_findStringFieldParent(Widget *w, const char *key, const char *value);
+Widget *widget_findStringField(Widget *screen, EmoField key, const char *value);
+Widget *widget_findStringFieldParent(Widget *w, EmoField key, const char *value);
 #if 0
 int widget_typeNoChildRender(DataObjectField *field);
 #endif
