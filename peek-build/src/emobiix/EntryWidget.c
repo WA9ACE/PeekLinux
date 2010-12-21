@@ -195,7 +195,7 @@ static void entry_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	EMO_ASSERT(dobj != NULL, "entry widget measure missing DataObject")
 	EMO_ASSERT(p != NULL, "entry widget measure missing the point")
 
-	dtype = (const char *)dataobject_getValue(dobj, "type")->field.string;
+	dtype = (const char *)dataobject_getEnum(dobj, EMO_FIELD_TYPE)->field.string;
 	ltype = widget_getID(w);
 	f = (Font *)defaultFont;
 	field = dataobject_getEnum(dobj, EMO_FIELD_DATA);
