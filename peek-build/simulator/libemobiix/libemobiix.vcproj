@@ -111,7 +111,7 @@
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="..\..\src\emobiix\simulator;..\..\src\zlib;..\..\src\libpng;..\..\src\lua;&quot;..\libprotocol\asn1c-files&quot;;..\..\src\emobiix\protocol;..\..\src\freetype2\include;..\..\src\emobiix\thirdparty;..\..\src\emobiix;.."
-				PreprocessorDefinitions="SIMULATOR;WIN32;_CRT_SECURE_NO_WARNINGS;NOGDI"
+				PreprocessorDefinitions="SIMULATOR;WIN32;_CRT_SECURE_NO_WARNINGS;NOGDI;inline=__inline"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"

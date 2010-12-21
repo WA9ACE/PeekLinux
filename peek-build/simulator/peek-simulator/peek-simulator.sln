@@ -48,6 +48,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "public-simulator", "..\publ
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "peek-hardware", "..\peek-hardware\peek-hardware.vcproj", "{BBA67C2C-F6CB-4E39-8288-559E12D55E77}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "emofieldlua", "..\emofieldlua\emofieldlua.vcproj", "{C9E0F008-F7E9-4B8A-94C9-AAB8CC10C2C8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -102,6 +104,10 @@ Global
 		{BBA67C2C-F6CB-4E39-8288-559E12D55E77}.Debug|Win32.Build.0 = Debug|Win32
 		{BBA67C2C-F6CB-4E39-8288-559E12D55E77}.Release|Win32.ActiveCfg = Release|Win32
 		{BBA67C2C-F6CB-4E39-8288-559E12D55E77}.Release|Win32.Build.0 = Release|Win32
+		{C9E0F008-F7E9-4B8A-94C9-AAB8CC10C2C8}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C9E0F008-F7E9-4B8A-94C9-AAB8CC10C2C8}.Debug|Win32.Build.0 = Debug|Win32
+		{C9E0F008-F7E9-4B8A-94C9-AAB8CC10C2C8}.Release|Win32.ActiveCfg = Release|Win32
+		{C9E0F008-F7E9-4B8A-94C9-AAB8CC10C2C8}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

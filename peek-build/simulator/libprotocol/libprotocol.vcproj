@@ -198,6 +198,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\emobiix\protocol\EmobiixField.c"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\emobiix\protocol\FieldNameP.c"
 				>
 			</File>
@@ -297,6 +301,10 @@
 			</File>
 			<File
 				RelativePath="..\..\src\emobiix\protocol\DataObjectTypeP.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\emobiix\protocol\EmobiixField.h"
 				>
 			</File>
 			<File

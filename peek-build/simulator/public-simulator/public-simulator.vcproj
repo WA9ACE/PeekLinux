@@ -45,7 +45,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="c:\thirdparty\xerces\include;..;..\..\src\emobiix\simulator;..\..\src\emobiix;..\..\src\emobiix\thirdparty;..\..\src\bui;..\..\src\baf\uilifecycle;..\..\src\freetype2\include"
+				AdditionalIncludeDirectories="c:\thirdparty\xerces\include;..;..\..\src\emobiix\simulator;..\..\src\emobiix\protocol;..\..\src\emobiix;..\..\src\emobiix\thirdparty;..\..\src\bui;..\..\src\baf\uilifecycle;..\..\src\freetype2\include"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;SIMULATOR"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -132,7 +132,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="c:\thirdparty\xerces\include;..;..\..\src\emobiix\simulator;..\..\src\emobiix;..\..\src\emobiix\thirdparty;..\..\src\bui;..\..\src\baf\uilifecycle;..\..\src\freetype2\include"
+				AdditionalIncludeDirectories="c:\thirdparty\xerces\include;..;..\..\src\emobiix\simulator;..\..\src\emobiix\protocol;..\..\src\emobiix;..\..\src\emobiix\thirdparty;..\..\src\bui;..\..\src\baf\uilifecycle;..\..\src\freetype2\include"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;FT2_BUILD_LIBRARY;_CRT_SECURE_NO_WARNINGS;SIMULATOR"
 				MinimalRebuild="false"
 				RuntimeLibrary="0"
@@ -266,11 +266,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\res\PeekDesktop_32512.ico"
+				RelativePath="C:\temp\iconextract\icons\PeekDesktop_32512.ico"
 				>
 			</File>
 			<File
-				RelativePath="C:\temp\iconextract\icons\PeekDesktop_32512.ico"
+				RelativePath=".\res\PeekDesktop_32512.ico"
 				>
 			</File>
 			<File
