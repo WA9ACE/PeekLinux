@@ -10,6 +10,7 @@ typedef struct EmoFieldDesc_t
 
 EmoFieldDesc EmoFieldMap[EMO_FIELD_UNKNOWN_FIELD] = 
 {
+	{ EMO_FIELD_ERRORNONE, "ERROR-NONE" },
 	{ EMO_FIELD_ALIGNMENT, EMO_FIELD_ALIGNMENT_STR },
 	{ EMO_FIELD_ALPHA, EMO_FIELD_ALPHA_STR },
 	{ EMO_FIELD_ARRAY, EMO_FIELD_ARRAY_STR },
@@ -135,7 +136,7 @@ EmoFieldDesc EmoFieldMap[EMO_FIELD_UNKNOWN_FIELD] =
 
 const char *emo_field_to_string(int fieldId)
 {
-	if (fieldId < 0 || fieldId >= EMO_FIELD_UNKNOWN_FIELD)
+	if (fieldId <= 0 || fieldId >= EMO_FIELD_UNKNOWN_FIELD)
 		return NULL;
 
 	return EmoFieldMap[fieldId].fieldName;
@@ -143,7 +144,7 @@ const char *emo_field_to_string(int fieldId)
 
 int emo_field_to_int(const char *fieldName)
 {
-	int fieldId = 0;
+	int fieldId = EMO_FIELD_ERRORNONE + 1;
 
 	if (!fieldName || !fieldName[0])
 		return EMO_FIELD_UNKNOWN_FIELD;

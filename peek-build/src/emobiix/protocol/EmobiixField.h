@@ -129,6 +129,7 @@ extern "C" {
 
 typedef enum EmoField_t
 {
+	EMO_FIELD_ERRORNONE = 0,
 	EMO_FIELD_ALIGNMENT,
 	EMO_FIELD_ALPHA,
 	EMO_FIELD_ARRAY,
