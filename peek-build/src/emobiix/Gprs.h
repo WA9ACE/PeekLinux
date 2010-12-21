@@ -1,8 +1,6 @@
 #ifndef _GPRS_H_
 #define _GPRS_H_
 
-#include "typedefs.h"
-
 #define GPRS_URI "system://local/gprs"
 
 #define GPRS_NOT_PRESENT  (-1)  //not present, last state is not indicated
@@ -15,10 +13,10 @@
 #define SIGNAL_FLIGHT_M (5)
 
 void gprs_dataobject_init(void);
-void gprs_set_status(BOOL status);
-void gprs_set_signal_level(U32 level);
-void gprs_set_location(U32 lac, U32 ci);
-void gprs_set_on(BOOL status);
+void gprs_set_status(char status);
+void gprs_set_signal_level(unsigned int level);
+void gprs_set_location(unsigned int lac, unsigned int ci);
+void gprs_set_on(char status);
 
 #endif /* _GPRS_H_ */
 

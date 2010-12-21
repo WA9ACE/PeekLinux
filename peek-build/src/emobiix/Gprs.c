@@ -83,7 +83,7 @@ void system_weather_request()
 	}
 }
 
-void gprs_set_status(BOOL status)
+void gprs_set_status(char status)
 {
 	if (!GPRS_DO)
 		gprs_dataobject_init();
@@ -95,7 +95,7 @@ void gprs_set_status(BOOL status)
 	force_dataobject_redraw();
 }
 
-void gprs_set_on(BOOL status)
+void gprs_set_on(char status)
 {
 	if (!GPRS_DO)
 		gprs_dataobject_init();
@@ -108,7 +108,7 @@ void gprs_set_on(BOOL status)
 	force_dataobject_redraw();
 }
 
-void gprs_set_emobiix_on(BOOL status)
+void gprs_set_emobiix_on(char status)
 {
 	if (!GPRS_DO)
 		gprs_dataobject_init();
@@ -124,7 +124,7 @@ void gprs_set_emobiix_on(BOOL status)
 	force_dataobject_redraw();
 }
 
-void gprs_set_signal_level(U32 level)
+void gprs_set_signal_level(unsigned int level)
 {
 	if (!GPRS_DO)
 		gprs_dataobject_init();
@@ -137,7 +137,7 @@ void gprs_set_signal_level(U32 level)
 	force_dataobject_redraw();
 }
 
-void gprs_set_location(U32 lac, U32 ci)
+void gprs_set_location(unsigned int lac, unsigned int ci)
 {
 	if (!GPRS_DO)
 		gprs_dataobject_init();
