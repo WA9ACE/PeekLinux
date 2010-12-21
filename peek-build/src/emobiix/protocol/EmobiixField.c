@@ -107,6 +107,7 @@ EmoFieldDesc EmoFieldMap[EMO_FIELD_UNKNOWN_FIELD] =
 	{ EMO_FIELD_Y, EMO_FIELD_Y_STR },
 	{ EMO_FIELD_YOFFSET, EMO_FIELD_YOFFSET_STR },
 	{ EMO_FIELD_ICONIFIED, EMO_FIELD_ICONIFIED_STR },
+	{ EMO_FIELD_STYLE, EMO_FIELD_STYLE_STR },
 	{ EMO_FIELD_STARTUPVIEW, EMO_FIELD_STARTUPVIEW_STR },
 	{ EMO_FIELD_FULLSCREEN, EMO_FIELD_FULLSCREEN_STR },
 	{ EMO_FIELD_URL, EMO_FIELD_URL_STR },
@@ -130,7 +131,6 @@ EmoFieldDesc EmoFieldMap[EMO_FIELD_UNKNOWN_FIELD] =
 	{ EMO_FIELD_SETITEM, EMO_FIELD_SETITEM_STR },
 	{ EMO_FIELD_FONTALIGNMENT, EMO_FIELD_FONTALIGNMENT_STR },
 	{ EMO_FIELD_ONSYNCFINISHED, EMO_FIELD_ONSYNCFINISHED_STR },
-	{ -1, NULL},
 };
 
 const char *emo_field_to_string(int fieldId)
@@ -144,12 +144,11 @@ const char *emo_field_to_string(int fieldId)
 int emo_field_to_int(const char *fieldName)
 {
 	int fieldId = 0;
-	
+
 	if (!fieldName || !fieldName[0])
 		return EMO_FIELD_UNKNOWN_FIELD;
 
-//	for ( ; fieldId < EMO_FIELD_UNKNOWN_FIELD; ++fieldId)
-	for ( ; EmoFieldMap[fieldId].fieldId >= 0; ++fieldId)
+	for ( ; fieldId < EMO_FIELD_UNKNOWN_FIELD; ++fieldId)
 		if (!strcmp(fieldName, EmoFieldMap[fieldId].fieldName))
 			return fieldId;
 

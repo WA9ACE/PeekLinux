@@ -93,10 +93,9 @@ int main(int argc, char **argv)
 
 	fprintf(output, "emo = { \n");
 
-	for ( ; EmoFieldMap[fieldId].fieldId >= 0; ++fieldId)
+	for ( ; fieldId < EMO_FIELD_UNKNOWN_FIELD; ++fieldId)
 		fprintf(output, "%s = %d,\n",
-				identify(EmoFieldMap[fieldId].fieldName),
-				EmoFieldMap[fieldId].fieldId);
+				identify(EmoFieldMap[fieldId].fieldName), EmoFieldMap[fieldId].fieldId);
 
 	fprintf(output, "}\n");
 	fprintf(output, "emo = protect_table(emo)\n");
