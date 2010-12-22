@@ -1,0 +1,20 @@
+.PHONY: all clean
+
+# provide all defines to recursive make calls
+export
+
+MAKEFLAGS = -r
+
+BASEDIR=$(CURDIR)
+SRCDIR=$(BASEDIR)/../src
+
+CXX     = g++
+CC      = gcc
+AR      = ar
+RANLIB  = ranlib
+
+CP = cp
+MV = mv
+
+LDFLAGS     = -shared
+ARFLAGS     = -rvu

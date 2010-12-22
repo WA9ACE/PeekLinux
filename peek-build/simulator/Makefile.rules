@@ -1,0 +1,25 @@
+ifneq ($(MAKECMDGOALS),clean)
+#	-include $(patsubst %.o,%.d,$(OBJ))
+endif
+
+DEBUG = -ggdb3
+OPTIMIZE = #-O3
+WARN = #-Wall
+
+CXXFLAGS := $(addprefix -D,$(DEFINE)) $(addprefix -I,$(INCLUDE)) $(DEBUG) $(OPTIMIZE) $(WARN) 
+CFLAGS   := $(addprefix -D,$(DEFINE)) $(addprefix -I,$(INCLUDE)) $(DEBUG) $(OPTIMIZE) $(WARN)
+
+.SUFFIXES:
+.SUFFIXES: .o .c .cpp .d
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+%.d: %.cpp
+	@$(CC) $(CXXFLAGS) -MF"$@" -MG -MM -MP -MT"$@" -MT"$(<:.cpp=.o)" "$<"
+
+%.d: %.c
+	@$(CC) $(CFLAGS) -MF"$@" -MG -MM -MP -MT"$@" -MT"$(<:.c=.o)" "$<"
