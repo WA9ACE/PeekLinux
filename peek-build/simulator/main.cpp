@@ -1,90 +1,91 @@
+#include <string>
+#include <stdio.h>
+#include <stdarg.h>
+#include <SDL/SDL.h>
+
+
 #include "lgui.h"
-//#include "tweet.h"
 #include "Platform.h"
 #include "ConnectionContext.h"
 #include "ApplicationManager.h"
 
-#include <GL/glut.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
+#include "DataObject.h"
+#include "RenderManager.h"
 
-#define GL_UNSIGNED_SHORT_5_6_5           0x8363
+#define EKEY_ACTIVATE           13
+#define EKEY_BACK                       12
+#define EKEY_FOCUSPREV          0xFFFFFF01
+#define EKEY_FOCUSNEXT          0xFFFFFF02
+#define EKEY_ALTTAB                     42
 
-/*#define DRAW_REGIONS*/
+void drawScreen(void);
 
 extern "C" {
 unsigned char screenBuf[320*240*2];
 }
 
-void recv_sms(void)
+SDL_Surface *load_image( char *filename )
 {
+    SDL_Surface* loadedImage = NULL;
+    SDL_Surface* optimizedImage = NULL;
+
+    loadedImage = SDL_LoadBMP(filename);
+
+    if( loadedImage != NULL )
+    {
+        optimizedImage = SDL_DisplayFormat( loadedImage );
+        SDL_FreeSurface( loadedImage );
+    }
+
+    return optimizedImage;
+}
+
+void apply_surface( int x, int y, SDL_Surface* source, SDL_Surface* destination )
+{
+    SDL_Rect offset;
+
+    offset.x = x;
+    offset.y = y;
+
+    SDL_BlitSurface( source, NULL, destination, &offset );
+}
+
+void update_surface(SDL_Surface *dest, unsigned char *buf) 
+{
+	
+	SDL_LockSurface(dest);
+	memcpy((Uint8 *)dest->pixels, buf, dest->w * dest->h * 2);
+	SDL_UnlockSurface(dest);
 
 }
 
-void processKeys(unsigned char key, int x, int y) {
-	fprintf(stderr, "glut key '%c'\n", key);
-#if 0
-	if (key == 'a') {
-		tweetKey(KP_WHEEL_UP);
-	} else
-	if (key == 'z') {
-		tweetKey(KP_WHEEL_DOWN);
-	} else
-	if (key == 'q') {
-		tweetKey(KP_ENTER_KEY);
-	} else
-	if (key == 'w') {
-		tweetKey(KP_BACKSPACE_KEY);
-	} else
-	if (key == '1') {
-		tweetKey(KP_1_KEY);
-	} else
-	if (key == '2') {
-		tweetKey(KP_2_KEY);
-	} else
-	if (key == '3') {
-		tweetKey(KP_3_KEY);
-	} else
-#endif
-	if (key == 27) 
-		exit(0);
-	else
-#ifdef USE_TWEET
-		tweetKey(key);
-#else
-		if (key == '`') /* lock key */
-			key = 42;
-		manager_handleKey(key);
-#endif
-
-	glutPostRedisplay();
-}
-
-#if 0
-void drawGUI(void)
+void processKeys(SDL_keysym key, unsigned int state)
 {
-	static int initd = 0;
-
-	if (!initd) {
-		lgui_attach(screenBuf);
-#ifdef USE_TWEET
-		tweetInit();
-		initd = 1;
-		tweetDrawScreen();
-#else
-		manager_init();
-		manager_drawScreen();
-#endif
-		//glutPostRedisplay();
+	switch(key.sym) {
+		case SDLK_UP:
+			manager_handleKey(EKEY_FOCUSPREV);
+			break;
+		case SDLK_DOWN:
+			manager_handleKey(EKEY_FOCUSNEXT);
+			break;
+		case SDLK_ESCAPE:
+			manager_handleKey(EKEY_BACK);
+			break;
+		case SDLK_RETURN:
+			manager_handleKey(EKEY_ACTIVATE);
+			break;
+		default:
+			manager_handleKey(key.sym);
 	}
+
+	drawScreen();
 }
-#endif
 
 void processMouse(int button, int state, int x, int y) 
 {
     // Used for wheels, has to be up
-	if (state == GLUT_UP )
+	//if (state == GLUT_UP )
+	if(0) // fix
 	{
 		if (button == 0) {
 #ifdef USE_TWEET
@@ -105,14 +106,14 @@ void processMouse(int button, int state, int x, int y)
 #else
 	manager_drawScreen();
 #endif
-	glutPostRedisplay();
+	//glutPostRedisplay();
 }
 
 static unsigned char glBuffer[320*240*2];
 void
 display(void)
 {
-	glClear(GL_COLOR_BUFFER_BIT);
+	//glClear(GL_COLOR_BUFFER_BIT);
 	//drawGUI();
 	
 	//fprintf(stderr, "in display\n");
@@ -142,10 +143,10 @@ display(void)
 		}
 	}
 
-	glPixelStorei(GL_UNPACK_ALIGNMENT,1);
-	glPixelZoom(1.0f, -1.0f);
-	glRasterPos2i(-1, 1);
-	glDrawPixels(320, 240, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glBuffer);
+	//glPixelStorei(GL_UNPACK_ALIGNMENT,1);
+	//glPixelZoom(1.0f, -1.0f);
+	//glRasterPos2i(-1, 1);
+	//glDrawPixels(320, 240, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, glBuffer);
 
 #ifdef DRAW_REGIONS
 	/* show redraw regions */
@@ -174,13 +175,12 @@ display(void)
 	}
 #endif
 
-	glutSwapBuffers();
+	//glutSwapBuffers();
 show_prev_screen:
 	lgui_blit_done();
 }
 
 extern "C" void main_test(void);
-
 extern "C" {
 void net_thread(void *d)
 {
@@ -195,34 +195,105 @@ static void timerCallback (int value)
 #else
 	manager_drawScreen();
 #endif
-	glutPostRedisplay();
+	//glutPostRedisplay();
 
-	glutTimerFunc(100, timerCallback, 0);
+	//glutTimerFunc(100, timerCallback, 0);
 }
 
-int
-main(int argc, char **argv)
+SDL_Surface *screen = NULL;
+SDL_Surface *background = NULL;
+SDL_Surface *mainscreen = NULL;
+
+const int SCREEN_WIDTH = 423;
+const int SCREEN_HEIGHT = 634;
+const int SCREEN_BPP = 16;
+
+void drawScreen(void)
 {
-  glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-  glutInitWindowSize(320, 240);
-  glutCreateWindow("simulator");
-  glutDisplayFunc(display);
-  glutKeyboardFunc(processKeys);
-  glutMouseFunc(processMouse);
+    renderman_flush();
+    manager_drawScreen();
+    lgui_set_dirty();
+
+	update_surface(mainscreen, screenBuf);
+	apply_surface( 53, 79, mainscreen, screen );
+
+	lgui_blit_done();
+
+	if( SDL_Flip(screen ) == -1 )
+		return;
+}
+
+void SDLloop(void)
+{
+	SDL_Event event;
+	bool quit;
+	
+	do
+	{
+		quit = false;
+		while(SDL_PollEvent(&event))
+		{
+			switch(event.type)
+			{
+				case SDL_KEYUP:
+					processKeys(event.key.keysym, 1);
+					break;
+				case SDL_QUIT:
+					quit = true;
+					break;
+			}
+		}
+	} while(!quit);
+}
+
+int main(int argc, char **argv)
+{
+  SDL_Color palette[256];
 
   thread_run(net_thread, NULL);
 
+  if( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
+  	return 1;
+
+  screen = SDL_SetVideoMode( SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, SDL_SWSURFACE );
+
+  SDL_WM_SetCaption( "Peek Simulator", NULL );
+
+  background = load_image( "peek.bmp" );
+  apply_surface( 0, 0, background, screen );
+
+  mainscreen = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240,
+        screen->format->BitsPerPixel,
+        screen->format->Rmask,
+        screen->format->Gmask,
+        screen->format->Bmask,
+        screen->format->Amask);
+
+  SDL_SetColors(screen, palette, 0, 256);
+
+  dataobject_platformInit();
+  renderman_init();
+
+  PlatformInit();
+
   manager_init();
-  lgui_attach(screenBuf);
 
-  glutTimerFunc(100, timerCallback, 0);
+  drawScreen();
 
-  glutMainLoop();
+  SDLloop();
+
   return 0;            
 }
 
+extern "C" int simAutoDetect()
+{
+	return 0;
+}
 
+extern "C" void updateScreen()
+{
+	drawScreen();
+}
 
 extern "C" void emo_printf(const char *fmt, ...)
 {
