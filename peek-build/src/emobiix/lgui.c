@@ -460,19 +460,30 @@ void lgui_blitRGB565A8(int destx, int desty, int imgx, int imgy,
 
 		buf += ccol;
 		imgbuf += ccol *3;
-        for (col = ccol; col < cwidth; ++col) {
-            pixel = *(imgbuf);
-            pixel |= *(imgbuf+1) << 8;
-			scale = *((unsigned char *)(imgbuf+2));
-			if (alpha < 255) {
+		if (alpha < 255) {
+			for (col = ccol; col < cwidth; ++col) {
+				pixel = *(imgbuf);
+				pixel |= *(imgbuf+1) << 8;
+				scale = *((unsigned char *)(imgbuf+2));
 				scale = (unsigned char)((int)scale*((int)alpha<<7)/(0xFF<<7));
+				srcpixel = *buf;
+				PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale, *buf)
+				/* *buf = pixel;*/
+				++buf;
+				imgbuf +=3;
 			}
-			srcpixel = *buf;
-			PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale, *buf)
-            /* *buf = pixel;*/
-            ++buf;
-            imgbuf +=3;
-        }
+		} else {
+			for (col = ccol; col < cwidth; ++col) {
+				pixel = *(imgbuf);
+				pixel |= *(imgbuf+1) << 8;
+				scale = *((unsigned char *)(imgbuf+2));
+				srcpixel = *buf;
+				PIXEL_MODULATE_ALPHA(pixel, srcpixel, scale, *buf)
+				/* *buf = pixel;*/
+				++buf;
+				imgbuf +=3;
+			}
+		}
         ++ypos;
         ++imgypos;
     }
