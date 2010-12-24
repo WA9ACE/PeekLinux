@@ -59,9 +59,9 @@ SRC += Widget.c
 SRC += WidgetRenderer.c
 SRC += emobiix_font.c
 SRC += lgui.c
-SRC += peek/KeyHandler.c
 SRC += simulator/KeyMappings.c
 SRC += simulator/NetworkTask.c
+SRC += simulator/PeekEmobiix.c
 SRC += Gprs.c
 
 OBJ = $(addprefix $(EMODIR)/,$(patsubst %.c,%.o,$(patsubst %.cpp,%.o,$(SRC))))

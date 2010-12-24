@@ -44,7 +44,6 @@ INCLUDE += $(SRCDIR)/netsurf/emoport
 #INCLUDE += $(M23DIR)/g23m/nexgen/coreip
 
 SRC  = peek/KeyHandler.c
-SRC += peek/PeekEmobiix.c
 SRC += Application.c
 SRC += Array.c
 SRC += BalTCPTransport.c

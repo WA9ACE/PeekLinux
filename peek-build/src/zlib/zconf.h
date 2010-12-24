@@ -361,8 +361,11 @@ typedef uLong FAR uLongf;
 #endif
 
 #ifdef STDC
-// XXX Peek compat #  include <sys/types.h>    /* for off_t */
+#if defined(LINUX)
+#  include <sys/types.h>    /* for off_t */
+#else
 #  include <file.h>
+#endif
 #endif
 
 /* a little trick to accommodate both "#define _LARGEFILE64_SOURCE" and

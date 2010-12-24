@@ -33,7 +33,13 @@ Boston, MA 02110-1301, USA.  */
 
 typedef char bool;
 
-enum { false, true };
+#ifndef true
+#define true 1
+#endif
+
+#ifndef false
+#define false 0
+#endif
 
 #define inline 
 

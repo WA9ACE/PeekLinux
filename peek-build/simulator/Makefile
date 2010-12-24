@@ -33,7 +33,7 @@ all: $(TARGET)
 simulator: $(SUBDIR) $(OBJ)
 	$(CXX) -o $@ $(OBJ) $(LIB)
 
-libemobiix:
+libemobiix: libprotocol
 	$(MAKE) -C $@
 
 freetype2:

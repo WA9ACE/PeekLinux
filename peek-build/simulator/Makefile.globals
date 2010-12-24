@@ -16,5 +16,9 @@ RANLIB  = ranlib
 CP = cp
 MV = mv
 
+ASN1CDIR = /usr/local
+ASN1C    = $(ASN1CDIR)/bin/asn1c
+ASN1CINC = $(ASN1CDIR)/share/asn1c
+
 LDFLAGS     = -shared
 ARFLAGS     = -rvu

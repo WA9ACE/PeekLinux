@@ -88,12 +88,16 @@ TARGET = $(CURDIR)/libprotocol.a
 
 all: $(TARGET)
 
-$(TARGET): $(OBJ)
-	$(AR) $(ARFLAGS) $@ $?
+$(TARGET): prepare $(OBJ)
+	$(AR) $(ARFLAGS) $@ $(OBJ)
+
+prepare:
+	$(MAKE) -C $(SRCDIR)/emobiix/protocol prepare
 
 clean:
 	$(RM) $(OBJ) 
 	$(RM) $(TARGET) 
 	$(RM) $(DEPS)
+	$(MAKE) -C $(SRCDIR)/emobiix/protocol clean
 
 include $(BASEDIR)/Makefile.rules

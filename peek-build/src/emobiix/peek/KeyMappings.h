@@ -1,8 +1,10 @@
 #ifndef _KEYMAPPINGS_H_
 #define _KEYMAPPINGS_H_
 
+#if !defined(LINUX)
 #include "general.h"
 #include "typedefs.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {

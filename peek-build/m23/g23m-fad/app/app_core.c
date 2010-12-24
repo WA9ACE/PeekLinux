@@ -1475,24 +1475,23 @@ int app_open_bearer_tcp(PROC_CONTEXT_T *pcont)
 	bearer_info.phone_nr_valid = FALSE;
 	bearer_info.cid = 1;
 
-/*
 	strcpy(bearer_info.apn, "position.t-mobile.com");
 	strcpy(bearer_info.user_id, "");
 	strcpy(bearer_info.password, "");
-*/
 
+/*
 	strcpy(bearer_info.apn, "wap.cingular");
 	strcpy(bearer_info.user_id, "WAP@CINGULARGPRS.COM");
 	strcpy(bearer_info.password, "CINGULAR1");
-
+*/
 	bearer_info.user_id_valid = TRUE;
 	bearer_info.password_valid = TRUE;
 
 	bearer_info.ip_address = SOCK_IPADDR_ANY;
-//	bearer_info.dns1 = inet_aton("67.199.130.4");
-//	bearer_info.dns2 = inet_aton("67.199.130.4");
-	bearer_info.dns1 = inet_aton("66.209.10.201");
-	bearer_info.dns2 = inet_aton("66.209.10.202");
+	bearer_info.dns1 = inet_aton("67.199.130.4");
+	bearer_info.dns2 = inet_aton("67.199.130.4");
+//	bearer_info.dns1 = inet_aton("66.209.10.201");
+//	bearer_info.dns2 = inet_aton("66.209.10.202");
 	bearer_info.gateway = SOCK_IPADDR_ANY;
 	bearer_info.authtype = SOCK_AUTH_NO;
 	bearer_info.data_compr = FALSE; // compression?

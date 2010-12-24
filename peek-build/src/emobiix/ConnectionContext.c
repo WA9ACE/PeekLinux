@@ -293,10 +293,6 @@ void connectionContext_requestAuth(ConnectionContext *ctx)
 	connectionContext_packetSend(ctx, &packet);
 }
 
-#ifdef SIMULATOR
-extern void xmlLoadObject(URL *url);
-#endif
-
 int connectionContext_syncRequestForce(ConnectionContext *ctx, URL *url,
 		DataObject *dobj)
 {
@@ -321,8 +317,9 @@ int connectionContext_syncRequestForce(ConnectionContext *ctx, URL *url,
 			return 1;
 		}
 
-#ifdef SIMULATOR
+#if defined(SIMULATOR) && !defined(LINUX)
 		if (strcmp(url->scheme, "xml") == 0) {
+			extern void xmlLoadObject(URL *url);
 			xmlLoadObject(url);
 			return 1;
 		}

@@ -26,7 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <string.h>   /* memcmp,strlen */
 #include <stddef.h>   /* ptrdiff_t */
-#if 0
+#if defined(LINUX)
 #include <inttypes.h> /* uint32_t etc */
 #else
 #include "pstdint.h"
