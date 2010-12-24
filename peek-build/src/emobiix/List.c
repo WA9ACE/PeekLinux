@@ -6,16 +6,6 @@
 
 #include <stddef.h>
 
-struct ListNode_t {
-    void *data;
-    ListNode *prev, *next;
-};
-
-struct List_t {
-    int length;
-    ListNode *head, *tail;
-};
-
 List *list_new(void)
 {
     List *output;
@@ -29,6 +19,10 @@ List *list_new(void)
 
     return output;
 }
+
+#if 0
+static int max_list = 0;
+#endif
 
 void list_append(List *l, void *item)
 {
@@ -46,6 +40,13 @@ void list_append(List *l, void *item)
     l->tail = node;
     node->data = item;
     ++l->length;
+
+#if 0
+	if (l->length > max_list) {
+		max_list = l->length;
+		emo_printf("Max list: %d" NL, max_list);
+	}
+#endif
 }
 
 void list_prepend(List *l, void *item)
@@ -151,9 +152,10 @@ void list_begin(List *l, ListIterator *output)
 	EMO_ASSERT(l != NULL, "list begin on NULL list")
 	EMO_ASSERT(output != NULL, "list begin missing iterator")
     
-		output->list = l;
+	/*output->list = l;
     output->node = l->head;
-    output->offset = (char *)&output->node->next - (char *)output->node;
+    output->offset = (char *)&output->node->next - (char *)output->node;*/
+	list_begin_inline(l, output);
 
     /*return output;*/
 }
@@ -178,24 +180,27 @@ int listIterator_finished(ListIterator *iter)
 {
 	EMO_ASSERT_INT(iter != NULL, 1, "list finished missing iterator")
 
-    return iter->node == NULL;
+	return listIterator_finished_inline(iter);
+    /*return iter->node == NULL;*/
 }
 
 void *listIterator_item(ListIterator *iter)
 {
 	EMO_ASSERT_NULL(iter != NULL, "list item missing iterator")
 
-	if (iter->node == NULL)
+	return listIterator_item_inline(iter);
+	/*if (iter->node == NULL)
 		return NULL;
-    return iter->node->data;
+    return iter->node->data;*/
 }
 
 void listIterator_next(ListIterator *iter)
 {
 	EMO_ASSERT(iter != NULL, "list next missing iterator")
 
-	if (iter->node)
-    	iter->node = *(ListNode **)(((char *)(iter->node))+iter->offset);
+	listIterator_next_inline(iter);
+	/*if (iter->node)
+    	iter->node = *(ListNode **)(((char *)(iter->node))+iter->offset);*/
 }
 
 void listIterator_remove(ListIterator *iter)

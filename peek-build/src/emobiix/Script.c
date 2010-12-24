@@ -79,19 +79,19 @@ static int __dataobject_getValue(lua_State *L)
 
 	if (field == NULL) {
 		lua_pushnil(L);
-		emo_printf("script_getValue(%s:%d) = nil" NL, fieldName, fieldEnum);
+		/*emo_printf("script_getValue(%s:%d) = nil" NL, fieldName, fieldEnum);*/
 	}
 	else if (field->type == DOF_STRING) {
-		emo_printf("script_getValue(%s:%d) = %s" NL, fieldName, fieldEnum, field->field.string);
+		/*emo_printf("script_getValue(%s:%d) = %s" NL, fieldName, fieldEnum, field->field.string);*/
 		lua_pushstring(L, field->field.string);
 	} else if (field->type == DOF_INT) {
-		emo_printf("script_getValue(%s:%d) = %d" NL, fieldName, fieldEnum, field->field.integer);
+		/*emo_printf("script_getValue(%s:%d) = %d" NL, fieldName, fieldEnum, field->field.integer);*/
 		lua_pushnumber(L, field->field.integer);
 	} else if (field->type == DOF_UINT) {
-		emo_printf("script_getValue(%s:%d) = %d" NL, fieldName, fieldEnum, field->field.uinteger);
+		/*emo_printf("script_getValue(%s:%d) = %d" NL, fieldName, fieldEnum, field->field.uinteger);*/
 		lua_pushnumber(L, field->field.uinteger);
 	} else {
-		emo_printf("script_getValue(%s:%d) = nil" NL, fieldName, fieldEnum);
+		/*emo_printf("script_getValue(%s:%d) = nil" NL, fieldName, fieldEnum);*/
 		lua_pushnil(L);
 	}
 
@@ -173,11 +173,11 @@ static int __dataobject_setValue(lua_State *L)
 		emo_printf("Set value to %d" NL, dstr->field.integer);
 	}
 
-	if (fieldName != NULL) {
+	/*if (fieldName != NULL) {
 		fieldEnum = emo_field_to_int(fieldName);
 		if (fieldEnum != EMO_FIELD_UNKNOWN_FIELD)
 			fieldName = NULL;
-	}
+	}*/
 
 	if (fieldName != NULL)
 	    dataobject_setValue(dobj, fieldName, dstr);

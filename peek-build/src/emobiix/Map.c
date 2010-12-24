@@ -78,13 +78,13 @@ static void* map_find_number(const Map *const ht, const int key)
 	MapNode *output;
 	ListIterator iter;
 
-	list_begin(ht->list, &iter);
-	while (!listIterator_finished(&iter)) 
+	list_begin_inline(ht->list, &iter);
+	while (!listIterator_finished_inline(&iter)) 
 	{
-		output = (MapNode *)listIterator_item(&iter);
+		output = (MapNode *)listIterator_item_inline(&iter);
 		if (output->key.number == key)
 			return output->data;
-		listIterator_next(&iter);
+		listIterator_next_inline(&iter);
 	}
 	return NULL;
 }
@@ -94,12 +94,12 @@ static void* map_find_string(const Map *const ht, const char *key)
 	MapNode *output;
 	ListIterator iter;
 
-	list_begin(ht->list, &iter);
-	while (!listIterator_finished(&iter)) {
-		output = (MapNode *)listIterator_item(&iter);
+	list_begin_inline(ht->list, &iter);
+	while (!listIterator_finished_inline(&iter)) {
+		output = (MapNode *)listIterator_item_inline(&iter);
 		if (strcmp(output->key.kstring, key) == 0) 
 			return output->data;
-		listIterator_next(&iter);
+		listIterator_next_inline(&iter);
 	}
 	return NULL;
 }
