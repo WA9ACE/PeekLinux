@@ -73,38 +73,51 @@ void map_append(Map *ht, const void *key, void *data)
     list_append(ht->list, (void *)node);
 }
 
+static void* map_find_number(const Map *const ht, const int key)
+{
+	MapNode *output;
+	ListIterator iter;
+
+	list_begin(ht->list, &iter);
+	while (!listIterator_finished(&iter)) 
+	{
+		output = (MapNode *)listIterator_item(&iter);
+		if (output->key.number == key)
+			return output->data;
+		listIterator_next(&iter);
+	}
+	return NULL;
+}
+
+static void* map_find_string(const Map *const ht, const char *key)
+{
+	MapNode *output;
+	ListIterator iter;
+
+	list_begin(ht->list, &iter);
+	while (!listIterator_finished(&iter)) {
+		output = (MapNode *)listIterator_item(&iter);
+		if (strcmp(output->key.kstring, key) == 0) 
+			return output->data;
+		listIterator_next(&iter);
+	}
+	return NULL;
+}
+
 void *map_find(Map *ht, const void *key)
 {
-    MapNode *output;
-    ListIterator iter;
-
-	EMO_ASSERT_NULL(ht != NULL, "map find on NULL map")
-	EMO_ASSERT_NULL(key != NULL, "map find missing key")
-
-    list_begin(ht->list, &iter);
-    while (!listIterator_finished(&iter)) {
-        output = (MapNode *)listIterator_item(&iter);
-        switch (ht->type) {
-            case STRING:
-				if (strcmp(output->key.kstring, (const char *)key) == 0) {
-					/*listIterator_delete(iter);*/
-                    return output->data;
-				}
-                break;
-            case NUMBER:
-            default:
-				if (output->key.number == (int)key) {
-					/*listIterator_delete(iter);*/
-                    return output->data;
-				}
-                break;
-        }
-        listIterator_next(&iter);
-    }
-
-	/*listIterator_delete(iter);*/
-
-    return NULL;
+	EMO_ASSERT_NULL(ht != NULL, "map find on NULL map");
+	EMO_ASSERT_NULL(key != NULL, "map find missing key");
+	
+	switch (ht->type) 
+	{
+		case STRING:
+			return map_find_string(ht, (const char*)key);
+		case NUMBER:
+		default:
+			return map_find_number(ht, (const int)key);
+	}
+	return NULL;
 }
 
 void map_remove(Map *ht, const void *key)
