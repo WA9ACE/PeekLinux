@@ -7,6 +7,7 @@
 #include "SetWidget.h"
 #include "Application.h"
 #include "ApplicationManager.h"
+#include "lgui.h"
 
 #include "p_malloc.h"
 
@@ -23,9 +24,22 @@ void style_renderWidgetTree(Style *s, Widget *w)
 	Application *app;
 	Style *style = NULL, *childStyle;
 	int hasFocus, wentUp = 0;
+	int translate_x, translate_y;
+	int ccol, cline, cwidth, cheight;
+	Rectangle *box, rect;
+	static int used = 0, passed = 0;
 
 	EMO_ASSERT(s != NULL, "style render tree missing style")
 	EMO_ASSERT(w != NULL, "style render tree missing tree")
+
+	box = widget_getBox(w);
+	lgui_get_translate(&translate_x, &translate_y);
+	rect.x = box->x + translate_x;
+	rect.y = box->y + translate_y;
+	rect.width = box->width;
+	rect.height = box->height;
+	if (lgui_clip_rect(&rect, &ccol, &cline, &cwidth, &cheight) == 0)
+		return;
 
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	hasFocus = widget_hasFocusOrParent(w);
@@ -122,8 +136,8 @@ Style *style_getID(Style *styleRoot, const char *otype, const char *id, int isFo
 
 	output = NULL;
 	for (dataobject_childIterator(styleRoot, &iter);
-			!listIterator_finished(&iter); listIterator_next(&iter)) {
-		child = listIterator_item(&iter);
+			!listIterator_finished_inline(&iter); listIterator_next_inline(&iter)) {
+		child = listIterator_item_inline(&iter);
 		type = dataobject_getEnum(child, EMO_FIELD_TYPE);
 		if (!dataobjectfield_isString(type, id))
 			continue;

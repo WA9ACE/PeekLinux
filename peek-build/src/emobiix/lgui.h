@@ -98,6 +98,7 @@ void lgui_clip_push(void);
 void lgui_clip_pop(void);
 
 void lgui_translate(int x, int y);
+void lgui_get_translate(int *x, int *y);
 
 void lgui_push_region(void);
 int lgui_index_count(void);

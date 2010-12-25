@@ -1428,6 +1428,12 @@ void lgui_translate(int x, int y)
 	translate_y += y;
 }
 
+void lgui_get_translate(int *x, int *y)
+{
+	*x = translate_x;
+	*y = translate_y;
+}
+
 #define REDRAW_REGION_COUNT 30
 static int region_index = 0;
 static Rectangle region_blit[REDRAW_REGION_COUNT];
