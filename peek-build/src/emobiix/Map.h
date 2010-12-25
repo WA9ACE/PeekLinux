@@ -18,6 +18,7 @@ Map *map_string(void);
 Map *map_int(void);
 void map_append(Map *ht, const void *key, void *data);
 void *map_find(Map *ht, const void *key);
+void *map_find_number(Map *ht, const void *key);
 void map_remove(Map *ht, const void *key);
 void map_delete(Map *ht);
 

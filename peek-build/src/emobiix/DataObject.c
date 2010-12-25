@@ -205,7 +205,7 @@ DataObjectField *dataobject_getEnum(DataObject *dobj, EmoField enu)
 	EMO_ASSERT_NULL(dobj != NULL, "getEnum on NULL DataObject")
 	EMO_ASSERT_NULL(enu != -1, "getEnum missing key")
 
-	output = (DataObjectField *)map_find(dobj->enumData, (const void *)enu);
+	output = (DataObjectField *)map_find_number(dobj->enumData, (const void *)enu);
 	if (output != NULL && output->type == DOF_STRING) {
 		if (output->flags & DOFF_ARRAYSOURCE) {
 			child = widget_getDataObject(dobj);
@@ -760,13 +760,13 @@ DataObject *dataobject_findByName(DataObject *dobj, const char *name)
 	EMO_ASSERT_NULL(name != NULL, "findByName without name")
 
 	field = dataobject_getEnum(dobj, EMO_FIELD_NAME);
-	if (dataobjectfield_isString(field, name)) {
+	if (dataobjectfield_isString_inline(field, name)) {
 		/*emo_printf("Found, returning" NL);*/
 		return dobj;
 	}
 
 	dtype = dataobject_getEnum(dobj, EMO_FIELD_TYPE);
-	if (dataobjectfield_isString(dtype, "frame")) {
+	if (dataobjectfield_isString_inline(dtype, "frame")) {
 		child = widget_getDataObject(dobj);
 		if (child != NULL) {
 			app = manager_applicationForDataObject(child);
@@ -780,7 +780,7 @@ DataObject *dataobject_findByName(DataObject *dobj, const char *name)
 				}
 			}
 		}
-	} else if (dataobjectfield_isString(dtype, "reference")) {
+	} else if (dataobjectfield_isString_inline(dtype, "reference")) {
 		child = widget_getDataObject(dobj);
 		if (child != NULL && child != dobj) {
 			child = dataobject_findByName(child, name);
@@ -792,15 +792,15 @@ DataObject *dataobject_findByName(DataObject *dobj, const char *name)
 	if (list_size(dobj->children) == 0)
 		return NULL;
 
-	list_begin(dobj->children, &iter);
-	while (!listIterator_finished(&iter)) {
-		child = listIterator_item(&iter);
+	list_begin_inline(dobj->children, &iter);
+	while (!listIterator_finished_inline(&iter)) {
+		child = listIterator_item_inline(&iter);
 		child = dataobject_findByName(child, name);
 		if (child != NULL) {
 			/*listIterator_delete(iter);*/
 			return child;
 		}
-		listIterator_next(&iter);
+		listIterator_next_inline(&iter);
 	}
 
 	/*listIterator_delete(iter);*/
@@ -1219,10 +1219,11 @@ int dataobjectfield_isString(DataObjectField *field, const char *str)
 {
 	EMO_ASSERT_INT(str != NULL, 0, "isString on field missing string")
 
-    if (field != NULL && field->type == DOF_STRING &&
+    /*if (field != NULL && field->type == DOF_STRING &&
             strcmp(field->field.string, str) == 0)
         return 1;
-    return 0;
+    return 0;*/
+	return dataobjectfield_isString_inline(field, str);
 }
 
 DataObjectField *dataobjectfield_copy(DataObjectField *field)

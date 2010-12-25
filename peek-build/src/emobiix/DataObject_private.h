@@ -43,4 +43,7 @@ struct DataObject_t {
 #define DO_FLAG_FORCE_SYNC			0x10
 #define DO_FLAG_CHANGED				0x20
 
+#define dataobjectfield_isString_inline(__field, __str) \
+	((__field) != NULL && (__field)->type == DOF_STRING && \
+            strcmp((__field)->field.string, (__str)) == 0)
 #endif
