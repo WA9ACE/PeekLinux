@@ -73,7 +73,7 @@ void map_append(Map *ht, const void *key, void *data)
     list_append(ht->list, (void *)node);
 }
 
-static void* map_find_number(const Map *const ht, const int key)
+void* map_find_number(const Map *const ht, const int key)
 {
 	MapNode *output;
 	ListIterator iter;

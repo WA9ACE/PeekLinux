@@ -205,7 +205,7 @@ DataObjectField *dataobject_getEnum(DataObject *dobj, EmoField enu)
 	EMO_ASSERT_NULL(dobj != NULL, "getEnum on NULL DataObject")
 	EMO_ASSERT_NULL(enu != -1, "getEnum missing key")
 
-	output = (DataObjectField *)map_find_number(dobj->enumData, (const void *)enu);
+	output = (DataObjectField *)map_find_number(dobj->enumData, (const int)enu);
 	if (output != NULL && output->type == DOF_STRING) {
 		if (output->flags & DOFF_ARRAYSOURCE) {
 			child = widget_getDataObject(dobj);
