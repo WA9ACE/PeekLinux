@@ -176,34 +176,6 @@ void widget_pack(Widget *w, Widget *parent)
 	list_append(parent->children, w);
 }
 
-void widget_setClass(Widget *w, const char *className)
-{
-	DataObjectField *field;
-
-	EMO_ASSERT(w != NULL, "widget set class missing widget")
-	EMO_ASSERT(className != NULL, "widget set class missing name")
-
-	field = dataobject_getEnum(w, EMO_FIELD_NAME);
-	if (!field)
-		dataobject_setEnum(w, EMO_FIELD_NAME, dataobjectfield_string(className));
-	else {
-		p_free(field->field.string);
-		field->field.string = p_strdup(className);
-	}
-}
-
-const char *widget_getClass(Widget *w)
-{
-	DataObjectField *field;
-
-	EMO_ASSERT_NULL(w != NULL, "widget get class missing widget")
-	
-	field = dataobject_getEnum(w, EMO_FIELD_NAME);
-	if (!field)
-		return NULL;
-	return field->field.string;
-}
-
 void widget_setID(Widget *w, const char *idName)
 {
 	DataObjectField *field;
@@ -1157,7 +1129,7 @@ static void widget_layoutMeasureFinal(Widget *w, Style *s)
 	DataObjectField *type;
 	WidgetRenderer *wr;
 	DataObject *dobj, *child;
-	const char *className, *id;
+	const char *id;
 	ListIterator iter;
 	IPoint p;
 	Application *app;
@@ -1169,7 +1141,6 @@ static void widget_layoutMeasureFinal(Widget *w, Style *s)
 
 	/* get style default */
 	dobj = widget_getDataObject(w);
-	className = widget_getClass(w);
 	id = widget_getID(w);
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	style = style_getID(s, type == NULL ? NULL : type->field.string, id,
@@ -1223,7 +1194,7 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 	WidgetRenderer *wr;
 	DataObject *dobj, *child;
 	Application *app;
-	const char *className, *id;
+	const char *id;
 	ListIterator iter;
 	IPoint p;
 	int slen, tmpint, wentUp = 0;
@@ -1234,7 +1205,6 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 
 	/* get style default */
 	dobj = widget_getDataObject(w);
-	className = widget_getClass(w);
 	id = widget_getID(w);
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	style = style_getID(s, type == NULL ? NULL : type->field.string, id,
@@ -1503,7 +1473,7 @@ void widget_resolveMargin(Widget *w, Style *s)
 	DataObjectField *field, *type;
 	WidgetRenderer *wr;
 	ListIterator iter;
-	const char *className, *id;
+	const char *id;
 	DataObject *dobj, *child;
 	Application *app;
 	Style *style, *childStyle;
@@ -1514,7 +1484,6 @@ void widget_resolveMargin(Widget *w, Style *s)
 
 	/* Apply margin from style */
 	dobj = widget_getDataObject(w);
-	className = widget_getClass(w);
 	id = widget_getID(w);
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);	
 
