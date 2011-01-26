@@ -183,16 +183,20 @@ void dataobject_setEnum(DataObject *dobj, EmoField enu, DataObjectField *v)
 {
 	DataObjectField *old;
 	const char *builtinType;
+	int doReplace = 0;
+	MapIterator iter;
 
 	EMO_ASSERT(dobj != NULL, "setEnum on NULL DataObject")
 	EMO_ASSERT(enu != -1, "setEnum missing key")
 	EMO_ASSERT(v != NULL, "setEnum missing value")
 
-	old = (DataObjectField *)map_find(dobj->enumData, (const void *)enu);
+	old = (DataObjectField *)map_find_iter(dobj->enumData, (const void *)enu,
+			&iter);
 	if (old == v)
 		return;
 	if (old != NULL) {
-		map_remove(dobj->enumData, (const void *)enu);
+		doReplace = 1;
+		//map_remove(dobj->enumData, (const void *)enu);
 		dataobjectfield_free(old);
 	}
 
@@ -204,7 +208,10 @@ void dataobject_setEnum(DataObject *dobj, EmoField enu, DataObjectField *v)
 		}
 	}
 
-	map_append(dobj->enumData, (const void *)enu, v);
+	if (doReplace)
+		mapIterator_replace(&iter, v);
+	else
+		map_append(dobj->enumData, (const void *)enu, v);
 }
 
 DataObjectField *dataobject_getEnum(DataObject *dobj, EmoField enu)
@@ -215,7 +222,7 @@ DataObjectField *dataobject_getEnum(DataObject *dobj, EmoField enu)
 	EMO_ASSERT_NULL(dobj != NULL, "getEnum on NULL DataObject")
 	EMO_ASSERT_NULL(enu != -1, "getEnum missing key")
 
-	output = (DataObjectField *)map_find_number(dobj->enumData, (const int)enu);
+	output = (DataObjectField *)map_find_number(dobj->enumData, (const int)enu, NULL);
 	if (output != NULL && output->type == DOF_STRING) {
 		if (output->flags & DOFF_ARRAYSOURCE) {
 			child = widget_getDataObject(dobj);

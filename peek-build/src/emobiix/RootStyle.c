@@ -118,7 +118,6 @@ Style *RootStyle(void)
 	dataobject_setEnum(solidbox, EMO_FIELD_BORDER, dataobjectfield_string("1234"));
 	dataobject_setEnum(solidbox, EMO_FIELD_FILL, dataobjectfield_string("solid"));
 	dataobject_setEnum(solidbox, EMO_FIELD_CHECK_COLOR, dataobjectfield_int(0x5050FFFF));
-	dataobject_setEnum(solidbox, EMO_FIELD_BOX_RENDERER, dataobjectfield_string("box"));
 
 	/* text */
 	solidbox = widget_newTypeIdName("text", NULL, NULL, defaultStyle);

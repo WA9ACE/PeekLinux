@@ -73,38 +73,44 @@ void map_append(Map *ht, const void *key, void *data)
     list_append(ht->list, (void *)node);
 }
 
-void* map_find_number(const Map *const ht, const int key)
+void* map_find_number(const Map *const ht, const int key, MapIterator *iter)
 {
 	MapNode *output;
-	ListIterator iter;
+	ListIterator localIter;
 
-	list_begin_inline(ht->list, &iter);
-	while (!listIterator_finished_inline(&iter)) 
+	if (iter == NULL)
+		iter = &localIter;
+
+	list_begin_inline(ht->list, iter);
+	while (!listIterator_finished_inline(iter)) 
 	{
-		output = (MapNode *)listIterator_item_inline(&iter);
+		output = (MapNode *)listIterator_item_inline(iter);
 		if (output->key.number == key)
 			return output->data;
-		listIterator_next_inline(&iter);
+		listIterator_next_inline(iter);
 	}
 	return NULL;
 }
 
-static void* map_find_string(const Map *const ht, const char *key)
+static void* map_find_string(const Map *const ht, const char *key, MapIterator *iter)
 {
 	MapNode *output;
-	ListIterator iter;
+	ListIterator localIter;
 
-	list_begin_inline(ht->list, &iter);
-	while (!listIterator_finished_inline(&iter)) {
-		output = (MapNode *)listIterator_item_inline(&iter);
+	if (iter == NULL)
+		iter = &localIter;
+
+	list_begin_inline(ht->list, iter);
+	while (!listIterator_finished_inline(iter)) {
+		output = (MapNode *)listIterator_item_inline(iter);
 		if (strcmp(output->key.kstring, key) == 0) 
 			return output->data;
-		listIterator_next_inline(&iter);
+		listIterator_next_inline(iter);
 	}
 	return NULL;
 }
 
-void *map_find(Map *ht, const void *key)
+void *map_find_iter(Map *ht, const void *key, MapIterator *iter)
 {
 	EMO_ASSERT_NULL(ht != NULL, "map find on NULL map");
 	EMO_ASSERT_NULL(key != NULL, "map find missing key");
@@ -112,10 +118,10 @@ void *map_find(Map *ht, const void *key)
 	switch (ht->type) 
 	{
 		case STRING:
-			return map_find_string(ht, (const char*)key);
+			return map_find_string(ht, (const char*)key, iter);
 		case NUMBER:
 		default:
-			return map_find_number(ht, (const int)key);
+			return map_find_number(ht, (const int)key, iter);
 	}
 	return NULL;
 }
@@ -209,6 +215,17 @@ void *mapIterator_item(MapIterator *iter, void **key)
 		*key = *(void **)&item->key;
 	}
 	return item->data;
+}
+
+void mapIterator_replace(MapIterator *iter, void *data)
+{
+	MapNode *item;
+
+	EMO_ASSERT(iter != NULL, "map item missing iterator")
+	EMO_ASSERT(data != NULL, "map item missing key")
+	
+	item = (MapNode *)listIterator_item((ListIterator *)iter);
+	item->data = data;
 }
 
 void mapIterator_remove(MapIterator *iter)

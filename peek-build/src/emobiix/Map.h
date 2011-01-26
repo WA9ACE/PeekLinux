@@ -17,14 +17,16 @@ typedef struct MapIterator_t MapIterator;*/
 Map *map_string(void);
 Map *map_int(void);
 void map_append(Map *ht, const void *key, void *data);
-void *map_find(Map *ht, const void *key);
-void *map_find_number(const Map *const ht, const int key);
+#define map_find(__ht, __key) map_find_iter(__ht, __key, NULL)
+void *map_find_iter(Map *ht, const void *key, MapIterator *iter);
+void *map_find_number(const Map *const ht, const int key, MapIterator *iter);
 void map_remove(Map *ht, const void *key);
 void map_delete(Map *ht);
 
 void map_begin(Map *ht, MapIterator *iter);
 int mapIterator_finished(MapIterator *iter);
 void *mapIterator_item(MapIterator *iter, void **key);
+void mapIterator_replace(MapIterator *iter, void *data);
 void mapIterator_remove(MapIterator *iter);
 void mapIterator_removeInt(MapIterator *iter);
 void mapIterator_next(MapIterator *iter);
