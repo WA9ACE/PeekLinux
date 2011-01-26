@@ -44,7 +44,9 @@ void style_renderWidgetTree(Style *s, Widget *w)
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	hasFocus = widget_hasFocusOrParent(w);
 	id = widget_getID(w);
+	//emo_printf("Getting styleID for %p" NL, w);
 	style = style_getID(s, type == NULL ? NULL : type->field.string, id, hasFocus, &wentUp);
+	//emo_printf("Got styleID for %p as %p" NL, w, style);
 
 	if (wentUp)
 		childStyle = s;
@@ -64,20 +66,14 @@ void style_renderWidgetTree(Style *s, Widget *w)
 		dataobject_setClean(w);
 	}
 
-#if 0
-	/* we dont render array children - they render themselves */
-	if (dataobjectfield_isString(type, "array"))
-		return;
-#endif
-
-	if (dataobjectfield_isString(type, "set")) {
+	if (EMO_DOF_IS_TYPE(type, EMO_TYPE_SET)) {
 		singleChild = setwidget_activeItem(w);
 		if (singleChild != NULL)
 			style_renderWidgetTree(childStyle, singleChild);
 		return;
 	}
 
-	if (dataobjectfield_isString(type, "frame")) {
+	if (EMO_DOF_IS_TYPE(type, EMO_TYPE_FRAME)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			app = manager_applicationForDataObject(child);
@@ -92,7 +88,7 @@ void style_renderWidgetTree(Style *s, Widget *w)
 				}
 			}
 		}
-	} else if (dataobjectfield_isString(type, "reference")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_REFERENCE)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			root = dataobject_superparent(child);
@@ -128,6 +124,8 @@ Style *style_getID(Style *styleRoot, const char *otype, const char *id, int isFo
 
 	EMO_ASSERT_NULL(styleRoot != NULL, "style getid missing style")
 
+	//emo_printf("StyleID: %p - type:%s, id:%s" NL, styleRoot, otype, id);
+
 	if (id == NULL) {
 		id = otype;
 		if (otype == NULL)
@@ -139,8 +137,13 @@ Style *style_getID(Style *styleRoot, const char *otype, const char *id, int isFo
 			!listIterator_finished_inline(&iter); listIterator_next_inline(&iter)) {
 		child = listIterator_item_inline(&iter);
 		type = dataobject_getEnum(child, EMO_FIELD_TYPE);
-		if (!dataobjectfield_isString(type, id))
-			continue;
+		if (EMO_TYPE_IS_BUILTIN(type->field.string)) {
+			if (!EMO_DOF_IS_TYPE(type, id))
+				continue;
+		} else {
+			if (!dataobjectfield_isString(type, id))
+				continue;
+		}
 		focus = widget_hasFocusOrParent(child);
 		if (focus == isFocused)
 			return child;
@@ -267,7 +270,7 @@ Gradient *style_getGradient(Style *s)
 	EMO_ASSERT_NULL(s != NULL, "style get gradient missing style")
 
 	type = dataobject_getEnum(s, EMO_FIELD_TYPE);
-	if (!dataobjectfield_isString(type, "gradient"))
+	if (!EMO_DOF_IS_TYPE(type, EMO_TYPE_GRADIENT))
 		return NULL;
 
 	output = gradient_new();

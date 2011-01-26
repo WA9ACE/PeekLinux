@@ -135,7 +135,7 @@ DataObject *BootApplication(void)
 	dataobject_setEnum(w3, EMO_FIELD_Y, dataobjectfield_string("5"));
 	dataobject_setEnum(w3, EMO_FIELD_WIDTH, dataobjectfield_string("100"));
 	dataobject_setEnum(w3, EMO_FIELD_HEIGHT, dataobjectfield_string("12"));
-	dataobject_setEnum(w3, EMO_FIELD_FONTCOLOR, dataobjectfield_string("#FFF"));
+	dataobject_setEnum(w3, EMO_FIELD_FONT_COLOR, dataobjectfield_string("#FFF"));
 	dataobject_setEnum(w3, EMO_FIELD_WIDTH, dataobjectfield_string("bold"));
 	dataobject_setEnum(w3, EMO_FIELD_DATA, dataobjectfield_string(" --- "));
 	w3 = dataobject_new();
@@ -541,22 +541,28 @@ DataObject *BootApplication(void)
 	dataobject_setEnum(w1, EMO_FIELD_NAME, dataobjectfield_string("appmenu"));
 	dataobject_setEnum(w1, EMO_FIELD_PACKING, dataobjectfield_string("vertical"));
 	dataobject_setEnum(w1, EMO_FIELD_WIDTH, dataobjectfield_string("320"));
+#if 0
 	w2 = dataobject_new();
 	dataobject_pack(w1, w2);
-	dataobject_setEnum(w2, EMO_FIELD_TYPE, dataobjectfield_string("image"));
+	//dataobject_setEnum(w2, EMO_FIELD_TYPE, dataobjectfield_string("image"));
+	dataobject_setEnum(w2, EMO_FIELD_TYPE, dataobjectfield_string("box"));
 	dataobject_setEnum(w2, EMO_FIELD_ACCESSKEY, dataobjectfield_string("BACK"));
 	dataobject_setEnum(w2, EMO_FIELD_ONRETURN, dataobjectfield_string("dobj = DataObject.find(\"mainview\");dobj:toScreen()"));
 	dataobject_setEnum(w2, EMO_FIELD_PACKING, dataobjectfield_string("vertical"));
-	dataobject_setEnum(w2, EMO_FIELD_REFERENCE, dataobjectfield_string("background"));
-	w4 = dataobject_new();
-	dataobject_pack(w2, w4);
-	dataobject_setEnum(w4, EMO_FIELD_TYPE, dataobjectfield_string("box"));
-	dataobject_setEnum(w4, EMO_FIELD_ID, dataobjectfield_string("solid"));
-	dataobject_setEnum(w4, EMO_FIELD_X, dataobjectfield_string("0"));
-	dataobject_setEnum(w4, EMO_FIELD_Y, dataobjectfield_string("0"));
-	dataobject_setEnum(w4, EMO_FIELD_WIDTH, dataobjectfield_string("320"));
-	dataobject_setEnum(w4, EMO_FIELD_HEIGHT, dataobjectfield_string("240"));
-	dataobject_setEnum(w4, EMO_FIELD_BACKGROUNDCOLOR, dataobjectfield_string("#000000AA"));
+	//dataobject_setEnum(w2, EMO_FIELD_REFERENCE, dataobjectfield_string("background"));
+#endif
+	w2 = dataobject_new();
+	dataobject_pack(w1, w2);
+	dataobject_setEnum(w2, EMO_FIELD_TYPE, dataobjectfield_string("box"));
+	dataobject_setEnum(w2, EMO_FIELD_ID, dataobjectfield_string("solid"));
+	dataobject_setEnum(w2, EMO_FIELD_X, dataobjectfield_string("0"));
+	dataobject_setEnum(w2, EMO_FIELD_Y, dataobjectfield_string("0"));
+	dataobject_setEnum(w2, EMO_FIELD_WIDTH, dataobjectfield_string("320"));
+	dataobject_setEnum(w2, EMO_FIELD_HEIGHT, dataobjectfield_string("240"));
+	dataobject_setEnum(w2, EMO_FIELD_BACKGROUND_COLOR, dataobjectfield_string("#000000FF"));
+	dataobject_setEnum(w2, EMO_FIELD_ACCESSKEY, dataobjectfield_string("BACK"));
+	dataobject_setEnum(w2, EMO_FIELD_ONRETURN, dataobjectfield_string("dobj = DataObject.find(\"mainview\");dobj:toScreen()"));
+	//dataobject_setEnum(w2, EMO_FIELD_BACKGROUND_COLOR, dataobjectfield_string("#000000AA"));
 	w4 = dobjFromFile("glow.png", w2);
 	dataobject_setEnum(w4, EMO_FIELD_X, dataobjectfield_string("86"));
 	dataobject_setEnum(w4, EMO_FIELD_Y, dataobjectfield_string("59"));
@@ -575,7 +581,7 @@ DataObject *BootApplication(void)
 	dataobject_setEnum(w4, EMO_FIELD_X, dataobjectfield_string("126"));
 	dataobject_setEnum(w4, EMO_FIELD_Y, dataobjectfield_string("100"));
 	dataobject_setEnum(w4, EMO_FIELD_WIDTH, dataobjectfield_string("80"));
-	dataobject_setEnum(w4, EMO_FIELD_FONTCOLOR, dataobjectfield_string("#FFF"));
+	dataobject_setEnum(w4, EMO_FIELD_FONT_COLOR, dataobjectfield_string("#FFF"));
 	dataobject_setEnum(w4, EMO_FIELD_NAME, dataobjectfield_string("appTitle"));
 	dataobject_setEnum(w4, EMO_FIELD_MULTILINE, dataobjectfield_string("1"));
 	dataobject_setEnum(w4, EMO_FIELD_DATA, dataobjectfield_string("     <b>Text\nMessaging"));
@@ -591,7 +597,7 @@ DataObject *BootApplication(void)
 	dataobject_pack(w3, w4);
 	dataobject_setEnum(w4, EMO_FIELD_TYPE, dataobjectfield_string("image"));
 	dataobject_setEnum(w4, EMO_FIELD_ACCESSKEY, dataobjectfield_string("NEXT"));
-	dataobject_setEnum(w4, EMO_FIELD_ALPHA, dataobjectfield_string("225"));
+	dataobject_setEnum(w4, EMO_FIELD_ALPHA, dataobjectfield_string("222"));
 	dataobject_setEnum(w4, EMO_FIELD_NAME, dataobjectfield_string("app2"));
 	dataobject_setEnum(w4, EMO_FIELD_ONRETURN, dataobjectfield_string("focusNext()"));
 	dataobject_setEnum(w4, EMO_FIELD_REFERENCE, dataobjectfield_string("img2"));
@@ -601,7 +607,7 @@ DataObject *BootApplication(void)
 	dataobject_pack(w3, w4);
 	dataobject_setEnum(w4, EMO_FIELD_TYPE, dataobjectfield_string("image"));
 	dataobject_setEnum(w4, EMO_FIELD_ACCESSKEY, dataobjectfield_string("PREV"));
-	dataobject_setEnum(w4, EMO_FIELD_ALPHA, dataobjectfield_string("200"));
+	dataobject_setEnum(w4, EMO_FIELD_ALPHA, dataobjectfield_string("189"));
 	dataobject_setEnum(w4, EMO_FIELD_NAME, dataobjectfield_string("app3"));
 	dataobject_setEnum(w4, EMO_FIELD_ONRETURN, dataobjectfield_string("focusPrev()"));
 	dataobject_setEnum(w4, EMO_FIELD_REFERENCE, dataobjectfield_string("img3"));
@@ -610,7 +616,7 @@ DataObject *BootApplication(void)
 	w4 = dataobject_new();
 	dataobject_pack(w3, w4);
 	dataobject_setEnum(w4, EMO_FIELD_TYPE, dataobjectfield_string("image"));
-	dataobject_setEnum(w4, EMO_FIELD_ALPHA, dataobjectfield_string("175"));
+	dataobject_setEnum(w4, EMO_FIELD_ALPHA, dataobjectfield_string("156"));
 	dataobject_setEnum(w4, EMO_FIELD_NAME, dataobjectfield_string("app4"));
 	dataobject_setEnum(w4, EMO_FIELD_REFERENCE, dataobjectfield_string("img4"));
 	dataobject_setEnum(w4, EMO_FIELD_X, dataobjectfield_string("130"));
@@ -618,7 +624,7 @@ DataObject *BootApplication(void)
 	w4 = dataobject_new();
 	dataobject_pack(w3, w4);
 	dataobject_setEnum(w4, EMO_FIELD_TYPE, dataobjectfield_string("image"));
-	dataobject_setEnum(w4, EMO_FIELD_ALPHA, dataobjectfield_string("150"));
+	dataobject_setEnum(w4, EMO_FIELD_ALPHA, dataobjectfield_string("123"));
 	dataobject_setEnum(w4, EMO_FIELD_NAME, dataobjectfield_string("app5"));
 	dataobject_setEnum(w4, EMO_FIELD_REFERENCE, dataobjectfield_string("img5"));
 	dataobject_setEnum(w4, EMO_FIELD_X, dataobjectfield_string("58"));
@@ -626,7 +632,7 @@ DataObject *BootApplication(void)
 	w4 = dataobject_new();
 	dataobject_pack(w3, w4);
 	dataobject_setEnum(w4, EMO_FIELD_TYPE, dataobjectfield_string("image"));
-	dataobject_setEnum(w4, EMO_FIELD_ALPHA, dataobjectfield_string("125"));
+	dataobject_setEnum(w4, EMO_FIELD_ALPHA, dataobjectfield_string("90"));
 	dataobject_setEnum(w4, EMO_FIELD_NAME, dataobjectfield_string("app6"));
 	dataobject_setEnum(w4, EMO_FIELD_REFERENCE, dataobjectfield_string("img6"));
 	dataobject_setEnum(w4, EMO_FIELD_X, dataobjectfield_string("58"));

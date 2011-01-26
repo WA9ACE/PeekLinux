@@ -128,7 +128,7 @@ static void entry_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	ltype = widget_getID(w);*/
 
 	iwr = NULL;
-	style_getRenderer(s, w, EMO_FIELD_BOXRENDERER, &iwr);
+	style_getRenderer(s, w, EMO_FIELD_BOX_RENDERER, &iwr);
 	if (iwr != NULL)
 		iwr->render(wr, s, w, dobj);
 
@@ -142,7 +142,7 @@ static void entry_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 
 	f = (Font *)defaultFont;
 	c.value = 0;
-	style_getColor(s, w, EMO_FIELD_FONTCOLOR, &c.value);
+	style_getColor(s, w, EMO_FIELD_FONT_COLOR, &c.value);
 
 	cursor = dataobject_getEnumAsInt(w, EMO_FIELD_CURSOR);
 	if (cursor == NULL) {
@@ -173,7 +173,7 @@ static void entry_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 				percent*(box->height-1)/100, 4, 0xCC, 0xCC, 0xFF, 0xFF);
 	}
 
-	if (style_getColor(s, w, EMO_FIELD_CURSORCOLOR, &cursorColor.value) != NULL) {
+	if (style_getColor(s, w, EMO_FIELD_CURSOR_COLOR, &cursorColor.value) != NULL) {
 		lgui_hline(cursorBox.x, cursorBox.y, cursorBox.width, cursorBox.height,
 				cursorColor.rgba.red, cursorColor.rgba.green, cursorColor.rgba.blue,
 				cursorColor.rgba.alpha);
@@ -184,8 +184,8 @@ static void entry_measure(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj, IPoint *p)
 {
 	Font *f;
-	const char *dtype;
-	const char *ltype;
+	/*const char *dtype;
+	const char *ltype;*/
 	const char *str;
 	DataObjectField *field;
 
@@ -195,8 +195,8 @@ static void entry_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	EMO_ASSERT(dobj != NULL, "entry widget measure missing DataObject")
 	EMO_ASSERT(p != NULL, "entry widget measure missing the point")
 
-	dtype = (const char *)dataobject_getEnum(dobj, EMO_FIELD_TYPE)->field.string;
-	ltype = widget_getID(w);
+	/*dtype = (const char *)dataobject_getEnum(dobj, EMO_FIELD_TYPE)->field.string;
+	ltype = widget_getID(w);*/
 	f = (Font *)defaultFont;
 	field = dataobject_getEnum(dobj, EMO_FIELD_DATA);
 	if (field == NULL) {

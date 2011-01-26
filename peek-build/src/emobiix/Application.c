@@ -99,7 +99,7 @@ void application_setCurrentScreen(Application *app, DataObject *screen)
 			"Setting application current screen on NULL Application")
 
 	field = dataobject_getEnum(screen, EMO_FIELD_TYPE);
-	if (!dataobjectfield_isString(field, "view")) {
+	if (!EMO_DOF_IS_TYPE(field, EMO_TYPE_VIEW)) {
 		if (field != NULL && field->type == DOF_STRING)
 			fieldValue = field->field.string;
 		else

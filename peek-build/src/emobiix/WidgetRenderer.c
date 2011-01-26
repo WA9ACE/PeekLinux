@@ -84,14 +84,15 @@ static void box_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj) {
 	Rectangle *box, *margin;
 	Gradient *g, *freeg = NULL;
-	const char *id, *str;
+	const char /* *id,*/ *str;
 	int radius, isGradient;
 	Color outline, color;
-	DataObjectField *type, *radiusF, *fill, *rounded;
+	DataObjectField /* *type,*/ *radiusF, *fill, *rounded;
 	DataObjectField *border, *bordercorners;
-	const char *typestr = NULL;
+	/*const char *typestr = NULL;*/
 	unsigned int cornerFlags, borderFlags, cornerBorderFlags;
 	ListIterator iter;
+	/*static int notDone = 1;*/
 
 	EMO_ASSERT(wr != NULL, "box renderer missing widget renderer")
 	EMO_ASSERT(s != NULL, "box renderer missing style")
@@ -100,18 +101,18 @@ static void box_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
-	id = widget_getID(w);
+	/*id = widget_getID(w);
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	if (type != NULL && type->type == DOF_STRING)
-		typestr = type->field.string;
+		typestr = type->field.string;*/
 	fill = style_getProperty(s, w, EMO_FIELD_FILL);
 	isGradient = dataobjectfield_isString(fill, "gradient");
 	radiusF = style_getProperty(s, w, EMO_FIELD_RADIUS);
 	rounded = style_getProperty(s, w, EMO_FIELD_ROUNDED);
 	border = style_getProperty(s, w, EMO_FIELD_BORDER);
-	bordercorners = style_getProperty(s, w, EMO_FIELD_BORDERCORNERS);
+	bordercorners = style_getProperty(s, w, EMO_FIELD_BORDER_CORNERS);
 	outline.value = 0;
-	style_getColor(s, w, EMO_FIELD_BORDERCOLOR, &outline.value);
+	style_getColor(s, w, EMO_FIELD_BORDER_COLOR, &outline.value);
 
 	if (rounded == NULL || rounded->type != DOF_STRING) {
 		cornerFlags = 0;
@@ -162,7 +163,7 @@ static void box_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		if (radiusF->type == DOF_INT || radiusF->type == DOF_UINT)
 			radius = radiusF->field.integer;
 		else if (radiusF->type == DOF_STRING) {
-			sscanf(radiusF->field.string, "%d", &radius);
+			radius = atoi(radiusF->field.string);
 		}
 	}
 
@@ -184,7 +185,7 @@ static void box_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 		}
 	} else if (dataobjectfield_isString(fill, "solid")) {
 		color.value = 0;
-		style_getColor(s, w, EMO_FIELD_BACKGROUNDCOLOR, &color.value);
+		style_getColor(s, w, EMO_FIELD_BACKGROUND_COLOR, &color.value);
 
 		if (cornerFlags == 0 || radius == 0) {
 			lgui_hline(box->x+margin->x, box->y+margin->y, box->width, box->height,

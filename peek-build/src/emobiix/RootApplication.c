@@ -138,7 +138,7 @@ DataObject *RootApplication(void)
 	settd = widget_newTypeIdName("label", NULL, NULL, setw);
 	dataobject_setEnum(settd, EMO_FIELD_REFERENCE, dataobjectfield_string("system://local/time"));
 	dataobject_setEnum(settd, EMO_FIELD_WEIGHT, dataobjectfield_string("bold"));
-	dataobject_setEnum(settd, EMO_FIELD_FONTCOLOR, dataobjectfield_string("#FFFFFF00"));
+	dataobject_setEnum(settd, EMO_FIELD_FONT_COLOR, dataobjectfield_string("#FFFFFF00"));
 	dataobject_setEnum(settd, EMO_FIELD_ALIGNMENT, dataobjectfield_string("center"));
 	dataobject_setEnum(settd, EMO_FIELD_MARGINTOP, dataobjectfield_string("4"));
 

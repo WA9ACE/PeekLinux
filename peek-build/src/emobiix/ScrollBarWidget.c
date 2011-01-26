@@ -34,10 +34,10 @@ static void scrollbar_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	childBox = widget_getChildBox(dobj);
 
 	thumbColor.value = 0;
-	style_getColor(s, w, EMO_FIELD_THUMBCOLOR, &thumbColor.value);
+	style_getColor(s, w, EMO_FIELD_THUMB_COLOR, &thumbColor.value);
 
 	trackColor.value = 0;
-	style_getColor(s, w, EMO_FIELD_TRACKCOLOR, &trackColor.value);
+	style_getColor(s, w, EMO_FIELD_TRACK_COLOR, &trackColor.value);
 
 	orientationField = style_getProperty(s, w, EMO_FIELD_ORIENTATION);
 	if (dataobjectfield_isString(orientationField, "horizontal"))

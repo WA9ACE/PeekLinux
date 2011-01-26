@@ -124,13 +124,18 @@ void lgui_vertical_gradient(
 		buf = lgui_buffer + startx + ypos*LGUI_WIDTH;
 
 		buf += ccol;
-		for (i = ccol; i < cwidth; ++i) {
-			if (alpha < 255) {
+		if (alpha < 255) {
+			for (i = ccol; i < cwidth; ++i) {
 				srcpixel = *buf;
 				PIXEL_MODULATE_ALPHA(ipixel, srcpixel, alpha, pixel)
+				*buf = pixel;
+				++buf;
 			}
-			*buf = pixel;
-			++buf;
+		} else {
+			for (i = ccol; i < cwidth; ++i) {
+				*buf = pixel;
+				++buf;
+			}
 		}
 		++ypos;
 	}
@@ -211,13 +216,18 @@ void lgui_vline(int x, int y, int len, int width,
 		buf = lgui_buffer + x + ypos*LGUI_WIDTH;
 
 		buf += ccol;
-		for (i = ccol; i < cwidth; ++i) {
-			if (alpha < 255) {
+		if (alpha < 255) {
+			for (i = ccol; i < cwidth; ++i) {
 				srcpixel = *buf;
 				PIXEL_MODULATE_ALPHA(ipixel, srcpixel, alpha, pixel)
+				*buf = pixel;
+				++buf;
 			}
-			*buf = pixel;
-			++buf;
+		} else {
+			for (i = ccol; i < cwidth; ++i) {
+				*buf = pixel;
+				++buf;
+			}
 		}
 
 		++ypos;
@@ -399,23 +409,36 @@ void lgui_blitRGB565(int destx, int desty, int imgx, int imgy,
 
 		buf += ccol;
 		imgbuf += ccol << 1;
-        for (col = ccol; col < cwidth; ++col) {
-                pixel = *((unsigned short *)(imgbuf));
-				opixel = pixel;
-				if (alpha < 255) {
+		if (alpha < 255) {
+			for (col = ccol; col < cwidth; ++col) {
+					pixel = *((unsigned short *)(imgbuf));
+					opixel = pixel;
 					srcpixel = *buf;
 					imgpixel = pixel;
 					PIXEL_MODULATE_ALPHA(imgpixel, srcpixel, alpha, opixel)
-				}
-				if (isStencil) {
-					if (pixel > 0)
+					if (isStencil) {
+						if (pixel > 0)
+							*buf = opixel;
+					} else {
 						*buf = opixel;
-				} else {
-					*buf = opixel;
-				}
-            ++buf;
-            imgbuf +=2;
-        }
+					}
+				++buf;
+				imgbuf +=2;
+			}
+		} else {
+			for (col = ccol; col < cwidth; ++col) {
+					pixel = *((unsigned short *)(imgbuf));
+					opixel = pixel;
+					if (isStencil) {
+						if (pixel > 0)
+							*buf = opixel;
+					} else {
+						*buf = opixel;
+					}
+				++buf;
+				imgbuf +=2;
+			}
+		}
         ++ypos;
         ++imgypos;
     }
@@ -1253,6 +1276,9 @@ void lgui_clip_set(Rectangle *rect)
 {
 	EMO_ASSERT(rect != NULL, "lgui clip set missing rect")
 
+	if (rect->y < 0)
+		emo_printf("" NL);
+
 	CLIP.x = rect->x;
 	CLIP.y = rect->y;
 	CLIP.width = rect->width;
@@ -1264,6 +1290,9 @@ void lgui_clip_union(Rectangle *rect)
 	int yh, xh, nyh, nxh;
 
 	EMO_ASSERT(rect != NULL, "lgui clip union missing rect")
+
+	if (rect->y < 0)
+		emo_printf("" NL);
 
 	yh = CLIP.y + CLIP.height;
 	xh = CLIP.x + CLIP.width;
@@ -1288,6 +1317,9 @@ void lgui_clip_and(Rectangle *rect)
 	int yh, xh, nyh, nxh;
 
 	EMO_ASSERT(rect != NULL, "lgui clip add missing rect")
+
+	if (rect->y < 0)
+		emo_printf("" NL);
 
 	yh = CLIP.y + CLIP.height;
 	xh = CLIP.x + CLIP.width;

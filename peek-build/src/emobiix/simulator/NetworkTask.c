@@ -15,6 +15,8 @@
 
 ConnectionContext *connectionContext;
 
+//extern CRITICAL_SECTION emoCrit;
+
 void NetworkTask(void)
 {
 	Endpoint *ep;
@@ -72,7 +74,9 @@ void NetworkTask(void)
         hasPrinted = 0;
 	while (1) 
 	{
+		//EnterCriticalSection(&emoCrit);
 		connectionContext_loopIteration(ctx);
+		//LeaveCriticalSection(&emoCrit);
 		Sleep(100);
 /*                if (!hasPrinted && dataobject_getState(dobj) == DOS_OK) {
                         dataobject_debugPrint(dobj);

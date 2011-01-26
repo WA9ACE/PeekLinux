@@ -105,11 +105,11 @@ void renderman_flush(void)
 		for (i = 0; i < len; ++i) {
 			widget = *(DataObject **)array_item(renderman->queue, i);
 			widget_getClipRectangle(widget, &rect);
-			scrolled = widget_findStringFieldParent(widget, EMO_FIELD_TYPE, "scrolled");
+			scrolled = widget_findStringFieldParent(widget, EMO_FIELD_TYPE, EMO_TYPE_SCROLLED);
 			if (scrolled != NULL) {
 				ytrans = dataobject_getEnumAsInt(scrolled, EMO_FIELD_YOFFSET);
 				if (ytrans != NULL) {
-					emo_printf("YTrans %d -> %d" NL, rect.y, rect.y-ytrans->field.integer);
+					/*emo_printf("YTrans %d -> %d" NL, rect.y, rect.y-ytrans->field.integer);*/
 					rect.y -= ytrans->field.integer;
 				}
 			}
@@ -128,12 +128,14 @@ void renderman_flush(void)
 		widget_markDirty(widget);
 		lgui_clip_identity();
 		widget_getClipRectangle(widget, &rect);
-		scrolled = widget_findStringFieldParent(widget, EMO_FIELD_TYPE, "scrolled");
+		scrolled = widget_findStringFieldParent(widget, EMO_FIELD_TYPE, EMO_TYPE_SCROLLED);
 		if (scrolled != NULL) {
 			ytrans = dataobject_getEnumAsInt(scrolled, EMO_FIELD_YOFFSET);
 			if (ytrans != NULL) {
-				emo_printf("YTrans %d -> %d" NL, rect.y, rect.y-ytrans->field.integer);
+				/*emo_printf("YTrans %d -> %d" NL, rect.y, rect.y-ytrans->field.integer);*/
 				rect.y -= ytrans->field.integer;
+				if (rect.y < 0)
+					rect.y = 0;
 			}
 		}
 		if (needsLayout) {

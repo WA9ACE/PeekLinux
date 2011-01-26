@@ -1,4 +1,4 @@
-<application name="Calcumobiix" description="emobiix calculator demo application" startupview="calculator" style="calcstyle">
+<application name="Calcumobiix" description="emobiix calculator demo application" startupview="calculator" style="calcstyle" fullscreen="1">
 	<style name="calcstyle">
 		<calcbox background-color="#312331" renderer="box" fill="solid"/>
 		<label font-color="#dfa933" renderer="label"/>
@@ -83,7 +83,7 @@ end;
     	<label alignment="center" weight="bold">Calcumobiix</label>
 	<box width="300" id="cframe">
 		<box width="100%" id="calcbox" background-color="#d1ebb3" margin="4" packing="vertical">
-			<label alignment="right" name="output" font-color="#000F00">0</label>
+			<label alignment="right" name="output" font-color="#000F00" width="100%" font-alignment="right">0</label>
 		</box>
 	</box>
 		<box packing="horizontal">

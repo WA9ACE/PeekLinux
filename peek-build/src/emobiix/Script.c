@@ -558,7 +558,7 @@ lua_State *script_getContext(DataObject *dobj, int *isTemporary)
 				listIterator_next(&iter)) {
 			sobj = (DataObject *)listIterator_item(&iter);
 			script = dataobject_getEnum(sobj, EMO_FIELD_TYPE);
-			if (dataobjectfield_isString(script, "script"))
+			if (EMO_DOF_IS_TYPE(script, EMO_TYPE_SCRIPT))
 				break;
 			sobj = NULL;
 		}

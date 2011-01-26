@@ -377,7 +377,7 @@ int widget_focusFirst(Widget *w, List *l)
 		return 0;
 #endif
 
-	if (dataobjectfield_isString(type, "frame")) {
+	if (EMO_DOF_IS_TYPE(type, EMO_TYPE_FRAME)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			app = manager_applicationForDataObject(child);
@@ -390,14 +390,14 @@ int widget_focusFirst(Widget *w, List *l)
 				}
 			}
 		}
-	} else if (dataobjectfield_isString(type, "reference")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_REFERENCE)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			result = widget_focusFirst(child, l);
 			if (result)
 				return 1;
 		}
-	} else if (dataobjectfield_isString(type, "stack")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_STACK)) {
 		child = stackwidget_focusStackObject(w);
 		if (child == NULL)
 			goto normal_children;
@@ -443,7 +443,7 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 	if (!*alreadyUnset && widget_hasFocus(w)) {
 		/*printf("UnFocus(%d)\n", w);*/
 
-		if (dataobjectfield_isString(type, "scrolled")) {
+		if (EMO_DOF_IS_TYPE(type, EMO_TYPE_SCROLLED)) {
 			if (scrolled_focusNext(w) == 1) {
 				list_append(l, w);
 				*alreadyUnset = 1;
@@ -495,7 +495,7 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 	}
 #endif
 
-	if (dataobjectfield_isString(type, "frame")) {
+	if (EMO_DOF_IS_TYPE(type, EMO_TYPE_FRAME)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			app = manager_applicationForDataObject(child);
@@ -509,7 +509,7 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 				}
 			}
 		}
-	} else if (dataobjectfield_isString(type, "reference")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_REFERENCE)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			result = widget_focusNextR(child,
@@ -517,7 +517,7 @@ int widget_focusNextR(Widget *w, List *l, int parentRedraw, int *alreadyUnset, i
 			if (result == 2)
 				return 2;
 		}
-	} else if (dataobjectfield_isString(type, "stack")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_STACK)) {
 		child = stackwidget_focusStackObject(w);
 		if (child == NULL)
 			goto normal_focus;
@@ -622,7 +622,7 @@ Widget *widget_focusPrevD(Widget *w)
 
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	if (type != NULL /*&& !widget_typeNoChildRender(type)*/) {
-		if (dataobjectfield_isString(type, "frame")) {
+		if (EMO_DOF_IS_TYPE(type, EMO_TYPE_FRAME)) {
 			child = widget_getDataObject(w);
 			if (child != NULL && child != w) {
 				app = manager_applicationForDataObject(child);
@@ -633,14 +633,14 @@ Widget *widget_focusPrevD(Widget *w)
 						return iw;
 				}
 			}
-		} else if (dataobjectfield_isString(type, "reference")) {
+		} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_REFERENCE)) {
 			child = widget_getDataObject(w);
 			if (child != NULL && child != w) {
 				iw = widget_focusPrevD(child);
 				if (iw != NULL)
 					return iw;
 			}
-		} else if (dataobjectfield_isString(type, "stack")) {
+		} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_STACK)) {
 			child = stackwidget_focusStackObject(w);
 			if (child == NULL)
 				goto normal_focus;
@@ -736,7 +736,7 @@ static Widget *widget_focusLast(Widget *w)
 		
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	/*if (!widget_typeNoChildRender(type)) {*/
-		if (dataobjectfield_isString(type, "frame")) {
+		if (EMO_DOF_IS_TYPE(type, EMO_TYPE_FRAME)) {
 			child = widget_getDataObject(w);
 			if (child != NULL && child != w) {
 				app = manager_applicationForDataObject(child);
@@ -747,14 +747,14 @@ static Widget *widget_focusLast(Widget *w)
 						return child;
 				}
 			}
-		} else if (dataobjectfield_isString(type, "reference")) {
+		} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_REFERENCE)) {
 			child = widget_getDataObject(w);
 			if (child != NULL && child != w) {
 				child = widget_focusLast(child);
 				if (child != NULL)
 					return child;
 			}
-		} else if (dataobjectfield_isString(type, "stack")) {
+		} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_STACK)) {
 			child = stackwidget_focusStackObject(w);
 			if (child == NULL)
 				goto normal_focus;
@@ -780,14 +780,6 @@ normal_focus:
 		return w;
 	}
 
-#if 0
-	if (dataobjectfield_isString(type, "array")) {
-		one = 1;
-		arraywidget_focusNext(w, &one, &two);
-		return w;
-	}
-#endif
-
 	return NULL;
 }
 
@@ -807,7 +799,7 @@ void widget_focusPrev(Widget *tree, Style *s)
 	}
 
 	type = dataobject_getEnum(oldW, EMO_FIELD_TYPE);
-	if (dataobjectfield_isString(type, "scrolled")) {
+	if (EMO_DOF_IS_TYPE(type, EMO_TYPE_SCROLLED)) {
 		if (scrolled_focusPrev(oldW) == 1) {
 			/* focus WhichOne unsets focus so reset it */
 			widget_setFocus(oldW, 1);
@@ -815,26 +807,6 @@ void widget_focusPrev(Widget *tree, Style *s)
 			return;
 		}
 	}
-
-#if 0
-	type = dataobject_getValue(oldW, "type");
-	if (dataobjectfield_isString(type, "array")) {
-		result = arraywidget_focusPrev(oldW);
-		if (result) {
-#if 0
-			widget_markDirty(oldW);
-			lgui_clip_identity();
-			widget_getClipRectangle(oldW, &rect);
-			lgui_clip_set(&rect);
-
-			lgui_push_region();
-			style_renderWidgetTree(s, tree);
-#endif
-			dataobject_setIsModified(oldW, 1);
-			return;
-		}
-	}
-#endif
 
 	widget_setFocus(oldW, 0);
 
@@ -847,28 +819,10 @@ focus_last:
 
 	if (oldW != NULL) {
 		dataobject_setIsModified(oldW, 1);
-#if 0
-		widget_markDirty(oldW);
-		lgui_clip_identity();
-		widget_getClipRectangle(oldW, &rect);
-		lgui_clip_set(&rect);
-
-		lgui_push_region();
-		style_renderWidgetTree(s, tree);
-#endif
 	}
 
 	if (newW != NULL) {
 		dataobject_setIsModified(newW, 1);
-#if 0
-		widget_markDirty(newW);
-		lgui_clip_identity();
-		widget_getClipRectangle(newW, &rect);
-		lgui_clip_set(&rect);
-	
-		lgui_push_region();
-		style_renderWidgetTree(s, tree);
-#endif
 	}
 }
 
@@ -888,7 +842,7 @@ Widget *widget_focusNoneR(Widget *w)
 	}
 
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
-	if (dataobjectfield_isString(type, "frame")) {
+	if (EMO_DOF_IS_TYPE(type, EMO_TYPE_FRAME)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			app = manager_applicationForDataObject(child);
@@ -901,14 +855,14 @@ Widget *widget_focusNoneR(Widget *w)
 				}
 			}
 		}
-	} else if (dataobjectfield_isString(type, "reference")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_REFERENCE)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			result = widget_focusNoneR(child);
 			if (result)
 				return result;
 		}
-	} else if (dataobjectfield_isString(type, "stack")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_STACK)) {
 		child = stackwidget_focusStackObject(w);
 		if (child == NULL)
 			goto normal_focus;
@@ -970,7 +924,7 @@ Widget *widget_focusWhichOneNF(Widget *w)
 	}
 
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
-	if (dataobjectfield_isString(type, "frame")) {
+	if (EMO_DOF_IS_TYPE(type, EMO_TYPE_FRAME)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			app = manager_applicationForDataObject(child);
@@ -983,14 +937,14 @@ Widget *widget_focusWhichOneNF(Widget *w)
 				}
 			}
 		}
-	} else if (dataobjectfield_isString(type, "reference")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_REFERENCE)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			result = widget_focusWhichOneNF(child);
 			if (result)
 				return result;
 		}
-	} else if (dataobjectfield_isString(type, "stack")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_STACK)) {
 		child = stackwidget_focusStackObject(w);
 		if (child == NULL)
 			goto normal_focus;
@@ -1031,7 +985,7 @@ Widget *widget_focusWhichOne(Widget *w)
 	}
 
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
-	if (dataobjectfield_isString(type, "frame")) {
+	if (EMO_DOF_IS_TYPE(type, EMO_TYPE_FRAME)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			app = manager_applicationForDataObject(child);
@@ -1044,14 +998,14 @@ Widget *widget_focusWhichOne(Widget *w)
 				}
 			}
 		}
-	} else if (dataobjectfield_isString(type, "reference")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_REFERENCE)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			result = widget_focusWhichOne(child);
 			if (result)
 				return result;
 		}
-	} else if (dataobjectfield_isString(type, "stack")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_STACK)) {
 		child = stackwidget_focusStackObject(w);
 		if (child == NULL)
 			goto normal_focus;
@@ -1086,7 +1040,7 @@ static void widget_markDirtyChild(Widget *w)
 	dataobject_setDirty(w);
 
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
-	if (dataobjectfield_isString(type, "frame")) {
+	if (EMO_DOF_IS_TYPE(type, EMO_TYPE_FRAME)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			app = manager_applicationForDataObject(child);
@@ -1097,7 +1051,7 @@ static void widget_markDirtyChild(Widget *w)
 				}
 			}
 		}
-	} else if (dataobjectfield_isString(type, "reference")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_REFERENCE)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w)
 			widget_markDirtyChild(child);
@@ -1122,10 +1076,6 @@ void widget_markDirty(Widget *w)
 
 	parent = w;
 	while (parent->parent != NULL) {
-		/*field = dataobject_getValue(parent, "type");
-		if (dataobjectfield_isString(field, "set") ||
-				dataobjectfield_isString(field, "stack"))
-			widget_markDirtyChild(parent);*/
 		parent = parent->parent;
 		dataobject_setDirty(parent);
 	}
@@ -1147,7 +1097,7 @@ Widget *widget_findStringField(Widget *w, EmoField key, const char *value)
 		return w;
 
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
-	if (dataobjectfield_isString(type, "frame")) {
+	if (EMO_DOF_IS_TYPE(type, EMO_TYPE_FRAME)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			app = manager_applicationForDataObject(child);
@@ -1157,7 +1107,7 @@ Widget *widget_findStringField(Widget *w, EmoField key, const char *value)
 					return widget_findStringField(child, key, value);
 			}
 		}
-	} else if (dataobjectfield_isString(type, "reference")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_REFERENCE)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w)
 				return widget_findStringField(child, key, value);
@@ -1180,18 +1130,26 @@ Widget *widget_findStringField(Widget *w, EmoField key, const char *value)
 Widget *widget_findStringFieldParent(Widget *w, EmoField key, const char *value)
 {
 	DataObjectField *field;
+	int isBuiltin;
 
 	EMO_ASSERT_NULL(w != NULL, "widget find string field missing widget")
 	EMO_ASSERT_NULL(value != NULL, "widget find string field missing value")
 
-	field = dataobject_getEnum(w, key);
-	if (dataobjectfield_isString(field, value))
-		return w;
+	isBuiltin = ((key == EMO_FIELD_TYPE) && EMO_TYPE_IS_BUILTIN(value));
+	do {
+		field = dataobject_getEnum(w, key);
+		if (isBuiltin) {
+			if (EMO_DOF_IS_TYPE(field, value))
+				return w;
+		} else {
+			if (dataobjectfield_isString(field, value))
+				return w;
+		}
 
-	if (w->parent == NULL)
-		return NULL;
+		w = w->parent;
+	} while (w != NULL);
 
-	return widget_findStringFieldParent(w->parent, key, value);
+	return NULL;
 }
 
 static void widget_layoutMeasureFinal(Widget *w, Style *s)
@@ -1233,7 +1191,7 @@ static void widget_layoutMeasureFinal(Widget *w, Style *s)
 		dataobject_setLayoutClean(w, LAYOUT_DIRTY_HEIGHT);
 	}
 
-	if (dataobjectfield_isString(type, "frame")) {
+	if (EMO_DOF_IS_TYPE(type, EMO_TYPE_FRAME)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			app = manager_applicationForDataObject(child);
@@ -1246,7 +1204,7 @@ static void widget_layoutMeasureFinal(Widget *w, Style *s)
 					widget_layoutMeasureFinal(child, style);
 			}
 		}
-	} else if (dataobjectfield_isString(type, "reference")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_REFERENCE)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w)
 			widget_layoutMeasureFinal(child, style);
@@ -1289,7 +1247,7 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 
 	wr = NULL;
 	style_getRenderer(style, w, EMO_FIELD_RENDERER, &wr);
-	if (wr != NULL && wr->measure != NULL && !dataobjectfield_isString(type, "text")) {
+	if (wr != NULL && wr->measure != NULL && !EMO_DOF_IS_TYPE(type, EMO_TYPE_TEXT)) {
 		wr->measure(wr, s, w, dobj, &p);
 		w->box.width = p.x;
 		w->box.height = p.y;
@@ -1306,7 +1264,7 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 			dataobject_setLayoutClean(w, _y); \
 		} else { \
 			slen = strlen(sField->field.string); \
-			sscanf(sField->field.string, "%d", &tmpint); \
+			tmpint = atoi(sField->field.string); \
 			if (sField->field.string[slen-1] == '%') { \
 				/* do nothing - this is a relative measure */ \
 			} else if (slen > 0) { \
@@ -1334,7 +1292,7 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 	}
 #endif
 
-	if (dataobjectfield_isString(type, "frame")) {
+	if (EMO_DOF_IS_TYPE(type, EMO_TYPE_FRAME)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			app = manager_applicationForDataObject(child);
@@ -1347,7 +1305,7 @@ static void widget_layoutMeasureAbsolute(Widget *w, Style *s)
 					widget_layoutMeasureAbsolute(child, style);
 			}
 		}
-	} else if (dataobjectfield_isString(type, "reference")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_REFERENCE)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w)
 			widget_layoutMeasureAbsolute(child, style);
@@ -1370,7 +1328,7 @@ void widget_layoutForceResolveParent(Widget *w, unsigned int flag)
 		return;
 
 	field = dataobject_getEnum(w, EMO_FIELD_TYPE);
-	if (dataobjectfield_isString(field, "view"))
+	if (EMO_DOF_IS_TYPE(field, EMO_TYPE_VIEW))
 		return;
 
 	if (dataobject_isLayoutDirty(w->parent, flag))
@@ -1406,7 +1364,7 @@ void widget_resolveMeasureRelative(Widget *w)
 	if (sField != NULL) { \
 		if (sField->type == DOF_STRING) { \
 			slen = strlen(sField->field.string); \
-			sscanf(sField->field.string, "%d", &tmpint); \
+			tmpint = atoi(sField->field.string); \
 			if (sField->field.string[slen-1] == '%') { \
 				if (dataobject_isLayoutDirty(w->parent, _y)) \
 					widget_layoutForceResolveParent(w->parent, _y); \
@@ -1433,7 +1391,7 @@ void widget_resolveMeasureRelative(Widget *w)
 	sField = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	/*if (!widget_typeNoChildRender(sField)) {*/
 		pack = widget_getPacking(w);
-		if (dataobjectfield_isString(sField, "frame")) {
+		if (EMO_DOF_IS_TYPE(sField, EMO_TYPE_FRAME)) {
 			child = widget_getDataObject(w);
 			if (child != NULL && child != w) {
 				app = manager_applicationForDataObject(child);
@@ -1445,7 +1403,7 @@ void widget_resolveMeasureRelative(Widget *w)
 					}
 				}
 			}
-		} else if (dataobjectfield_isString(sField, "reference")) {
+		} else if (EMO_DOF_IS_TYPE(sField, EMO_TYPE_REFERENCE)) {
 			child = widget_getDataObject(w);
 			if (child != NULL && child != w) {
 				isset = 1;
@@ -1454,7 +1412,7 @@ void widget_resolveMeasureRelative(Widget *w)
 		}
 		dataobject_childIterator(w, &iter);
 		while (!listIterator_finished(&iter)) {
-			if (dataobjectfield_isString(sField, "set")) {
+			if (EMO_DOF_IS_TYPE(sField, EMO_TYPE_SET)) {
 				child = setwidget_activeItem(w);
 				isset = 1;
 				if (child == NULL)
@@ -1530,7 +1488,7 @@ start_child:
 	}
 	if (!heightStillDirty && dataobject_isLayoutDirty(w, LAYOUT_DIRTY_HEIGHT)) {
 		sField = dataobject_getEnum(w, EMO_FIELD_TYPE);
-		if (!dataobjectfield_isString(sField, "text")) {
+		if (!EMO_DOF_IS_TYPE(sField, EMO_TYPE_TEXT)) {
 			w->box.height = sumHeight;
 			dataobject_setLayoutClean(w, LAYOUT_DIRTY_HEIGHT);
 		}
@@ -1558,20 +1516,7 @@ void widget_resolveMargin(Widget *w, Style *s)
 	dobj = widget_getDataObject(w);
 	className = widget_getClass(w);
 	id = widget_getID(w);
-	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
-
-#if 0
-	/* for debugging css on buttons */
-	if (dataobjectfield_isString(type, "label")) {
-		parent = dataobject_parent(dobj);
-		if (parent != NULL) {
-			output = dataobject_getValue(parent, "type");
-			if (dataobjectfield_isString(output, "button")) {
-				emo_printf("button->label" NL);
-			}
-		}
-	}
-#endif	
+	type = dataobject_getEnum(w, EMO_FIELD_TYPE);	
 
 	style = style_getID(s, type == NULL ? NULL : type->field.string, id,
 			widget_hasFocus(w), &wentUp);
@@ -1614,7 +1559,7 @@ void widget_resolveMargin(Widget *w, Style *s)
 		return;
 #endif
 
-	if (dataobjectfield_isString(type, "frame")) {
+	if (EMO_DOF_IS_TYPE(type, EMO_TYPE_FRAME)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			app = manager_applicationForDataObject(child);
@@ -1627,7 +1572,7 @@ void widget_resolveMargin(Widget *w, Style *s)
 					widget_resolveMargin(child, style);
 			}
 		}
-	} else if (dataobjectfield_isString(type, "reference")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_REFERENCE)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w)
 			widget_resolveMargin(child, style);
@@ -1683,17 +1628,17 @@ void widget_resolvePosition(Widget *w)
 		return;
 #endif
 
-	if (dataobjectfield_isString(field, "stack"))
+	if (EMO_DOF_IS_TYPE(field, EMO_TYPE_STACK))
 		positionStatic = 1;
 
-	if (dataobjectfield_isString(field, "set")) {
+	if (EMO_DOF_IS_TYPE(field, EMO_TYPE_SET)) {
 		/*singleChild = setwidget_activeItem(w);
 		if (singleChild == NULL)
 			return;*/
 		positionStatic = 1;
 	}
 
-	if (dataobjectfield_isString(field, "frame")) {
+	if (EMO_DOF_IS_TYPE(field, EMO_TYPE_FRAME)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			app = manager_applicationForDataObject(child);
@@ -1706,7 +1651,7 @@ void widget_resolvePosition(Widget *w)
 				}
 			}
 		}
-	} else if (dataobjectfield_isString(field, "reference")) {
+	} else if (EMO_DOF_IS_TYPE(field, EMO_TYPE_REFERENCE)) {
 		child = widget_getDataObject(w);
 		if (child != NULL && child != w) {
 			singleChild = child;
@@ -1812,7 +1757,7 @@ start_child:
 		listIterator_next(&iter);
 	}
 
-	if (dataobjectfield_isString(field, "scrolled"))
+	if (EMO_DOF_IS_TYPE(field, EMO_TYPE_SCROLLED))
 		scrolled_autoscroll(w);
 
 	/*listIterator_delete(iter);*/

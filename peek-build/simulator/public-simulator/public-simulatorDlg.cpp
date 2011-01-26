@@ -18,6 +18,7 @@
 #include "KeyMappings.h"
 #include "Cache.h"
 #include "Font.h"
+#include "EmobiixField.h"
 
 #include "p_malloc.h"
 
@@ -633,6 +634,7 @@ DataObject *LoadObject(DOMNode *node)
 
 	xstr = node->getNodeName();
 	astr = XMLString::transcode(xstr);
+	//emo_printf("Setting EMO_FIELD_TYPE to %s\n", astr);
 	dataobject_setEnum(output, EMO_FIELD_TYPE, dataobjectfield_string(astr));
 	XMLString::release(&astr);
 
@@ -676,8 +678,22 @@ DataObject *LoadObject(DOMNode *node)
 			dataobject_setEnum(output, EMO_FIELD_DATA,
 					dataobjectfield_data(data, filesize));
 		}
+#if 0
 		dataobject_setValue(output, attrName.c_str(),
 				dataobjectfield_string(attrValue.c_str()));
+#else
+		int enumInt;
+		enumInt = emo_field_to_int(attrName.c_str());
+		if (enumInt == EMO_FIELD_UNKNOWN_FIELD) {
+			//emo_printf("Setting value %s to %s\n", attrName.c_str(), attrValue.c_str());
+			dataobject_setValue(output, attrName.c_str(),
+				dataobjectfield_string(attrValue.c_str()));
+		} else {
+			//emo_printf("Setting ENUM %s to %s\n", attrName.c_str(), attrValue.c_str());
+			dataobject_setEnum(output, (EmoField)enumInt,
+					dataobjectfield_string(attrValue.c_str()));
+		}
+#endif
 	}
 
 	DOMNode *childNode;
@@ -813,7 +829,7 @@ void CpublicsimulatorDlg::OnFileLoadapplication()
 		mime_loadAll(dobj);
 		dataobject_exportGlobal(dobj, url, 0);
 		type = dataobject_getEnum(dobj, EMO_FIELD_TYPE);
-		if (dataobjectfield_isString(type, "application")) {
+		if (EMO_DOF_IS_TYPE(type, EMO_TYPE_APPLICATION)) {
 			manager_loadApplication(dobj, xmlLoadFilename.empty(),
 					url);
 			/*app = application_load(dobj);

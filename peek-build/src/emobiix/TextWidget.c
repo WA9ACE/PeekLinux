@@ -34,7 +34,7 @@ static void text_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	margin = widget_getMargin(w);
 	f = (Font *)defaultFont;/*style_getProperty(s, NULL, ltype, dtype, "font");*/
 	c.value = 0;
-	style_getColor(s, w, EMO_FIELD_FONTCOLOR, &c.value);
+	style_getColor(s, w, EMO_FIELD_FONT_COLOR, &c.value);
 	text = widget_getDataObject(w);
 	sourceField = dataobject_getEnum(w, EMO_FIELD_DATAFIELD);
 	if (sourceField != NULL && sourceField->type == DOF_STRING)

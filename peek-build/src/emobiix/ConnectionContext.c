@@ -312,7 +312,7 @@ int connectionContext_syncRequestForce(ConnectionContext *ctx, URL *url,
 			mime_loadAll(cobj);
 
 			field = dataobject_getEnum(cobj, EMO_FIELD_TYPE);
-			if (dataobjectfield_isString(field, "application"))
+			if (EMO_DOF_IS_TYPE(field, EMO_TYPE_APPLICATION))
 				manager_loadApplication(cobj, 1, url);
 			return 1;
 		}
@@ -547,7 +547,7 @@ static void connectionContext_processPacket(ConnectionContext *ctx,
 				if (field != NULL && field->type == DOF_STRING)
 					emo_printf("*** Finished Type: %s" NL, field->field.string);
 				if (field != NULL && field->type == DOF_STRING &&
-						strcmp(field->field.string, "application") == 0) {
+						EMO_DOF_IS_TYPE(field, EMO_TYPE_APPLICATION) == 0) {
 					if (sreq->newObject)
 						manager_loadApplication(sreq->dobj, 1, sreq->url);
 					/*app = application_load(sreq->dobj);

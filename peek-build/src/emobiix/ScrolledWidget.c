@@ -107,7 +107,7 @@ void scrolled_forceVisible(Widget *w)
 
 	EMO_ASSERT(w != NULL, "scrolled forceVisible on NULL")
 
-	scrolled = widget_findStringFieldParent(w, EMO_FIELD_TYPE, "scrolled");
+	scrolled = widget_findStringFieldParent(w, EMO_FIELD_TYPE, EMO_TYPE_SCROLLED);
 	if (scrolled == NULL)
 		return;
 

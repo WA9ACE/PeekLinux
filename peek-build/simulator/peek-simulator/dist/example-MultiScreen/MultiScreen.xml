@@ -7,7 +7,7 @@
 		<box alignment="center" renderer="box" width="60" height="30" margin="5" rounded="13" background-color="#FF0" border="1234" border-corners="13" border-color="#000"/>
 		<label name="test" testf="1234">Hello</label>
 		<button alignment="center" canfocus="1" onreturn="
-			lbl = DataObject.locate(&quot;system://local/battery&quot;)
+			lbl = DataObject.find(&quot;test&quot;)
 			print(lbl:getValue(&quot;level&quot;))
 			dobj = DataObject.find(&quot;view2&quot;)
 			dobj:toScreen()

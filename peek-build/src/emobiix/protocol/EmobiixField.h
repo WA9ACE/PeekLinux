@@ -108,23 +108,12 @@ extern "C" {
 #define EMO_FIELD_URL_STR "url"
 #define EMO_FIELD_INDEX_STR "index"
 #define EMO_FIELD_MIMETYPE_STR "mime-type"
-#define EMO_FIELD_FONTCOLOR_STR "font-color"
-#define EMO_FIELD_BACKGROUNDCOLOR_STR "background-color"
 #define EMO_FIELD_DESCRIPTION_STR "description"
 #define EMO_FIELD_ONLOAD_STR "onload"
 #define EMO_FIELD_ACCESSKEY_STR "accesskey"
 #define EMO_FIELD_ONRETURN_STR "onreturn"
-#define EMO_FIELD_TITLE_STR "title"
-#define EMO_FIELD_BOXRENDERER_STR "box-renderer"
-#define EMO_FIELD_BORDERCORNERS_STR "border-corners"
-#define EMO_FIELD_BORDERCOLOR_STR "border-colors"
-#define EMO_FIELD_CURSORCOLOR_STR "cursor-color"
-#define EMO_FIELD_CHECKCOLOR_STR "check-color"
-#define EMO_FIELD_THUMBCOLOR_STR "thumb-color"
-#define EMO_FIELD_TRACKCOLOR_STR "track-color"
 #define EMO_FIELD_ICON_STR "icon"
 #define EMO_FIELD_SETITEM_STR "setitem"
-#define EMO_FIELD_FONTALIGNMENT_STR "font-alignment"
 #define EMO_FIELD_ONSYNCFINISHED_STR "onsyncfinished"
 
 typedef enum EmoField_t
@@ -233,23 +222,12 @@ typedef enum EmoField_t
 	EMO_FIELD_URL,
 	EMO_FIELD_INDEX,
 	EMO_FIELD_MIMETYPE,
-	EMO_FIELD_FONTCOLOR,
-	EMO_FIELD_BACKGROUNDCOLOR,
 	EMO_FIELD_DESCRIPTION,
 	EMO_FIELD_ONLOAD,
 	EMO_FIELD_ACCESSKEY,
 	EMO_FIELD_ONRETURN,
-	EMO_FIELD_TITLE,
-	EMO_FIELD_BOXRENDERER,
-	EMO_FIELD_BORDERCORNERS,
-	EMO_FIELD_BORDERCOLOR,
-	EMO_FIELD_CURSORCOLOR,
-	EMO_FIELD_CHECKCOLOR,
-	EMO_FIELD_THUMBCOLOR,
-	EMO_FIELD_TRACKCOLOR,
 	EMO_FIELD_ICON,
 	EMO_FIELD_SETITEM,
-	EMO_FIELD_FONTALIGNMENT,
 	EMO_FIELD_ONSYNCFINISHED,
 
 	EMO_FIELD_UNKNOWN_FIELD
@@ -257,6 +235,37 @@ typedef enum EmoField_t
 
 extern const char *emo_field_to_string(int fieldId);
 extern int emo_field_to_int(const char *fieldName);
+
+/* type names pointer comparison helpers */
+extern const char *EMO_TYPE_NAMES;
+
+extern const char *EMO_TYPE_VIEW;
+extern const char *EMO_TYPE_ENTRY;
+extern const char *EMO_TYPE_CHECKBOX;
+extern const char *EMO_TYPE_BOX;
+extern const char *EMO_TYPE_APPLICATION;
+extern const char *EMO_TYPE_SCRIPT;
+extern const char *EMO_TYPE_STYLE;
+extern const char *EMO_TYPE_IMAGE;
+extern const char *EMO_TYPE_LABEL;
+extern const char *EMO_TYPE_STACK;
+extern const char *EMO_TYPE_SET;
+extern const char *EMO_TYPE_SETITEM;
+extern const char *EMO_TYPE_TEXT;
+extern const char *EMO_TYPE_ARRAY;
+extern const char *EMO_TYPE_FRAME;
+extern const char *EMO_TYPE_REFERENCE;
+extern const char *EMO_TYPE_SCROLLED;
+extern const char *EMO_TYPE_GRADIENT;
+extern const char *EMO_TYPE_DATA;
+
+extern const char *EMO_TYPE_NAMES_END;
+
+#define EMO_TYPE_IS_BUILTIN(__x) (((__x) >= EMO_TYPE_NAMES) && ((__x) <= EMO_TYPE_NAMES_END))
+#define EMO_DOF_IS_TYPE(__dof, __bi_type) ((__dof)->field.string == (__bi_type))
+const char *emo_builtin_type(const char *typeName);
+
+void emo_builtin_type_init(void);
 
 #ifdef __cplusplus
 }

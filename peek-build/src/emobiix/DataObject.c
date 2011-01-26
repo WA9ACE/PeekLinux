@@ -25,8 +25,10 @@ void dataobjectfield_free(DataObjectField *f)
 
 	switch (f->type) {
 		case DOF_STRING:
-			if (f->field.string != NULL)
-			p_free(f->field.string);
+			if (f->field.string != NULL) {
+				if (!EMO_TYPE_IS_BUILTIN(f->field.string))
+					p_free(f->field.string);
+			}
 			break;
 		case DOF_DATA:
 			if (f->field.data.bytes != NULL)
@@ -182,6 +184,7 @@ void dataobject_delete(DataObject *dobj)
 void dataobject_setEnum(DataObject *dobj, EmoField enu, DataObjectField *v)
 {
 	DataObjectField *old;
+	const char *builtinType;
 
 	EMO_ASSERT(dobj != NULL, "setEnum on NULL DataObject")
 	EMO_ASSERT(enu != -1, "setEnum missing key")
@@ -194,6 +197,15 @@ void dataobject_setEnum(DataObject *dobj, EmoField enu, DataObjectField *v)
 		map_remove(dobj->enumData, (const void *)enu);
 		dataobjectfield_free(old);
 	}
+
+	if (enu == EMO_FIELD_TYPE && !EMO_TYPE_IS_BUILTIN(v->field.string)) {
+		builtinType = emo_builtin_type(v->field.string);
+		if (builtinType != NULL) {
+			p_free(v->field.string);
+			v->field.string = (char *)builtinType;
+		}
+	}
+
 	map_append(dobj->enumData, (const void *)enu, v);
 }
 
@@ -356,9 +368,15 @@ DataObjectField *dataobject_getValueReal(DataObject *dobj, const char *key)
 {
 	DataObjectField *output;
 	DataObject *child;
+	int enumInt;
 
 	EMO_ASSERT_NULL(dobj != NULL, "getValue on NULL DataObject")
 	EMO_ASSERT_NULL(key != NULL, "getValue missing key")
+
+	/* fixme - expensive */
+	enumInt = emo_field_to_int(key);
+	if (enumInt != EMO_FIELD_UNKNOWN_FIELD)
+		return dataobject_getEnum(dobj, enumInt);
 
 	output = (DataObjectField *)map_find(dobj->data, key);
 	if (output != NULL && output->type == DOF_STRING) {
@@ -515,7 +533,7 @@ void dataobject_childIterator(DataObject *dobj, ListIterator *iter)
 		item = (DataObject *)listIterator_item(iter);
 		/*if (list_size(item->arrayChildren) > 0) {*/
 		type = dataobject_getEnum(item, EMO_FIELD_TYPE);
-		if (dataobjectfield_isString(type, "array")) {
+		if (EMO_DOF_IS_TYPE(type, EMO_TYPE_ARRAY)) {
 			list_begin(item->arrayChildren, iter);
 			return;
 		}
@@ -766,7 +784,7 @@ DataObject *dataobject_findByName(DataObject *dobj, const char *name)
 	}
 
 	dtype = dataobject_getEnum(dobj, EMO_FIELD_TYPE);
-	if (dataobjectfield_isString_inline(dtype, "frame")) {
+	if (EMO_DOF_IS_TYPE(dtype, EMO_TYPE_FRAME)) {
 		child = widget_getDataObject(dobj);
 		if (child != NULL) {
 			app = manager_applicationForDataObject(child);
@@ -780,7 +798,7 @@ DataObject *dataobject_findByName(DataObject *dobj, const char *name)
 				}
 			}
 		}
-	} else if (dataobjectfield_isString_inline(dtype, "reference")) {
+	} else if (EMO_DOF_IS_TYPE(dtype, EMO_TYPE_REFERENCE)) {
 		child = widget_getDataObject(dobj);
 		if (child != NULL && child != dobj) {
 			child = dataobject_findByName(child, name);
@@ -855,7 +873,7 @@ void dataobject_setLayoutDirtyAll(DataObject *dobj)
 	dobj->flags1 |= DO_FLAG_LAYOUT_DIRTY_HEIGHT;
 
 	type = dataobject_getEnum(dobj, EMO_FIELD_TYPE);
-	if (dataobjectfield_isString(type, "frame")) {
+	if (EMO_DOF_IS_TYPE(type, EMO_TYPE_FRAME)) {
 		child = widget_getDataObject(dobj);
 		if (child != NULL && child != dobj) {
 			app = manager_applicationForDataObject(child);
@@ -865,7 +883,7 @@ void dataobject_setLayoutDirtyAll(DataObject *dobj)
 					dataobject_setLayoutDirtyAll(child);
 			}
 		}
-	} else if (dataobjectfield_isString(type, "reference")) {
+	} else if (EMO_DOF_IS_TYPE(type, EMO_TYPE_REFERENCE)) {
 		child = widget_getDataObject(dobj);
 		if (child != NULL && child != dobj)
 			dataobject_setLayoutDirtyAll(child);
@@ -939,10 +957,32 @@ static void dataobject_debugPrintR(DataObject *dobj, int level)
 		mapIterator_next(&iter);
 		++i;
 	}
+	map_begin(dobj->enumData, &iter);
+	while (!mapIterator_finished(&iter)) {
+		if (i != 0)
+			emo_printf(", ");
+		dof = (DataObjectField *)mapIterator_item(&iter, (void **)&key);
+		switch (dof->type) {
+			case DOF_STRING:
+				emo_printf("E(%s)=\"%s\"", emo_field_to_string((int)key), dof->field.string);
+				break;
+			case DOF_INT:
+				emo_printf("E(%s)=\"%d\"", emo_field_to_string((int)key), dof->field.integer);
+				break;
+			case DOF_UINT:
+				emo_printf("E(%s)=\"%d\"", emo_field_to_string((int)key), dof->field.uinteger);
+				break;
+			case DOF_DATA:
+				emo_printf("E(%s)=\"DATA-%d bytes\"", emo_field_to_string((int)key), dof->field.data.size);
+				break;
+		}
+		mapIterator_next(&iter);
+		++i;
+	}
 	emo_printf(">" NL);
 
 	dof = dataobject_getEnum(dobj, EMO_FIELD_TYPE);
-	if (dataobjectfield_isString(dof, "frame")) {
+	if (EMO_DOF_IS_TYPE(dof, EMO_TYPE_FRAME)) {
 		child = widget_getDataObject(dobj);
 		if (child != NULL) {
 			app = manager_applicationForDataObject(child);
@@ -1065,6 +1105,7 @@ void dataobject_platformInit(void)
 	if (globalDObjs != NULL)
 		return;
 
+	emo_builtin_type_init();
 	globalDObjs = hashtable_string();
 }
 
@@ -1194,6 +1235,10 @@ void dataobjectfield_setBoolean(DataObjectField *field, int bval)
 
     if (field != NULL) {
 		if (field->type == DOF_STRING) {
+			
+			EMO_ASSERT(!EMO_TYPE_IS_BUILTIN(field->field.string),
+				"Attempting to set a builtin type name to a bool")
+			
 			p_free(field->field.string);
 			field->field.string = p_strdup(bval ? "1" : "0");
 		} else if (field->type == DOF_INT || field->type == DOF_UINT) {
@@ -1208,7 +1253,8 @@ void dataobjectfield_setString(DataObjectField *field, const char *bval)
 
     if (field != NULL) {
 		if (field->type == DOF_STRING) {
-			p_free(field->field.string);
+			if (!EMO_TYPE_IS_BUILTIN(field->field.string))
+				p_free(field->field.string);
 		}
 		field->type = DOF_STRING;
 		field->field.string = p_strdup(bval);
@@ -1313,7 +1359,7 @@ void dataobject_resolveReferences(DataObject *dobj)
 	/*listIterator_delete(iter);*/
 
 	field = dataobject_getEnum(dobj, EMO_FIELD_TYPE);
-	if (dataobjectfield_isString(field, "array")) {
+	if (EMO_DOF_IS_TYPE(field, EMO_TYPE_ARRAY)) {
 		array_expand(dobj);
 		renderman_clearQueue();
 		widget_markDirty(dataobject_superparent(dobj));
@@ -1397,7 +1443,7 @@ void dataobject_setIsModified(DataObject *dobj, int isModified)
 	}
 
 	type = dataobject_getEnum(dobj, EMO_FIELD_TYPE);
-	if (dataobjectfield_isString(type, "array")) {
+	if (EMO_DOF_IS_TYPE(type, EMO_TYPE_ARRAY)) {
 		array_expand(dobj);
 		renderman_clearQueue();
 		widget_markDirty(dataobject_superparent(dobj));

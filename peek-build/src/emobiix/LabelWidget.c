@@ -18,8 +18,8 @@ static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	Rectangle *box, *margin;
 	Font *f;
 	Color c;
-	const char *dtype;
-	const char *ltype;
+	/*const char *dtype;
+	const char *ltype;*/
 	const char *str;
 	DataObjectField *field, *sourceField, *boldField, *fontalign;
     int isBold = 0;
@@ -32,10 +32,10 @@ static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 
 	box = widget_getBox(w);
 	margin = widget_getMargin(w);
-	dtype = (const char *)dataobject_getEnum(w, EMO_FIELD_TYPE)->field.string;
-	ltype = widget_getID(w);
+	/*dtype = (const char *)dataobject_getEnum(w, EMO_FIELD_TYPE)->field.string;
+	ltype = widget_getID(w);*/
 	f = (Font *)defaultFont;/*style_getProperty(s, NULL, ltype, dtype, "font");*/
-	style_getColor(s, w, EMO_FIELD_FONTCOLOR, &c.value);
+	style_getColor(s, w, EMO_FIELD_FONT_COLOR, &c.value);
 	/*c.value = (unsigned int)style_getProperty(s, NULL, ltype, dtype, "color");
 	field = dataobject_getValue(w, "font-color");
 	if (field != NULL) {
@@ -47,7 +47,7 @@ static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
 	}*/
 	sourceField = dataobject_getEnum(w, EMO_FIELD_DATAFIELD);
 	if (sourceField != NULL && sourceField->type == DOF_STRING)
-		field = dataobject_getValue(dobj, sourceField->field.string);
+		field = dataobject_getValueReal(dobj, sourceField->field.string);
 	else
 		field = dataobject_getEnum(dobj, EMO_FIELD_DATA);
 	if (field == NULL)
@@ -63,7 +63,7 @@ static void string_renderer(WidgetRenderer *wr, Style *s, Widget *w,
             isBold = 0;
     }
 
-	fontalign = style_getProperty(s, w, EMO_FIELD_FONTALIGNMENT);
+	fontalign = style_getProperty(s, w, EMO_FIELD_FONT_ALIGNMENT);
 
 	string_measure(wr, s, w, dobj, &dimensions);
 
@@ -81,8 +81,8 @@ static void string_measure(WidgetRenderer *wr, Style *s, Widget *w,
 		DataObject *dobj, IPoint *p)
 {
 	Font *f;
-	const char *dtype;
-	const char *ltype;
+	/*const char *dtype;
+	const char *ltype;*/
 	const char *str;
 	DataObjectField *field, *sourceField, *boldField;
     int isBold = 0;
@@ -93,13 +93,13 @@ static void string_measure(WidgetRenderer *wr, Style *s, Widget *w,
 	EMO_ASSERT(dobj != NULL, "string measure missing DataObject")
 	EMO_ASSERT(p != NULL, "string measure missing the point")
 
-	dtype = (const char *)dataobject_getEnum(w, EMO_FIELD_TYPE)->field.string;
-	ltype = widget_getID(w);
+	/*dtype = (const char *)dataobject_getEnum(w, EMO_FIELD_TYPE)->field.string;
+	ltype = widget_getID(w);*/
 	f = (Font *)defaultFont;/*style_getProperty(s, NULL, ltype, dtype, "font");*/
 	
 	sourceField = dataobject_getEnum(w, EMO_FIELD_DATAFIELD);
 	if (sourceField != NULL && sourceField->type == DOF_STRING)
-		field = dataobject_getValue(dobj, sourceField->field.string);
+		field = dataobject_getValueReal(dobj, sourceField->field.string);
 	else
 		field = dataobject_getEnum(dobj, EMO_FIELD_DATA);
 	

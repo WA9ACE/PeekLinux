@@ -216,10 +216,10 @@ void manager_handleKey(unsigned int key)
 	if (focus != NULL) {
 		DataObjectField *field;
 		field = dataobject_getEnum(focus, EMO_FIELD_TYPE);
-		if (dataobjectfield_isString(field, "entry")) {
+		if (EMO_DOF_IS_TYPE(field, EMO_TYPE_ENTRY)) {
 			if (entryWidget_handleKey(focus, key, style))
 				return;
-		} else if (dataobjectfield_isString(field, "checkbox")) {
+		} else if (EMO_DOF_IS_TYPE(field, EMO_TYPE_CHECKBOX)) {
 			if (checkboxWidget_handleKey(focus, key, style))
 				return;
 		}

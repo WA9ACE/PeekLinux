@@ -5,6 +5,7 @@
 		<box alignment="center" id="gradbox" width="60" height="30" margin="5"/>
 		<box alignment="center" id="gradboxr" width="60" height="30" margin="5" border="0" border-corners="0" rounded="2"/>
 		<box alignment="center" renderer="box" width="60" height="30" margin="5" rounded="13" background-color="#FF0" border="1234" border-corners="13" border-color="#000"/>
+		<box alignment="center" id="solid" width="60" height="30" margin="5" background-color="#FF00FF80"/>
 	</box>
 </view>
 </application>
