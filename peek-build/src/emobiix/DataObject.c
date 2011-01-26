@@ -378,11 +378,6 @@ DataObjectField *dataobject_getValueReal(DataObject *dobj, const char *key)
 	EMO_ASSERT_NULL(dobj != NULL, "getValue on NULL DataObject")
 	EMO_ASSERT_NULL(key != NULL, "getValue missing key")
 
-	/* fixme - expensive */
-	enumInt = emo_field_to_int(key);
-	if (enumInt != EMO_FIELD_UNKNOWN_FIELD)
-		return dataobject_getEnum(dobj, enumInt);
-
 	output = (DataObjectField *)map_find(dobj->data, key);
 	if (output != NULL && output->type == DOF_STRING) {
 		if (output->flags & DOFF_ARRAYSOURCE) {
@@ -390,6 +385,12 @@ DataObjectField *dataobject_getValueReal(DataObject *dobj, const char *key)
 			output = dataobject_getValue(child, output->field.string);
 		}
 	}
+	if (output == NULL) {
+		/* fixme - expensive */
+		enumInt = emo_field_to_int(key);
+		if (enumInt != EMO_FIELD_UNKNOWN_FIELD)
+			return dataobject_getEnum(dobj, enumInt);
+		}
 
 	return output;
 }
