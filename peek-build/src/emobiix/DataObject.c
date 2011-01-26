@@ -155,29 +155,27 @@ void dataobject_delete(DataObject *dobj)
 		item = (DataObjectField *)mapIterator_item(&iter, (void **)&key);
 		dataobjectfield_free(item);
 		mapIterator_remove(&iter);
-		/*mapIterator_delete(iter);*/
 	} while (1);
 
-	/*
 	do {
-		list_begin(dobj->children, &liter);
-		if (listIterator_finished(&liter))
+		map_begin(dobj->enumData, &iter);
+		if (mapIterator_finished(&iter))
 			break;
-		listIterator_remove(&liter);
-	} while (1);*/
+		item = (DataObjectField *)mapIterator_item(&iter, (void **)&key);
+		dataobjectfield_free(item);
+		mapIterator_remove(&iter);
+	} while (1);
 
 	for (list_begin(dobj->referenced, &liter); !listIterator_finished(&liter);
 			listIterator_next(&liter)) {
 		cw = (DataObject *)listIterator_item(&liter);
 		cw->widgetData = NULL;
 		dataobject_setIsModified(cw, 1);
-		/*renderman_queue(cw);*/
 	}
 
 	list_delete(dobj->children);
 	list_delete(dobj->referenced);
 	map_delete(dobj->data);
-	/*renderman_dequeue(dobj);*/
 	p_free(dobj);
 }
 
