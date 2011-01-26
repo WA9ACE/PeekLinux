@@ -39,14 +39,13 @@ void array_expand(Widget *w)
 	if (filtervalue == NULL || filtervalue->type != DOF_STRING)
 		filterfield = NULL;
 	
-	for (list_begin(w->arrayChildren, &iter); !listIterator_finished(&iter);
+	for (list_begin(&w->arrayChildren, &iter); !listIterator_finished(&iter);
 			listIterator_next(&iter)) {
 		dataobject_delete((DataObject *)listIterator_item(&iter));
 	}
-	list_delete(w->arrayChildren);
-	w->arrayChildren = list_new();
-
-	list_begin(w->children, &iter);
+	list_clear(&w->arrayChildren);
+	
+	list_begin(&w->children, &iter);
 	arrtemplate = (DataObject *)listIterator_item(&iter);
 
 	direction = dataobject_getEnum(w, EMO_FIELD_DIRECTION);
@@ -58,9 +57,9 @@ void array_expand(Widget *w)
 		startNumber = 30;
 
 	if (dataobjectfield_isString(direction, "prepend"))
-		list_rbegin(dobj->children, &iter);
+		list_rbegin(&dobj->children, &iter);
 	else
-		list_begin(dobj->children, &iter);
+		list_begin(&dobj->children, &iter);
 
 	recordIdx = 0;
 	for (; !listIterator_finished(&iter); listIterator_next(&iter)) {
@@ -80,7 +79,7 @@ void array_expand(Widget *w)
 
 		shim = dataobject_copyTree(arrtemplate);
 		widget_setDataObjectArray(shim, rec);
-		list_append(w->arrayChildren, (void *)shim);
+		list_append(&w->arrayChildren, (void *)shim);
 		shim->parent = w->parent;
 
 		dataobject_setIsModified(shim, 1);

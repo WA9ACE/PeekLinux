@@ -17,10 +17,10 @@ struct DataObject_t {
 	unsigned int stampMinor;
 	unsigned int stampMajor;
 
-	List *referenced;
+	List referenced;
 
-	List *children;
-	List *arrayChildren;
+	List children;
+	List arrayChildren;
 	DataObject *parent;
 
 	Rectangle margin, box, childBox;

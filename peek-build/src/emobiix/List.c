@@ -20,6 +20,15 @@ List *list_new(void)
     return output;
 }
 
+void list_init(List *l)
+{
+	EMO_ASSERT(l != NULL, "list init to NULL list")
+
+	l->length = 0;
+    l->head = NULL;
+    l->tail = NULL;
+}
+
 #if 0
 static int max_list = 0;
 #endif
@@ -67,11 +76,11 @@ void list_prepend(List *l, void *item)
     ++l->length;
 }
 
-void list_delete(List *l)
+void list_clear(List *l)
 {
     ListNode *node, *next;
 
-	EMO_ASSERT(l != NULL, "deleting NULL list")
+	EMO_ASSERT(l != NULL, "clearing NULL list")
 
     node = l->head;
     while (node != NULL) {
@@ -79,7 +88,14 @@ void list_delete(List *l)
         p_free(node);
         node = next;
     }
+}
 
+void list_delete(List *l)
+{
+
+	EMO_ASSERT(l != NULL, "deleting NULL list")
+
+	list_clear(l);
     p_free(l);
 }
 

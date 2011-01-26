@@ -63,9 +63,9 @@ DataObject *dataobject_new(void)
 	}
 	output->data = map_string();
 	output->enumData = map_int();
-	output->children = list_new();
-	output->referenced = list_new();
-	output->arrayChildren = list_new();
+	list_init(&output->children);
+	list_init(&output->referenced);
+	list_init(&output->arrayChildren);
 	output->parent = NULL;
 	output->widgetData = NULL;
 	output->state = DOS_OK;
@@ -129,7 +129,7 @@ DataObject *dataobject_copyTree(DataObject *dobj)
 
 	output = dataobject_copy(dobj);
 
-	for (list_begin(dobj->children, &iter); !listIterator_finished(&iter);
+	for (list_begin(&dobj->children, &iter); !listIterator_finished(&iter);
 			listIterator_next(&iter)) {
 		widget_pack(dataobject_copyTree((DataObject *)listIterator_item(&iter)),
 				output);
@@ -166,16 +166,17 @@ void dataobject_delete(DataObject *dobj)
 		mapIterator_remove(&iter);
 	} while (1);
 
-	for (list_begin(dobj->referenced, &liter); !listIterator_finished(&liter);
+	for (list_begin(&dobj->referenced, &liter); !listIterator_finished(&liter);
 			listIterator_next(&liter)) {
 		cw = (DataObject *)listIterator_item(&liter);
 		cw->widgetData = NULL;
 		dataobject_setIsModified(cw, 1);
 	}
 
-	list_delete(dobj->children);
-	list_delete(dobj->referenced);
+	list_clear(&dobj->children);
+	list_clear(&dobj->referenced);
 	map_delete(dobj->data);
+	map_delete(dobj->enumData);
 	p_free(dobj);
 }
 
@@ -467,14 +468,14 @@ void dataobject_appendRecord(DataObject *dobj, DataObject *robj)
 	EMO_ASSERT(dobj != NULL, "appending record on NULL DataObject")
 	EMO_ASSERT(robj != NULL, "appending NULL record") 
 
-	list_append(dobj->children, robj);
+	list_append(&dobj->children, robj);
 }
 
 int dataobject_getChildCount(DataObject *dobj)
 {
 	EMO_ASSERT_INT(dobj != NULL, 0, "get child count on NULL DataObject")
 
-	return list_size(dobj->children);
+	return list_size(&dobj->children);
 }
 
 int dataobject_isLocal(DataObject *dobj)
@@ -534,13 +535,12 @@ void dataobject_childIterator(DataObject *dobj, ListIterator *iter)
 	EMO_ASSERT(dobj != NULL, "iterate children on NULL DataObject")
 	EMO_ASSERT(iter != NULL, "iterate children on DataObject without iterator")
 
-	list_begin(dobj->children, iter);
-	if (list_size(dobj->children) > 0) {
+	list_begin(&dobj->children, iter);
+	if (list_size(&dobj->children) > 0) {
 		item = (DataObject *)listIterator_item(iter);
-		/*if (list_size(item->arrayChildren) > 0) {*/
 		type = dataobject_getEnum(item, EMO_FIELD_TYPE);
 		if (EMO_DOF_IS_TYPE(type, EMO_TYPE_ARRAY)) {
-			list_begin(item->arrayChildren, iter);
+			list_begin(&item->arrayChildren, iter);
 			return;
 		}
 	}
@@ -554,11 +554,11 @@ void dataobject_rchildIterator(DataObject *dobj, ListIterator *iter)
 	EMO_ASSERT(iter != NULL, "iterate children on DataObject without iterator")
 
 
-	list_rbegin(dobj->children, iter);
-	if (list_size(dobj->children) > 0) {
+	list_rbegin(&dobj->children, iter);
+	if (list_size(&dobj->children) > 0) {
 		item = (DataObject *)listIterator_item(iter);
-		if (list_size(item->arrayChildren) > 0) {
-			list_rbegin(item->arrayChildren, iter);
+		if (list_size(&item->arrayChildren) > 0) {
+			list_rbegin(&item->arrayChildren, iter);
 			return;
 		}
 	}
@@ -577,7 +577,7 @@ static DataObject *dataobject_getTreeR(DataObject *dobj, int *index)
 	if (*index == 0)
 		return dobj;
 
-	list_begin(dobj->children, &iter);
+	list_begin(&dobj->children, &iter);
 	while (!listIterator_finished(&iter)) {
 		*index = *index - 1;
 		output = dataobject_getTreeR((DataObject *)listIterator_item(&iter), index);
@@ -614,7 +614,7 @@ DataObject *dataobject_getForcedObject(DataObject *dobj, int *index)
 	if (dobj->flags1 & DO_FLAG_FORCE_SYNC)
 		return dobj;
 
-	list_begin(dobj->children, &iter);
+	list_begin(&dobj->children, &iter);
 	while (!listIterator_finished(&iter)) {
 		*index = *index + 1;
 		output = dataobject_getForcedObject((DataObject *)listIterator_item(&iter), index);
@@ -638,7 +638,7 @@ int dataobject_getTreeNextOp(DataObject *dobj, int *ischild)
 	EMO_ASSERT_INT(ischild != NULL, 0, "treeNextOp on DataObject without child")
 
 	/* check for add child */
-	list_begin(dobj->children, &iter);
+	list_begin(&dobj->children, &iter);
 	if (!listIterator_finished(&iter)) {
 		*ischild = -1;
 		/*listIterator_delete(iter);*/
@@ -656,7 +656,7 @@ int dataobject_getTreeNextOp(DataObject *dobj, int *ischild)
 
 	/* search for the child in parent */
 next_iteration:
-	list_begin(parent->children, &iter);
+	list_begin(&parent->children, &iter);
 	while (!listIterator_finished(&iter)) {
 		if (last == (DataObject *)listIterator_item(&iter)) {
 			listIterator_next(&iter);
@@ -694,7 +694,7 @@ static int dataobject_treeIndexR(DataObject *parent, DataObject *dobj, int *inde
 	if (parent == dobj)
 		return *index;
 
-	list_begin(parent->children, &iter);
+	list_begin(&parent->children, &iter);
 	while (!listIterator_finished(&iter)) {
 		*index += 1;
 		output = dataobject_treeIndexR((DataObject *)listIterator_item(&iter), dobj, index);
@@ -734,7 +734,7 @@ void dataobject_pack(DataObject *parent, DataObject *child)
 	EMO_ASSERT(child != NULL, "packing NULL child")
 		
 	child->parent = parent;
-	list_append(parent->children, child);
+	list_append(&parent->children, child);
 }
 
 void dataobject_packStart(DataObject *parent, DataObject *child)
@@ -743,7 +743,7 @@ void dataobject_packStart(DataObject *parent, DataObject *child)
 	EMO_ASSERT(child != NULL, "packing start NULL child")
 
 	child->parent = parent;
-	list_prepend(parent->children, child);
+	list_prepend(&parent->children, child);
 }
 
 DataObject *dataobject_parent(DataObject *dobj)
@@ -813,10 +813,10 @@ DataObject *dataobject_findByName(DataObject *dobj, const char *name)
 		}
 	}
 
-	if (list_size(dobj->children) == 0)
+	if (list_size(&dobj->children) == 0)
 		return NULL;
 
-	list_begin_inline(dobj->children, &iter);
+	list_begin_inline(&dobj->children, &iter);
 	while (!listIterator_finished_inline(&iter)) {
 		child = listIterator_item_inline(&iter);
 		child = dataobject_findByName(child, name);
@@ -1341,21 +1341,18 @@ void dataobject_resolveReferences(DataObject *dobj)
 				connectionContext_syncRequest(connectionContext, url);
 				ref = dataobject_locate(url);
 			}
-			EMO_ASSERT(dobj->referenced != NULL, "resolve ref 1 is null");
 			widget_setDataObject(dobj, ref);
 		} else {
 			parent = dataobject_superparent(dobj);
 			ref = dataobject_findByName(parent, field->field.string);
-			EMO_ASSERT(dobj->referenced != NULL, "resolve ref 2 is null");
 			widget_setDataObject(dobj, ref);
 		}
 	} else {
-		EMO_ASSERT(dobj->referenced != NULL, "resolve ref 3 is null");
 		widget_setDataObject(dobj, NULL);
 	}
 	/*}*/
 
-	list_begin(dobj->children, &iter);
+	list_begin(&dobj->children, &iter);
 	while (!listIterator_finished(&iter)) {
 		DataObject *obj = (DataObject *)listIterator_item(&iter);
 		EMO_ASSERT(obj != NULL, "got null item from child iter");
@@ -1371,7 +1368,7 @@ void dataobject_resolveReferences(DataObject *dobj)
 		widget_markDirty(dataobject_superparent(dobj));
 	}
 
-	list_begin(dobj->arrayChildren, &iter);
+	list_begin(&dobj->arrayChildren, &iter);
 	while (!listIterator_finished(&iter)) {
 		DataObject *obj = (DataObject *)listIterator_item(&iter);
 		EMO_ASSERT(obj != NULL, "got null item from array child iter");
@@ -1407,7 +1404,7 @@ static void dataobject_onsyncfinishedR(DataObject *dobj, int *doneForced)
 		*doneForced = 1;
 	}
 
-	list_begin(dobj->children, &iter);
+	list_begin(&dobj->children, &iter);
 	while (!listIterator_finished(&iter)) {
 		child = (DataObject *)listIterator_item(&iter);
 		dataobject_onsyncfinishedR(child, doneForced);
@@ -1455,7 +1452,7 @@ void dataobject_setIsModified(DataObject *dobj, int isModified)
 		widget_markDirty(dataobject_superparent(dobj));
 	}
 
-	for (list_begin(dobj->referenced, &iter); !listIterator_finished(&iter);
+	for (list_begin(&dobj->referenced, &iter); !listIterator_finished(&iter);
 			listIterator_next(&iter)) {
 		dataobject_setIsModified((DataObject *)listIterator_item(&iter), isModified);
 	}
@@ -1469,7 +1466,7 @@ void dataobject_setIsModifiedTree(DataObject *dobj, int isModified)
 
 	dataobject_setIsModified(dobj, isModified);
 
-	for (list_begin(dobj->children, &iter); !listIterator_finished(&iter);
+	for (list_begin(&dobj->children, &iter); !listIterator_finished(&iter);
 			listIterator_next(&iter)) {
 		dataobject_setIsModifiedTree((DataObject *)listIterator_item(&iter), isModified);
 	}

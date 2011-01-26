@@ -65,7 +65,7 @@ void widget_setDataObject(Widget *w, DataObject *dobj)
 	EMO_ASSERT(w != NULL, "widget set object missing widget")
 
 	if (w->widgetData != NULL) {
-		for (list_begin(w->widgetData->referenced, &iter); !listIterator_finished(&iter);	
+		for (list_begin(&w->widgetData->referenced, &iter); !listIterator_finished(&iter);	
 				listIterator_next(&iter)) {
 			robj = (DataObject *)listIterator_item(&iter);
 			if (robj == w) {
@@ -77,7 +77,7 @@ void widget_setDataObject(Widget *w, DataObject *dobj)
 	w->widgetData = dobj;
 	if (dobj != NULL)
 	{
-		list_append(dobj->referenced, w);
+		list_append(&dobj->referenced, w);
 	}
 	/*w->self = dobj;*/
 }
@@ -100,10 +100,7 @@ void widget_setDataObjectArray(Widget *w, DataObject *dobj)
 	EMO_ASSERT(dobj != NULL, "widget set array missing array")
 
 	if (widget_isArraySource(w))
-	{
-		EMO_ASSERT(dobj->referenced != NULL, "set data ref is null");
 		widget_setDataObject(w, dobj);
-	}
 	
 	for (dataobject_childIterator(w, &iter); !listIterator_finished(&iter); listIterator_next(&iter)) 
 	{
@@ -173,7 +170,7 @@ void widget_pack(Widget *w, Widget *parent)
 	EMO_ASSERT(parent != NULL, "widget pack missing parent")
 
 	w->parent = parent;
-	list_append(parent->children, w);
+	list_append(&parent->children, w);
 }
 
 void widget_setID(Widget *w, const char *idName)

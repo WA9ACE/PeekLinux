@@ -31,10 +31,12 @@ typedef struct ListIterator_t ListIterator;
 typedef int (*ListComparitor)(void *arg1, void *arg2);
 
 List *list_new(void);
+void list_init(List *l);
 void list_append(List *l, void *item);
 void list_prepend(List *l, void *item);
 void* list_firstItem(List *list);
 void* list_lastItem(List *list);
+void list_clear(List *l);
 void list_delete(List *l);
 int list_size(List *l);
 void list_debug(List *l);
