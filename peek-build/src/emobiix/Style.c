@@ -44,9 +44,7 @@ void style_renderWidgetTree(Style *s, Widget *w)
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
 	hasFocus = widget_hasFocusOrParent(w);
 	id = widget_getID(w);
-	//emo_printf("Getting styleID for %p" NL, w);
 	style = style_getID(s, type == NULL ? NULL : type->field.string, id, hasFocus, &wentUp);
-	//emo_printf("Got styleID for %p as %p" NL, w, style);
 
 	if (wentUp)
 		childStyle = s;
@@ -177,6 +175,7 @@ DataObjectField *style_getProperty(Style *os, DataObject *dobj, EmoField key)
 	EMO_ASSERT_NULL(os != NULL, "style get property missing style")
 	EMO_ASSERT_NULL(dobj != NULL, "style get property missing object")
 
+restart_getproperty:
 	s = os;
 	output = dataobject_getEnum(dobj, key);
 	if (output != NULL)
@@ -189,8 +188,10 @@ DataObjectField *style_getProperty(Style *os, DataObject *dobj, EmoField key)
 	}
 
 	rootStyle = manager_getRootStyle();
-	if (os != rootStyle)
-		return style_getProperty(rootStyle, dobj, key);
+	if (os != rootStyle) {
+		os = rootStyle;
+		goto restart_getproperty;
+	}
 
 	return NULL;
 }
@@ -204,6 +205,7 @@ DataObjectField *style_getPropertyAsInt(Style *os, DataObject *dobj, EmoField ke
 	EMO_ASSERT_NULL(os != NULL, "style get propertyAsInt missing style")
 	EMO_ASSERT_NULL(dobj != NULL, "style get propertyAsInt missing object")
 
+restart_getpropertyasint:
 	s = os;
 	output = dataobject_getEnumAsInt(dobj, key);
 	if (output != NULL)
@@ -216,8 +218,10 @@ DataObjectField *style_getPropertyAsInt(Style *os, DataObject *dobj, EmoField ke
 	}
 
 	rootStyle = manager_getRootStyle();
-	if (os != rootStyle)
-		return style_getPropertyAsInt(rootStyle, dobj, key);
+	if (os != rootStyle) {
+		os = rootStyle;
+		goto restart_getpropertyasint;
+	}
 
 	return NULL;
 }
