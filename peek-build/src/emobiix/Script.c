@@ -167,10 +167,10 @@ static int __dataobject_setValue(lua_State *L)
 
 	if (lua_isstring(L, dstrIdx)) {
 		dstr = dataobjectfield_string(luaL_checkstring(L, dstrIdx));
-		emo_printf("Set value to %s" NL, dstr->field.string);
+		/*emo_printf("Set value to %s" NL, dstr->field.string);*/
 	} else {
 		dstr = dataobjectfield_int((int)luaL_checknumber(L, dstrIdx));
-		emo_printf("Set value to %d" NL, dstr->field.integer);
+		/*emo_printf("Set value to %d" NL, dstr->field.integer);*/
 	}
 
 	/*if (fieldName != NULL) {

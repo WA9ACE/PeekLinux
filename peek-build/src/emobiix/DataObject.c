@@ -252,7 +252,7 @@ DataObjectField *dataobject_getEnumAsInt(DataObject *dobj, EmoField enu)
 
 	output = dataobject_getEnum(dobj, enu);
 	if (output == NULL)
-		return output;
+		return NULL;
 
 	if (output->type == DOF_INT || output->type == DOF_UINT)
 		return output;

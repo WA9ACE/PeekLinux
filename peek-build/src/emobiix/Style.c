@@ -111,12 +111,13 @@ void style_renderWidgetTree(Style *s, Widget *w)
 		wr->postrender(wr, style, w, dobj);
 }
 
-Style *style_getID(Style *styleRoot, const char *otype, const char *id, int isFocused,
+Style *style_getID(Style *styleRoot, const char *otype, const char *oid, int isFocused,
 		int *wentUp)
 {
 	ListIterator iter;
 	DataObjectField *type;
 	int focus;
+	const char *id;
 	DataObject *child, *parent;
 	Style *output;
 
@@ -124,6 +125,9 @@ Style *style_getID(Style *styleRoot, const char *otype, const char *id, int isFo
 
 	//emo_printf("StyleID: %p - type:%s, id:%s" NL, styleRoot, otype, id);
 
+restart_stylegetid:
+
+	id = oid;
 	if (id == NULL) {
 		id = otype;
 		if (otype == NULL)
@@ -155,14 +159,18 @@ Style *style_getID(Style *styleRoot, const char *otype, const char *id, int isFo
 	if (parent != NULL) {
 		if (wentUp != NULL)
 			*wentUp = 1;
-		return style_getID(parent, otype, id, isFocused, NULL);
+		styleRoot = parent;
+		goto restart_stylegetid;
+		//return style_getID(parent, otype, id, isFocused, NULL);
 	}
 
 	output = manager_getRootStyle();
 	if (styleRoot != output){ 
 		if (wentUp != NULL)
 			*wentUp = 1;
-		return style_getID(output, otype, id, isFocused, NULL);
+		styleRoot = output;
+		goto restart_stylegetid;
+		//return style_getID(output, otype, id, isFocused, NULL);
 	}
 	return styleRoot;
 }
