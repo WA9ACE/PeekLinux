@@ -160,9 +160,9 @@ CpublicsimulatorDlg::CpublicsimulatorDlg(CWnd* pParent /*=NULL*/)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	GlobalDialog = this;
-	m_isDebug = true;
-	m_showInternalDebug = true;
-	m_showScriptDebug = true;
+	m_isDebug = false;
+	m_showInternalDebug = false;
+	m_showScriptDebug = false;
 }
 
 void CpublicsimulatorDlg::DoDataExchange(CDataExchange* pDX)
@@ -346,6 +346,7 @@ void CpublicsimulatorDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 
 extern long int cury;
 extern void DrawPoint(CStatusGraphCtrl* TheCtrl,long int cury,bool Update);
+extern "C" void p_dumpMemoryStatistics(void);
 BOOL CpublicsimulatorDlg::PreTranslateMessage(MSG* pMsg)
 {
 	/*m_graph.SetCurrentValue(p_getTotalAllocated());*/
@@ -355,7 +356,8 @@ BOOL CpublicsimulatorDlg::PreTranslateMessage(MSG* pMsg)
 		if (pMsg->wParam == VK_ESCAPE) {
 			//EnterCriticalSection(&emoCrit);
 			used = true;
-			manager_debugPrint();
+			//manager_debugPrint();
+			p_dumpMemoryStatistics();
 			//LeaveCriticalSection(&emoCrit);
 			return TRUE;
 		}

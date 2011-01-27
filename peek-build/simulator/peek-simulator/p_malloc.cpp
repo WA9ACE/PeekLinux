@@ -6,6 +6,8 @@
 #include <string.h>
 #include <stdio.h>
 #include <map>
+#include <list>
+#include <string>
 
 typedef struct alloc_t {
     int size;
@@ -130,4 +132,58 @@ extern "C" void *p_realloc_i(void *p, int s, const char *filename, int line,
 extern "C" int p_getTotalAllocated(void)
 {
 	return totalSize;
+}
+
+typedef struct {
+	int size;
+	int count;
+} sizeCount;
+
+typedef struct {
+	std::string str;
+	sizeCount val;
+} strval;
+
+bool strvalCompare(strval &first, strval &second)
+{
+	return first.val.size > second.val.size;
+}
+
+extern "C" void p_dumpMemoryStatistics(void)
+{
+	AllocationsIterator iter;
+	std::map<std::string, sizeCount> sizeAlloc;
+
+	for (iter = Allocations.begin(); iter != Allocations.end(); ++iter) {
+		std::string ref;
+		char line[32];
+
+		ref = (*iter).second.filename;
+		ref += ":";
+		ref += (*iter).second.function;
+		ref += ":";
+		sprintf(line, "%d", (*iter).second.line);
+		ref += line;
+
+		sizeCount &sc = sizeAlloc[ref];
+		sc.size += (*iter).second.size;
+		++sc.count;
+	}
+
+	std::list<strval> sortedAllocs;
+	std::map<std::string, sizeCount>::iterator riter;
+
+	for (riter = sizeAlloc.begin(); riter != sizeAlloc.end(); ++riter) {
+		strval v = {(*riter).first, (*riter).second};
+		sortedAllocs.push_back(v);
+	}
+
+	sortedAllocs.sort(strvalCompare);
+
+	std::list<strval>::iterator aiter;
+
+	emo_printf(" == Allocations by aggregate size ==" NL);
+	for (aiter = sortedAllocs.begin(); aiter != sortedAllocs.end(); ++aiter)
+		emo_printf("% 6d bytes (% 4d allocs)  %s" NL, (*aiter).val.size,
+				(*aiter).val.count, (*aiter).str.c_str());
 }
