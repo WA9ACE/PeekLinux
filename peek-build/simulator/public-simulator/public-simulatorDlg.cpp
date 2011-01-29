@@ -405,6 +405,20 @@ BOOL CpublicsimulatorDlg::PreTranslateMessage(MSG* pMsg)
 				DrawScreen();
 				//LeaveCriticalSection(&emoCrit);
 				return CDialog::PreTranslateMessage(pMsg);
+			case 37:
+				//EnterCriticalSection(&emoCrit);
+				used = true;
+				manager_handleKey(EKEY_FOCUSLEFT);
+				DrawScreen();
+				//LeaveCriticalSection(&emoCrit);
+				return CDialog::PreTranslateMessage(pMsg);
+			case 39:
+				//EnterCriticalSection(&emoCrit);
+				used = true;
+				manager_handleKey(EKEY_FOCUSRIGHT);
+				DrawScreen();
+				//LeaveCriticalSection(&emoCrit);
+				return CDialog::PreTranslateMessage(pMsg);
 			default:
 				break;
 		}
