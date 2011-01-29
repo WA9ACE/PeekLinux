@@ -93,7 +93,7 @@ int TCPConnect(Endpoint *iep, URL *destination)
 
 	port = (unsigned short)atoi(destination->port);
 
-	if (isalpha(destination->hostname[0])) {
+	if (isalpha(((unsigned char *)(destination->hostname))[0])) {
 		remoteHost = gethostbyname(destination->hostname);
 	} else {
 		addr.s_addr = inet_addr(destination->hostname);

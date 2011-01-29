@@ -25,7 +25,7 @@ void NetworkTask(void)
 	Transport *transport;
 	ConnectionContext *ctx;
 	int hasPrinted;
-	char buf[256];
+	unsigned char buf[256];
 	FILE *input;
 	int i;
 

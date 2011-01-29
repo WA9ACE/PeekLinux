@@ -42,6 +42,8 @@ void style_renderWidgetTree(Style *s, Widget *w)
 		return;
 
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
+	if (type == NULL)
+		return;
 	hasFocus = widget_hasFocusOrParent(w);
 	id = widget_getID(w);
 	style = style_getID(s, type == NULL ? NULL : type->field.string, id, hasFocus, &wentUp);
@@ -130,8 +132,8 @@ restart_stylegetid:
 	id = oid;
 	if (id == NULL) {
 		id = otype;
-		if (otype == NULL)
-			return styleRoot;
+		/*if (otype == NULL)
+			return styleRoot;*/
 	}
 
 	output = NULL;

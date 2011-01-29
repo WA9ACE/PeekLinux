@@ -38,8 +38,10 @@ void gradient_addStop(Gradient *g, int position, Color color)
 	EMO_ASSERT(g != NULL, "adding stop to NULL gradient")
 
 	stop = (GradientStop *)p_malloc(sizeof(GradientStop));
-	if (stop == NULL)
+	if (stop == NULL) {
 		emo_printf("Stop allocated was null" NL);
+		return;
+	}
 	stop->position = position;
 	stop->color = color;
 
@@ -53,13 +55,14 @@ int gradient_stops(Gradient *g)
 	return array_length(g->stops);
 }
 
+Color invalidColor = { 0 };
 Color gradient_getStop(Gradient *g, int id, int *height)
 {
 	GradientStop *s = NULL;
 	int outheight;
 
-	EMO_ASSERT_INT(g != NULL, s->color, "getting stop on NULL gradient")
-	EMO_ASSERT_INT(height != NULL, s->color,
+	EMO_ASSERT_INT(g != NULL, invalidColor, "getting stop on NULL gradient")
+	EMO_ASSERT_INT(height != NULL, invalidColor,
 			"getting stop on gradient missing height")
 
 	s = *(GradientStop **)array_item(g->stops, id);

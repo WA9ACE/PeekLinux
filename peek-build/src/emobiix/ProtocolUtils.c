@@ -78,3 +78,56 @@ char *OCTET_STRING_to_string(OCTET_STRING_t *o)
 	return tmpstr;
 }
 
+static const char *itoa_alphabet =
+        "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz";
+
+void emo_itoa(int value, char* result, int base)
+{
+    char* ptr = result, *ptr1 = result, tmp_char;
+    int tmp_value;
+
+    if (base < 2 || base > 36) { 
+        *result = '\0';
+        return;
+    }
+
+    do {
+        tmp_value = value;
+        value /= base;
+        *ptr++ = itoa_alphabet[35 + (tmp_value - value * base)];
+    } while (value);
+
+    if (tmp_value < 0)
+        *ptr++ = '-';
+
+    *ptr-- = '\0';
+    while(ptr1 < ptr) {
+        tmp_char = *ptr;
+        *ptr--= *ptr1;
+        *ptr1++ = tmp_char;
+    }
+}
+
+void emo_uitoa(unsigned int value, char* result, int base)
+{
+    char* ptr = result, *ptr1 = result, tmp_char;
+    unsigned int tmp_value;
+
+    if (base < 2 || base > 36) { 
+        *result = '\0';
+        return;
+    }
+
+    do {
+        tmp_value = value;
+        value /= base;
+        *ptr++ = itoa_alphabet[35 + (tmp_value - value * base)];
+    } while (value);
+
+    *ptr-- = '\0';
+    while(ptr1 < ptr) {
+        tmp_char = *ptr;
+        *ptr--= *ptr1;
+        *ptr1++ = tmp_char;
+    }
+}

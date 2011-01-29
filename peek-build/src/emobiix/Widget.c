@@ -141,7 +141,7 @@ WidgetPacking widget_getPacking(Widget *w)
 	if (!field)
 		return (WidgetPacking)WP_VERTICAL;
 	if (field->type == DOF_STRING) {
-		if (isdigit(field->field.string[0]))
+		if (isdigit(((unsigned char *)(field->field.string))[0]))
 			newField = dataobjectfield_int(atoi(field->field.string));
 		else if (strcmp(field->field.string, "horizontal") == 0)
 			newField = dataobjectfield_int(WP_HORIZONTAL);
@@ -173,21 +173,6 @@ void widget_pack(Widget *w, Widget *parent)
 	list_append(&parent->children, w);
 }
 
-void widget_setID(Widget *w, const char *idName)
-{
-	DataObjectField *field;
-
-	EMO_ASSERT(w != NULL, "widget set id missing widget")
-	EMO_ASSERT(idName != NULL, "widget set id missing id")
-
-	field = dataobject_getEnum(w, EMO_FIELD_ID);
-	if (!field)
-		dataobject_setEnum(w, EMO_FIELD_ID, dataobjectfield_string(idName));
-	else {
-		p_free(field->field.string);
-		field->field.string = p_strdup(idName);
-	}	
-}
 
 const char *widget_getID(Widget *w)
 {
@@ -242,15 +227,14 @@ int widget_hasFocusOrParent(Widget *w)
 
 	EMO_ASSERT_INT(w != NULL, 0, "widget has focus or parent missing widget")
 
-	hasFocus = widget_hasFocus(w);
-	if (!hasFocus) {
+	while (w != NULL) {
+		hasFocus = widget_hasFocus(w);
+		if (hasFocus)
+			return 1;
 		w = w->parent;
-		if (w == NULL)
-			return 0;
-		return widget_hasFocusOrParent(w);
 	}
 
-	return 1;
+	return 0;
 }
 
 void widget_setFocus(Widget *w, int isFocus)
@@ -1140,7 +1124,9 @@ static void widget_layoutMeasureFinal(Widget *w, Style *s)
 	dobj = widget_getDataObject(w);
 	id = widget_getID(w);
 	type = dataobject_getEnum(w, EMO_FIELD_TYPE);
-	style = style_getID(s, type == NULL ? NULL : type->field.string, id,
+	if (type == NULL)
+		return;
+	style = style_getID(s, type->field.string, id,
 			widget_hasFocus(w), &wentUp);
 
 	if (wentUp)
@@ -1816,7 +1802,7 @@ WidgetAlignment widget_getAlignment(Widget *w)
 	if (!field)
 		return (WidgetAlignment)WA_LEFT;
 	if (field->type == DOF_STRING) {
-		if (isdigit(field->field.string[0]))
+		if (isdigit(((unsigned char *)(field->field.string))[0]))
 			newField = dataobjectfield_int(atoi(field->field.string));
 		else if (strcmp(field->field.string, "left") == 0 ||
 				strcmp(field->field.string, "top") == 0)

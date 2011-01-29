@@ -234,7 +234,7 @@ static int cache_readObjectR(SyncListP_t *sp, DataObject *root, File *rcFile, in
 	SyncOperandP_t *syncOp;
 	DataObjectField *dof;
 	DataObject *dobj, *cobj;
-	char *fieldName;
+	char *fieldName = NULL;
 	void *data;
 	int i, treeIndex;
 	EmoField fieldEnum = -1;

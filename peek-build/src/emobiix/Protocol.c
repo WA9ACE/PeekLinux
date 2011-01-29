@@ -1,8 +1,13 @@
 #include "Protocol.h"
+#include "ProtocolUtils.h"
 
 #include "Debug.h"
 
 #include "p_malloc.h"
+
+
+extern void emo_itoa(int value, char *output, int base);
+extern void emo_uitoa(unsigned int value, char *output, int base);
 
 void protocol_syncStart(DataObjectSyncStartP_t *p, const char *url,
 		DataObjectStampP_t minor, DataObjectStampP_t major, long sequenceID)
@@ -56,10 +61,13 @@ SyncOperandP_t *protocol_serializeField(DataObject *sobj, const char *fieldName)
 		syncOp->syncP.choice.syncModifyP.modifySizeP = field->field.data.size;
 		syncOp->syncP.choice.syncModifyP.modifyOffsetP = 0;
 	} else if (field->type == DOF_INT || field->type == DOF_UINT) {
-		if (field->type == DOF_INT)
-			snprintf(fieldstr, 64, "%d", field->field.integer);
-		else
-			snprintf(fieldstr, 64, "%ud", field->field.uinteger);
+		if (field->type == DOF_INT) {
+			//snprintf(fieldstr, 64, "%d", field->field.integer);
+			emo_itoa(field->field.integer, fieldstr, 10);
+		} else {
+			//snprintf(fieldstr, 64, "%ud", field->field.uinteger);
+			emo_uitoa(field->field.uinteger, fieldstr, 10);
+		}
 		syncOp->syncP.present = syncP_PR_syncSetP;
 		syncOp->syncP.choice.syncSetP.buf = NULL;
         OCTET_STRING_fromBuf(&syncOp->syncP.choice.syncSetP,
@@ -102,10 +110,13 @@ SyncOperandP_t *protocol_serializeFieldEnum(DataObject *sobj, EmoField fieldEnum
 		syncOp->syncP.choice.syncModifyP.modifySizeP = field->field.data.size;
 		syncOp->syncP.choice.syncModifyP.modifyOffsetP = 0;
 	} else if (field->type == DOF_INT || field->type == DOF_UINT) {
-		if (field->type == DOF_INT)
-			snprintf(fieldstr, 64, "%d", field->field.integer);
-		else
-			snprintf(fieldstr, 64, "%ud", field->field.uinteger);
+		if (field->type == DOF_INT) {
+			//snprintf(fieldstr, 64, "%d", field->field.integer);
+			emo_itoa(field->field.integer, fieldstr, 10);
+		} else {
+			//snprintf(fieldstr, 64, "%ud", field->field.uinteger);
+			emo_uitoa(field->field.uinteger, fieldstr, 10);
+		}
 		syncOp->syncP.present = syncP_PR_syncSetP;
 		syncOp->syncP.choice.syncSetP.buf = NULL;
         OCTET_STRING_fromBuf(&syncOp->syncP.choice.syncSetP,

@@ -21,7 +21,6 @@ void widget_setDataObjectArray(Widget *w, DataObject *dobj);
 void widget_setPacking(Widget *w, WidgetPacking p);
 WidgetPacking widget_getPacking(Widget *w);
 void widget_pack(Widget *w, Widget *parent);
-void widget_setID(Widget *w, const char *idName);
 const char *widget_getID(Widget *w);
 int widget_canFocus(Widget *w);
 void widget_setCanFocus(Widget *w, int canFocus);

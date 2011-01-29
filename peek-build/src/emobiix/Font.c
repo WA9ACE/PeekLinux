@@ -231,6 +231,7 @@ unsigned int UTF8toUTF32(const char *isource, int *advance)
 	*advance = extraBytesToRead+1;
 
 	switch (extraBytesToRead) {
+		default: extraBytesToRead = 5;
 	    case 5: ch += *source++; ch <<= 6;
 	    case 4: ch += *source++; ch <<= 6;
 	    case 3: ch += *source++; ch <<= 6;
