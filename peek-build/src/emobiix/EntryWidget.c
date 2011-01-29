@@ -32,8 +32,10 @@ int entryWidget_handleKey(Widget *w, unsigned int key, Style *s)
 	emo_printf("entryWidget_handleKey() key=%d print=%d", key, isprint(key));
 #endif
 
-	if (key > 0xFFFFFF00 || !isprint(key) && key != '\b')
-		return 0;
+	if (key != EKEY_FOCUSLEFT && key != EKEY_FOCUSRIGHT) {
+		if (key > 0xFFFFFF00 || !isprint(key) && key != '\b')
+			return 0;
+	}
 
 	dobj = widget_getDataObject(w);
 	field = dataobject_getEnum(dobj, EMO_FIELD_DATA);
@@ -43,7 +45,30 @@ int entryWidget_handleKey(Widget *w, unsigned int key, Style *s)
 	}
 
 	cursorfield = dataobject_getEnumAsInt(w, EMO_FIELD_CURSOR);
+	if (cursorfield == NULL) {
+		cursorfield = dataobjectfield_int(0);
+		dataobject_setEnum(w, EMO_FIELD_CURSOR, cursorfield);
+	}
 	cursorindex = cursorfield->field.integer;
+
+	if (key == EKEY_FOCUSLEFT) {
+		--cursorindex;
+		if (cursorindex >= 0) {
+			cursorfield->field.integer = cursorindex;
+			dataobject_setIsModified(w, 1);
+		}
+		return 1;
+	}
+
+	if (key == EKEY_FOCUSRIGHT) {
+		if (field->field.string[cursorindex] == 0)
+			return 1;
+		++cursorindex;
+		cursorfield->field.integer = cursorindex;
+		dataobject_setIsModified(w, 1);
+		return 1;
+	}
+
 	cursorbytes = 0;
 	pos = field->field.string;
 	lastpos = 0;
