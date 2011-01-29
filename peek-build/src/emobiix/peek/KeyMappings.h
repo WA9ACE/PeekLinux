@@ -10,11 +10,13 @@
 extern "C" {
 #endif
 
-#define EKEY_ACTIVATE			0xFFFFFF03
 #define EKEY_FOCUSPREV		0xFFFFFF01
 #define EKEY_FOCUSNEXT		0xFFFFFF02
+#define EKEY_ACTIVATE			0xFFFFFF03
 #define EKEY_ALTTAB				0xFFFFFF04
-#define EKEY_BACK				0xFFFFFF05
+#define EKEY_BACK				  0xFFFFFF05
+#define EKEY_FOCUSLEFT    0xFFFFFF06
+#define EKEY_FOCUSRIGHT   0xFFFFFF07
 
 typedef enum
 {
