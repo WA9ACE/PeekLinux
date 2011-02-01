@@ -1020,14 +1020,14 @@ static int lgui_process_escape_seq(const char *p, EscapeSequenceState *state)
 		state->isItalic = 0;
 		return 4;
 	} else if (p[1] == 'c' && p[10] == '>') {
-		state->currentColor.value = strtol(p+2, NULL, 16);
+		state->currentColor.value = strtoul(p+2, NULL, 16);
 		//sscanf(p+2, "%x", &state->currentColor.value);
 		return 11;
 	} else if (p[1] == '/' && p[2] == 'c' && p[3] == '>') {
 		state->currentColor.value = state->basecolor.value;
 		return 4;
 	} else if (p[1] == 'g' && p[10] == '>') {
-		state->backgroundColor.value = strtol(p+2, NULL, 16);
+		state->backgroundColor.value = strtoul(p+2, NULL, 16);
 		//sscanf(p+2, "%x", &state->backgroundColor.value);
 		state->useBackground = 1;
 		return 11;
