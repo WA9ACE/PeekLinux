@@ -264,17 +264,17 @@ DataObjectField *dataobject_getEnumAsInt(DataObject *dobj, EmoField enu)
 			switch (len) {
 				case 8:
 				default:
-					//output->field.uinteger = strtoll(str+1, NULL, 16);
-					sscanf(str+1, "%X", &output->field.uinteger);
+					output->field.uinteger = strtoul(str+1, NULL, 16);
+					//sscanf(str+1, "%X", &output->field.uinteger);
 					break;
 				case 6:
-					//output->field.uinteger = strtol(str+1, NULL, 16);
-					sscanf(str+1, "%X", &output->field.uinteger);
+					output->field.uinteger = strtoul(str+1, NULL, 16);
+					//sscanf(str+1, "%X", &output->field.uinteger);
 					output->field.uinteger <<= 8;
 					output->field.uinteger |= 0xFF;
 					break;
 				case 3:
-					tmpcol = strtol(str+1, NULL, 16);
+					tmpcol = strtoul(str+1, NULL, 16);
 					//sscanf(str+1, "%X", &tmpcol);
 					output->field.uinteger = ((tmpcol & 0xF00) << 20) | ((tmpcol & 0xF00) << 16);
 					output->field.uinteger |= ((tmpcol & 0x0F0) << 16) | ((tmpcol & 0x0F0) << 12);
@@ -423,17 +423,17 @@ DataObjectField *dataobject_getValueAsInt(DataObject *dobj, const char *key)
 			switch (len) {
 				case 8:
 				default:
-					//output->field.uinteger = strtol(str+1, NULL, 16);
-					sscanf(str+1, "%X", &output->field.uinteger);
+					output->field.uinteger = strtoul(str+1, NULL, 16);
+					//sscanf(str+1, "%X", &output->field.uinteger);
 					break;
 				case 6:
-					//output->field.uinteger = strtol(str+1, NULL, 16);
-					sscanf(str+1, "%X", &output->field.uinteger);
+					output->field.uinteger = strtoul(str+1, NULL, 16);
+					//sscanf(str+1, "%X", &output->field.uinteger);
 					output->field.uinteger <<= 8;
 					output->field.uinteger |= 0xFF;
 					break;
 				case 3:
-					tmpcol = strtol(str+1, NULL, 16);
+					tmpcol = strtoul(str+1, NULL, 16);
 					//sscanf(str+1, "%X", &tmpcol);
 					output->field.uinteger = ((tmpcol & 0xF00) << 20) | ((tmpcol & 0xF00) << 16);
 					output->field.uinteger |= ((tmpcol & 0x0F0) << 16) | ((tmpcol & 0x0F0) << 12);
